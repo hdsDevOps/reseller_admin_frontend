@@ -1,120 +1,37 @@
 version: "3.8"
 services:
   main:
-    build: ./microfrontends/main
+    build: ./main
     container_name: microfrontend_container_main
     ports:
-    - 3000:3000
+      - 3000:3000
     networks:
-    - dev_network
-    depends_on:
-    - customer
-    - api-gateway
+      - dev_network
+
   customer:
-    build: ./microfrontends/customer
+    build: ./customer
     container_name: microfrontend_container_customer
     ports:
-    - 3001:3001
-    networks:
-    - dev_network
-    depends_on:
-    - api-gateway
-  api-gateway:
-    build: ./microservices/api-gateway
-    container_name: microservices_container_api-gateway
-    ports:
-    - 8000:8000
-    expose:
-    - "8000"
-    networks:
-    - dev_network
-    depends_on:
-    - adminservices
-    - customerservices
-    - googleservices
-    - miscservices
-    - notificationservices
-    - reportservices
-    - subscriptionservices
-    - voucherservices
-  adminservices:
-    build: ./microservices/adminservices
-    container_name: microservices_container_adminservices
-    ports:
-    - 8001:8001
-    expose:
-    - "8001"
-    networks:
-    - dev_network
-  customerservices:
-    build: ./microservices/customerservices
-    container_name: microservices_container_customerservices
-    ports:
-    - 8002:8002
-    expose:
-    - "8002"
-    networks:
-    - dev_network
-
-  googleservices:
-    build: ./microservices/googleservices
-    container_name: microservices_container_googleservices
-    ports:
-      - "8003:8003"
-    expose:
-    - "8003"  
+      - 3001:3001
     networks:
       - dev_network
 
-  miscservices:
-    build: ./microservices/miscservices
-    container_name: microservices_container_miscservices
+  auth:
+    build: ./auth
+    container_name: microfrontend_container_auth
     ports:
-      - "8004:8004"
-    expose:
-    - "8004"  
+      - 3002:3002
     networks:
       - dev_network
 
-  notificationservices:
-    build: ./microservices/notificationservices
-    container_name: microservices_container_notificationservices
+  store:
+    build: ./store
+    container_name: microfrontend_container_store
     ports:
-      - "8005:8005"
-    expose:
-    - "8005"  
-    networks:
-      - dev_network 
-
-  reportservices:
-    build: ./microservices/reportservices
-    container_name: microservices_container_reportservices
-    ports:
-      - "8006:8006"
-    expose:
-    - "8006"
+      - 3030:3030
     networks:
       - dev_network
 
-  subscriptionservices:
-    build: ./microservices/subscriptionservices
-    container_name: microservices_container_subscriptionservices
-    ports:
-      - "8007:8007"
-    expose:
-    - "8007"
-    networks:
-      - dev_network
-
-  voucherservices:
-    build: ./microservices/voucherservices
-    container_name: microservices_container_voucherservices
-    ports:
-      - "8008:8008"
-    expose:
-    - "8008"
-    networks:
-      - dev_network  
 networks:
   dev_network:
     driver: bridge
