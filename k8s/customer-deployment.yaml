@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendadmin-customer-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontendadmin-customer-service
+  template:
+    metadata:
+      labels:
+        app: frontendadmin-customer-service
+    spec:
+      containers:
+      - name: frontendadmin-customer-service
+        image: hordansodevops/reseller_customer_frontendadmin_customer:latest
+        ports:
+        - containerPort: 3001
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 3
