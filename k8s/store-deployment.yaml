@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontendadmin-store-service
-        image: hordansodevops/reseller_customer_frontendadmin_store:latest
+        image: hordansodevops/reseller_admin_frontend_store:latest
         ports:
         - containerPort: 3030
         resources:

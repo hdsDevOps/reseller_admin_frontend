@@ -24,7 +24,7 @@ jobs:
               uses: docker/metadata-action@v5
               with:
                   images: |
-                      hordansodevops/reseller_customer_frontendadmin_customer
+                      hordansodevops/reseller_admin_frontend_customer
 
             - name: Log in to Docker Hub
               uses: docker/login-action@v3
@@ -63,7 +63,7 @@ jobs:
                       k8s/customer-deployment.yaml
                       k8s/customer-service.yaml
                   images: |
-                      hordansodevops/reseller_customer_frontendadmin_customer:latest
+                      hordansodevops/reseller_admin_frontend_customer:latest
 
             # Uncomment if you have a separate ingress deployment
             # - name: Deploy Ingress
