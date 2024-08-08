@@ -45,9 +45,9 @@ module.exports = (_, argv) => ({
 			name: "main",
 			filename: "remoteEntry.js",
 			remotes: {
-				store: "store@http://localhost:3030/remoteEntry.js",
-				auth: "auth@http://localhost:3002/remoteEntry.js",
-				customer: "customer@http://localhost:3001/remoteEntry.js",
+				store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				auth: "auth@https://auth.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				customer: "customer@https://customer.admin.gworkspace.withhordanso.com/remoteEntry.js",
 			},
 			exposes: {
 				"./Navbar": "./src/components/Navbar.tsx",

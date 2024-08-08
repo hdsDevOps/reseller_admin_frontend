@@ -45,7 +45,7 @@ module.exports = (_, argv) => ({
 			name: "customer",
 			filename: "remoteEntry.js",
 			remotes: {
-				store: "store@http://localhost:3030/remoteEntry.js",
+				store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
 			},
 			exposes: {
 				"./Cart": "./src/components/Cart.tsx",
