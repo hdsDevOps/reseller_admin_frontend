@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form } from "react-bootstrap";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -12,62 +11,65 @@ const ForgotPassword: React.FC = () => {
   };
 
   const onGoBackhandler = () => {
-    navigate('/login'); // Replace '/login' with your login route path
+    navigate("/login"); // Replace '/login' with your login route path
   };
 
   return (
-    <div className="sign-in">
-      <div className="forgot-pws-header mb-4">
-        {/* <Image
-          src={imageAssets.logo_small} // Replace with your image path
-          alt="hordanso"
-          className="forgot-pws-logo"
-        /> */}
-        <h3>Forgot password?</h3>
-        <p>
-          Enter the email address associated with your account and we’ll send
-          you a link to reset your password.
-        </p>
-      </div>
-      <div className="auth-container">
-        <Form onSubmit={handleLogin}>
-          <Form.Group controlId="formBasicEmail" className="mb-4">
-            <Form.Label className="auth-form-label mb-1">Email</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-control auth-form-control"
-              data-testid="email"
-            />
-          </Form.Group>
-          <div className="auth-btn-container mt-3">
-            <Button
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-gray-100">
+      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-lg shadow-md">
+        <div>
+          {/* You can add your logo here */}
+          {/* <img className="mx-auto h-12 w-auto" src="/path-to-your-logo.png" alt="Logo" /> */}
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Forgot password?
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Enter the email address associated with your account and we'll
+            send you a link to reset your password.
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email-address" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                data-testid="email"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
               type="submit"
-              className="primary-btn black-background"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               data-testid="next"
             >
               Next
-            </Button>
+            </button>
           </div>
+        </form>
 
-          <div className="text-center mt-4">
-            <Button
-              type="button"
-              onClick={onGoBackhandler}
-              data-testid="back-to-login"
-              className="auth-back-btn"
-            >
-              {/* <Image
-                src={imageAssets.back_arrow} // Replace with your image path
-                alt="back arrow"
-                className="auth-back-arrow"
-              /> */}
-              <span className="ps-1">Back to login</span>
-            </Button>
-          </div>
-        </Form>
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={onGoBackhandler}
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+            data-testid="back-to-login"
+          >
+            ← Back to login
+          </button>
+        </div>
       </div>
     </div>
   );
