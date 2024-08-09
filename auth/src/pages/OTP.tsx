@@ -6,10 +6,8 @@ import React, {
   KeyboardEvent,
 } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Form, Row, Col } from "react-bootstrap";
 
 const OTP: React.FC = () => {
-
   const navigate = useNavigate();
 
   const otp1Ref = useRef<HTMLInputElement>(null);
@@ -34,7 +32,7 @@ const OTP: React.FC = () => {
     e: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const value = (e.target as HTMLInputElement).value;
+    const value = e.target.value;
     if (/^\d$/.test(value)) {
       switch (index) {
         case 1:
@@ -122,172 +120,87 @@ const OTP: React.FC = () => {
     const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
     if (otp.length === 6) {
       // Process the OTP login
-      // dispatch(makeUserLoginThunk({ email, otp }))
-      //   .then((response) => {
-      //     // Handle successful login
-      //     toast.success("Login successful!");
-      //     router.push("/dashboard"); // Replace with your desired route
-      //   })
-      //   .catch((error) => {
-      //     // Handle login error
-      //     if (error instanceof CustomError) {
-      //       toast.error(error.message);
-      //     } else {
-      //       toast.error("Login failed. Please try again.");
-      //     }
-      //   });
+      // Add your login logic here
     } else {
-      //toast.error("Please enter a valid 6-digit OTP.");
+      // Add error handling logic here
     }
   };
 
   const onGoBackhandler = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
-    <div className="sign-in">
-      <div className="auth-header mb-4">
-        {/* <Image
-        src={imageAssets.logo_small} // Replace with your image path
-        alt="hordanso"
-        className="auth-logo"
-      /> */}
-        <h3>Sign in your account</h3>
-      </div>
-      <div className="auth-container">
-        <Form onSubmit={handleLogin}>
-          <Row>
-            <Form.Label className="auth-form-label mb-4">
-              OTP Verification
-            </Form.Label>
-            <Col sm={2} xl={2}>
-              <Form.Control
-                type="text"
-                maxLength={1}
-                ref={otp1Ref}
-                value={otp1}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 1)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 1)
-                }
-                className="otp-input"
-                data-testid="otp-one"
-              />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
-                type="text"
-                maxLength={1}
-                ref={otp2Ref}
-                value={otp2}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 2)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 2)
-                }
-                className="otp-input"
-                data-testid="otp-two"
-              />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
-                type="text"
-                maxLength={1}
-                ref={otp3Ref}
-                value={otp3}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 3)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 3)
-                }
-                className="otp-input"
-                data-testid="otp-three"
-              />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
-                type="text"
-                maxLength={1}
-                ref={otp4Ref}
-                value={otp4}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 4)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 4)
-                }
-                className="otp-input"
-                data-testid="otp-four"
-              />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
-                type="text"
-                maxLength={1}
-                ref={otp5Ref}
-                value={otp5}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 5)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 5)
-                }
-                className="otp-input"
-                data-testid="otp-five"
-              />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
-                type="text"
-                maxLength={1}
-                ref={otp6Ref}
-                value={otp6}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 6)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 6)
-                }
-                className="otp-input"
-                data-testid="otp-six"
-              />
-            </Col>
-          </Row>
-          <div className="auth-btn-container mt-3">
-            <Button type="submit" className="primary-btn" data-testid="submit">
-              Submit
-            </Button>
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in your account
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="otp" className="sr-only">
+                OTP Verification
+              </label>
+              <div className="flex justify-between">
+                {[otp1Ref, otp2Ref, otp3Ref, otp4Ref, otp5Ref, otp6Ref].map((ref, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    ref={ref}
+                    value={[otp1, otp2, otp3, otp4, otp5, otp6][index]}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(e, index + 1)
+                    }
+                    onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
+                      handleKeyDown(e, index + 1)
+                    }
+                    className="appearance-none rounded-none relative block w-12 h-12 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm text-center"
+                    data-testid={`otp-${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="text-center auth-otp-footer mt-4">
-            <p>
-              Didn't get an OTP ?{" "}
-              <Link data-testid="resend-otp" to="#">
-                Resend OTP
-              </Link>{" "}
-              <span>01:19</span>
-            </p>
-          </div>
-          <div className="text-center mt-4">
-            <Button
-              type="button"
-              onClick={() => onGoBackhandler()}
-              className="auth-back-btn"
-              data-testid="back-to-login"
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              data-testid="submit"
             >
-              {/* <Image
-              src={imageAssets.back_arrow} // Replace with your image path
-              alt="back arrow"
-              className="auth-back-arrow"
-            /> */}
-              <span className="ps-1">Back to login</span>
-            </Button>
+              Submit
+            </button>
           </div>
-        </Form>
+        </form>
+
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Didn't get an OTP?{" "}
+            <Link
+              to="#"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+              data-testid="resend-otp"
+            >
+              Resend OTP
+            </Link>{" "}
+            <span className="text-gray-500">01:19</span>
+          </p>
+        </div>
+
+        <div className="text-center mt-4">
+          <button
+            type="button"
+            onClick={onGoBackhandler}
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            data-testid="back-to-login"
+          >
+            ← Back to login
+          </button>
+        </div>
       </div>
     </div>
   );
