@@ -5,6 +5,7 @@ const Login = React.lazy(() => import("./Login"));
 const OTP = React.lazy(() => import("./OTP"));
 const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
 
+
 const AuthApp: React.FC = () => {
   return (
     <Container fluid>

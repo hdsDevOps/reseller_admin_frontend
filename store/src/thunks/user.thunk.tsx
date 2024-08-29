@@ -25,3 +25,14 @@ export const makeUserLoginThunk = createAsyncThunk(
     );
   }
 );
+
+export const makeUserOtpThunk = createAsyncThunk(
+  "users/makeUserLogin",
+  async ({ email, password, login_user_type }: any) => {
+    return await userApis.checkUserOtpsApi(
+      email,
+      password,
+      login_user_type
+    );
+  }
+);

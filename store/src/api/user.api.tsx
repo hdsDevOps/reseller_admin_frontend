@@ -17,6 +17,22 @@ async function checkUserCredentialsApi(
     throw error;
   }
 }
+async function checkUserOtpsApi(
+  email: string,
+  password: string,
+  login_user_type: number,
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.login, {
+      email,
+      password,
+      login_user_type,
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+}
 
 async function checkUserTokenApi(): Promise<any> {
   try {
@@ -29,6 +45,8 @@ async function checkUserTokenApi(): Promise<any> {
 
 
 export const userApis = {
+  checkUserOtpsApi,
   checkUserCredentialsApi,
   checkUserTokenApi,
+  
 };

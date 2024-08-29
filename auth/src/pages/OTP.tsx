@@ -7,11 +7,18 @@ import React, {
 } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Form, Row, Col } from "react-bootstrap";
-
+import { makeUserOtpThunk,makeUserLoginThunk  } from "store/user.thunk";
 const OTP: React.FC = () => {
 
   const navigate = useNavigate();
 
+
+  console.log(makeUserOtpThunk,'user otp thunk here   ');
+
+  console.log(makeUserLoginThunk,'user login thunk here   ');
+  
+  console.log('good');
+  
   const otp1Ref = useRef<HTMLInputElement>(null);
   const otp2Ref = useRef<HTMLInputElement>(null);
   const otp3Ref = useRef<HTMLInputElement>(null);

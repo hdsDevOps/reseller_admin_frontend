@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
     getUserAuthTokenFromLSThunk,
     makeUserLoginThunk,
+    makeUserOtpThunk
   } from '../thunks/user.thunk';
 import {userLocalStorage} from '../localStorage/user.storage';
 export interface UserDetailsState {
@@ -54,6 +55,25 @@ const authSlice = createSlice({
     );
 
     builder.addCase(makeUserLoginThunk.rejected, state => {
+      //state.userAuthStatus = 'UN_AUTHORIZED';
+    });
+
+
+    builder.addCase( makeUserOtpThunk.pending, state => {
+      //state.userAuthStatus = 'PENDING';
+    });
+
+    builder.addCase(
+      makeUserOtpThunk.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.token = action.payload?.data?.token;
+        userLocalStorage.saveUserTokenToLocalStorage(
+          action.payload?.data?.token
+        );
+      },
+    );
+
+    builder.addCase( makeUserOtpThunk.rejected, state => {
       //state.userAuthStatus = 'UN_AUTHORIZED';
     });
 

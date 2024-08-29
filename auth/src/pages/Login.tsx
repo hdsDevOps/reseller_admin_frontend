@@ -14,6 +14,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    console.log('API URL:', process.env.REACT_APP_BASE_URL);
 
     try {
       const result = await dispatch(
@@ -24,9 +25,11 @@ const Login: React.FC = () => {
         })
       ).unwrap();
       console.log("result....", result);
-      navigate("/dashboard");
+      // navigate("/dashboard");
+      navigate('/otp')
     } catch (error) {
-      console.error("Login error:", error);
+
+      console.error("Login error here :", error);
     }
   };
 
@@ -46,7 +49,7 @@ const Login: React.FC = () => {
           alt="hordanso"
           className="auth-logo"
         /> */}
-        <h3>Log in to your account</h3>
+        <h3 className="text-red-500">Log in to your account</h3>
       </div>
       <div className="auth-container">
         <Form onSubmit={handleSubmit}>
