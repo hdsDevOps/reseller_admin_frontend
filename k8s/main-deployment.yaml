@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendadmin-main-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontendadmin-main-service
+  template:
+    metadata:
+      labels:
+        app: frontendadmin-main-service
+    spec:
+      containers:
+      - name: frontendadmin-main-service
+        image: hordansodevops/reseller_admin_frontend_main:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 3
+
