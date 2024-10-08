@@ -3,8 +3,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
     getUserAuthTokenFromLSThunk,
     makeUserLoginThunk,
-  } from '../thunks/user.thunk';
-import {userLocalStorage} from '../localStorage/user.storage';
+} from '../thunks/user.thunk';
+import { userLocalStorage } from '../localStorage/user.storage';
+
 export interface UserDetailsState {
   userAuthStatus: 'AUTHORIZED' | 'UN_AUTHORIZED' | 'PENDING' | 'UPGRADE';
   userDetails: any;
@@ -33,14 +34,15 @@ const authSlice = createSlice({
       state.userAuthStatus = action.payload;
     },
     resetUserSlice: (state) => {
-      state = initialState;
+      state.userAuthStatus = 'PENDING';
+      state.userDetails = {};
+      state.userId = null;
+      state.token = '';
     },
   },
-
   extraReducers: builder => {
-
     builder.addCase(makeUserLoginThunk.pending, state => {
-      //state.userAuthStatus = 'PENDING';
+      // state.userAuthStatus = 'PENDING';
     });
 
     builder.addCase(
@@ -54,25 +56,22 @@ const authSlice = createSlice({
     );
 
     builder.addCase(makeUserLoginThunk.rejected, state => {
-      //state.userAuthStatus = 'UN_AUTHORIZED';
+      // state.userAuthStatus = 'UN_AUTHORIZED';
     });
 
     builder.addCase(getUserAuthTokenFromLSThunk.pending, state => {
-        state.userAuthStatus = 'PENDING';
-      });
+      state.userAuthStatus = 'PENDING';
+    });
 
-      builder.addCase(getUserAuthTokenFromLSThunk.fulfilled,(state, action: PayloadAction<any>) => {
-          state.userAuthStatus = 'AUTHORIZED';
-          state.token = action.payload;
-        },
-      );
+    builder.addCase(getUserAuthTokenFromLSThunk.fulfilled, (state, action: PayloadAction<any>) => {
+      state.userAuthStatus = 'AUTHORIZED';
+      state.token = action.payload;
+    });
 
-      builder.addCase(getUserAuthTokenFromLSThunk.rejected, state => {
-        state.userAuthStatus = 'UN_AUTHORIZED';
-      });
-
+    builder.addCase(getUserAuthTokenFromLSThunk.rejected, state => {
+      state.userAuthStatus = 'UN_AUTHORIZED';
+    });
   },
-
 });
 
 export const { setTokenDetails, setUserDetails, setUserAuthStatus, resetUserSlice } = authSlice.actions;

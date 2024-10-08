@@ -1,31 +1,28 @@
-import React from 'react';
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import CustomerApp from "customer/CustomerApp";
+import Header from "../components/Header";
+// import DomainApp from "domains/DomainApp";
 
 const Dashboard = React.lazy(() => import("./Dashboard"));
-const About = React.lazy(() => import("./About"));
 
 const routes = [
-  
   { path: "/", element: <Dashboard /> },
   { path: "/dashboard", element: <Dashboard /> },
-  { path: "/about", element: <About /> },
-  { path: "/customer/*", element: <CustomerApp /> },
 ];
 
 const MainApp: React.FC = () => (
   <div className="main-wrapper">
-    <Navbar />
-    <div className="content-body">
+    <Header />
+    <div className="content-body min-h-screen pl-[5.2rem] lg:pl-[17rem] pt-[6rem] pr-[0.8rem] pb-4">
       <Routes>
         {routes.map((route, index) => (
           <Route key={index} path={route.path} element={route.element} />
         ))}
       </Routes>
+      {/* <DomainApp /> */}
     </div>
-    <Footer />
+    <Navbar />
   </div>
 );
 

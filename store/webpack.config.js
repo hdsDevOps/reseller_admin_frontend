@@ -1,10 +1,15 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+const path = require('path');
 const Dotenv = require('dotenv-webpack');
+
 const deps = require("./package.json").dependencies;
+
+const printCompilationMessage = require('./compilation.config.js');
+
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "http://localhost:3030/",
+    publicPath: "auto",
   },
 
   resolve: {
@@ -14,6 +19,22 @@ module.exports = (_, argv) => ({
   devServer: {
     port: 3030,
     historyApiFallback: true,
+    watchFiles: [path.resolve(__dirname, 'src')],
+    onListening: function (devServer) {
+      const port = devServer.server.address().port
+
+      printCompilationMessage('compiling', port)
+
+      devServer.compiler.hooks.done.tap('OutputMessagePlugin', (stats) => {
+        setImmediate(() => {
+          if (stats.hasErrors()) {
+            printCompilationMessage('failure', port)
+          } else {
+            printCompilationMessage('success', port)
+          }
+        })
+      })
+    }
   },
 
   module: {
@@ -45,12 +66,12 @@ module.exports = (_, argv) => ({
       filename: "remoteEntry.js",
       remotes: {},
       exposes: {
-        "./ReduxProvider": "./src/provider/index.tsx",
-        "./user.storage": "./src/localStorage/user.storage.tsx",
-        "./hooks": "./src/hooks.ts",
-        "./user.thunk": "./src/thunks/user.thunk.tsx",
-        "./authSlice": "./src/slices/authSlice.ts",
-      },
+				"./ReduxProvider": "./src/provider/index.tsx",
+				"./user.storage": "./src/localStorage/user.storage.tsx",
+				"./hooks": "./src/hooks.ts",
+				"./user.thunk": "./src/thunks/user.thunk.tsx",
+				"./authSlice": "./src/slices/authSlice.ts",
+			},
       shared: {
         ...deps,
         react: {

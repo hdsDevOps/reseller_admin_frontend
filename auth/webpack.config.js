@@ -1,10 +1,15 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
-const Dotenv = require("dotenv-webpack");
+const path = require('path');
+const Dotenv = require('dotenv-webpack');
+
 const deps = require("./package.json").dependencies;
+
+const printCompilationMessage = require('./compilation.config.js');
+
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "http://localhost:3002/",
+    publicPath: "http://localhost:3001/",
   },
 
   resolve: {
@@ -12,8 +17,24 @@ module.exports = (_, argv) => ({
   },
 
   devServer: {
-    port: 3002,
+    port: 3001,
     historyApiFallback: true,
+    watchFiles: [path.resolve(__dirname, 'src')],
+    onListening: function (devServer) {
+      const port = devServer.server.address().port
+
+      printCompilationMessage('compiling', port)
+
+      devServer.compiler.hooks.done.tap('OutputMessagePlugin', (stats) => {
+        setImmediate(() => {
+          if (stats.hasErrors()) {
+            printCompilationMessage('failure', port)
+          } else {
+            printCompilationMessage('success', port)
+          }
+        })
+      })
+    }
   },
 
   module: {
@@ -44,7 +65,7 @@ module.exports = (_, argv) => ({
       name: "auth",
       filename: "remoteEntry.js",
       remotes: {
-        store: "store@http://localhost:3030/remoteEntry.js",
+        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
       },
       exposes: {
         "./AuthApp": "./src/pages/index.tsx",
@@ -65,6 +86,6 @@ module.exports = (_, argv) => ({
     new HtmlWebPackPlugin({
       template: "./src/index.html",
     }),
-    new Dotenv(),
+    new Dotenv()
   ],
 });

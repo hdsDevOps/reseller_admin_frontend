@@ -1,4 +1,4 @@
 export const endPoints = {
-    login: 'adminservices/login',
-    checkToken: 'adminlogin/checktoken'
+    login: 'customerservices/login',
+    checkToken: 'customerservices/checktoken'
 }
