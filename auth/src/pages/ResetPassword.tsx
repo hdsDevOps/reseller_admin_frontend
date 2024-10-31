@@ -1,0 +1,129 @@
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "store/hooks";
+import { HiOutlineEye } from "react-icons/hi";
+import { RiEyeCloseLine } from "react-icons/ri";
+// import { makeUserLoginThunk } from "store/user.thunk";
+import { RiInformation2Line } from "react-icons/ri";
+
+const ResetPassword: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if(password != confirmPassword){
+      alert('Your passwords do not match');
+    }
+    else{
+      navigate('/password-reset-successful')
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <div className="w-full flex flex-col justify-center items-center h-full xsm-max:px-1 font-inter">
+      <div className="w-full max-w-[32rem] bg-gray-50 p-12 rounded-3xl xsm-max:px-4">
+        <div className="w-full">
+          <div className="text-center">
+            <div className="flex items-center justify-center">
+              <img
+                src={process.env.BASE_URL + "/images/logo.jpeg"}
+                alt="logo"
+                className="w-[108px]"
+              />
+            </div>
+            <h3 className="text-[28px] font-inter font-medium text-[#0D121F] pt-4">
+              Log in your account
+            </h3>
+            
+          </div>
+          <div className="mt-6">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col"
+            >
+              <div className="max-w-[456px] mt-4">
+                <div
+                  className="flex flex-row justify-between"
+                >
+                  <label className="text-gray-900 text-base font-bold font-inter tracking-[1px]">
+                    Password
+                  </label>
+                  <RiInformation2Line
+                    className="w-[20px] h-[20px] text-[#12A833] mt-[3px] mr-[17px]"
+                  />
+                </div>
+                <div className="my-[6px]">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={e => {
+                      setPassword(e.target.value);
+                    }}
+                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                    minLength={8}
+                    placeholder="Enter password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="relative float-right mt-[-35px] mr-[15px]"
+                  >
+                    {showPassword ? (
+                      <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
+                    ) : (
+                      <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="max-w-[456px] mt-4">
+                <label className="text-gray-900 text-base font-bold font-inter tracking-[1px]">
+                  Confirm Password
+                </label>
+                <div className="my-[6px]">
+                  <input
+                    type={"password"}
+                    value={confirmPassword}
+                    onChange={e => {
+                      setConfirmPassword(e.target.value);
+                    }}
+                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                    minLength={8}
+                    placeholder="Enter password"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="max-w-[456px] mt-[25px]">
+                <button
+                  type="submit"
+                  data-testid="log-in"
+                  className="w-full btn-green bg-black h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]"
+                >
+                  Confirm Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-12 mb-10 text-center">
+        <p className="text-[#848484] text-xs font-normal mt-8">© 2024 HORDANSO WORKSPACE. All rights reserved</p>
+      </div>
+    </div>
+  );
+};
+
+export default ResetPassword;

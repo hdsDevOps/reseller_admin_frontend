@@ -5,6 +5,8 @@ import { Route, Routes } from "react-router-dom";
 const Login = React.lazy(() => import("./Login"));
 const OTP = React.lazy(() => import("./OTP"));
 const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
+const ResetPassword = React.lazy(() => import("./ResetPassword"));
+const  PasswordResetSuccessful = React.lazy(() => import('./PasswordResetSuccessful'));
 
 
 const AuthApp: React.FC = () => {
@@ -18,6 +20,8 @@ const AuthApp: React.FC = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/otp" element={<OTP />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
+            <Route path="/resetpassword" element={<ResetPassword />} />
+            <Route path="/password-reset-successful" element={<PasswordResetSuccessful />} />
           </Routes>
         </main>
         {/* <Footer/> */}

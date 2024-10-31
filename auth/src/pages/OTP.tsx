@@ -35,6 +35,22 @@ const OTP: React.FC = () => {
   const [ time, setTime ] = useState(0);
   const [ seconds, setSeconds ] = useState(0);
   const [ minutes, setMinutes ] = useState(0);
+  
+
+  useEffect(() => {
+    if(time>0){
+      setSeconds(time%60);
+      setMinutes((parseInt(time/60)).toFixed(0));
+      setTimeout(() => {
+        setTime(time-1);
+      }, 1000);
+    }
+    else{
+      setSeconds(0);
+      setMinutes(0);
+      setTime(0);
+    }
+  }, [time])
 
   useEffect(() => {
     otp1Ref.current?.focus();
@@ -139,7 +155,7 @@ const OTP: React.FC = () => {
           dispatch(setTokenDetails("usy6767jshs688ytmbqa88654sgsgs5sgs6sgs6q"));
           navigate("/dashboard");
         } else {
-          //navigate("/resetpassword");
+          navigate("/resetpassword");
         }
       } else {
         alert("Invalid OTP. Please try again.");
@@ -198,7 +214,11 @@ const OTP: React.FC = () => {
           >
             <div className="flex justify-between mt-12 w-[451px]">
               <p className="text-md font-bold">OTP verification</p>
-              <span className="text-red-600">01:19</span>
+              <span className="text-red-600">{
+                `0${minutes}:${
+                  seconds<10 ? "0"+seconds : seconds
+                }`
+              }</span>
             </div>
             <div className="grid grid-cols-6 gap-2 mt-4 w-[451px]">
               <input
@@ -266,7 +286,9 @@ const OTP: React.FC = () => {
               <button
                 type="submit"
                 data-testid="log-in"
-                className="w-full btn-green bg-[#12A833] h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]"
+                className={`w-full btn-green ${
+                  mode === "signin" ? "bg-[#12A833]" : "bg-black"
+                } h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]`}
               >
                 Submit
               </button>
@@ -276,7 +298,15 @@ const OTP: React.FC = () => {
                 Didn't get an OTP?{" "}
                 <button
                   type="button"
-                  className={`text-red-600 underline ml-4`}
+                  className={`${
+                    time>0 ? 'text-[#858585]' : 'text-red-600 underline'
+                  } ml-4`}
+                  onClick={() => {
+                    setTime(120);
+                  }}
+                  disabled={
+                    time>0 ? true : false
+                  }
                 >
                   Resend OTP
                 </button>{" "}
