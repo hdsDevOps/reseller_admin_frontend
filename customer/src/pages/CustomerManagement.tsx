@@ -118,9 +118,9 @@ const CustomerManagement: React.FC = () => {
 
         <div className="flex flex-row justify-between py-4 mr-[40px]">
           <div
-            className="flex flex-row"
+            className="grid grid-cols-1 min-[968px]:grid-cols-2"
           >
-            <div className="min-[940px]:w-1/2 w-full px-4">
+            <div className="w-[300px] px-4">
               <input
                 list="brow"
                 placeholder="Auto search domain list"
@@ -148,7 +148,7 @@ const CustomerManagement: React.FC = () => {
                 })}
               </div>
             </div>
-            <div className="min-[940px]:w-1/2 w-full px-4">
+            <div className="w-[300px] px-4 min-[968px]:mt-0 mt-[15px]">
               <input
                 className="w-full h-[38px] border border-[#E4E4E4] bg-[#F9F9F9] py-[8px] px-[9px] rounded-[8px] font-inter font-normal font-base focus:outline-none"
                 name="name"
@@ -158,7 +158,9 @@ const CustomerManagement: React.FC = () => {
               />
             </div>
           </div>
-          <div>
+          <div
+            className="min-[968px]:mt-0 mt-[27px]"
+          >
             <button
               type="button"
               className="bg-[#12A833] text-white px-[20px] py-[7px] rounded-[10px] w-[80px] h-[38px]"
@@ -470,8 +472,11 @@ const CustomerManagement: React.FC = () => {
                       <td>
                         <button
                           type="button"
+                          className="w-[33.66px] h-[33.66px] text-[#12A833] border border-[#12A833] rounded-full pl-[5px]"
                         >
-                          <Ellipsis />
+                          <Ellipsis
+                            className="w-[19px]"
+                          />
                         </button>
                       </td>
                     </tr>
