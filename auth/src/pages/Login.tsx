@@ -9,8 +9,8 @@ const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("test@yopmail.com");
-  const [password, setPassword] = useState("Test@1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -50,7 +50,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center h-screen xsm-max:px-1">
+    <div className="w-full flex flex-col justify-center items-center h-full xsm-max:px-1 font-inter">
       <div className="w-full max-w-[32rem] bg-gray-50 p-12 rounded-3xl xsm-max:px-4">
         <div className="w-full">
           <div className="text-center">
@@ -58,77 +58,102 @@ const Login: React.FC = () => {
               <img
                 src={process.env.BASE_URL + "/images/logo.jpeg"}
                 alt="logo"
+                className="w-[108px]"
               />
             </div>
-            <h3 className="text-2xl font-semibold text-[#0D121F] pt-4">
+            <h3 className="text-[28px] font-inter font-medium text-[#0D121F] pt-4">
               Log in your account
             </h3>
+            
           </div>
           <div className="mt-6">
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col"
+            >
+              <div className="max-w-[456px]">
                 <label
-                  className="block text-gray-900 text-base font-bold mb-1"
+                  className="text-gray-900 text-base font-bold font-inter tracking-[1px]"
                   htmlFor="formBasicEmail"
                 >
                   Email
                 </label>
-                <input
-                  type="text"
-                  id="formBasicEmail"
-                  placeholder="Enter email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="custom-input"
-                  data-testid="email"
-                />
+                <div
+                  className="my-[6px] w-full"
+                >
+                  <input
+                    type="email"
+                    id="formBasicEmail"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                    data-testid="email"
+                    required
+                  />
+                </div>
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="max-w-[456px] mt-4">
+                <label className="text-gray-900 text-base font-bold font-inter tracking-[1px]">
                   Password
                 </label>
-                <div className="relative">
+                <div className="my-[6px]">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={handlePasswordChange}
-                    className="custom-input"
+                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
                     minLength={8}
-                    placeholder=".........."
+                    placeholder="Enter password"
                     required
                   />
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                    className="relative float-right mt-[-35px] mr-[15px]"
                   >
                     {showPassword ? (
-                      <HiOutlineEye className="h-5 w-5" aria-hidden="true" />
+                      <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
                     ) : (
-                      <RiEyeCloseLine className="h-5 w-5" aria-hidden="true" />
+                      <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
                     )}
                   </button>
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="mt-[25px] flex justify-between">
+                <div className="flex flex-row justify-between w-32 pt-1.5">
+                  <input
+                    type="checkbox"
+                    className="border border-[#545454] h-4 w-4"
+                  />
+
+                  <label
+                    className="text-xs text-gray-900"
+                  >
+                    Keep me logged in
+                  </label>
+                </div>
+
+                <div className="">
+                  <Link
+                    to="/forgotpassword"
+                    className="text-xs font-normal text-[#12A833]"
+                    data-testid="forgot-password"
+                  >
+                    Forgot Password
+                  </Link>
+                </div>
+              </div>
+              <div className="max-w-[456px] mt-[25px]">
                 <button
                   type="submit"
                   data-testid="log-in"
-                  className="btn-green"
+                  className="w-full btn-green bg-[#12A833] h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]"
                 >
-                  Submit
+                  Log in
                 </button>
               </div>
-              <div className="text-right mt-2">
-                <Link
-                  to="/forgotpassword"
-                  className="text-sm font-normal text-red-600"
-                  data-testid="forgot-password"
-                >
-                  Forgot Password
-                </Link>
-              </div>
-              <div className="text-center mt-4">
+              <div className="text-center mt-8">
                 <p className="text-sm font-medium text-gray-900">
                   By signing in, you agree to our{" "}
                   <button
@@ -145,22 +170,143 @@ const Login: React.FC = () => {
           </div>
           {show && (
             <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-              <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+              <div className="bg-white p-8 rounded-lg shadow-lg max-w-xl w-full">
                 <div className="flex justify-between items-center pb-3">
-                  <p className="text-lg font-bold">Terms of Services</p>
+                  <h1 className="font-bold text-normal text-[35px]">Terms of Services</h1>
                   <button onClick={handleClose} className="text-black">
-                    &times;
+                    <img
+                      src={process.env.BASE_URL + "/images/close.png"}
+                      alt="close"
+                      className="w-[40px] h-[40px]"
+                    />
                   </button>
                 </div>
-                <p>Woohoo, you are reading this text in a modal!</p>
+                <p
+                  className="h-[500px] overflow-scroll overflow-x-hidden font-inter text-[14px] pr-1"
+                >
+                &nbsp;1. Introduction
+                These Terms and Conditions ("Terms") govern your use of the design services provided by [Your Company Name] ("Company," "we," "us," or "our"). By using our design services, you agree to be bound by these Terms. If you do not agree with any part of these Terms, you must not use our design services.
+
+                <br /><br />
+
+                &nbsp;2. Intellectual Property Rights
+
+                <br />
+
+                2.1. Ownership: All design work, including but not limited to graphics, logos, illustrations, and layouts created by [Your Company Name] remains the intellectual property of [Your Company Name] until full payment is received.
+
+                <br /><br />
+
+                2.2. Usage Rights: Upon full payment, you are granted a non-exclusive, non-transferable license to use the design work for the intended purpose as agreed upon. This license does not grant you ownership of the design work, only the right to use it.
+
+                <br /><br />
+
+                2.3. Third-Party Elements: Any third-party elements, such as stock images or fonts, included in the design work may have separate licenses. It is your responsibility to comply with the terms of these licenses.
+
+                <br /><br />
+
+                &nbsp;3. Payment and Fees
+
+                <br />
+
+                3.1. Payment Terms: Payment terms will be outlined in the invoice provided. Full payment is required upon completion of the design work unless otherwise agreed upon in writing.
+
+                <br /><br />
+
+                3.2. Late Payments: Late payments may incur additional fees as specified in the invoice or agreed upon separately.
+
+                <br /><br />
+
+                &nbsp;4. Revisions and Modifications
+
+                <br />
+
+                4.1. Revisions: We offer a reasonable number of revisions to the design work as part of our service. The scope of revisions will be defined in the project agreement.
+
+                <br /><br />
+
+                4.2. Additional Revisions: Any additional revisions beyond the agreed-upon scope may incur extra charges.
+
+                <br /><br />
+
+                &nbsp;5. Use of Designs
+
+                <br /><br />
+
+                5.1. Permitted Use: The design work may be used for the specific purpose for which it was created and as described in the project agreement.
+
+                <br /><br />
+
+                5.2. Prohibited Use: You may not resell, redistribute, or use the design work for any other purpose without prior written consent from [Your Company Name].
+
+                <br /><br />
+                
+                &nbsp;6. Confidentiality
+
+                <br />
+
+                6.1. Confidential Information: Any confidential information shared during the course of the project will be kept confidential and will not be disclosed to any third parties without your consent.
+
+                <br /><br />
+                
+                &nbsp;7. Liability
+
+                <br />
+
+                7.1. No Warranty: The design work is provided "as is" without any warranty of any kind, either express or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose.
+                
+                <br /><br />
+
+                7.2. Limitation of Liability: In no event shall [Your Company Name] be liable for any indirect, incidental, special, or consequential damages arising out of or in connection with the use or inability to use the design work.
+
+                <br /><br />
+                
+                &nbsp;8. Termination
+                
+                <br />
+
+                8.1. Termination by Client: You may terminate the project at any time by providing written notice. In such cases, you will be billed for any completed work and any expenses incurred up to the date of termination.
+
+                <br /><br />
+                
+                8.2. Termination by Company: We reserve the right to terminate the project if you breach any of these Terms. In such cases, no refund will be provided.
+
+                <br /><br />
+                
+                &nbsp;9. Governing Law
+
+                <br />
+
+                These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction].
+
+                <br /><br />
+                
+                &nbsp;10. Changes to Terms
+
+                <br />
+
+                We reserve the right to update these Terms from time to time. Any changes will be posted on our website, and it is your responsibility to review these Terms periodically.
+
+                <br /><br />
+                
+                &nbsp;11. Contact Information
+
+                <br />
+
+                If you have any questions about these Terms, please contact us at [Your Contact Information].
+                </p>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-6 mb-10 text-center">
-        <p className="mb-3">Or</p>
+      <div className="mt-12 mb-10 text-center">
+        <p className="text-[#848484] text-xs font-normal mt-8">© 2024 HORDANSO WORKSPACE. All rights reserved</p>
+      </div>
+
+      {/* <div className="mt-6 mb-10 text-center">
+        <p className="mb-3">Or</p>© 2024 HORDANSO WORKSPACE. All rights reserved
         <button
           type="button"
           className="flex items-center justify-center w-full px-4 py-[.7rem] border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -172,7 +318,7 @@ const Login: React.FC = () => {
           />
           <span className="text-gray-900 text-sm">Sign in with Google</span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
