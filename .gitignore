@@ -3,9 +3,21 @@
 # dependencies
 /auth/node_modules
 
+/customer/node_modules
+
 /main/node_modules
 
+/paymenthistory/node_modules
+
+/role/node_modules
+
+/settings/node_modules
+
 /store/node_modules
+
+/subscription/node_modules
+
+/vouchernotification/node_modules
 
 # /store/.env
 
