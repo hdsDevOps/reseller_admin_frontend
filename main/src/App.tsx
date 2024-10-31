@@ -10,7 +10,8 @@ import { useAppSelector } from "store/hooks";
 import "auth/AuthCss";
 
 const App: React.FC = () => {
-  const { token } = useAppSelector((state) => state.auth);
+  // const { token } = useAppSelector((state) => state.auth);
+  const token = "usy6767jshs688ytmbqa88654sgsgs5sgs6sgs6q";
 
   return (
     <Suspense fallback={<h2>Loading.....</h2>}>

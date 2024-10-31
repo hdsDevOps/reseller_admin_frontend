@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChartLine,
   Mail,
@@ -12,162 +12,541 @@ import {
   LogOut,
   CircleChevronLeft,
   CircleChevronRight,
+  ListChecks,
+  TicketPercent,
+  LayoutTemplate,
+  ReceiptText,
+  MessageCircleQuestion,
+  History,
+  UserPen,
+  GitPullRequestDraft,
+  ChevronDown,
+  ChevronUp,
+  Dot,
 } from "lucide-react";
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { CiCreditCard1 } from "react-icons/ci";
 import { useAppDispatch } from "store/hooks";
 import { setTokenDetails } from "store/authSlice";
+import { RiCashFill } from "react-icons/ri";
+import { RiLogoutCircleLine } from "react-icons/ri";
 
 const links = [
   {
-    path: "/dashboard",
+    path: ["/dashboard"],
     label: "Dashboard",
-    icon: <ChartLine className="w-5 h-5" />,
+    icon: <ChartLine className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
   },
   {
-    path: "/customers",
+    path: ["/customers"],
     label: "Customer Management",
-    icon: <Ticket className="w-5 h-5" />,
+    icon: <ListChecks className="w-[18.5px] h-[18.5px] mt-[3px] border-[2px] border-[#000000] rounded-[5px]" />,
+    subDomain: [],
   },
   {
-    path: "/settings",
-    label: "Settings",
-    icon: <Settings className="w-5 h-5" />,
+    path: ["/customer-group", "/voucher-list"],
+    label: "Voucher Management",
+    icon: <TicketPercent className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [
+      { path: '/customer-group', label: 'Customer group' },
+      { path: '/voucher-list', label: 'Voucher list' }
+    ]
+  },
+  {
+    path: ["/notification-template"],
+    label: "Notification Template",
+    icon: <LayoutTemplate className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
+  },
+  {
+    path: ["/plan-and-price-setup", "/gemini-setup"],
+    label: "Subscription Master",
+    icon: <i className="bi bi-cash-stack w-[18.5px] h-[18.5px] mt-[0.5px]"></i>,
+    subDomain: [
+      { path: '/plan-and-price-setup', label: 'Plan & price setup' },
+      { path: '/gemini-setup', label: 'Gemini setup' },
+    ],
+  },
+  {
+    path: ["/payment-method"],
+    label: "Payment Method",
+    icon: <CiCreditCard1 className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
+  },
+  {
+    path: ["/billing-history"],
+    label: "Billing History",
+    icon: <ReceiptText className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
+  },
+  {
+    path: ["/faqs"],
+    label: "FAQ's",
+    icon: <MessageCircleQuestion className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
+  },
+  {
+    path: ["/email-log"],
+    label: "Email Log",
+    icon: <History className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
+  },
+  {
+    path: ["/user-list", "/role"],
+    label: "Role Management",
+    icon: <UserPen className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [
+      { path: '/user-list', label: 'User list' },
+      { path: '/role', label: 'Role' },
+    ],
+  },
+  {
+    path: ["/cms"],
+    label: "CMS",
+    icon: <GitPullRequestDraft className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
   },
 ];
+
+const links2= [
+  {
+    path: ["/customer-agreement", "/privacy-policy", "/terms-and-conditions"],
+    label: "Settings",
+    icon: <Settings className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [
+      { path: '/customer-agreement', label: 'Customer agreement' },
+      { path: '/privacy-policy', label: 'Privacy policy' },
+      { path: '/terms-and-conditions', label: 'Terms & conditions' },
+    ],
+  },
+  {
+    path: ["/logout"],
+    label: "Logout",
+    icon: <RiLogoutCircleLine className="w-[18.5px] h-[18.5px] mt-[3px]" />,
+    subDomain: [],
+  },
+]
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [image, setImage] = useState<string | ArrayBuffer | null>(
     localStorage.getItem("profileImage") || null
   );
   const [username] = useState("Robert Clive"); // Replace with actual username
   const [email] = useState("roberclive@domain.co.in"); // Replace with actual email
+  const [width, setWidth] = useState(window.innerWidth);
+  const dropdown="dropdown"
+  const [ dropdowns, setDropdowns ] = useState({
+    dropdown1: "hidden",
+    dropdown2: "hidden",
+    dropdown4: "hidden",
+    dropdown9: "hidden",
+  });
 
   const handleLogout = async () => {
     dispatch(setTokenDetails(""));
     navigate("/login");
-  };
+  };  
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
 
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImage(base64String);
-        localStorage.setItem("profileImage", base64String);
-      };
+    window.addEventListener('resize', handleResize);
 
-      reader.readAsDataURL(file);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(width < 769){
+      setIsOpen(false);
     }
-  };
-
-  const getLinkClass = (path: string) => {
-    return location.pathname === path
-      ? "relative flex items-center gap-2 p-2 rounded cursor-pointer bg-[#DCEBDFCC] pl-6 pr-4"
-      : "flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-[#DCEBDFCC] pl-6 pr-4 w-full";
-  };
+    else{
+      setIsOpen(true);
+    }
+  }, [width]);
 
   return (
     <aside
-      className={`fixed h-full sm:max-h-screen top-0 left-0 transition-all duration-300 ease-in-out bg-[#F0F0F0] text-black shadow-md flex flex-col ${
-        isOpen ? "max-w-64 sm-max:max-w-64" : "max-w-20"
-      } lg:max-w-64 w-full z-40`}
+      className={`h-full sticky transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
+        isOpen ? "max-w-[307px]" : "max-w-20"
+      } pt-[24px] drop-shadow-md`}
     >
-      <div className="flex items-center relative p-4">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden text-black absolute top-24 -right-1"
-        >
-          {isOpen ? (
-            <CircleChevronLeft className="size-3" />
-          ) : (
-            <CircleChevronRight className="size-3" />
-          )}
-        </button>
-      </div>
-      <div className="p-[14px] flex-1 mt-2">
-        <div className="bg-[#DAE8FF] shadow-sm p-[6px] rounded-md flex items-center gap-2 my-[10px]">
-          <div className="relative">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              id="profileImageUpload"
-            />
-            <label htmlFor="profileImageUpload">
-              <img
-                src={image ? (image as string) : "/default-profile.png"}
-                alt="Profile"
-                className="w-10 h-10 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 border-gray-300 object-cover cursor-pointer"
-              />
-            </label>
-          </div>
-          <div className={`flex items-center gap-2 overflow-hidden ${isOpen ? "flex" : "hidden  sm:flex"}`}>
-            <div className="flex flex-col text-xs ml-2">
-              <span className="font-medium text-gray-600">{username}</span>
-              <span className="text-gray-400">{email}</span>
-            </div>
-            <div className="text-gray-400 text-sm">
-              <PanelLeftClose className="w-4 h-4" />
-            </div>
-          </div>
-        </div>
-        <nav>
-          <ul className="relative flex flex-col gap-2">
-            {links.map(({ path, label, icon }) => (
-              <li key={path} className={getLinkClass(path)}>
-                {location.pathname === path && (
-                  <div
-                    className="absolute -left-8 top-0 bottom-0 w-1.5 bg-green-500 rounded-r-lg"
-                    style={{ marginLeft: "1rem" }}
-                  ></div>
-                )}
-                <Link to={path} className="flex items-center gap-2 w-full">
-                  {React.cloneElement(icon, {
-                    className: `w-4 h-4 text-black ${
-                      isOpen ? "w-5 h-5" : "w-4 h-4 text-black"
-                    } ${
-                      location.pathname === path
-                        ? "text-gray-600"
-                        : "text-gray-500"
-                    }`,
-                  })}
-                  <span
-                    className={`text-sm ${
-                      isOpen ? "block" : "hidden"
-                    } lg:block`}
+      <div
+        className={`transition-all duration-300 ease-in-out text-black flex flex-col`}
+        // 
+      >
+        {
+          links && links.map((item, index) => {
+            if(item.path == '/dashboard'){
+              return(
+                <>
+                  <div key={index}
+                    className="flex flex-row px-[7px] border-b-[1px] border-[#E4E4E4] pb-[20px] my-[4px]"
                   >
-                    {label}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-      <div className="relative p-4 mt-auto">
-        <div className="absolute top-0 left-0 right-0 w-full border-t-2 border-green-500 mb-2"></div>
-        <button
-          className="flex items-center gap-2 w-full p-2 rounded hover:bg-[#DCEBDFCC] text-green-500"
-          onClick={handleLogout}
+                    <Link
+                      to={item.path[0]}
+                      className="w-full"
+                    >
+                      <div
+                        className={`flex flex-row w-full py-[12px] px-[10px] ${
+                          location.pathname == item.path[0]  && `bg-[#12A83333] rounded-[8px]`
+                        } hover:bg-[#12A83333] hover:rounded-[8px] ${
+                          !isOpen && (
+                            `ml-[10px] max-w-12 pl-[15px]`
+                          )
+                        }`}
+                      >
+                        {item.icon}
+                        <p
+                          className={`ml-[12px] font-poppins text-[16px] font-medium ${
+                            !isOpen && (
+                              `hidden`
+                            )
+                          }`}
+                        >{item.label}</p>
+                      </div>
+                    </Link>
+                  </div>
+
+                  <div>
+                    <a
+                      className="float-right mr-[-9px] mt-[-16px] cursor-pointer"
+                      onClick={() => {
+                        setIsOpen(!isOpen);
+                        setDropdowns({
+                          dropdown1: "hidden",
+                          dropdown2: "hidden",
+                          dropdown4: "hidden",
+                          dropdown9: "hidden",
+                        });
+                      }}
+                    >
+                      <i className={`bi ${
+                        isOpen ? `bi-text-indent-right` : 'bi-text-indent-left'
+                      } text-[14px] text-[#FFFFFF] bg-[#12A833] border-[2px] border-[#12A833] rounded-full w-[21px] h-[21px] px-[2px]`}></i>
+                    </a>
+                  </div>
+                </>
+              )
+            }
+            else if(item.subDomain.length != 0){
+              return(
+                <>
+                  <div key={index}
+                    className="flex flex-row px-[7px] my-[4px]"
+                  >
+                    <button
+                      type='button'
+                      className={`w-full`}
+                      onClick={() => {
+                        if(dropdowns["dropdown"+index] == "hidden"){
+                          setIsOpen(true);
+                          setDropdowns({
+                            ...dropdowns,
+                            ["dropdown"+index]: ""
+                          })
+                        }
+                        else{
+                          if(width <= 768){
+                            setIsOpen(false);
+                            setDropdowns({
+                              dropdown1: "hidden",
+                              dropdown2: "hidden",
+                              dropdown4: "hidden",
+                              dropdown9: "hidden"
+                            })
+                          }
+                          else{
+                            setDropdowns({
+                              dropdown1: "hidden",
+                              dropdown2: "hidden",
+                              dropdown4: "hidden",
+                              dropdown9: "hidden"
+                            })
+                          }
+                        }
+                      }}
+                    >
+                      <div
+                        className={`flex flex-row justify-between w-full py-[12px] px-[10px] ${
+                          location.pathname == item.path[0] && `bg-[#12A83333] rounded-[8px]` || location.pathname == item.path[1] && `bg-[#12A83333] rounded-[8px]`
+                        } hover:bg-[#12A83333] hover:rounded-[8px] ${
+                            !isOpen && (
+                              `ml-[10px] max-w-12 pl-[15px]`
+                            )
+                          }`}
+                      >
+                        <div
+                          className="flex flex-row transition-all duration-300 ease-in-out"
+                        >
+                          {item.icon}
+                          <p
+                            className={`ml-[12px] font-poppins text-[16px] font-medium ${
+                              !isOpen && (
+                                `hidden`
+                              )
+                            }`}
+                          >{item.label}</p>
+                        </div>
+                        <a
+                          className="float-right mt-[2px]"
+                        >
+                          {
+                            dropdowns["dropdown"+index] == "hidden" ? <ChevronDown /> : <ChevronUp />
+                          }
+                        </a>
+                      </div>
+                    </button>
+                  </div>
+                  <div
+                    className="flex flex-col mx-[11px] mt-[-5px] bg-[#FFFFFF] rounded-b-lg shadow-md"
+                  >
+                    {
+                      item.subDomain.map((element, key) => {
+                        return(
+                          <div
+                            className={`border-t-[1px] border-[#E4E4E4] w-full py-[5px] px-[5px] ${dropdowns["dropdown"+index]}`}
+                            key={key}
+                          >
+                            <Link
+                              to={element.path}
+                            >
+                              {/*  border-t-[1px]  */}
+                              <a
+                                className="flex flex-row"
+                                onClick={() => {
+                                  if(width <= 768){
+                                    setIsOpen(false);
+                                    setDropdowns({
+                                      dropdown1: "hidden",
+                                      dropdown2: "hidden",
+                                      dropdown4: "hidden",
+                                      dropdown9: "hidden"
+                                    })
+                                  }
+                                  else{
+                                    setDropdowns({
+                                      dropdown1: "hidden",
+                                      dropdown2: "hidden",
+                                      dropdown4: "hidden",
+                                      dropdown9: "hidden"
+                                    })
+                                  }
+                                }}
+                              ><Dot />{element.label}</a>
+                            </Link>
+                          </div>
+                        )
+                      })
+                    }
+                  </div>
+                </>
+              )
+            }
+            else{
+              return(
+                <>
+                  <div key={index}
+                    className="flex flex-row px-[7px] my-[4px]"
+                  >
+                    <Link
+                      to={item.path[0]}
+                      className="w-full"
+                    >
+                      <div
+                        className={`flex flex-row justify-between w-full py-[12px] px-[10px] ${
+                          location.pathname == item.path[0]  && `bg-[#12A83333] rounded-[8px]`
+                        } hover:bg-[#12A83333] hover:rounded-[8px] ${
+                            !isOpen && (
+                              `ml-[10px] max-w-12 pl-[15px]`
+                            )
+                          }`}
+                      >
+                        <div
+                          className="flex flex-row"
+                        >
+                          {item.icon}
+                          <p
+                            className={`ml-[12px] font-poppins text-[16px] font-medium ${
+                              !isOpen && (
+                                `hidden`
+                              )
+                            }`}
+                          >{item.label}</p>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                
+                </>
+              )
+            }
+          })
+        }
+
+        <div
+          className="sticky top-[100vh] border-t-[1px] border-[#CDCDCD] pt-[30px] pb-[15px] mt-[15px]"
         >
-          <LogOut
-            className={`w-5 h-5 ${
-              isOpen ? "w-6 h-6" : "w-5 h-5"
-            } text-green-500`}
-          />
-          <span className={`${isOpen ? "block" : "hidden"} lg:block text-sm`}>
-            Logout
-          </span>
-        </button>
+          {
+            links2 && links2.map((item, index) => {
+              if(item.path[0] == '/logout'){
+                return(
+                  <div key={index}
+                    className="flex flex-row px-[7px] my-[4px] text-[#E02424]"
+                  >
+                    <button
+                      type='button'
+                      className="w-full"
+                      onClick={handleLogout}
+                    >
+                      <div
+                        className={`flex flex-row w-full py-[12px] px-[10px] ${
+                          location.pathname == item.path[0] && `bg-[#E02424] text-[#FFFFFF] rounded-[8px]`
+                        } hover:bg-[#E02424] hover:rounded-[8px] hover:text-[#FFFFFF] ${
+                          !isOpen && (
+                            `ml-[10px] max-w-12 pl-[15px]`
+                          )
+                        }`}
+                      >
+                        {item.icon}
+                        <p
+                          className={`ml-[12px] font-poppins text-[16px] font-medium ${
+                            !isOpen && (
+                              `hidden`
+                            )
+                          }`}
+                        >{item.label}</p>
+                      </div>
+                    </button>
+                  </div>
+                )
+              }
+              else{
+                return(
+                  <>
+                    <div
+                      className="flex flex-col mx-[11px] mb-[-3px] bg-[#FFFFFF] rounded-t-lg shadow-md"
+                    >
+                      {
+                        item.subDomain.map((element, key) => {
+                          return(
+                            <div
+                              className={`border-t-[1px] border-[#E4E4E4] w-full py-[5px] px-[5px] ${dropdowns["dropdown1"]}`}
+                              key={key}
+                            >
+                              <Link
+                                to={element.path}
+                              >
+                                {/*  border-t-[1px]  */}
+                                <a
+                                  className="flex flex-row"
+                                  onClick={() => {
+                                    if(width <= 768){
+                                      setIsOpen(false);
+                                      setDropdowns({
+                                        dropdown1: "hidden",
+                                        dropdown2: "hidden",
+                                        dropdown4: "hidden",
+                                        dropdown9: "hidden"
+                                      })
+                                    }
+                                    else{
+                                      setDropdowns({
+                                        dropdown1: "hidden",
+                                        dropdown2: "hidden",
+                                        dropdown4: "hidden",
+                                        dropdown9: "hidden"
+                                      })
+                                    }
+                                  }}
+                                ><Dot />{element.label}</a>
+                              </Link>
+                            </div>
+                          )
+                        })
+                      }
+                    </div>
+                    <div key={index}
+                      className="flex flex-row px-[7px] my-[4px]"
+                    >
+                      <button
+                        type='button'
+                        className="w-full"
+                        onClick={() => {
+                          if(dropdowns["dropdown1"] == "hidden"){
+                            setIsOpen(true);
+                            setDropdowns({
+                              ...dropdowns,
+                              dropdown1: ""
+                            })
+                          }
+                          else{
+                            if(width <= 768){
+                              setIsOpen(false);
+                              setDropdowns({
+                                dropdown1: "hidden",
+                                dropdown2: "hidden",
+                                dropdown4: "hidden",
+                                dropdown9: "hidden"
+                              })
+                            }
+                            else{
+                              setDropdowns({
+                                dropdown1: "hidden",
+                                dropdown2: "hidden",
+                                dropdown4: "hidden",
+                                dropdown9: "hidden"
+                              })
+                            }
+                          }
+                        }}
+                      >
+                        <div
+                          className={`flex flex-row justify-between w-full py-[12px] px-[10px] hover:bg-[#12A83333] hover:rounded-[8px] ${
+                            !isOpen && (
+                              `ml-[10px] max-w-12 pl-[15px]`
+                            )
+                          } ${
+                            (location.pathname == item.path[0] || location.pathname == item.path[1] || location.pathname == item.path[2] || location.pathname == item.path[3]) && ( `bg-[#12A83333] rounded-[8px]` )
+                          }`}
+                        >
+                          <div
+                            className="flex flex-row transition-all duration-300 ease-in-out"
+                          >
+                            {item.icon}
+                            <p
+                              className={`ml-[12px] font-poppins text-[16px] font-medium ${
+                                !isOpen && (
+                                  `hidden`
+                                )
+                              }`}
+                            >{item.label}</p>
+                          </div>
+                          <a
+                            className="float-right mt-[2px]"
+                          >
+                            {
+                              dropdowns["dropdown1"] == "hidden" ? <ChevronUp /> : <ChevronDown />
+                            }
+                          </a>
+                        </div>
+                      </button>
+                    </div>
+                  </>
+                )
+              }
+            })
+          }
+        </div>
       </div>
     </aside>
   );
