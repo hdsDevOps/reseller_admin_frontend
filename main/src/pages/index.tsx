@@ -10,6 +10,7 @@ import SettingsApp from "settings/SettingsApp";
 import SubscriptionApp from "subscription/SubscriptionApp";
 import VoucherApp from "vouchernotification/VoucherApp";
 import Faqs from "./Faqs";
+import EmailLog from "./EmailLog";
 // import DomainApp from "domains/DomainApp";
 
 const Dashboard = React.lazy(() => import("./Dashboard"));
@@ -18,6 +19,8 @@ const routes = [
   { path: "/", element: <Dashboard /> },
   { path: "/dashboard", element: <Dashboard /> },
   {path: "/faqs", element: <Faqs />},
+  {path: "/email-log", element: <EmailLog />},
+  
 ];
 
 const MainApp: React.FC = () => (
