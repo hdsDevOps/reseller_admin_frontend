@@ -3,7 +3,7 @@ import { FaCalendarAlt } from 'react-icons/fa';
 
 const GroupForm: React.FC = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex items-center justify-center p-4">
       <div className="w-full max-w-3xl">
         <h2 className="text-xl font-bold mb-4">Group Information</h2>
 
