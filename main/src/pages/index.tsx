@@ -9,6 +9,7 @@ import RoleApp from "role/RoleApp";
 import SettingsApp from "settings/SettingsApp";
 import SubscriptionApp from "subscription/SubscriptionApp";
 import VoucherApp from "vouchernotification/VoucherApp";
+import Faqs from "./Faqs";
 // import DomainApp from "domains/DomainApp";
 
 const Dashboard = React.lazy(() => import("./Dashboard"));
@@ -16,6 +17,7 @@ const Dashboard = React.lazy(() => import("./Dashboard"));
 const routes = [
   { path: "/", element: <Dashboard /> },
   { path: "/dashboard", element: <Dashboard /> },
+  {path: "/faqs", element: <Faqs />},
 ];
 
 const MainApp: React.FC = () => (
