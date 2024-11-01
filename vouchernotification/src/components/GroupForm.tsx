@@ -60,7 +60,7 @@ const GroupForm: React.FC = () => {
             <label className="absolute left-3 -top-2.5 text-sm text-gray-500 bg-white px-1">Expiry Date Range</label>
             <input
               type="text"
-              className="border border-gray-300 w-full bg-transparent p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black"
+              className="border border-gray-300 w-full bg-transparent p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black cursor-pointer"
               placeholder='Select date range'
             />
             <MdOutlineCalendarToday className="absolute right-3 top-4 text-black" />
@@ -69,9 +69,9 @@ const GroupForm: React.FC = () => {
           <div className="flex-1 ml-2 relative">
             <label className="absolute left-3 -top-2.5 text-sm text-gray-500 bg-white px-1">License Number</label>
             <input
-              type="text"
-              className="border border-gray-300 w-full bg-transparent p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500"
-              placeholder=" "
+              type="number"
+              className="border border-gray-300 w-full bg-transparent p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black"
+              placeholder="Select number"
             />
           </div>
         </div>
@@ -89,12 +89,12 @@ const GroupForm: React.FC = () => {
 
         <div className="flex justify-start mt-6 gap-4">
           <button
-            className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
+            className="bg-green-500 text-white max-w-[6rem] w-full py-3 px-4 rounded-md hover:bg-green-600"
           >
             Save
           </button>
           <button
-            className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+            className="bg-red-500 text-white max-w-[6rem] w-full py-3 px-4 rounded-md hover:bg-red-600"
           >
             Cancel
           </button>

@@ -13,7 +13,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full relative">
+      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-sm w-full relative mx-3">
         <button
           className="absolute top-6 right-6 bg-green-600 rounded-full text-white p-1 hover:bg-green-500 shadow-md"
           onClick={onClose}
@@ -22,7 +22,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
           <FaTimes />
         </button>
         <h2 className="text-lg pb-2">{title}</h2>
-        <div className="mt-4  w-full">{children}</div>
+        <div className="mt-4 w-full">{children}</div>
       </div>
     </div>
   );
