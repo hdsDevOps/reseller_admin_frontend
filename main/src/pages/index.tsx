@@ -11,6 +11,7 @@ import SubscriptionApp from "subscription/SubscriptionApp";
 import VoucherApp from "vouchernotification/VoucherApp";
 import Faqs from "./Faqs";
 import EmailLog from "./EmailLog";
+import CMS from "./CMS";
 // import DomainApp from "domains/DomainApp";
 
 const Dashboard = React.lazy(() => import("./Dashboard"));
@@ -20,6 +21,7 @@ const routes = [
   { path: "/dashboard", element: <Dashboard /> },
   {path: "/faqs", element: <Faqs />},
   {path: "/email-log", element: <EmailLog />},
+  {path: "/cms", element: <CMS />},
   
 ];
 
