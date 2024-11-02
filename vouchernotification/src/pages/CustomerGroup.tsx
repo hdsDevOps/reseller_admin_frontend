@@ -97,7 +97,7 @@ const CustomerGroup: React.FC = () => {
           </span>
         </div>
       </div>
-      <div className="flex items-center justify-end  gap-16 mb-4 mr-6">
+      <div className="flex items-center justify-end  gap-16 mb-10 mr-6">
         <div className="flex items-center justify-center gap-10">
           <input
             type="text"

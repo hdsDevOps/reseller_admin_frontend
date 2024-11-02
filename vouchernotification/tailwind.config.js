@@ -1,3 +1,5 @@
+import daisyui from "daisyui"
+
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: false, // or 'media' or 'class'
@@ -7,5 +9,12 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [daisyui],
+  daisyui: {
+    themes: [
+      // Your themes here, if any
+    ],
+    themes: ["light", "dark"],
+    darkTheme: false,
+  },
 }
