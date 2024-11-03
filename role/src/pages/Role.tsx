@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Role() {
+const Role = () => {
   return (
     <div>Role</div>
   )
