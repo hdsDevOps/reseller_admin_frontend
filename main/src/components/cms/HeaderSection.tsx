@@ -26,7 +26,7 @@ const HeaderSection = () => {
         </div>
         <div className="p-6">
           {menus.map((menu) => (
-            <div key={menu.id} className="flex items-center py-2">
+            <div key={menu.id} className="flex items-center space-x-4">
               <span className="w-24 text-gray-600">Menu {menu.id}</span>
               <span className="px-2">:</span>
               <span>{menu.title}</span>

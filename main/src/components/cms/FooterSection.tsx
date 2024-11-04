@@ -10,12 +10,12 @@ const FooterSection = () => {
       </div>
       <div className="p-6 space-y-6">
         <div>
-          <div className="flex items-center py-2">
-            <span className="w-24 text-gray-600">Heading</span>
+          <div className="flex items-center space-x-4">
+            <span className="w-40 text-gray-600">Heading</span>
             <span className="px-2">:</span>
             <span>Marketing</span>
           </div>
-          <div className="pl-6 space-y-2">
+          <div className="space-y-2">
             {[
               "Video",
               "SEO",
@@ -24,8 +24,8 @@ const FooterSection = () => {
               "Campaign",
               "Terms & Conditions",
             ].map((item, index) => (
-              <div key={index} className="flex items-center py-1">
-                <span className="w-32 text-gray-600">{item}</span>
+              <div key={index} className="flex items-center space-x-4">
+                <span className="w-40 text-gray-600">{item}</span>
                 <span className="px-2">:</span>
                 <a
                   href="https://simplify.jobs/"
@@ -38,12 +38,12 @@ const FooterSection = () => {
           </div>
         </div>
         <div>
-          <div className="flex items-center py-2">
-            <span className="w-24 text-gray-600">Heading</span>
+          <div className="flex items-center space-x-4">
+            <span className="w-40 text-gray-600">Heading</span>
             <span className="px-2">:</span>
             <span>Websites</span>
           </div>
-          <div className="pl-6 space-y-2">
+          <div className="space-y-2">
             {[
               "Domain Name",
               "Design",
@@ -52,8 +52,8 @@ const FooterSection = () => {
               "Develop",
               "Privacy & Policy",
             ].map((item, index) => (
-              <div key={index} className="flex items-center py-1">
-                <span className="w-32 text-gray-600">{item}</span>
+              <div key={index} className="flex items-center space-x-4">
+                <span className="w-40 text-gray-600">{item}</span>
                 <span className="px-2">:</span>
                 <a
                   href="https://simplify.jobs/"

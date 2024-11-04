@@ -28,9 +28,9 @@ const Accordion: React.FC<AccordionProps> = ({ items }) => {
           >
             <span className="text-xl font-medium">{item.title}</span>
             {activeSection === item.id ? (
-              <ChevronUp className="w-5 h-5 text-gray-500" />
+              <ChevronUp className="w-8 h-8 text-gray-500 bg-gray-200 rounded-full p-1" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-gray-500" />
+              <ChevronDown className="w-8 h-8 text-gray-500 bg-gray-200 rounded-full p-1" />
             )}
           </button>
           {activeSection === item.id && (

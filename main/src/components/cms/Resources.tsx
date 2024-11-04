@@ -1,10 +1,13 @@
-import React from 'react';
+import React from "react";
 
 const Resources: React.FC = () => {
   const resources = [
-    { title: 'Connect', description: 'Lorem ipsum dolor sit amet consectetur.' },
-    { title: 'Create', description: 'Lorem ipsum dolor sit amet consectetur.' },
-    { title: 'Access', description: 'Lorem ipsum dolor sit amet consectetur.' }
+    {
+      title: "Connect",
+      description: "Lorem ipsum dolor sit amet consectetur.",
+    },
+    { title: "Create", description: "Lorem ipsum dolor sit amet consectetur." },
+    { title: "Access", description: "Lorem ipsum dolor sit amet consectetur." },
   ];
 
   return (
@@ -17,13 +20,15 @@ const Resources: React.FC = () => {
       <div className="space-y-6">
         {resources.map((resource) => (
           <div key={resource.title} className="p-4 bg-gray-50 rounded-lg">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-600">Content Title:</p>
+            <div className="">
+              <div className="flex space-x-5">
+                <p className="text-gray-600 w-40">Content Title:</p>
+                <p className="text-gray-600">:</p>
                 <p className="font-medium">{resource.title}</p>
               </div>
-              <div>
-                <p className="text-gray-600">Content Description:</p>
+              <div className="flex space-x-5">
+                <p className="text-gray-600 text-nowrap w-40">Content Description:</p>
+                <p className="text-gray-600">:</p>
                 <p>{resource.description}</p>
               </div>
             </div>
