@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import CustomerAgreement from "../components/CustomerAgreement";
 import TermsConditions from "../components/TermsConditions";
+import PrivacyPolicy from "../components/PrivacyPolicy";
 
 
 const Settings = React.lazy(() => import("./Settings"));
@@ -14,6 +15,7 @@ const SettingsApp: React.FC = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/customer-agreement" element={<CustomerAgreement />} />
         <Route path="/terms-and-conditions" element={<TermsConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
     </Suspense>
   );
