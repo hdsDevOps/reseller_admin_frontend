@@ -148,7 +148,7 @@ export default function Header() {
                         <RiSettings4Line
                           className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
                         />
-                        <a
+                        <a href="/admin-profile"
                           className="sm:text-[15px] text-[12px] pl-[5px]"
                         >Profile setting</a>
                       </div>
