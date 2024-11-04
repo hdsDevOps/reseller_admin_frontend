@@ -26,7 +26,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
         </div>
         <form>
           <div className="grid grid-cols-1 gap-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="relative">
                 <label className="absolute left-3 -top-2.5 text-sm text-gray-500 bg-white px-1">
                   First Name

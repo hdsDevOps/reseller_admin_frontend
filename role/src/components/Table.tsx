@@ -7,7 +7,7 @@ interface User {
 
 interface Column<T> {
   header: string;
-  accessor: keyof T; // This must be a key of T
+  accessor: keyof T;
 }
 
 interface TableProps<T> {

@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 
 const Role = React.lazy(() => import("./Role"));
 const UserList = React.lazy(() => import("./UserList"));
+const AddRole = React.lazy(() => import("./AddRole"));
 
 
 const RoleApp: React.FC = () => {
@@ -12,6 +13,7 @@ const RoleApp: React.FC = () => {
       <Routes>
         <Route path="/role" element={<Role />} />
         <Route path="/user-list" element={<UserList />} />
+        <Route path="/add-role" element={<AddRole />} />
       </Routes>
     </Suspense>
   );
