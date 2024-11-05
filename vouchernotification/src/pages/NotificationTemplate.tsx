@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Modal from "../components/Modal";
+import { BsEnvelopePlusFill } from "react-icons/bs";
+import { IoChevronDown } from "react-icons/io5";
 
 const NotificationTemplate = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -27,6 +29,8 @@ const NotificationTemplate = () => {
   const toggleSwitch = () => {
     setIsToggled(!isToggled);
   };
+  const handleCancel = () => {
+    setSelectedItem("");  };
 
   const dropdownItems = [
     "Email Verification",
@@ -39,13 +43,13 @@ const NotificationTemplate = () => {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex flex-row justify-between mr-[40px]">
-        <h3 className="font-inter font-medium text-[28px]">
+      <div className="flex items-center justify-between">
+        <h3 className="font-inter font-medium text-md md:text-lg lg:text-[28px]">
           Notification Template
         </h3>
         <button
           type="button"
-          className="bg-[#12A833] px-[20px] py-[7px] w-[139px] h-[40px] rounded-[10px] hover:bg-opacity-95 font-inter font-normal text-base text-[#FFFFFF] float-right"
+          className="bg-[#12A833] py-[7px] w-[7.2rem] sm:w-[139px] h-[40px] rounded-[10px] hover:bg-opacity-95 font-inter font-normal text-sm md:text-base text-[#FFFFFF] float-right"
           onClick={openModal}
         >
           +&nbsp;&nbsp;Add new
@@ -59,10 +63,10 @@ const NotificationTemplate = () => {
           className={`btn m-1 flex items-center justify-between border border-gray-200 w-64 p-2 rounded-[4px] 
             ${
               isDropdownOpen
-                ? "bg-[#fffefe] text-gray-800"
+                ? "bg-[#fffefe] text-[#BABABA]"
                 : selectedItem
-                ? "bg-green-500 text-white"
-                : "bg-gray-200 text-gray-500"
+                ? "bg-gray-200 text-[#757575]"
+                : "bg-gray-200 text-[#757575]"
             } 
             outline-none transition-all duration-200`}
           onClick={toggleDropdown}
@@ -99,8 +103,8 @@ const NotificationTemplate = () => {
 
       {!selectedItem ? (
         <div className="bg-gray-100 border border-gray-300 w-full min-h-48 h-full flex flex-col mt-20">
-          <div className="flex flex-row justify-center items-center p-6">
-            <h3 className="font-inter text-red-500 font-medium text-[20px]">
+          <div className="flex justify-center items-center p-6 text-red-500 font-medium text-[20px]">
+            <h3 className="font-inter">
               Please choose a template first
             </h3>
           </div>
@@ -110,9 +114,9 @@ const NotificationTemplate = () => {
           <div className="p-4"></div>
         </div>
       ) : (
-        <div className="flex flex-col items-center p-6">
-          <div className="flex items-center justify-between w-full">
-            <h3 className="font-inter text-black font-medium text-[20px] mb-4">
+        <div className="flex flex-col items-center mt-20">
+          <div className="flex items-center justify-between w-full my-3">
+            <h3 className="font-inter text-black font-medium text-[20px]">
               Template
             </h3>
             <div className="flex items-center">
@@ -136,45 +140,52 @@ const NotificationTemplate = () => {
               </label>
             </div>
           </div>
-
-          <div className="bg-white w-full p-6 rounded-lg shadow-md">
-            <h4 className="font-medium text-xl text-gray-700 mb-4">
-              Customize your {selectedItem} email template
-            </h4>
-            <div className="mb-6">
-              <label className="block text-sm text-gray-600 mb-2">
-                Subject
-              </label>
-              <input
-                type="text"
-                placeholder={`Enter ${selectedItem} subject`}
-                className="border border-gray-300 w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm text-gray-600 mb-2">Body</label>
-              <textarea
-                rows={6}
-                placeholder={`Enter ${selectedItem} body content`}
-                className="border border-gray-300 w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              ></textarea>
-            </div>
-
-            <div className="flex justify-center gap-10 my-10">
+          <div className="w-full flex flex-col items-center  border-2 border-[#E4E4E4] min-h-[20rem] h-full">
+            <div className="flex items-center justify-between w-full py-1 px-3">
+              <h3 className="font-inter text-[#757575] text-base">
+                {selectedItem}
+              </h3>
               <button
                 type="button"
-                className="bg-red-500 text-white w-32 h-12 rounded-md hover:bg-opacity-95 transition"
-                onClick={() => setSelectedItem("")} // Clear selection
+                className="flex items-center justify-between bg-[#007BFFCC] text-white text-sm w-44 h-12 px-2 hover:bg-opacity-95 transition"
               >
-                Cancel
+                Dynamic code list
+                <IoChevronDown className="inline-flex text-md mt-1" />
               </button>
+            </div>
+            <div className="border-b-2 border-gray-300 w-full" />
 
-              <button
-                type="submit"
-                className="bg-green-500 text-white w-32 h-12 rounded-md hover:bg-green-600 transition"
-              >
-                Save
+            <div className="w-full">
+              <textarea
+                className="w-full bg-transparent min-h-[20rem] outline-none py-2 px-3 h-full resize-none"
+                placeholder="HTML/CSS script should be here to make the Promotion template"
+              ></textarea>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center w-full px-0 lg:px-4 flex-wrap sm:flex-nowrap">
+            <div className="flex items-center gap-1 w-full sm:w-auto sm:mb-0 mt-1">
+              <div className="flex justify-between items-center border border-[#E4E4E4] text-[0.85rem] w-full sm:max-w-sm md:max-w-[24rem] bg-white p-3">
+                <span className="text-[#757575]">
+                  Separate multiple emails with comma.
+                </span>
+                <MdKeyboardArrowDown
+                  className="ml-2 text-[#757575]"
+                  size={24}
+                />
+              </div>
+              <BsEnvelopePlusFill className="text-[#525050] hidden sm:block" size={32} />
+            </div>
+
+            <div className="flex gap-2 md:gap-4 justify-end w-full sm:w-auto">
+              <button className="px-4 py-3 text-white bg-green-500 rounded-xl hover:bg-green-600 transition-all duration-300">
+                Preview
+              </button>
+              <button className="px-4 py-3 border border-green-500 text-black rounded-xl hover:bg-green-100 transition-all duration-300">
+                Update
+              </button>
+              <button className="px-4 py-3 text-white bg-red-500 rounded-xl hover:bg-red-600 transition-all duration-300" onClick={handleCancel}>
+                Cancel
               </button>
             </div>
           </div>
