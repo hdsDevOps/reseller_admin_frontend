@@ -11,11 +11,7 @@ interface TableProps<T> {
   renderActions?: (item: T) => JSX.Element;
 }
 
-const Table = <T extends { image?: string | null }>({
-  columns,
-  data,
-  renderActions,
-}: TableProps<T>) => {
+const Table = <T extends {}>({ columns, data, renderActions }: TableProps<T>) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full">
@@ -44,16 +40,7 @@ const Table = <T extends { image?: string | null }>({
                   key={column.accessor as string}
                   className="px-6 py-4 text-center whitespace-nowrap text-[#2e3f5d] sm:text-xs md:text-md lg:text-[16px] font-medium"
                 >
-                  {column.accessor === 'currency' ? (
-                    <div className="flex items-center justify-center">
-                      {item.image && (
-                        <img src={item.image} alt="Currency" className="w-5 h-5 mr-1" />
-                      )}
-                      {String(item[column.accessor])}
-                    </div>
-                  ) : (
-                    String(item[column.accessor])
-                  )}
+                  {String(item[column.accessor])}
                 </td>
               ))}
               {renderActions && (
@@ -68,5 +55,6 @@ const Table = <T extends { image?: string | null }>({
     </div>
   );
 };
+
 
 export default Table;

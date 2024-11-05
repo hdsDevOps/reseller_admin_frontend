@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import GroupForm from '../components/GroupForm';
 import VoucherForm from '../components/VoucherForm';
+import NotificationTemplate from "./NotificationTemplate";
 
 
 const Voucher = React.lazy(() => import("./Voucher"));
@@ -16,6 +17,7 @@ const VoucherApp: React.FC = () => {
         <Route path="/customer-group" element={<CustomerGroup />} />
         <Route path="/add-group" element={<GroupForm />} />
         <Route path="/add-voucher" element={<VoucherForm />} />
+        <Route path="/notification-template" element={<NotificationTemplate />} />
       </Routes>
     </Suspense>
   );

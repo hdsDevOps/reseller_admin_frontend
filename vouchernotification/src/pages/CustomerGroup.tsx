@@ -39,12 +39,12 @@ const CustomerGroup: React.FC = () => {
       createdDate: "23 Jan 2024",
     },
     {
-      groupName: "XYZ Group",
+      groupName: "ABC Group",
       numberOfCustomers: 15,
       createdDate: "25 Jan 2024",
     },
     {
-      groupName: "LMN Group",
+      groupName: "ABC Group",
       numberOfCustomers: 20,
       createdDate: "30 Jan 2024",
     },
@@ -97,20 +97,20 @@ const CustomerGroup: React.FC = () => {
           </span>
         </div>
       </div>
-      <div className="flex items-center justify-end  gap-16 mb-10 mr-6">
-        <div className="flex items-center justify-center gap-10">
+      <div className="flex items-center md:justify-end  gap-16 mb-10 mr-6">
+        <div className="flex items-center justify-center gap-3 md:gap-10 lg:gap-32 mr-2 lg:mr-28">
           <input
             type="text"
-            className="border border-gray-300 bg-[#F9F9F9] py-3 px-6 focus:outline-none focus:ring-1 focus:ring-green-500 cursor-pointer"
+            className="bg-[#F9F9F9] p-2 focus:outline-none focus:ring-1 focus:ring-green-500 cursor-pointer md:w-64"
             placeholder="Group Name"
           />
           <div className="flex-1 mr-2 relative  bg-red-500">
             <input
               type="text"
-              className="border border-gray-300 bg-[#F9F9F9] py-3 px-6 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black cursor-pointer"
+              className="border border-[#E4E4E4] bg-[#F9F9F9] p-2 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black cursor-pointer md:w-64"
               placeholder="Created Date"
             />
-            <MdOutlineCalendarToday className="absolute right-3 top-4 text-black" />
+            <MdOutlineCalendarToday className="absolute right-3 top-1/2 -translate-y-1/2 text-black" />
           </div>
         </div>
       </div>
