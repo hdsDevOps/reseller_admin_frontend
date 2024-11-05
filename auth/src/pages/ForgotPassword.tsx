@@ -1,6 +1,7 @@
 import { MoveLeft } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import '../styles/styles.css'
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -19,8 +20,8 @@ const ForgotPassword: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-[570px]">
-        <div className="px-[60px] xsm-max:px-4 bg-[#F9FAFB] rounded-lg shadow-sm">
-          <div className={`mb-[20px] flex items-center justify-center`}>
+        <div className="px-[60px] xsm-max:px-4 bg-custom-white5 rounded-lg shadow-sm">
+          <div className={`mb-5 flex items-center justify-center`}>
             <img
               src={process.env.BASE_URL + "/images/logo.jpeg"}
               alt="logo"
@@ -28,10 +29,10 @@ const ForgotPassword: React.FC = () => {
             />
           </div>
           <div>
-            <h3 className="font-inter font-medium mb-4 text-[28px]">
+            <h3 className="h3-text">
               Forgot password?
             </h3>
-            <p className="mt-2 text-left text-base text-[#151515]">
+            <p className="mt-2 text-left text-base text-custom-black">
               Enter the email address associated with your account and we’ll send
               you an OTP to reset your password.
             </p>
@@ -41,7 +42,7 @@ const ForgotPassword: React.FC = () => {
               <div className="space-y-1 w-full flex flex-col">
                 <label
                   htmlFor="email-address"
-                  className="text-base font-bold text-black mb-[15px]"
+                  className="login-label mb-[15px]"
                 >
                   Email
                 </label>
@@ -51,7 +52,7 @@ const ForgotPassword: React.FC = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                  className="login-input"
                   placeholder="Robertclive@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -64,7 +65,7 @@ const ForgotPassword: React.FC = () => {
               <button
                 type="submit"
                 data-testid="log-in"
-                className="w-full btn-green bg-black h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]"
+                className="w-full h-11 btn-black"
               >
                 Next
               </button>

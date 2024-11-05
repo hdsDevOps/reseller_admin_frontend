@@ -10,6 +10,7 @@ import { useAppDispatch } from "store/hooks";
 // import { makeUserLoginThunk } from "store/user.thunk";
 import { setTokenDetails } from "store/authSlice";
 import { MoveLeft } from 'lucide-react';
+import '../styles/styles.css'
 
 const OTP: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -182,14 +183,14 @@ const OTP: React.FC = () => {
               className={`w-[108px]`}
             />
           </div>
-          <h3 className="text-center font-inter font-medium mb-4 text-[28px]">
+          <h3 className="text-center h3-text mb-4">
             {mode === "signin" ? "Sign in your account" : "Verify your email"}
           </h3>
           <div
-            className="w-full flex  items-start justify-center"
+            className="w-full flex items-start justify-center"
           >
             <p
-              className="text-center font-inter font-normal text-[16px] w-[430px]"
+              className="text-center font-inter-16px-400 w-[430px]"
             >
               {
                 mode === "signin" ? "Enter the six digit code we sent to your email address to verify your Hordanso account:" : `Enter the six digit code we sent to your email address to verify your Hordanso account:`
@@ -228,7 +229,7 @@ const OTP: React.FC = () => {
                 value={otp1}
                 onChange={(e) => handleInputChange(e, 1)}
                 onKeyDown={(e) => handleKeyDown(e, 1)}
-                className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
+                className="otp-input"
                 placeholder="0"
               />
               <input
@@ -238,7 +239,7 @@ const OTP: React.FC = () => {
                 value={otp2}
                 onChange={(e) => handleInputChange(e, 2)}
                 onKeyDown={(e) => handleKeyDown(e, 2)}
-                className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
+                className="otp-input"
                 placeholder="0"
               />
               <input
@@ -248,7 +249,7 @@ const OTP: React.FC = () => {
                 value={otp3}
                 onChange={(e) => handleInputChange(e, 3)}
                 onKeyDown={(e) => handleKeyDown(e, 3)}
-                className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
+                className="otp-input"
                 placeholder="0"
               />
               <input
@@ -258,7 +259,7 @@ const OTP: React.FC = () => {
                 value={otp4}
                 onChange={(e) => handleInputChange(e, 4)}
                 onKeyDown={(e) => handleKeyDown(e, 4)}
-                className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
+                className="otp-input"
                 placeholder="0"
               />
               <input
@@ -268,7 +269,7 @@ const OTP: React.FC = () => {
                 value={otp5}
                 onChange={(e) => handleInputChange(e, 5)}
                 onKeyDown={(e) => handleKeyDown(e, 5)}
-                className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
+                className="otp-input"
                 placeholder="0"
               />
               <input
@@ -278,7 +279,7 @@ const OTP: React.FC = () => {
                 value={otp6}
                 onChange={(e) => handleInputChange(e, 6)}
                 onKeyDown={(e) => handleKeyDown(e, 6)}
-                className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
+                className="otp-input"
                 placeholder="0"
               />
             </div>
@@ -286,9 +287,9 @@ const OTP: React.FC = () => {
               <button
                 type="submit"
                 data-testid="log-in"
-                className={`w-full btn-green ${
-                  mode === "signin" ? "bg-[#12A833]" : "bg-black"
-                } h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]`}
+                className={`w-full ${
+                  mode === "signin" ? "btn-green" : "btn-black"
+                } h-11`}
               >
                 Submit
               </button>

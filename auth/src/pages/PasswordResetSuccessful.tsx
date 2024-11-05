@@ -5,6 +5,7 @@ import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 // import { makeUserLoginThunk } from "store/user.thunk";
 import { RiInformation2Line } from "react-icons/ri";
+import '../styles/styles.css'
 
 const PasswordResetSuccessful: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +42,7 @@ const PasswordResetSuccessful: React.FC = () => {
                 className="w-[108px] mb-[10px]"
               />
             </div>
-            <h3 className="text-[28px] font-inter font-medium text-[#0D121F] pt-4 mb-[100px]">
+            <h3 className="h3-text pt-4 mb-[100px]">
               Successful password reset!
             </h3>
           </div>
@@ -49,7 +50,7 @@ const PasswordResetSuccessful: React.FC = () => {
             className="w-full flex  items-start justify-center mb-[80px]"
           >
             <p
-              className="text-center font-inter font-normal text-[16px] w-[430px]"
+              className="text-center font-inter-16px-400 w-[430px]"
             >
               Now you can use your new password to log in in to your account!
             </p>
@@ -58,7 +59,7 @@ const PasswordResetSuccessful: React.FC = () => {
             <button
               onClick={() => navigate('/login')}
               data-testid="log-in"
-              className="w-full btn-green bg-black h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]"
+              className="w-full h-11 btn-black"
             >
               Back to log in
             </button>

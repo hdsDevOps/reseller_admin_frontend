@@ -5,6 +5,7 @@ import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 // import { makeUserLoginThunk } from "store/user.thunk";
 import { RiInformation2Line } from "react-icons/ri";
+import '../styles/styles.css'
 
 const ResetPassword: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +42,7 @@ const ResetPassword: React.FC = () => {
                 className="w-[108px]"
               />
             </div>
-            <h3 className="text-[28px] font-inter font-medium text-[#0D121F] pt-4">
+            <h3 className="h3-text pt-4">
               Log in your account
             </h3>
             
@@ -55,7 +56,7 @@ const ResetPassword: React.FC = () => {
                 <div
                   className="flex flex-row justify-between"
                 >
-                  <label className="text-gray-900 text-base font-bold font-inter tracking-[1px]">
+                  <label className="login-label">
                     Password
                   </label>
                   <RiInformation2Line
@@ -69,7 +70,7 @@ const ResetPassword: React.FC = () => {
                     onChange={e => {
                       setPassword(e.target.value);
                     }}
-                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                    className="login-input"
                     minLength={8}
                     placeholder="Enter password"
                     required
@@ -88,7 +89,7 @@ const ResetPassword: React.FC = () => {
                 </div>
               </div>
               <div className="max-w-[456px] mt-4">
-                <label className="text-gray-900 text-base font-bold font-inter tracking-[1px]">
+                <label className="login-label">
                   Confirm Password
                 </label>
                 <div className="my-[6px]">
@@ -98,7 +99,7 @@ const ResetPassword: React.FC = () => {
                     onChange={e => {
                       setConfirmPassword(e.target.value);
                     }}
-                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                    className="login-input"
                     minLength={8}
                     placeholder="Enter password"
                     required
@@ -109,7 +110,7 @@ const ResetPassword: React.FC = () => {
                 <button
                   type="submit"
                   data-testid="log-in"
-                  className="w-full btn-green bg-black h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]"
+                  className="w-full btn-black"
                 >
                   Confirm Password
                 </button>

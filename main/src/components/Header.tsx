@@ -8,6 +8,7 @@ import { RiSettings4Line } from "react-icons/ri";
 import { RiLock2Line } from "react-icons/ri";
 import { RiCheckboxBlankCircleFill } from "react-icons/ri";
 import { ChevronDown } from 'lucide-react';
+import '../styles/styles.css';
 
 export default function Header() {
   const[showNotification,setShowNotfication] = useState(true);
@@ -78,10 +79,10 @@ export default function Header() {
             className="flex flex-row"
           >
             <div
-              className="text-center sm:pt-[1px] bg-[#12A833] sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-0 mt-[8px] sm:mr-[10px] mr-0"
+              className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-0 mt-[8px] sm:mr-[10px] mr-0"
             >
               <a
-                className="font-montserrat sm:text-base text-[12px] font-semibold text-[#FFFFFF]"
+                className="font-montserrat sm:text-base text-[12px] font-semibold text-white"
               >
                 LU
               </a>
@@ -98,17 +99,17 @@ export default function Header() {
 
             {
               showProfile && <div 
-                className="fixed flex flex-col bg-[#FFFFFF] sm:w-[220px] w-[200px] ml-[-5px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px]"
+                className="fixed flex flex-col bg-white sm:w-[220px] w-[200px] ml-[-5px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px]"
                 ref={elementRef}
               >
                 <div
                   className="flex flex-row"
                 >
                   <div
-                    className="text-center sm:pt-[1px] bg-[#12A833] sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0"
+                    className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0"
                   >
                     <a
-                      className="font-montserrat sm:text-base text-[10px] font-semibold text-[#FFFFFF]"
+                      className="font-montserrat sm:text-base text-[10px] font-semibold text-white"
                     >
                       LU
                     </a>
@@ -117,17 +118,17 @@ export default function Header() {
                     className="flex flex-col w-[123px] sm:ml-[5px] ml-[10px]"
                   >
                     <p
-                      className="text-poppins sm:text-[14px] text-[12px] text-normal text-[#222222]"
+                      className="text-poppins sm:text-[14px] text-[12px] text-normal text-custom-black2"
                     >
                       Lemmy Ugochukwu
                     </p>
                     <p
-                      className="text-inter sm:text-[12px] text-[10px] text-normal text-[#8E8E8E]"
+                      className="text-inter sm:text-[12px] text-[10px] text-normal text-custom-gray2"
                     >
                       philipbassey@mail.com
                     </p>
                     <p
-                      className="text-inter sm:text-[10px] text-[8px] text-normal text-[#3A3A3A]"
+                      className="text-inter sm:text-[10px] text-[8px] text-normal text-custom-gray3"
                     >
                       (Super admin)
                     </p>
@@ -135,7 +136,7 @@ export default function Header() {
                 </div>
 
                 <div
-                  className="border-t-[0.4px] border-[#C4C4C4] sm:w-[210px] w-[190px] my-[5px]"
+                  className="border-t-[0.4px] border-custom-gray4 sm:w-[210px] w-[190px] my-[5px]"
                 ></div>
                 <div
                   className="pl-[10px]"
@@ -154,7 +155,7 @@ export default function Header() {
                       </div>
                     </li>
                     <li
-                      className="flex flex-row justify-between"
+                      className="flex-row-between"
                     >
                       <div
                         className="flex flex-row cursor-pointer py-[5px]"

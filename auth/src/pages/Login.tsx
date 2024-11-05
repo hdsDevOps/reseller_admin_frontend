@@ -4,6 +4,7 @@ import { useAppDispatch } from "store/hooks";
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 // import { makeUserLoginThunk } from "store/user.thunk";
+import '../styles/styles.css'
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -61,7 +62,7 @@ const Login: React.FC = () => {
                 className="w-[108px]"
               />
             </div>
-            <h3 className="text-[28px] font-inter font-medium text-[#0D121F] pt-4">
+            <h3 className="h3-text pt-4">
               Log in your account
             </h3>
             
@@ -73,7 +74,7 @@ const Login: React.FC = () => {
             >
               <div className="max-w-[456px]">
                 <label
-                  className="text-gray-900 text-base font-bold font-inter tracking-[1px]"
+                  className="login-label"
                   htmlFor="formBasicEmail"
                 >
                   Email
@@ -87,14 +88,14 @@ const Login: React.FC = () => {
                     placeholder="Enter email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                    className="login-input"
                     data-testid="email"
                     required
                   />
                 </div>
               </div>
               <div className="max-w-[456px] mt-4">
-                <label className="text-gray-900 text-base font-bold font-inter tracking-[1px]">
+                <label className="login-label">
                   Password
                 </label>
                 <div className="my-[6px]">
@@ -102,7 +103,7 @@ const Login: React.FC = () => {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={handlePasswordChange}
-                    className="w-full h-[52px] rounded-[8px] border px-[4px] py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal"
+                    className="login-input"
                     minLength={8}
                     placeholder="Enter password"
                     required
@@ -121,7 +122,7 @@ const Login: React.FC = () => {
                 </div>
               </div>
               <div className="mt-[25px] flex justify-between">
-                <div className="flex flex-row justify-between w-32 pt-1.5">
+                <div className="flex-row-between w-32 pt-1.5">
                   <input
                     type="checkbox"
                     className="border border-[#545454] h-4 w-4"
@@ -137,7 +138,7 @@ const Login: React.FC = () => {
                 <div className="">
                   <Link
                     to="/forgotpassword"
-                    className="text-xs font-normal text-[#12A833]"
+                    className="text-xs font-normal text-custom-green"
                     data-testid="forgot-password"
                   >
                     Forgot Password
@@ -148,7 +149,7 @@ const Login: React.FC = () => {
                 <button
                   type="submit"
                   data-testid="log-in"
-                  className="w-full btn-green bg-[#12A833] h-11 py-0.625 px-1.25 rounded-lg text-base font-semibold text-[#F0F0F3]"
+                  className="w-full btn-green h-11"
                 >
                   Log in
                 </button>
@@ -169,10 +170,10 @@ const Login: React.FC = () => {
             </form>
           </div>
           {show && (
-            <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-              <div className="bg-white p-8 rounded-lg shadow-lg max-w-xl w-full">
+            <div className="fixed-full-screen">
+              <div className="fixed-popup max-w-xl w-full p-2">
                 <div className="flex justify-between items-center pb-3">
-                  <h1 className="font-bold text-normal text-[35px]">Terms of Services</h1>
+                  <h1 className="h1-text">Terms of Services</h1>
                   <button onClick={handleClose} className="text-black">
                     <img
                       src={process.env.BASE_URL + "/images/close.png"}
