@@ -127,7 +127,7 @@ const CustomerInformation: React.FC = () => {
           !resetPasswordShow ? "hidden" : ""
         }`}
       >
-        <div className="fixed-popup-round3xl w-[538px] h-[284px] p-6 flex flex-col font-inter">
+        <div className="fixed-popup-round3xl min-[546px]:w-[538px] max-[546px]:w-full h-[284px] p-6 flex flex-col font-inter">
           <div
             className='flex-row-between'
           >
@@ -149,16 +149,16 @@ const CustomerInformation: React.FC = () => {
             onSubmit={resetPasswordSubmit}
           >
             <div
-              className='flex flex-row font-inter mt-[37px]'
+              className='grid min-[546px]:grid-cols-2 max-[546px]:grid-cols-1 font-inter min-[546px]:mt-[37px] max-[546px]:mt-[20px]'
             >
               <div
-                className='flex flex-col w-1/2 px-2'
+                className='flex flex-col px-2 max-[546px]:mb-3'
               >
                 <label
-                  className='float-left text-sm font-normal text-custom-gray ml-[18px] z-[1] bg-white w-fit px-2'
+                  className='search-input-label'
                 >New Password</label>
                 <input type={showNewPassword ? 'text' : 'password'} placeholder='New Password' minLength={8} required
-                  className='border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2'
+                  className='search-input-text'
                   onChange={e => {
                     setNewPassword(e.target.value);
                   }}
@@ -180,13 +180,13 @@ const CustomerInformation: React.FC = () => {
                 </button>
               </div>
               <div
-                className='flex flex-col w-1/2 px-2'
+                className='flex flex-col px-2'
               >
                 <label
-                  className='float-left text-sm font-normal text-custom-gray ml-[18px] z-[1] bg-white w-fit px-2'
+                  className='search-input-label'
                 >Confirm Password</label>
                 <input type={showConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' minLength={8} required
-                  className='border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2'
+                  className='search-input-text'
                   onChange={e => {
                     setConfirmPassword(e.target.value);
                   }}
@@ -220,13 +220,13 @@ const CustomerInformation: React.FC = () => {
         </div>
       </div>
       <div
-        className='grid min-[1150px]:grid-cols-3 grid-cols-1 min-[1150px]:gap-5 mt-8 w-full'
+        className='w-full grid min-[1150px]:grid-cols-3 grid-cols-1 mt-8'
       >
         {
           bottomData && bottomData.map((item, index) => {
             return(
               <div
-                className='w-[268px] h-[119px] rounded-[5px] border border-[#dbffe380] bg-[#dbffe380] flex flex-col justify-center min-[1150px]:my-0 my-2'
+                className='w-[268px] h-[119px] rounded-[5px] border border-[#dbffe380] bg-[#dbffe380] flex flex-col justify-center min-[1150px]:my-0 my-2 mx-auto min-[1150px]:first:ml-0 min-[1150px]:last:mr-0'
                 key={index}
               >
                 {item.icon}

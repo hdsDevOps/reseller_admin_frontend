@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
 import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,13 @@ const CustomerManagement: React.FC = () => {
   });
   const [domainList, setDomainList] = useState([]);
   const [data, setData] = useState([]);
-  console.log(filters);
+  const [showList, setShowList] = useState(null);
+  const listRef = useRef(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSuspendModal, setShowSuspendModal] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [commonModal, setCommonModal] = useState(false);
 
   const getData = () => {
     axios
@@ -58,6 +64,15 @@ const CustomerManagement: React.FC = () => {
       .catch(err => console.log(err))
   };
 
+  const handleStatusChange = (item) => {
+    axios
+      .patch(`http://localhost:8080/edit-customer/${item.customerId}`, { status: !item.status})
+      .then(res => {
+        getData();
+      })
+      .catch(err => console.log(err))
+  };
+
   const tableHeads = [
     '',
     "Customer ID",
@@ -74,25 +89,45 @@ const CustomerManagement: React.FC = () => {
     "Action",
   ];
 
+  const toggleList = (customerId) => {
+    setShowList((prev) => (prev === customerId ? null : customerId))
+  };
+  const handleClickOutOfList = e => {
+    if(listRef.current && !listRef.current.contains(e.target)){
+      setShowList(null);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutOfList);
+    return() => {
+      document.removeEventListener('mousedown', handleClickOutOfList);
+    };
+  }, []);
+
   return (
     <div
       className="grid grid-cols-1"
     >
       <div className="flex flex-col w-full">
-        <div className="flex-row-between mr-10">
+        <div className="flex-row-between-responsive sm:mr-10 max-sm:mr-0">
           <h3 className="h3-text">
             Customers Management
           </h3>
-          <button
-            type="button"
-            className="bg-custom-green px-5 py-[7px] w-[139px] h-[40px] rounded-[10px] font-inter-16px-400-white float-right"
-          >
-            +&nbsp;&nbsp;Add new
-          </button>
+          <div>
+            <button
+              type="button"
+              className="btn-green w-[139px] h-[40px] float-right sm-mt-0 mt-2"
+              onClick={() => {
+                navigate('/add-customer');
+              }}
+            >
+              +&nbsp;&nbsp;Add new
+            </button>
+          </div>
         </div>
 
-        <div className="flex-row-between mt-[58px] mr-[40px]">
-          <div className="flex flex-row">
+        <div className="flex-row-between-responsive mt-[58px] sm:mr-10 max-sm:mr-0">
+          <div className="flex flex-row w-full">
             <input
               type="checkbox"
               className="w-3 h-3 border border-black mt-[12px] mr-[6px]"
@@ -101,8 +136,8 @@ const CustomerManagement: React.FC = () => {
               Select All
             </p>
           </div>
-          <div className="flex flex-row">
-            <select className="mr-2 w-[198px] h-[38px] select-notification">
+          <div className="flex sm:flex-row max-sm:flex-col sm:justify-end max-sm:items-end w-full">
+            <select className="sm:mr-2 max-sm:mr-0 w-[198px] h-[38px] select-notification">
               <option selected hidden>
                 Select a notification
               </option>
@@ -110,18 +145,18 @@ const CustomerManagement: React.FC = () => {
 
             <button
               type="button"
-              className="w-[79px] h-[38px] btn-blue"
+              className="w-[79px] h-[38px] btn-blue max-sm:mt-1"
             >
               Send
             </button>
           </div>
         </div>
 
-        <div className="flex-row-between py-4 mr-[40px]">
+        <div className="flex-row-between-responsive py-4 sm:mr-10 max-sm:mr-0">
           <div
             className="grid grid-cols-1 min-[968px]:grid-cols-2"
           >
-            <div className="w-[300px] px-4">
+            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0">
               <input
                 list="brow"
                 placeholder="Auto search domain list"
@@ -149,7 +184,7 @@ const CustomerManagement: React.FC = () => {
                 })}
               </div>
             </div>
-            <div className="w-[300px] px-4 min-[968px]:mt-0 mt-[15px]">
+            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
               <input
                 className="serach-input"
                 name="name"
@@ -164,7 +199,7 @@ const CustomerManagement: React.FC = () => {
           >
             <button
               type="button"
-              className="btn-green w-[80px] h-[38px]"
+              className="btn-green w-[80px] h-[38px] max-sm:float-right"
               onClick={() => {
                 setFilterShow(true);
               }}
@@ -360,7 +395,7 @@ const CustomerManagement: React.FC = () => {
         </div>
 
         <div className="w-full overflow-x-auto pb-[20px]">
-          <table className="min-w-[1100px]">
+          <table className="min-w-[1100px] max-h-screen">
             <thead className="h-[53px] thead-css">
               <tr>
                 {tableHeads?.map((item, index) => {
@@ -377,7 +412,9 @@ const CustomerManagement: React.FC = () => {
               </tr>
             </thead>
 
-            <tbody>
+            <tbody
+              className="h-fit"
+            >
               {
                 data && data.map((item, index) => {
                   return (
@@ -456,19 +493,16 @@ const CustomerManagement: React.FC = () => {
                       <td
                         className="px-[7px] py-[20px]"
                       >
-                        {
-                          item.status ? <button
-                            type="button"
-                            className="w-20 h-[22px] active-status"
-                          >
-                            Active
-                          </button> : <button
-                            type="button"
-                            className="w-20 h-[22px] inactive-status"
-                          >
-                            Inactive
-                          </button>
-                        }
+                        <button
+                          className={`w-20 h-[22px] ${
+                          item.status ? 'active-status' : 'inactive-status'
+                          }`}
+                          onClick={() => handleStatusChange(item)}
+                        >
+                          {
+                            item.status ? 'Active' : 'Inactive'
+                          }
+                        </button>
                       </td>
                       <td>
                         <button
@@ -477,8 +511,207 @@ const CustomerManagement: React.FC = () => {
                         >
                           <Ellipsis
                             className="w-[19px] m-auto"
+                            onClick={() => {toggleList(item?.customerId)}}
                           />
                         </button>
+
+                        {
+                          showList === item?.customerId && (
+                            <div
+                              className={`absolute right-0 rounded-3xl bg-white border-2 w-[186px]`}
+                              ref={listRef}
+                            >
+                              <ul
+                                className="customer-table-more-list"
+                              >
+                                <li
+                                  className="customer-table-more-list-li"
+                                >
+                                  <a
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      navigate('/edit-customer', { state: {customerId: item?.customerId }});
+                                    }}
+                                  >Edit Customer</a>
+                                </li>
+                                <li
+                                  className="customer-table-more-list-li"
+                                >
+                                  <a
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      setShowDeleteModal(!showDeleteModal);
+                                      setCommonModal(true);
+                                    }}
+                                  >Delete Customer</a>
+                                </li>
+                                <li
+                                  className="customer-table-more-list-li"
+                                >
+                                  <a
+                                    className="cursor-pointer"
+                                  >Login as Customer</a>
+                                </li>
+                                <li
+                                  className="customer-table-more-list-li"
+                                >
+                                  <a
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      setShowSubscriptionModal(!showSubscriptionModal);
+                                    }}
+                                  >Cancel Subscription
+                                  </a>
+                                  {
+                                    showSubscriptionModal && (
+                                      <div
+                                        className="fixed-full-screen"
+                                      >
+                                        <div
+                                          className="fixed-popup min-[560px]:w-[557px] max-[560px]:w-full h-[372px] flex flex-col font-inter"
+                                        >
+                                          <div className="flex-row-between px-8 pt-[31px] pb-7 border-b-[1px] border-cWhite3 h-[74px]">
+                                            <h3 className="text-xl font-medium">Cancel subscription</h3>
+                                            <div
+                                              className="w-[30px] h-[30px] bg-gray-100 rounded-full mt-[-2px]"
+                                            >
+                                              <button
+                                                type="button"
+                                                className="rotate-45 text-4xl ml-[5.5px] mt-[-7px]"
+                                                onClick={() => {
+                                                  setShowSubscriptionModal(false);
+                                                }}
+                                              >
+                                                +
+                                              </button>
+                                            </div>
+                                          </div>
+
+                                          <p
+                                            className="font-roboto font-medium text-xl leading-6 text-black mt-4 ml-[30px]"
+                                          >
+                                            The reason of cancel request
+                                          </p>
+
+                                          <textarea
+                                            className="m-[18px] mt-[22px] bg-gray-100 h-[111px] p-[14px]"
+                                          />
+
+                                          <div
+                                            className="flex min-[560px]:flex-row max-[560px]:flex-col justify-center max-[560px]:items-center w-full mt-4"
+                                          >
+                                            <button
+                                              className="btn-app-dec text-custom-green border-custom-green mb-1"
+                                            >Approve</button>
+                                            <button
+                                              className="btn-app-dec text-black  border-gray-500 min-[560px]:ml-[26px] max-[560px]:ml-0"
+                                            >Decline</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )
+                                  }
+                                  {
+                                    commonModal && (
+                                      <div
+                                        className="fixed-full-screen"
+                                      >
+                                        <div
+                                          className="fixed-popup-round3xl min-[540px]:w-[538px] max-[540px]:w-full h-[315px] p-6"
+                                        >
+                                          <div
+                                            className="flex flex-row justify-between"
+                                          >
+                                            <h3
+                                              className="h3-text"
+                                            >
+                                              {
+                                                showDeleteModal ? 'Delete Account' :
+                                                showSuspendModal ? 'Suspend Account' :
+                                                showTransferModal ? 'Transfer Account' : ''
+                                              }
+                                            </h3>
+                                            <div
+                                              className="w-[30px] h-[30px] bg-gray-100 rounded-full mt-[-2px]"
+                                            >
+                                              <button
+                                                type="button"
+                                                className="rotate-45 text-4xl ml-[5.5px] mt-[-7px]"
+                                                onClick={() => {
+                                                  setCommonModal(false);
+                                                  setShowDeleteModal(false);
+                                                  setShowSuspendModal(false);
+                                                  setShowTransferModal(false);
+                                                }}
+                                              >
+                                                +
+                                              </button>
+                                            </div>
+                                          </div>
+
+                                          <div
+                                            className="mt-16 px-8"
+                                          >
+                                            <p
+                                              className="font-warning-popup-message"
+                                            >
+                                              {
+                                                showDeleteModal ? 'Are you sure want to delete this account?' :
+                                                showSuspendModal ? 'Are you sure want to suspend this account?' :
+                                                showTransferModal ? 'Are you sure want to transfer this account?' : ''
+                                              }
+                                            </p>
+                                          </div>
+
+                                          <div
+                                            className="flex flex-row justify-center items-center mt-14"
+                                          >
+                                            <button
+                                              className="btn-green-2 w-[79px]"
+                                              type="button"
+                                            >Yes</button>
+                                            <button
+                                              className="btn-red ml-[60px]"
+                                              type="button"
+                                              onClick={() => {
+                                                setCommonModal(false);
+                                                setShowDeleteModal(false);
+                                                setShowSuspendModal(false);
+                                                setShowTransferModal(false);
+                                              }}
+                                            >Cancel</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )
+                                  }
+                                </li>
+                                <li
+                                  className="customer-table-more-list-li"
+                                >
+                                  <a
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      setShowSuspendModal(!showSuspendModal);
+                                      setCommonModal(true);
+                                    }}
+                                  >Suspend Account</a>
+                                </li>
+                                <li
+                                  className="customer-table-more-list-li"
+                                    onClick={() => {
+                                      setShowTransferModal(!showTransferModal);
+                                      setCommonModal(true);
+                                    }}
+                                >
+                                  <a
+                                    className="cursor-pointer"
+                                  >Transfer Account</a>
+                                </li>
+                              </ul>
+                            </div>
+                          )
+                        }
                       </td>
                     </tr>
                   );
