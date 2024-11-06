@@ -20,13 +20,13 @@ const Table = <T extends {}>({ columns, data, renderActions }: TableProps<T>) =>
             {columns.map((column, index) => (
               <th
                 key={index}
-                className="h-16 text-center sm:text-xs md:text-md lg:text-[16px] font-medium text-gray-500 capitalize tracking-wider"
+                className="h-16 text-center sm:text-sm font-medium text-gray-500 capitalize tracking-wider"
               >
                 {column.header}
               </th>
             ))}
             {renderActions && (
-              <th className="px-6 py-3 text-center sm:text-xs md:text-md lg:text-[16px] font-medium text-gray-500 capitalize tracking-wider">
+              <th className="px-6 py-3 text-center sm:text-sm lg:text-[16px] font-medium text-gray-500 capitalize tracking-wider">
                 Actions
               </th>
             )}
@@ -38,13 +38,13 @@ const Table = <T extends {}>({ columns, data, renderActions }: TableProps<T>) =>
               {columns.map((column) => (
                 <td
                   key={column.accessor as string}
-                  className="px-6 py-4 text-center whitespace-nowrap text-[#2e3f5d] sm:text-xs md:text-md lg:text-[16px] font-medium"
+                  className="px-6 py-4 text-center whitespace-nowrap text-[#2e3f5d] sm:text-sm font-medium"
                 >
                   {String(item[column.accessor])}
                 </td>
               ))}
               {renderActions && (
-                <td className="px-6 py-4 text-center whitespace-nowrap ">
+                <td className="px-6 py-4 text-center text-sm whitespace-nowrap ">
                   {renderActions(item)}
                 </td>
               )}
