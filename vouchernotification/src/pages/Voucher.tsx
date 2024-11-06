@@ -14,7 +14,7 @@ interface VoucherListData {
   discount: string;
   startDate: string;
   endDate: string;
-  image?: any;
+  image?: string; // Optional image property
 }
 
 const VoucherList: React.FC = () => {
@@ -28,7 +28,22 @@ const VoucherList: React.FC = () => {
       header: "Voucher Code",
       accessor: "voucherCode" as keyof VoucherListData,
     },
-    { header: "Currency", accessor: "currency" as keyof VoucherListData },
+    {
+      header: "Currency",
+      accessor: "currency" as keyof VoucherListData,
+      renderCell: (item: VoucherListData) => (
+        <div className="flex items-center gap-2">
+          {item.image && (
+            <img
+              src="/imahes/usa.jpg"
+              alt="Currency"
+              className="w-6 h-6 rounded-full object-cover"
+            />
+          )}
+          <span>{item.currency}</span>
+        </div>
+      ),
+    },
     { header: "Discount", accessor: "discount" as keyof VoucherListData },
     { header: "Start Date", accessor: "startDate" as keyof VoucherListData },
     { header: "End Date", accessor: "endDate" as keyof VoucherListData },
@@ -41,7 +56,7 @@ const VoucherList: React.FC = () => {
       discount: "50%",
       startDate: "10 Jan 2024",
       endDate: "10 Feb 2024",
-      image: "/images/usa.jpg",
+      image: "/images/india-flag.jpg",
     },
     {
       voucherCode: "HORD22",
@@ -49,7 +64,7 @@ const VoucherList: React.FC = () => {
       discount: "30%",
       startDate: "10 Jan 2024",
       endDate: "10 Feb 2024",
-      image: "/inr.webp",
+      image: "/images/usa-flag.jpg",
     },
     {
       voucherCode: "HORD23",
@@ -57,7 +72,7 @@ const VoucherList: React.FC = () => {
       discount: "50%",
       startDate: "10 Jan 2024",
       endDate: "10 Feb 2024",
-      image: "/gbp.jpg",
+      image: "/images/india-flag.jpg",
     },
     {
       voucherCode: "HORD24",
@@ -65,7 +80,7 @@ const VoucherList: React.FC = () => {
       discount: "50%",
       startDate: "10 Jan 2024",
       endDate: "10 Feb 2024",
-      image: "/gbp.jpg",
+      image: "/images/uk-flag.jpg",
     },
   ];
 
@@ -122,6 +137,7 @@ const VoucherList: React.FC = () => {
           </span>
         </div>
       </div>
+
       <div className="flex items-center justify-end gap-16 mb-10">
         <div className="flex items-center justify-center gap-10">
           <div className="flex items-center relative">
@@ -130,7 +146,7 @@ const VoucherList: React.FC = () => {
                 Select Currency
               </option>
               <option value="INR">INR</option>
-              <option value="USA">USA</option>
+              <option value="USD">USA</option>
             </select>
             <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
               <FaCaretDown className="w-4 h-4 text-gray-500" />
@@ -166,6 +182,7 @@ const VoucherList: React.FC = () => {
         data={currentItems}
         renderActions={renderActions}
       />
+
       <div className="flex flex-col mt-4 absolute bottom-2 right-0">
         <div className="flex justify-end mb-2">
           <button

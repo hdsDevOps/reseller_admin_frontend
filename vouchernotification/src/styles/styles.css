@@ -1,0 +1,157 @@
+.bg-custom-green{
+  @apply bg-cGreen;
+}
+
+.bg-custom-light-green{
+  @apply bg-cGreen2;
+}
+
+.bg-custom-white{
+  @apply bg-cWhite;
+}
+
+.text-custom-green{
+  @apply text-cGreen;
+}
+
+.text-custom-blue{
+  @apply text-cBlue2;
+}
+
+.text-custom-blue-2{
+  @apply text-cBlue;
+}
+
+.text-custom-gray{
+  @apply text-cGray;
+}
+
+.rounded-10px{
+  @apply rounded-[10px];
+}
+
+.font-inter-16px-400-white{
+  @apply font-inter font-normal text-base text-white;
+}
+
+.font-inter-16px-400-custom-gray{
+  @apply font-inter font-normal text-base text-[#5A5A5A];
+}
+
+.font-inter-16px-400{
+  @apply font-inter font-normal text-base;
+}
+
+.font-inter-bold{
+  @apply font-inter font-bold;
+}
+
+.flex-row-between{
+  @apply flex flex-row justify-between;
+}
+
+.flex-row-end{
+  @apply flex flex-row justify-end;
+}
+
+.border-custom-white{
+  @apply border-cWhite;
+}
+
+.border-custom-green{
+  @apply border-cGreen;
+}
+
+.active-status{
+  @apply border border-cGreen bg-cGreen3 rounded-[10px] font-inter font-normal text-[13px] text-black;
+}
+
+.inactive-status{
+  @apply border border-cRed bg-cRed2 rounded-[10px] font-inter font-normal text-[13px] text-black;
+}
+
+.btn-blue{
+  @apply bg-cBlue text-base font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px];
+}
+
+.btn-green{
+  @apply bg-cGreen text-base font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px];
+}
+
+
+
+.btn-green-2{
+  @apply px-5 py-[10px] rounded-[10px] bg-cGreen text-cWhite4 font-semibold text-base;
+}
+
+.btn-light-green{
+  @apply bg-cGreen2 border border-cWhite text-black rounded-[10px] px-5 py-[6px];
+}
+
+.btn-close{
+  @apply text-[25px] rotate-45;
+}
+
+.btn-as-customer-login{
+  @apply bg-cBlue4 py-[7px] px-2 rounded-md border border-cGreen4 font-inter text-base leading-6 font-normal text-black;
+}
+
+.a-reset-password{
+  @apply font-inter font-normal text-xs text-cBlue5 underline cursor-pointer;
+}
+
+.serach-input{
+  @apply h-[38px] w-full border border-cWhite bg-cWhite2 py-2 px-[9px] rounded-lg font-inter font-normal text-base focus:outline-none placeholder-black;
+}
+
+.select-input{
+  @apply w-full h-10 border border-cWhite py-2 px-[9px] rounded-lg font-inter font-normal text-base focus:outline-none;
+}
+
+.select-notification{
+  @apply rounded-[10px] border border-cWhite bg-cGreen2 pl-[15px] font-inter font-normal text-base focus:outline-none;
+}
+
+.thead-css{
+  @apply border border-cWhite bg-cWhite2;
+}
+
+.th-css{
+  @apply opacity-60 text-black font-inter text-[12.8px] text-center font-normal;
+}
+
+.td-css{
+  @apply font-inter font-normal text-[10px] opacity-60;
+}
+
+.h3-text{
+  @apply font-inter font-medium text-[28px] text-black leading-8;
+}
+
+.h5-text{
+  @apply font-medium text-xl leading-6 text-cBlue3 uppercase;
+}
+
+.page-indicator-1{
+  @apply font-inter font-normal text-base;
+}
+
+.page-indicator-arrow{
+  @apply h-[20px] mt-[4px] text-[#00000066];
+}
+
+.page-indicator-2{
+  @apply font-inter font-normal text-base text-cGreen;
+}
+
+.fixed-full-screen{
+  @apply fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50;
+}
+
+.fixed-popup{
+  @apply bg-white rounded-lg shadow-lg;
+}
+
+.fixed-popup-round3xl{
+  @apply bg-white rounded-3xl shadow-lg;
+}

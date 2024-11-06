@@ -5,7 +5,7 @@ import { FiPlus } from "react-icons/fi";
 import { IoChevronForward } from "react-icons/io5";
 import Table from "../components/Table";
 import Modal from "../components/Modal";
-import "../index.css";
+import "../styles/styles.css"
 import { MdOutlineCalendarToday } from "react-icons/md";
 
 interface CustomerGroupData {
