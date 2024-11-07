@@ -4,8 +4,10 @@ import Modal from "../components/Modal";
 import { BsEnvelopePlusFill } from "react-icons/bs";
 import { IoChevronDown } from "react-icons/io5";
 
+
 const NotificationTemplate = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isPreviewModalOpen, setPreviewModalOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
   const [isToggled, setIsToggled] = useState(false);
@@ -17,6 +19,14 @@ const NotificationTemplate = () => {
   const closeModal = () => {
     setModalOpen(false);
   };
+
+  const openPreviewModal = () => {
+    setPreviewModalOpen(true);
+  }
+
+  const closePreviewModal = () => {
+    setPreviewModalOpen(false);
+  }
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -178,7 +188,7 @@ const NotificationTemplate = () => {
             </div>
 
             <div className="flex gap-2 md:gap-4 justify-end w-full sm:w-auto">
-              <button className="px-4 py-3 text-white bg-green-500 rounded-xl hover:bg-green-600 transition-all duration-300">
+              <button className="px-4 py-3 text-white bg-green-500 rounded-xl hover:bg-green-600 transition-all duration-300" onClick={openPreviewModal}>
                 Preview
               </button>
               <button className="px-4 py-3 border border-green-500 text-black rounded-xl hover:bg-green-100 transition-all duration-300">
@@ -223,6 +233,15 @@ const NotificationTemplate = () => {
             Save
           </button>
         </div>
+      </Modal>
+
+      {/* Modal for Preview */}
+      <Modal
+        isOpen={isPreviewModalOpen}
+        onClose={closePreviewModal}
+        title="Template Preview"
+      >
+        <div className="absolute top-16 left-0 right-0 border border-gray-100 w-full" />
       </Modal>
     </div>
   );

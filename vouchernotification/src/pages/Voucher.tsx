@@ -6,7 +6,9 @@ import { IoChevronForward } from "react-icons/io5";
 import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../index.css";
-import { MdOutlineCalendarToday } from "react-icons/md";
+import { IoCalendarClearOutline } from "react-icons/io5";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface VoucherListData {
   voucherCode: string;
@@ -19,6 +21,8 @@ interface VoucherListData {
 
 const VoucherList: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [, setSelectedGroup] = useState<VoucherListData | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 3;
@@ -141,7 +145,7 @@ const VoucherList: React.FC = () => {
       <div className="flex items-center justify-end gap-16 mb-10">
         <div className="flex items-center justify-center gap-10">
           <div className="flex items-center relative">
-            <select className="border border-gray-300 max-w-xs w-full bg-transparent p-3 pr-10 rounded-sm focus:outline-none focus:ring-1 focus:ring-green-500 appearance-none">
+            <select className="border border-gray-300 max-w-xs w-full bg-transparent p-2 pr-10 rounded-sm focus:outline-none focus:ring-1 focus:ring-green-500 appearance-none">
               <option value="" disabled selected>
                 Select Currency
               </option>
@@ -155,25 +159,40 @@ const VoucherList: React.FC = () => {
 
           <input
             type="text"
-            className="border border-gray-300 bg-[#F9F9F9] py-3 px-6 focus:outline-none focus:ring-1 focus:ring-green-500 cursor-pointer"
+            className="border border-gray-300 bg-[#F9F9F9] py-2 px-6 focus:outline-none focus:ring-1 focus:ring-green-500 cursor-pointer"
             placeholder="Voucher Code"
           />
-          <div className="flex-1 mr-2 relative bg-red-500">
-            <input
-              type="text"
-              className="border border-gray-300 bg-[#F9F9F9] py-3 px-6 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black cursor-pointer"
-              placeholder="Start Date"
-            />
-            <MdOutlineCalendarToday className="absolute right-3 top-4 text-black" />
-          </div>
-          <div className="flex-1 mr-2 relative bg-red-500">
-            <input
-              type="text"
-              className="border border-gray-300 bg-[#F9F9F9] py-3 px-6 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black cursor-pointer"
-              placeholder="End Date"
-            />
-            <MdOutlineCalendarToday className="absolute right-3 top-4 text-black" />
-          </div>
+          <div className="relative">
+              <DatePicker
+                selected={startDate}
+                onChange={(date: Date | null) => setStartDate(date)}
+                className="border border-gray-300 bg-[#F9F9F9] py-2 px-6 text-[#6D6D6D] text-sm  focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black"
+                placeholderText="Start Date"
+                dateFormat="MM/dd/yyyy"
+                todayButton="Today"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+              />
+              <IoCalendarClearOutline size={20} className="text-[#000000] absolute right-2 top-1/2 transform -translate-y-1/2 font-bold" />
+            </div>
+
+            <div className="relative">
+              <DatePicker
+                selected={endDate}
+                onChange={(date: Date | null) => setEndDate(date)}
+                className="border border-gray-300 bg-[#F9F9F9] py-2 px-6 text-[#6D6D6D] text-sm  focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black"
+                placeholderText="End Date"
+                dateFormat="MM/dd/yyyy"
+                todayButton="Today"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+              />
+              <IoCalendarClearOutline size={20} className="text-[#000000] absolute right-2 top-1/2 transform -translate-y-1/2 font-bold" />
+            </div>
+
+
         </div>
       </div>
 

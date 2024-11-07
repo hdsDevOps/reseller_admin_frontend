@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
-import { IoChevronForward } from "react-icons/io5";
+import { IoCalendarClearOutline, IoChevronForward } from "react-icons/io5";
 import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css"
-import { MdOutlineCalendarToday } from "react-icons/md";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; 
 
 interface CustomerGroupData {
   groupName: string;
@@ -16,6 +17,7 @@ interface CustomerGroupData {
 
 const CustomerGroup: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [createdDate, setCreatedDate] = useState<Date | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<CustomerGroupData | null>(
     null
   );
@@ -98,20 +100,26 @@ const CustomerGroup: React.FC = () => {
         </div>
       </div>
       <div className="flex items-center md:justify-end  gap-16 mb-10 mr-6">
-        <div className="flex items-center justify-center gap-3 md:gap-10 lg:gap-32 mr-2 lg:mr-28">
+        <div className="flex items-center justify-center gap-3 md:gap-10 lg:gap-28 mr-2 lg:mr-28">
           <input
             type="text"
             className="bg-[#F9F9F9] p-2 focus:outline-none focus:ring-1 focus:ring-green-500 cursor-pointer md:w-64"
             placeholder="Group Name"
           />
-          <div className="flex-1 mr-2 relative  bg-red-500">
-            <input
-              type="text"
-              className="border border-[#E4E4E4] bg-[#F9F9F9] p-2 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black cursor-pointer md:w-64"
-              placeholder="Created Date"
-            />
-            <MdOutlineCalendarToday className="absolute right-3 top-1/2 -translate-y-1/2 text-black" />
-          </div>
+          <div className="relative mr-20">
+              <DatePicker
+                selected={createdDate}
+                onChange={(date: Date | null) => setCreatedDate(date)}
+                className="placeholder:text-black border border-[#E4E4E4] bg-[#F9F9F9] text-[#000000] text-base p-2 pl-3 pr-10 focus:outline-none focus:ring-1 focus:ring-green-500"
+                placeholderText="Created date"
+                dateFormat="MM/dd/yyyy"
+                todayButton="Today"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+              />
+              <IoCalendarClearOutline size={20} className="text-[#000000] absolute right-3 top-1/2 transform -translate-y-1/2 font-bold" />
+            </div>
         </div>
       </div>
       <Table

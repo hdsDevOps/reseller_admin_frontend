@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { IoChevronForward } from "react-icons/io5";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { Link } from "react-router-dom";
+import Modal from "./Modal"
 
 const GroupForm: React.FC = () => {
+  const [isPreviewModalOpen, setPreviewModalOpen] = useState(false);
+
+  const openPreviewModal = () => {
+    setPreviewModalOpen(true);
+  }
+
+  const closePreviewModal = () => {
+    setPreviewModalOpen(false);
+  }
+
   return (
     <>
      <Link to="/voucher-list">
@@ -89,7 +100,7 @@ const GroupForm: React.FC = () => {
                   rows={4}
                 />
               </div>
-              <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">
+              <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition" onClick={openPreviewModal}>
                 Preview
               </button>
             </div>
@@ -106,6 +117,14 @@ const GroupForm: React.FC = () => {
         </div>
       </div>
     </div>
+    {/* Modal for Preview */}
+    <Modal
+        isOpen={isPreviewModalOpen}
+        onClose={closePreviewModal}
+        title="Voucher Preview"
+      >
+        <div className="absolute top-16 left-0 right-0 border border-gray-100 w-full" />
+      </Modal>
     </>
     
   );
