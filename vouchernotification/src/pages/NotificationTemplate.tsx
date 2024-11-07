@@ -1,36 +1,30 @@
-import React, { useState } from "react";
-import { MdKeyboardArrowDown } from "react-icons/md";
+import React, { useEffect, useRef, useState } from "react";
 import Modal from "../components/Modal";
 import { BsEnvelopePlusFill } from "react-icons/bs";
-import { IoChevronDown } from "react-icons/io5";
+import { FiPlus } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import '../styles/styles.css';
 
 const NotificationTemplate = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
   const [isToggled, setIsToggled] = useState(false);
+  const modalRef = useRef();
 
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
+  const clickOutsideModal = (event) => {
+    if(modalRef.current && !modalRef.current.contains(event.target)){
+      setIsModalOpen(false);
+    }
   };
 
-  const handleItemClick = (item: string) => {
-    setSelectedItem(item);
-    setDropdownOpen(false);
-  };
-  const toggleSwitch = () => {
-    setIsToggled(!isToggled);
-  };
-  const handleCancel = () => {
-    setSelectedItem("");  };
+  useEffect(() => {
+    document.addEventListener('mousedown', clickOutsideModal);
+
+    return () => {
+      document.removeEventListener('mousedown', clickOutsideModal);
+    };
+  }, []);
 
   const dropdownItems = [
     "Email Verification",
@@ -42,188 +36,172 @@ const NotificationTemplate = () => {
   ];
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="flex items-center justify-between">
-        <h3 className="font-inter font-medium text-md md:text-lg lg:text-[28px]">
-          Notification Template
-        </h3>
-        <button
-          type="button"
-          className="bg-[#12A833] py-[7px] w-[7.2rem] sm:w-[139px] h-[40px] rounded-[10px] hover:bg-opacity-95 font-inter font-normal text-sm md:text-base text-[#FFFFFF] float-right"
-          onClick={openModal}
-        >
-          +&nbsp;&nbsp;Add new
-        </button>
-      </div>
-
-      <div className="dropdown relative self-end mt-6">
-        <div
-          tabIndex={0}
-          role="button"
-          className={`btn m-1 flex items-center justify-between border border-gray-200 w-64 p-2 rounded-[4px] 
-            ${
-              isDropdownOpen
-                ? "bg-[#fffefe] text-[#BABABA]"
-                : selectedItem
-                ? "bg-gray-200 text-[#757575]"
-                : "bg-gray-200 text-[#757575]"
-            } 
-            outline-none transition-all duration-200`}
-          onClick={toggleDropdown}
-          onKeyPress={(e) => e.key === "Enter" && toggleDropdown()}
-        >
-          {selectedItem || "Select a notification section"}
-          <MdKeyboardArrowDown
-            className={`ml-2 text-xl transition-transform ${
-              isDropdownOpen ? "rotate-180" : "rotate-0"
-            }`}
-          />
-        </div>
-        {isDropdownOpen && (
-          <ul
-            className="absolute right-0 dropdown-content menu bg-white rounded-box z-[1] w-[16rem] p-2 shadow transition-all duration-300 ease-in-out"
-            style={{
-              transform: `translateY(${isDropdownOpen ? 0 : -10}px)`,
-              opacity: isDropdownOpen ? 1 : 0,
-            }}
+    <div className="grid grid-cols-1">
+      <div className="flex flex-col">
+        <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
+          <h3 className="h3-text">Notification Template</h3>
+          <div
+            className="flex min-[500px]:justify-end max-[500px]:justify-center max-[500px]:mt-2"
           >
-            {dropdownItems.map((item, index) => (
-              <li key={index} className="flex justify-center">
-                <a
-                  onClick={() => handleItemClick(item)}
-                  className="cursor-pointer w-full text-center text-sm p-2 hover:bg-gray-100"
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {!selectedItem ? (
-        <div className="bg-gray-100 border border-gray-300 w-full min-h-48 h-full flex flex-col mt-20">
-          <div className="flex justify-center items-center p-6 text-red-500 font-medium text-[20px]">
-            <h3 className="font-inter">
-              Please choose a template first
-            </h3>
+            <button
+              type="button"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+              className="btn-green w-[139px] items-center"
+            >
+              <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
+              Add new
+            </button>
           </div>
-
-          <div className="border-b-2 border-gray-300" />
-
-          <div className="p-4"></div>
         </div>
-      ) : (
-        <div className="flex flex-col items-center mt-20">
-          <div className="flex items-center justify-between w-full my-3">
-            <h3 className="font-inter text-black font-medium text-[20px]">
-              Template
-            </h3>
-            <div className="flex items-center">
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only"
-                  checked={isToggled}
-                  onChange={toggleSwitch}
-                />
-                <div
-                  className={`w-10 h-5 rounded-full shadow-inner transition-all duration-200 ease-in-out ${
-                    isToggled ? "bg-green-500" : "bg-gray-200"
-                  }`}
-                ></div>
-                <div
-                  className={`absolute left-0 w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${
-                    isToggled ? "translate-x-6" : ""
-                  }`}
-                ></div>
-              </label>
+
+        <div className="flex justify-end mt-[46px]">
+          <select className="notification-select w-[275px] max-[400px]:w-full" onChange={e => {
+            setSelectedItem(e.target.value);
+          }}>
+            <option selected hidden value=''>Select a notification section </option>
+            {
+              dropdownItems && dropdownItems.map((item, index) => {
+                return(
+                  <option key={index} value={item}>{item}</option>
+                )
+              })
+            }
+            <option>INR</option>
+            <option>USD</option>
+            <option>GBP</option>
+          </select>
+        </div>
+
+        {!selectedItem ? (
+          <div className="bg-gray-100 border border-gray-300 w-full min-h-48 h-full flex flex-col mt-16">
+            <div className="h-[77px] border-b border-custom-white text-center pt-[26px]">
+              <h5 className="h5-text-red">
+                Please choose a template first
+              </h5>
             </div>
           </div>
-          <div className="w-full flex flex-col items-center  border-2 border-[#E4E4E4] min-h-[20rem] h-full">
-            <div className="flex items-center justify-between w-full py-1 px-3">
-              <h3 className="font-inter text-[#757575] text-base">
-                {selectedItem}
-              </h3>
-              <button
-                type="button"
-                className="flex items-center justify-between bg-[#007BFFCC] text-white text-sm w-44 h-12 px-2 hover:bg-opacity-95 transition"
+        ) : (
+          <div className="flex flex-col items-center mt-20">
+            <div className="flex items-center justify-between w-full my-3">
+              <h5 className="h5-text-black">
+                Template
+              </h5>
+              <div
+                className="mt-[7.5px] transition-transform duration-1000 ease-in-out"
+                // onClick={() => setShowNotfication(!showNotification)}
               >
-                Dynamic code list
-                <IoChevronDown className="inline-flex text-md mt-1" />
-              </button>
-            </div>
-            <div className="border-b-2 border-gray-300 w-full" />
-
-            <div className="w-full">
-              <textarea
-                className="w-full bg-transparent min-h-[20rem] outline-none py-2 px-3 h-full resize-none"
-                placeholder="HTML/CSS script should be here to make the Promotion template"
-              ></textarea>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center w-full px-0 lg:px-4 flex-wrap sm:flex-nowrap">
-            <div className="flex items-center gap-1 w-full sm:w-auto sm:mb-0 mt-1">
-              <div className="flex justify-between items-center border border-[#E4E4E4] text-[0.85rem] w-full sm:max-w-sm md:max-w-[24rem] bg-white p-3">
-                <span className="text-[#757575]">
-                  Separate multiple emails with comma.
-                </span>
-                <MdKeyboardArrowDown
-                  className="ml-2 text-[#757575]"
-                  size={24}
-                />
+                <label className="relative cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" />
+                  <div
+                    className="w-[40px] h-[20px] flex items-center bg-gray-300 rounded-full after:flex after:items-center after:justify-center peer peer-checked:after:translate-x-full after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-[#00D13B]">
+                  </div>
+                </label>
               </div>
-              <BsEnvelopePlusFill className="text-[#525050] hidden sm:block" size={32} />
+            </div>
+            <div className="w-full flex flex-col items-center  border-2 border-[#E4E4E4]">
+              <div className="notification-template-head">
+                <h3 className="notification-template-header py-3 pl-3">
+                  {selectedItem}
+                </h3>
+                <select className="select-dynamic-code">
+                  <option selected>Dynamic code list</option>
+                </select>
+              </div>
+
+              <div className="w-full">
+              <textarea
+                className="notification-template-textarea"
+                placeholder="HTML/CSS script should be here to make the Promotion template"
+              />
+              </div>
             </div>
 
-            <div className="flex gap-2 md:gap-4 justify-end w-full sm:w-auto">
-              <button className="px-4 py-3 text-white bg-green-500 rounded-xl hover:bg-green-600 transition-all duration-300">
-                Preview
-              </button>
-              <button className="px-4 py-3 border border-green-500 text-black rounded-xl hover:bg-green-100 transition-all duration-300">
-                Update
-              </button>
-              <button className="px-4 py-3 text-white bg-red-500 rounded-xl hover:bg-red-600 transition-all duration-300" onClick={handleCancel}>
-                Cancel
-              </button>
+            <div className="flex min-lg:flex-row max-lg:flex-col justify-between items-center w-full h-[41px]">
+              <div className="flex items-center lg:w-full">
+                <select
+                  className="border border-custom-white h-[41px] lg:ml-[15px] ml-0"
+                >
+                  <option selected>Separate multiple emails with comma'.</option>
+                </select>
+                <BsEnvelopePlusFill className="text-[#525050] hidden sm:block" size={32} />
+              </div>
+
+              <div className="flex min-[570px]:flex-row max-[570px]:flex-col justify-end gap-[10px] pt-[2px] min-lg:mt-0 max-lg:mt-1">
+                <button
+                  className='btn-green'
+                >Preview</button>
+                <button
+                  className='btn-different'
+                >Update</button>
+                <button
+                  className='btn-red-2'
+                >Cancel</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modal for adding a new template */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title="Add Notification Template"
-      >
-        <div className="relative">
-          <label className="absolute left-3 -top-2.5 text-gray-900 bg-white px-1 text-lg">
-            Subject
-          </label>
-          <input
-            type="text"
-            className="border border-gray-300 w-full bg-transparent p-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-gray-800"
-            placeholder="Enter subject"
-          />
-        </div>
-        <div className="flex justify-center gap-10 my-10">
-          <button
-            type="button"
-            className="bg-red-500 text-white w-32 h-12 rounded-md hover:bg-opacity-95 transition"
-            onClick={closeModal}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-green-500 text-white w-32 h-12 rounded-md hover:bg-green-600 transition"
-          >
-            Save
-          </button>
-        </div>
-      </Modal>
+        {
+          isModalOpen && (
+            <div className='fixed-full-screen'>
+              <div className='fixed-popup w-[488px] h-[343px] p-[30px]' ref={modalRef}>
+                <div className='flex flex-col'>
+                  <div
+                    className='flex-row-between'
+                  >
+                    <h4
+                      className='text-2xl font-medium'
+                    >Voucher Preview</h4>
+                    <div className='btn-close-bg'>
+                      <button
+                        type='button'
+                        className='text-3xl rotate-45 mt-[-8px] text-white'
+                        onClick={() => {
+                          setIsModalOpen(false);
+                        }}
+                      >+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className='flex flex-col px-2 mt-10'
+                >
+                  <label
+                    className='search-input-label'
+                  >Subject</label>
+                  <input
+                    type='text'
+                    placeholder='Enter Subject'
+                    name='subject'
+                    required
+                    className='search-input-text px-4'
+                    // onChange={updateCustomer}
+                    // value={customer[item.name]}
+                  />
+                </div>
+
+                <div
+                  className='mt-11 flex flex-row justify-center mb-3'
+                >
+                  <button
+                    type='button'
+                    className='btn-red h-[46px]'
+                    onClick={() => {
+                      setIsModalOpen(false);
+                    }}
+                  >Cancel</button>
+                  <button
+                    className='btn-green-2 h-[46px] ml-[30px]'
+                  >Save</button>
+                </div>
+              </div>
+            </div>
+          )
+        }
+      </div>
     </div>
   );
 };

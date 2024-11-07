@@ -35,7 +35,7 @@ const AddCustomer: React.FC = () => {
     {label: 'Zip code', type: 'number', name: 'zipCode'},
     {label: 'Business phone number', type: 'number', name: 'phone'},
     {label: 'EMail address', type: 'email', name: 'email'},
-  ]
+  ];
 
   const submit = e => {
     e.preventDefault();

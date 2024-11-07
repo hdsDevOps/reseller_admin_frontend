@@ -70,6 +70,10 @@
   @apply border-cGreen;
 }
 
+.border-custom-gray{
+  @apply border-cGray5;
+}
+
 .active-status{
   @apply border border-cGreen bg-cGreen3 rounded-[10px] font-inter font-normal text-[13px] text-black;
 }
@@ -264,4 +268,16 @@
 
 .notification-template-textarea{
   @apply w-full max-h-[208px] min-h-[208px] overflow-y-scroll px-6 py-1 focus:outline-none;
+}
+
+.payment-select{
+  @apply text-cGreen font-inter font-normal text-base focus:outline-none w-[97px] h-[38px] ;
+}
+
+.payment-option{
+  @apply text-black;
+}
+
+.select-div{
+  @apply text-end px-2 py-[7px];
 }

@@ -34,7 +34,7 @@ const CustomerInformation: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const resetPasswordSubmit = e => {
-    e.preventDefault()
+    e.preventDefault();
     setResetPasswordShow(false);
     setNewPassword('');
     setConfirmPassword('');
@@ -42,7 +42,7 @@ const CustomerInformation: React.FC = () => {
   
   return (
     <div
-      className='flex flex-col px-2'
+      className='flex flex-col px-2 max-[400px]:px-0'
     >
       <div
         className='flex flex-row'
@@ -69,7 +69,7 @@ const CustomerInformation: React.FC = () => {
           className='page-indicator-1'
         >Customer Managemnet</p>
         <ChevronRight
-          className='page-indicator-arrow'
+          className='page-indicator-arrow-2'
         />
         <p
           className='page-indicator-2'
@@ -77,7 +77,7 @@ const CustomerInformation: React.FC = () => {
       </div>
 
       <div
-        className='flex-row-between mt-8'
+        className='flex-row-between-2 mt-8'
       >
         <div
           className='flex flex-col'
@@ -106,15 +106,15 @@ const CustomerInformation: React.FC = () => {
           >Domain : {customerData?.domain}</p>
         </div>
         <div
-          className='flex flex-col justify-between text-right'
+          className='flex flex-col justify-between text-right max-[631px]:items-center'
         >
           <button
             type='button'
-            className='btn-as-customer-login'
+            className='btn-as-customer-login max-w-fit'
           >Login as Customer</button>
 
           <a
-            className='a-reset-password'
+            className='a-reset-password max-[631px]:my-2'
             onClick={() => {
               setResetPasswordShow(true);
             }}

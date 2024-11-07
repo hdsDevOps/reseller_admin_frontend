@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
-import { IoChevronForward } from "react-icons/io5";
+import { ChevronRight } from 'lucide-react';
 import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css"
-import { MdOutlineCalendarToday } from "react-icons/md";
 
 interface CustomerGroupData {
   groupName: string;
@@ -15,10 +14,26 @@ interface CustomerGroupData {
 }
 
 const CustomerGroup: React.FC = () => {
+  const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<CustomerGroupData | null>(
     null
   );
+  const modalRef = useRef();
+
+  const clickOutsideModal = (event) => {
+    if(modalRef.current && !modalRef.current.contains(event.target)){
+      setModalOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', clickOutsideModal);
+
+    return () => {
+      document.removeEventListener('mousedown', clickOutsideModal);
+    };
+  }, []);
 
   const columns = [
     { header: "Group Name", accessor: "groupName" as keyof CustomerGroupData },
@@ -61,12 +76,12 @@ const CustomerGroup: React.FC = () => {
   };
 
   const renderActions = (item: CustomerGroupData) => (
-    <div className="flex items-center justify-center gap-3">
-      <button className="text-black hover:text-red-600 text-md md:text-2xl">
+    <div className="flex items-center justify-center gap-3 my-1">
+      <button className="text-black hover:text-red-600 text-md">
         <FaTrash role="img" aria-label="trash" />
       </button>
       <button
-        className="text-[#2e3f5d] text-sm hover:bg-[#9be9ac] hover:text-black py-2 px-4 md:py-2 md:px-5 rounded-md bg-[#CDE9D3]"
+        className="btn-green-3 w-14 h-7"
         onClick={() => openModal(item)}
       >
         View
@@ -75,42 +90,59 @@ const CustomerGroup: React.FC = () => {
   );
 
   return (
-    <div className="">
-      <div className="flex flex-col mb-16 md:mb-20 gap-2">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg md:text-2xl">Customer Groups</h1>
-          <Link
-            to="/add-group"
-            className="text-white text-sm hover:bg-opacity-95 py-2 px-5 rounded-md bg-[#12A833] flex items-center justify-center"
+    <div className="grid grid-cols-1">
+      <div className="flex flex-col">
+        <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
+          <h3 className="h3-text">Customer Groups</h3>
+          <div
+            className="flex min-[500px]:justify-end max-[500px]:justify-center max-[500px]:mt-2"
           >
-            <FiPlus className="inline-block items-center mr-2" />
-            Add new
-          </Link>
+            <button
+              onClick={() => navigate('/add-customer-group')}
+              className="btn-green w-[139px] items-center"
+            >
+              <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
+              Add new
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-md md:text-lg">
-          <h1 className="text-gray-400 text-sm md:text-xl">
-            Voucher Management{" "}
-            <IoChevronForward className="inline-block items-center" />
-          </h1>
-          <span className="text-green-500 cursor-pointer text-sm md:text-xl">
-            Customer group
-          </span>
+        <div
+          className='flex flex-row mt-5 h-[22px]'
+        >
+          <p
+            className='page-indicator-1'
+          >Voucher Management</p>
+          <ChevronRight
+            className='page-indicator-arrow-3'
+          />
+          <p
+            className='page-indicator-2'
+          >Customer group</p>
         </div>
       </div>
-      <div className="flex items-center md:justify-end  gap-16 mb-10 mr-6">
-        <div className="flex items-center justify-center gap-3 md:gap-10 lg:gap-32 mr-2 lg:mr-28">
-          <input
-            type="text"
-            className="bg-[#F9F9F9] p-2 focus:outline-none focus:ring-1 focus:ring-green-500 cursor-pointer md:w-64"
-            placeholder="Group Name"
-          />
-          <div className="flex-1 mr-2 relative  bg-red-500">
+      <div className="grid lg:grid-cols-2 grid-cols-1 mt-14 mb-[51px]">
+        <div className="lg:col-start-2 grid sm:grid-cols-2 grid-cols-1 max-sm:w-[300px] max-sm:mx-auto">
+          <div className="px-4">
             <input
               type="text"
-              className="border border-[#E4E4E4] bg-[#F9F9F9] p-2 focus:outline-none focus:ring-1 focus:ring-green-500 placeholder:text-black cursor-pointer md:w-64"
-              placeholder="Created Date"
+              className="serach-input-2"
+              name="groupName"
+              placeholder="Group name"
             />
-            <MdOutlineCalendarToday className="absolute right-3 top-1/2 -translate-y-1/2 text-black" />
+          </div>
+          <div className="px-4 sm:mt-0 mt-1">
+            <input
+              type="text"
+              className="serach-input-2 placeholder-black"
+              name="createdDate"
+              placeholder="Created date"
+              onFocus={e => {
+                e.target.type='date'
+              }}
+              onBlur={e => {
+                e.target.type='text'
+              }}
+            />
           </div>
         </div>
       </div>
@@ -121,19 +153,19 @@ const CustomerGroup: React.FC = () => {
       />
 
       {/* Modal for Group Details */}
-      <Modal isOpen={isModalOpen} onClose={closeModal} title="Group Details">
+      <Modal isOpen={isModalOpen} onClose={closeModal} modalRef={modalRef} title="Group Details">
         {selectedGroup && (
-          <div className="flex justify-between items-center border-b border-black text-xs font-normal">
+          <div className="flex justify-between border-b border-black leading-none">
             <p className="">Group Name:</p>
             <p className="">{selectedGroup.groupName}</p>
           </div>
         )}
-        <div className="mt-4 flex flex-col gap-2">
-          <p className="text-xs font-normal">Country:</p>
-          <p className="text-xs font-normal">Region:</p>
-          <p className="text-xs font-normal">Subscription Plan:</p>
-          <p className="text-xs font-normal">Expiry Date:</p>
-          <p className="text-xs font-normal">License Usage:</p>
+        <div className="mt-px flex flex-col">
+          <p className="mt-0">Country:</p>
+          <p className="mt-0">Region:</p>
+          <p className="mt-0">Subscription Plan:</p>
+          <p className="mt-0">Expiry Date:</p>
+          <p className="mt-0">License Usage:</p>
         </div>
       </Modal>
     </div>

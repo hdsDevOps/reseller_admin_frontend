@@ -13,14 +13,14 @@ interface TableProps<T> {
 
 const Table = <T extends {}>({ columns, data, renderActions }: TableProps<T>) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full">
-        <thead className="bg-[#F7FAFF]">
+    <div className="w-full overflow-x-auto pb-[20px]">
+      <table className="min-w-[1100px] lg:min-w-full max-h-screen">
+        <thead className="bg-custom-blue-6 h-[53px]">
           <tr>
             {columns.map((column, index) => (
               <th
                 key={index}
-                className="h-16 text-center sm:text-sm font-medium text-gray-500 capitalize tracking-wider"
+                className="th-css-2"
               >
                 {column.header}
               </th>
@@ -32,19 +32,19 @@ const Table = <T extends {}>({ columns, data, renderActions }: TableProps<T>) =>
             )}
           </tr>
         </thead>
-        <tbody className="bg-white">
+        <tbody className="bg-white mt-3">
           {data.map((item, index) => (
-            <tr key={index} className="hover:bg-gray-50">
+            <tr key={index} className="hover:bg-gray-50 my-8">
               {columns.map((column) => (
                 <td
                   key={column.accessor as string}
-                  className="px-6 py-4 text-center whitespace-nowrap text-[#2e3f5d] sm:text-sm font-medium"
+                  className="td-css-2"
                 >
                   {String(item[column.accessor])}
                 </td>
               ))}
               {renderActions && (
-                <td className="px-6 py-4 text-center text-sm whitespace-nowrap ">
+                <td className="">
                   {renderActions(item)}
                 </td>
               )}
