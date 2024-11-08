@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
 
-const PaymentMethod = () => {
+const PaymentMethod: React.FC = () => {
   const paymentMethods = [
     { image: '/images/stripe.png' },
     { image: '/images/paystack.png' },
