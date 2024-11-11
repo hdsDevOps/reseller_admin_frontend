@@ -1,6 +1,8 @@
 import React from "react";
+import ResourcesModal from "./components/ResourcesModal";
 
 const Resources: React.FC = () => {
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(true);
   const resources = [
     {
       title: "Connect",
@@ -13,7 +15,7 @@ const Resources: React.FC = () => {
   return (
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex items-center justify-start mb-6">
-        <button className="px-4 py-2 text-white bg-green-500 rounded-md">
+        <button onClick={() => setIsEditModalOpen(true)} className="px-4 py-2 text-white bg-green-500 rounded-md">
           EDIT
         </button>
       </div>
@@ -35,6 +37,10 @@ const Resources: React.FC = () => {
           </div>
         ))}
       </div>
+      <ResourcesModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
     </div>
   );
 };

@@ -1,10 +1,19 @@
 import React from "react";
+import ContactEditModal from "./components/ContactEditModal";
 
 const ContactSection = () => {
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [contactData, setContactData] = React.useState({
+    pageDescription: "For any information not hesitate to reach us.",
+    callUs: "+1 469-893-0678",
+    email: "contact@hordanso.com",
+    address: "Hordanso LLC 4364 Western Center Blvd PMB 2012 Fort Worth"
+  });
+
   return (
     <div className="bg-white rounded-lg shadow mt-6">
       <div className="flex items-center justify-start p-4 border-b">
-        <button className="px-4 py-1 text-white bg-green-500 rounded hover:bg-green-600">
+        <button onClick={() => setIsEditModalOpen(true)} className="px-4 py-1 text-white bg-green-500 rounded hover:bg-green-600">
           EDIT
         </button>
       </div>
@@ -36,6 +45,11 @@ const ContactSection = () => {
           </div>
           
       </div>
+      <ContactEditModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        initialData={contactData}
+      />
     </div>
   );
 };

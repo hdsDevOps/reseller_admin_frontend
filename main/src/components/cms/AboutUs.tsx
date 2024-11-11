@@ -1,20 +1,7 @@
 import React from "react";
 
 const AboutUs: React.FC = () => {
-  const blocks = [
-    {
-      contentTitle: "Make decisions faster, face to face.",
-      contentDescription:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      image: "/meeting-image.jpg",
-    },
-    {
-      contentTitle: "Secure your data and devices.",
-      contentDescription:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      image: "/security-image.jpg",
-    },
-  ];
+  
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
@@ -28,25 +15,47 @@ const AboutUs: React.FC = () => {
           Everything you need to know About us
         </h3>
       </div>
-      <div className="space-y-6">
-        {blocks.map((block, index) => (
-          <div key={index} className="grid grid-cols-4 gap-6">
-            <div className="col-span-1">
-              <img
-                src={block.image}
-                alt={block.contentTitle}
-                className="w-full rounded-lg"
-              />
-            </div>
-            <div className="col-span-3">
-              <p className="font-medium mb-2">{block.contentTitle}</p>
-              <p className="text-gray-600">{block.contentDescription}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className="p-5">
+      <ContentBlock 
+        imageSrc="image1.jpg" 
+        title="Make decisions faster, face to face." 
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit." 
+      />
+      <ContentBlock 
+        imageSrc="image2.jpg" 
+        title="Secure your data and devices." 
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit." 
+      />
+    </div>
     </div>
   );
 };
 
 export default AboutUs;
+
+
+interface ContentBlockProps {
+  imageSrc: string;
+  title: string;
+  description: string;
+}
+
+const ContentBlock: React.FC<ContentBlockProps> = ({ imageSrc, title, description }) => {
+  return (
+    <div className="flex mb-6">
+      <img src={imageSrc} alt={title} className="w-24 h-auto mr-5" />
+      <div>
+        <div className="flex">
+          <span className="font-bold mr-2 w-[10.7rem]">Content title</span>
+          <span className="mr-4">:</span>
+          <span>{title}</span>
+        </div>
+        <div className="flex mt-1">
+          <span className="font-bold mr-2 w-60">Content Description</span>
+          <span className="mr-4">:</span>
+          <span>{description}</span>
+        </div>
+      </div>
+    </div>
+  );
+};

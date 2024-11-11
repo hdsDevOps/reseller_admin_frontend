@@ -1,10 +1,15 @@
 import React from "react";
+import FooterEditModal from "./components/FooterEditModal";
 
 const FooterSection = () => {
+  const [showModal, setShowModal] = React.useState(false);
+
   return (
     <div className="bg-white rounded-lg shadow mt-6">
       <div className="flex items-center justify-start p-4 border-b">
-        <button className="px-4 py-1 text-white bg-green-500 rounded hover:bg-green-600">
+        <button onClick={
+          () => setShowModal(true)
+        } className="px-4 py-1 text-white bg-[#12A833] rounded hover:bg-green-600">
           EDIT
         </button>
       </div>
@@ -29,7 +34,7 @@ const FooterSection = () => {
                 <span className="px-2">:</span>
                 <a
                   href="https://simplify.jobs/"
-                  className="text-blue-500 hover:underline"
+                  className="text-[#12A833] hover:underline"
                 >
                   https://simplify.jobs/
                 </a>
@@ -57,7 +62,7 @@ const FooterSection = () => {
                 <span className="px-2">:</span>
                 <a
                   href="https://simplify.jobs/"
-                  className="text-blue-500 hover:underline"
+                  className="text-[#12A833] hover:underline"
                 >
                   https://simplify.jobs/
                 </a>
@@ -66,6 +71,10 @@ const FooterSection = () => {
           </div>
         </div>
       </div>
+      <FooterEditModal 
+  isOpen={showModal} 
+  onClose={() => setShowModal(false)} 
+/>
     </div>
   );
 };

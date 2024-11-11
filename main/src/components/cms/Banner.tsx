@@ -1,5 +1,8 @@
 import React from "react";
 import { Switch } from "@headlessui/react";
+import { FaTrash,FaPen } from "react-icons/fa";
+import BannerModal from "./components/BannerModal";
+
 
 const Banner: React.FC = () => {
   const banners = [
@@ -45,10 +48,23 @@ const Banner: React.FC = () => {
     },
   ];
 
+  const [status, setStatus] = React.useState("Inactive");
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  // Add this inside your Banner component
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const toggleStatus = () => {
+    setStatus((prevStatus) =>
+      prevStatus === "Active" ? "Inactive" : "Active"
+    );
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex items-center justify-start mb-6">
-        <button className="px-4 py-2 text-white bg-green-500 rounded-md">
+        <button   onClick={openModal}  className="px-4 py-2 text-white bg-[#12A833] rounded-md">
           ADD
         </button>
       </div>
@@ -61,9 +77,9 @@ const Banner: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <span>Show Coupon:</span>
                   <Switch
-                    // checked={enabled}
+                    checked={true}
                     // onChange={setEnabled}
-                    className="group relative flex h-7 w-14 cursor-pointer rounded-full bg-green-500 p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white data-[checked]:bg-green-500"
+                    className="group relative flex h-7 w-14 cursor-pointer rounded-full bg-[#12A833] p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white data-[checked]:bg-[#12A833]"
                   >
                     <span
                       aria-hidden="true"
@@ -74,9 +90,9 @@ const Banner: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <span>Show Video:</span>
                   <Switch
-                    // checked={banner.showVideo}
+                    checked={false}
                     // onChange={setEnabled}
-                    className="group relative flex h-7 w-14 cursor-pointer rounded-full bg-red-500 p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white data-[checked]:bg-red-500"
+                    className="group relative flex h-7 w-14 cursor-pointer rounded-full bg-[#E02424] p-1 transition-colors duration-200 ease-in-out focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white data-[checked]:bg-[#E02424]"
                   >
                     <span
                       aria-hidden="true"
@@ -116,7 +132,9 @@ const Banner: React.FC = () => {
                   <p className="text-blue-600">{banner.buttonURL}</p>
                 </div>
                 <div className="flex space-x-4">
-                  <p className="text-gray-600 text-nowrap w-24">Starting price</p>
+                  <p className="text-gray-600 text-nowrap w-24">
+                    Starting price
+                  </p>
                   <p className="text-gray-600">:</p>
                   <div className="flex flex-wrap gap-2">
                     {banner.startingPrice.map((price, idx) => (
@@ -131,21 +149,32 @@ const Banner: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-start">
+            <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span>Status:</span>
-                <span
+                <button
+                  onClick={toggleStatus}
                   className={`px-3 py-1 rounded-full text-white ${
-                    banner.status === "Active" ? "bg-green-500" : "bg-red-500"
+                    status === "Active" ? "bg-[#12A833]" : "bg-[#E02424]"
                   }`}
                 >
-                  {banner.status}
-                </span>
+                  {status}
+                </button>
+              </div>
+              <div className="flex gap-x-2">
+              <button className="">
+                  <FaPen size={28}/>
+                  </button>
+                  <button className="">
+                  <FaTrash size={28}/>
+                  </button>
               </div>
             </div>
           </div>
         ))}
       </div>
+      <BannerModal isOpen={isModalOpen} onClose={closeModal} />
+
     </div>
   );
 };

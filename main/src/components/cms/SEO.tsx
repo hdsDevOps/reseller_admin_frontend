@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SEOEditModal from "./components/SEOEditModal";
 
 interface SEOData {
   contentTitle: string;
@@ -10,6 +11,7 @@ interface SEOData {
 }
 
 const SEO = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [seoData, setSeoData] = useState<SEOData>({
     contentTitle: "Landing Page",
     contentDescription: "",
@@ -19,10 +21,15 @@ const SEO = () => {
     urlLink: "",
   });
 
+  const handleSave = (updatedData: SEOData) => {
+    setSeoData(updatedData);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="flex items-center justify-start p-4">
-        <button className="px-4 py-1 text-white bg-green-500 rounded hover:bg-green-600">
+        <button onClick={() => setIsModalOpen(true)} className="px-4 py-1 text-white bg-[#12A833] rounded hover:bg-green-600">
           Edit
         </button>
       </div>
@@ -64,6 +71,12 @@ const SEO = () => {
           <p>Enter the URL Link</p>
         </div>
       </div>
+      <SEOEditModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        seoData={seoData}
+        onSave={handleSave}
+      />
     </div>
   );
 };

@@ -1,7 +1,12 @@
 import React from "react";
 import { TrashIcon, PencilIcon } from "lucide-react";
+import PromotionModal from "./components/PromotionModal";
+import "./index.css"
+
 
 const Promotion: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   const promotions = [
     {
       template: "2x1",
@@ -22,7 +27,7 @@ const Promotion: React.FC = () => {
   return (
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex items-center justify-start mb-6">
-        <button className="px-4 py-2 text-white bg-green-500 rounded-md">
+        <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 text-white bg-[#12A833] rounded-md">
           ADD
         </button>
       </div>
@@ -67,7 +72,7 @@ const Promotion: React.FC = () => {
               <span> Status:</span>
               <span
                 className={`px-2.5 py-1 rounded-full text-sm text-white ${
-                  promo.status === "Active" ? "bg-green-500" : "bg-red-500"
+                  promo.status === "Active" ? "bg-[#12A833]" : "bg-red-500"
                 }`}
               >
                 {promo.status}
@@ -76,6 +81,10 @@ const Promotion: React.FC = () => {
           </div>
         ))}
       </div>
+      <PromotionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
