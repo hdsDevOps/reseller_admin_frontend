@@ -37,6 +37,7 @@ module.exports = {
         cBlack2: "#00163B",
         cBlack3: "#312E3C",
         cBlack4: "#1E1E1E",
+        cBlack5: '#434D64',
       },
     },
   },

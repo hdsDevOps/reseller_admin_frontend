@@ -260,7 +260,7 @@ const Sidebar = () => {
               return(
                 <>
                   <div key={index}
-                    className="flex flex-row px-[7px]"
+                    className="flex flex-col px-[7px] whitespace-nowrap"
                   >
                     <button
                       type='button'
@@ -316,7 +316,7 @@ const Sidebar = () => {
                     {
                       dropdowns[index] && (
                         <div
-                          className={`flex flex-col bg-white rounded-b-lg shadow-xl h-fit absolute w-[92%] mt-[74px]`}
+                          className={`flex flex-col bg-white rounded-b-lg shadow-xl h-fit absolute w-[93.5%] mt-[53px]`}
                           ref={(el) => (dropdownRef.current[index] = el)}
                         >
                           {
@@ -399,7 +399,7 @@ const Sidebar = () => {
         }
 
         <div
-          className="sticky top-[100vh] border-t-[1px] border-custom-white6 pt-[30px] pb-[15px] mt-[15px]"
+          className="sticky top-[100vh] border-t-[1px] border-custom-white6 pt-[30px] pb-[15px] mt-[35px]"
         >
           {
             links2 && links2.map((item, index) => {

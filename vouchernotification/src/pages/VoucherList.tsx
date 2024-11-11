@@ -198,7 +198,7 @@ const VoucherList: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 mt-14 sm:mb-[51px] mb-[31px]">
-        <div className="lg:col-start-2 grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 main-sm:w-[300px] max-sm:mx-auto">
+        <div className="lg:col-start-2 grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 min-sm:w-[300px] max-sm:mx-auto">
           <div className="px-4 mb-5 sm:mb-0">
             <select className="select-input">
               <option selected hidden value=''>Select Currency</option>

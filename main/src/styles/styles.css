@@ -219,5 +219,5 @@
 }
 
 .navbar-w-h-2{
-  @apply min-w-[18.5px] min-h-[15.5px] mt-[11px];
+  @apply max-w-[21.5px] max-h-[18.5px] mt-[11px];
 }
