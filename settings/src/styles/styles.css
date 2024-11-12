@@ -10,12 +10,20 @@
   @apply bg-cWhite;
 }
 
+.bg-custom-white-2{
+  @apply bg-cWhite2;
+}
+
 .bg-custom-blue-6{
   @apply bg-cBlue6;
 }
 
 .bg-custom-red{
   @apply bg-cRed;
+}
+
+.bg-custom-image{
+  @apply bg-[url('https://s3-alpha-sig.figma.com/img/0816/c1b6/496d214cbeaa29db7663557d135170ea?Expires=1732492800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=oeJ8rMpaqNvsa4b~6z1jE4ScJgwRURM7yTfwhgVL3dCvABr2FPYfekVZQHPs3uua3CZfZAfn8nyfmNrIOMp0cwF46Vy95veCq4y~y86bKJa4L2yAmzHIzy9Bnbldnn0OihOULvqLeTwDFvAIBdewHI~xrtTWQkiBfR0nWZzrboJE09aOPwBXftPVVFmrdccKshW2ESmwE5mo30-CAbuWPxRh0Qy-4TFHXeHWzzJLS5MRki6E2ZWfZIBNmpp7T-W-8x6zK0DA6aVO3wBUWsDlvaQa5W02cs2dwzW7SwzzjCM6rCXnGGP7vBIiLCgTL1J5SlHayqzWoKCMucNfhz4ScQ__')] bg-cover bg-center;
 }
 
 .text-custom-green{
@@ -30,12 +38,24 @@
   @apply text-cBlue;
 }
 
+.text-custom-blue-8{
+  @apply text-cBlue8;
+}
+
+.text-custom-blue-9{
+  @apply text-cBlue9;
+}
+
 .text-custom-gray{
   @apply text-cGray;
 }
 
 .text-custom-red{
   @apply text-cRed;
+}
+
+.text-custom-black-4{
+  @apply text-cBlack4;
 }
 
 .rounded-10px{
@@ -58,8 +78,16 @@
   @apply font-inter font-medium text-base text-black;
 }
 
+.font-inter-20px-500-cBlack4{
+  @apply font-inter font-medium text-xl leading-6 text-cBlack4;
+}
+
 .font-inter-bold{
   @apply font-inter font-bold;
+}
+
+.font-inter-16px-bold-black{
+  @apply font-inter font-bold text-base text-center text-black;
 }
 
 .flex-row-between{
@@ -158,8 +186,16 @@
   @apply float-left text-sm font-normal text-custom-gray ml-[18px] z-[1] bg-white w-fit px-2;
 }
 
+.search-input-label-2{
+  @apply float-left text-xs font-inter font-normal text-custom-gray ml-[18px] z-[1] bg-white w-fit px-2;
+}
+
 .search-input-text{
   @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2;
+}
+
+.search-input-text-2{
+  @apply border border-[#E4E4E4] rounded-[10px] mt-[-9px];
 }
 
 .search-select-text{
@@ -194,8 +230,20 @@
   @apply font-inter font-medium text-[28px] text-black leading-8;
 }
 
+.h3-text-2{
+  @apply font-inter font-extrabold text-[13px] text-cPurple leading-[17px];
+}
+
+.h2-text{
+  @apply font-inter font-bold text-base leading-[20px] text-black opacity-60;
+}
+
 .h5-text{
   @apply font-medium text-xl leading-6 text-cBlue3 uppercase;
+}
+
+.h5-text-2{
+  @apply font-normal text-[10px] font-inter leading-6 text-black;
 }
 
 .h5-text-black{
@@ -310,3 +358,35 @@
   @apply h-fit font-inter font-semibold text-base leading-9 text-center text-cWhite4 rounded-[10px];
 }
 /*  py-[10px] px-5 */
+
+.btn-chevron-down{
+  @apply w-9 h-9 bg-cGreen bg-opacity-20 rounded-full text-black;
+}
+
+.btn-chevron-up{
+  @apply w-9 h-9 bg-cGray bg-opacity-20 rounded-full text-black;
+}
+
+.btn-cms{
+  @apply h-6 bg-cGreen px-5 rounded-tl-[10px] rounded-tr-[5px] rounded-br-[10px] rounded-bl-[5px] font-inter font-semibold text-base text-center text-cWhite4;
+}
+
+.banner-table-td-1{
+  @apply text-nowrap align-top font-inter font-normal text-xs text-black opacity-60;
+}
+
+.banner-table-td-2{
+  @apply align-top font-inter text-[11px] text-left;
+}
+
+.banner-table-td-3{
+  @apply align-top font-inter text-[14px] font-bold text-black text-center leading-5;
+}
+
+.banner-price-span{
+  @apply h-6 rounded-2xl bg-black bg-opacity-[38%] flex flex-row;
+}
+
+.banner-price-p{
+  @apply font-inter font-normal text-[10px] leading-3 tracking-[-1.1%] text-cBlack3 align-middle my-auto;
+}
