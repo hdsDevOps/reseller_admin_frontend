@@ -22,10 +22,6 @@
   @apply bg-cRed;
 }
 
-.bg-custom-image{
-  @apply bg-[url('https://s3-alpha-sig.figma.com/img/0816/c1b6/496d214cbeaa29db7663557d135170ea?Expires=1732492800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=oeJ8rMpaqNvsa4b~6z1jE4ScJgwRURM7yTfwhgVL3dCvABr2FPYfekVZQHPs3uua3CZfZAfn8nyfmNrIOMp0cwF46Vy95veCq4y~y86bKJa4L2yAmzHIzy9Bnbldnn0OihOULvqLeTwDFvAIBdewHI~xrtTWQkiBfR0nWZzrboJE09aOPwBXftPVVFmrdccKshW2ESmwE5mo30-CAbuWPxRh0Qy-4TFHXeHWzzJLS5MRki6E2ZWfZIBNmpp7T-W-8x6zK0DA6aVO3wBUWsDlvaQa5W02cs2dwzW7SwzzjCM6rCXnGGP7vBIiLCgTL1J5SlHayqzWoKCMucNfhz4ScQ__')] bg-cover bg-center;
-}
-
 .text-custom-green{
   @apply text-cGreen;
 }
@@ -48,6 +44,10 @@
 
 .text-custom-gray{
   @apply text-cGray;
+}
+
+.text-custom-gray-6{
+  @apply text-cGray6;
 }
 
 .text-custom-red{
@@ -86,8 +86,20 @@
   @apply font-inter font-bold;
 }
 
+.font-inter-bold-16px-cGray7{
+  @apply font-inter font-bold text-base text-cGray7;
+}
+
 .font-inter-16px-bold-black{
   @apply font-inter font-bold text-base text-center text-black;
+}
+
+.font-inter-14px-normal-cGray{
+  @apply font-inter font-normal text-[14px] text-start text-cGray;
+}
+
+.font-inter-14px-bold-cBlack7{
+  @apply font-inter font-bold text-[14px] text-start text-cBlack7;
 }
 
 .flex-row-between{
@@ -104,6 +116,10 @@
 
 .border-custom-green{
   @apply border-cGreen;
+}
+
+.border-custom-gray-2{
+  @apply border-cGray2;
 }
 
 .border-custom-gray{
@@ -132,6 +148,10 @@
 
 .btn-green-3{
   @apply bg-cGreen2 text-[8px] font-normal font-inter text-cGray2 focus:outline-none rounded-[5px] px-5 py-[5px] text-center;
+}
+
+.btn-green-4{
+  @apply bg-white text-[14px] font-plusJakartaSans font-bold text-center text-cGreen border border-cGreen py-[10px] px-8 hover:bg-cGreen hover:text-white rounded-[4px];
 }
 
 .btn-light-green{
@@ -234,6 +254,10 @@
   @apply font-inter font-extrabold text-[13px] text-cPurple leading-[17px];
 }
 
+.h3-text-3{
+  @apply font-inter font-bold text-[28px] text-cGreen leading-7;
+}
+
 .h2-text{
   @apply font-inter font-bold text-base leading-[20px] text-black opacity-60;
 }
@@ -252,6 +276,14 @@
 
 .h5-text-red{
   @apply font-inter font-medium text-xl leading-6 text-cRed;
+}
+
+.h6-text{
+  @apply font-plusJakartaSans font-bold sm:text-[32px] text-[30px] text-cBlack6 text-nowrap;
+}
+
+.h6-text-2{
+  @apply font-plusJakartaSans font-bold text-xl text-cBlack6 text-nowrap;
 }
 
 .page-indicator-1{
@@ -369,6 +401,10 @@
 
 .btn-cms{
   @apply h-6 bg-cGreen px-5 rounded-tl-[10px] rounded-tr-[5px] rounded-br-[10px] rounded-bl-[5px] font-inter font-semibold text-base text-center text-cWhite4;
+}
+
+.btn-cms-2{
+  @apply w-[54px] h-[17px] bg-cGreen rounded-tl-[10px] rounded-tr-[5px] rounded-br-[10px] rounded-bl-[5px] font-inter font-semibold text-[12px] text-center text-cWhite4;
 }
 
 .banner-table-td-1{

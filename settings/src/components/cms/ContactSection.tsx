@@ -1,5 +1,6 @@
 import React from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import '../../styles/styles.css';
 
 const ContactSection = () => {
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);

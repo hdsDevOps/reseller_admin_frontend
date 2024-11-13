@@ -151,6 +151,7 @@ export default function Header() {
                         />
                         <a
                           className="sm:text-[15px] text-[12px] pl-[5px]"
+                          onClick={() => {navigate('/profile-settings')}}
                         >Profile setting</a>
                       </div>
                     </li>

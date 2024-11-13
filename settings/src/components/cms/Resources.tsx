@@ -145,7 +145,7 @@ const Resources: React.FC = () => {
                           className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
                         >
                           <Editor
-                            apiKey="1yqlfs5x0br4syeyz3nn35sqrara2uccudx0cycccjpo6pes"
+                            apiKey={process.env.TINY_MCE_API}
                             init={{
                               height: 200,
                               menubar: false,

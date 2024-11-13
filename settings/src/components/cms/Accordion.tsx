@@ -12,7 +12,7 @@ interface AccordionProps {
 }
 
 const Accordion: React.FC<AccordionProps> = ({ items }) => {
-  const [activeSection, setActiveSection] = useState<string | null>('footer');
+  const [activeSection, setActiveSection] = useState<string | null>('banner');
 
   const toggleSection = (id: string) => {
     setActiveSection(activeSection === id ? null : id);

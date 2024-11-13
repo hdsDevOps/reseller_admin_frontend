@@ -6,6 +6,10 @@ const Settings = React.lazy(() => import("./Settings"));
 const EmailLog = React.lazy(() => import("./EmailLog"));
 const Faqs = React.lazy(() => import("./Faqs"));
 const CMS = React.lazy(() => import("./CMS"));
+const CustomerAgreement = React.lazy(() => import("./CustomerAgreement"));
+const PrivacyPolicy = React.lazy(() => import("./PrivacyPolicy"));
+const TermsConditions = React.lazy(() => import("./TermsAndConditions"));
+const ProfileSettings = React.lazy(() => import("./ProfileSettings"));
 
 
 const SettingsApp: React.FC = () => {
@@ -16,6 +20,10 @@ const SettingsApp: React.FC = () => {
         <Route path="/email-log" element={<EmailLog />} />
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/cms" element={<CMS />} />
+        <Route path="/customer-agreement" element={<CustomerAgreement />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsConditions />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
       </Routes>
     </Suspense>
   );
