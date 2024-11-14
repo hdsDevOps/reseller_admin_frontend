@@ -14,11 +14,6 @@
   @apply bg-cWhite2;
 }
 
-.bg-custom-white-5{
-  @apply bg-cWhite5;
-}
-
-
 .bg-custom-blue-6{
   @apply bg-cBlue6;
 }
@@ -61,10 +56,6 @@
 
 .text-custom-black-4{
   @apply text-cBlack4;
-}
-
-.text-custom-black-8{
-  @apply text-[#121212];
 }
 
 .rounded-10px{
@@ -271,10 +262,6 @@
   @apply font-inter font-bold text-base leading-[20px] text-black opacity-60;
 }
 
-.h4-text{
-  @apply font-inter font-medium text-2xl text-cBlue3 text-nowrap;
-}
-
 .h5-text{
   @apply font-medium text-xl leading-6 text-cBlue3 uppercase;
 }
@@ -438,8 +425,4 @@
 
 .banner-price-p{
   @apply font-inter font-normal text-[10px] leading-3 tracking-[-1.1%] text-cBlack3 align-middle my-auto;
-}
-
-.photo-p{
-  @apply font-inter font-normal text-[7px] text-center text-[#A6A6A60];
 }
