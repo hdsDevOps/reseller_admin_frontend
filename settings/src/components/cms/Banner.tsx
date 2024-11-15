@@ -40,7 +40,7 @@ const Banner: React.FC = () => {
   
   const banners = [
     {
-      image: `${process.env.BASE_URL}images/ai-collaboration.jpeg`,
+      image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/ai-collaboration.jpeg?alt=media&token=fe97a3de-fce5-4883-9673-b6adf16a9e7d',
       title: "Create, connect and collaborate with the power of AI",
       description:
         "Lorem ipsum dolor sit amet consectetur. Lacus sollicitudin tortor porta montes varius lobortirisus suscipit curabitur leo id est. Quam est volutpat hendrerit vitae dui turpis sit. Ut amet aliquam etiam montes.  diam enas a risus lacus enim. Nec turpis facilisis elit accumsan morbi. Tempus enim vitae ",
@@ -60,7 +60,7 @@ const Banner: React.FC = () => {
       status: true,
     },
     {
-      image: `${process.env.BASE_URL}images/domain-growth.png`,
+      image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/domain-growth.png?alt=media&token=5bc64ddf-5778-4232-baca-245b37f57dc4',
       title: "All you need to know how to grow up with your domain",
       description:
         "you can spare business worldwide to buy a domain , choose your own  Lorem ipsum dolor sit amet consectetur. Lacus sollicitudin tortor porta montes varius lobortirisus suscipit curabitur leo id est. Quam est volutpat hendrerit ",
@@ -82,13 +82,13 @@ const Banner: React.FC = () => {
   ];
 
   const flagList = [
-    {flag: 'images/european-flag.png', name: 'EUR', logo: '€',},
-    {flag: 'images/australia-flag.png', name: 'AUS', logo: 'A$',},
-    {flag: 'images/us-flag.png', name: 'US', logo: '$',},
-    {flag: 'images/nigeria-flag.png', name: 'NIG', logo: 'N₦',},
-    {flag: 'images/england-flag.png', name: 'ENG', logo: '£',},
-    {flag: 'images/canada-flag.png', name: 'CAN', logo: 'C$',},
-    {flag: 'images/india-flag.png', name: 'IND', logo: '₹',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/australia-flag.png?alt=media&token=5a2db638-131e-49c7-be83-d0c84db8d440', name: 'AUS', logo: 'A$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/us-flag.png?alt=media&token=c8bc35ae-de58-4a91-bf00-05a3fc9dd85a', name: 'US', logo: '$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/nigeria-flag.png?alt=media&token=80438147-6c10-4b4b-8cf9-181c7c8ad4d2', name: 'NIG', logo: 'N₦',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/england-flag.png?alt=media&token=64f093ef-b2a9-4b35-b510-a5943039ae5c', name: 'ENG', logo: '£',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAN', logo: 'C$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'IND', logo: '₹',},
   ];
 
   const bannerLeft = [
@@ -260,7 +260,7 @@ const Banner: React.FC = () => {
                                         key={n}
                                         className="banner-price-span px-2"
                                       >
-                                        <img src={`${process.env.BASE_URL}${getFlagImage(price?.name)}`} alt={price.name} className="w-auto h-auto p-1" />
+                                        <img src={`${getFlagImage(price?.name)}`} alt={price.name} className="w-auto h-auto p-1" />
                                         <p
                                           className="banner-price-p"
                                         >{price.amount}</p>
@@ -442,7 +442,7 @@ const Banner: React.FC = () => {
                                           className="h-6 rounded-[15px] bg-black bg-opacity-40 flex flex-row px-2 gap-1"
                                         >
                                           <img
-                                            src={`${process.env.BASE_URL}${getFlagImage(price.name)}`}
+                                            src={`${getFlagImage(price.name)}`}
                                             alt={price.name}
                                             className="w-5 h-5 my-auto"
                                           />

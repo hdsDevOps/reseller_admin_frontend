@@ -37,7 +37,7 @@ const ResetPassword: React.FC = () => {
           <div className="text-center">
             <div className="flex items-center justify-center">
               <img
-                src={process.env.BASE_URL + "/images/logo.jpeg"}
+                src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
                 alt="logo"
                 className="w-[108px]"
               />

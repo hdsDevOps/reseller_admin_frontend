@@ -23,7 +23,7 @@ const ForgotPassword: React.FC = () => {
         <div className="px-[60px] xsm-max:px-4 bg-custom-white5 rounded-lg shadow-sm">
           <div className={`mb-5 flex items-center justify-center`}>
             <img
-              src={process.env.BASE_URL + "/images/logo.jpeg"}
+              src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
               alt="logo"
               className={`w-[108px]`}
             />

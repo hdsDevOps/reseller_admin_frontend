@@ -57,7 +57,7 @@ const Login: React.FC = () => {
           <div className="text-center">
             <div className="flex items-center justify-center">
               <img
-                src={process.env.BASE_URL + "/images/logo.jpeg"}
+                src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
                 alt="logo"
                 className="w-[108px]"
               />
@@ -176,7 +176,7 @@ const Login: React.FC = () => {
                   <h1 className="h1-text">Terms of Services</h1>
                   <button onClick={handleClose} className="text-black">
                     <img
-                      src={process.env.BASE_URL + "/images/close.png"}
+                      src={'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6'}
                       alt="close"
                       className="w-[40px] h-[40px]"
                     />

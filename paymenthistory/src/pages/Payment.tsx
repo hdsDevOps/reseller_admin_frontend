@@ -4,8 +4,8 @@ import '../styles/styles.css';
 
 const PaymentMethod: React.FC = () => {
   const paymentMethods = [
-    { image: '/images/stripe.png' },
-    { image: '/images/paystack.png' },
+    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/stripe.png?alt=media&token=23bd6672-665c-4dfb-9d75-155abd49dc58' },
+    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/paystack.png?alt=media&token=8faf3870-4256-4810-9844-5fd3c147d7a3' },
   ];
 
   return (
@@ -30,7 +30,7 @@ const PaymentMethod: React.FC = () => {
                   </select>
                 </div>
 
-                <img src={`${process.env.BASE_URL}${item.image}`} alt='image' className="w-[150px] h-[71px] object-cover mx-auto mt-4" />
+                <img src={item.image} alt='image' className="w-[150px] h-[71px] object-cover mx-auto mt-4" />
               </div>
             )
           })

@@ -211,7 +211,7 @@ const BillingHistory: React.FC = () => {
                 <td className="td-css-3 text-custom-black-5">{detail.domain}</td>
                 <td className="td-css-full-opactiy text-custom-black-5 min-w-[150px]">
                   <span className="flex items-center justify-center">
-                    <img src={process.env.BASE_URL+'/images/visa.png'} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
+                    <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
                     <span className="font-inter-bold-xs-60percent-black">
                       {detail.paymentMethod}
                     </span>

@@ -35,6 +35,7 @@ const Promotion: React.FC = () => {
       startDate: "17-07-2024",
       endDate: "21-07-2024",
       status: true,
+      image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/coupon-2x1.png?alt=media&token=c83ac2c6-827b-4d17-b2fc-4e9776fe6eaf',
     },
     {
       template: "50%",
@@ -42,6 +43,7 @@ const Promotion: React.FC = () => {
       startDate: "19-07-2024",
       endDate: "25-07-2024",
       status: false,
+      image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/coupon-50%25.png?alt=media&token=84ea9b03-3ef2-4f17-8f04-eb7f8c70cb34',
     },
   ];
   
@@ -79,7 +81,7 @@ const Promotion: React.FC = () => {
                     className="my-auto"
                   >
                     <img
-                      src={`${process.env.BASE_URL}images/coupon-${promotions[0].template}.png`}
+                      src={promo.image}
                       alt="Coupon template"
                       className="w-full border border-dashed border-black rounded-md"
                     />

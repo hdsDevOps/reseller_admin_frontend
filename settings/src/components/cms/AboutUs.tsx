@@ -7,11 +7,11 @@ const AboutUs: React.FC = () => {
   const [isEditModalOpen,setIsEditModalOpen]=useState(false);
   const [heading, setHeading]=useState({
     heading: 'Everything you need to know About us',
-    image: 'images/bg-image.jpeg'
+    image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/bg-image.jpeg?alt=media&token=4b755044-4c3d-471d-b717-70cd1a24d97a'
   })
   const [blocks,setBlock]=useState([
-    { block: 'Block 1', contentTitle: 'Make decisions faster, face to face.', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', image: 'images/meetimage1.png'},
-    { block: 'Block 2', contentTitle: 'Secure your data and devices.', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', image: 'images/about-us.jpeg'},
+    { block: 'Block 1', contentTitle: 'Make decisions faster, face to face.', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/meetimage1.png?alt=media&token=c16dfe83-9303-4b2b-a6d0-fe0961b1420b'},
+    { block: 'Block 2', contentTitle: 'Secure your data and devices.', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/about-us.jpeg?alt=media&token=29188efe-f571-46be-b0a6-542eab7b3f48'},
   ])
 
   return (
@@ -32,7 +32,7 @@ const AboutUs: React.FC = () => {
             </h3>
           </div>
           <img
-            src={process.env.BASE_URL+heading.image}
+            src={heading.image}
             alt={heading.heading}
             className="w-full h-16 object-cover"
           />
@@ -43,7 +43,7 @@ const AboutUs: React.FC = () => {
               return(
                 <ContentBlock
                   key={index}
-                  imageSrc={process.env.BASE_URL+block.image} 
+                  imageSrc={block.image} 
                   title={block.contentTitle} 
                   description={block.description} 
                   block={block.block}

@@ -9,7 +9,7 @@ const initialProfile = {
   fname: "Lemmy",
   lname: "Ugochukwu",
   userType: "Admin",
-  image: "bg-image.jpeg",
+  image: "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/bg-image.jpeg?alt=media&token=4b755044-4c3d-471d-b717-70cd1a24d97a",
   email: "philipbassey@mail.com",
   phone: "1234567890",
   address: "Lorem ipsum dolor sit",
@@ -61,7 +61,7 @@ function ProfileSettings() {
             className='flex flex-col w-[93px]'
           >
             <img
-              src={process.env.BASE_URL+"images/"+profile.image}
+              src={profile.image}
               alt='Profile'
               className='border-[3px] border-white w-full h-[93px] rounded-full bg-custom-green'
             />
@@ -190,7 +190,7 @@ function ProfileSettings() {
                 className='flex flex-col w-[93px]'
               >
                 <img
-                  src={process.env.BASE_URL+"images/"+profile.image}
+                  src={profile.image}
                   alt='Profile'
                   className='border-[3px] border-white w-full h-[93px] rounded-full bg-custom-green'
                 />

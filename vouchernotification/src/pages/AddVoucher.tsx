@@ -28,7 +28,7 @@ const AddVoucher: React.FC = () =>  {
     {label: 'End Date', placholder: 'Select End Date', type: 'date', name: 'endDate'},
   ];
   const currencyList = [
-    { icon: 'IND.png', name: 'IND'},
+    { icon: 'India-flag.png', name: 'IND'},
   ];
   return (
     <div>

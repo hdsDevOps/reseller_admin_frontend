@@ -294,13 +294,13 @@ const UserList = () => {
                               onChange={(e) => {
                                 setModalData({
                                   ...modalData,
-                                  email: `${e.target.value}@domain.com`
+                                  email: `${e.target.value}@hordanso.com`
                                 })
                               }}
                             />
                             <p
                               className="domain-name"
-                            >{modalType == 'add' ? '@domain.com' : `@${separateEmail(modalData[item.name]).domain}`}</p>
+                            >{modalType == 'add' ? '@hordanso.com' : `@${separateEmail(modalData[item.name]).domain}`}</p>
                           </div>
                         )
                       }

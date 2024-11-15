@@ -12,13 +12,13 @@ interface AmountBoxProps {
 function AddPlanPriceSetup() {
   const navigate = useNavigate();
   const flagList = [
-    {flag: 'images/european-flag.png', name: 'EUR', logo: '€',},
-    {flag: 'images/australia-flag.png', name: 'AUS', logo: 'A$',},
-    {flag: 'images/us-flag.png', name: 'US', logo: '$',},
-    {flag: 'images/nigeria-flag.png', name: 'NIG', logo: 'N₦',},
-    {flag: 'images/england-flag.png', name: 'ENG', logo: '£',},
-    {flag: 'images/canada-flag.png', name: 'CAN', logo: 'C$',},
-    {flag: 'images/india-flag.png', name: 'IND', logo: '₹',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/australia-flag.png?alt=media&token=5a2db638-131e-49c7-be83-d0c84db8d440', name: 'AUS', logo: 'A$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/us-flag.png?alt=media&token=c8bc35ae-de58-4a91-bf00-05a3fc9dd85a', name: 'US', logo: '$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/nigeria-flag.png?alt=media&token=80438147-6c10-4b4b-8cf9-181c7c8ad4d2', name: 'NIG', logo: 'N₦',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/england-flag.png?alt=media&token=64f093ef-b2a9-4b35-b510-a5943039ae5c', name: 'ENG', logo: '£',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAN', logo: 'C$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'IND', logo: '₹',},
   ];
 
   const initialSubscription = {
@@ -65,13 +65,14 @@ function AddPlanPriceSetup() {
   };
   const [subscription, setSubscription] = useState(initialSubscription);
   const [amountCount, setAMountCount] = useState(1);
+  const [dragActive, setDragActive] = useState(false);
   
   const productivityList = [
-    {logo: 'images/gmail.png', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Gmail</b> Business email</p>, type: 'checkbox'},
+    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/gmail.png?alt=media&token=78d49456-c44c-4ff4-bb46-163e07e0a461', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Gmail</b> Business email</p>, type: 'checkbox'},
     {logo: '', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Custom email for your business</p>, type: 'checkbox'},
     {logo: '', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Phishing and spam protection that blocks more than 99.9% of attacks</p>, type: 'checkbox'},
     {logo: '', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Ad-free email experience</p>, type: 'checkbox'},
-    {logo: 'images/google-meet.png', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Meet</b> Video and voice conferencing</p>, type: 'text'},
+    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/google-meet.png?alt=media&token=37fae9c9-b466-4311-a03b-6019c3e4e29a', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Meet</b> Video and voice conferencing</p>, type: 'text'},
     {logo: '', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Meeting length (maximum)</p>, type: 'text'},
     {logo: '', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'>US or international dial-in phone numbers</p>, type: 'checkbox'},
     {logo: '', name: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Digital whiteboarding</p>, type: 'checkbox'},
@@ -178,7 +179,7 @@ function AddPlanPriceSetup() {
                     .filter(item => item !== undefined)
                     .map((item, m) => {
                       if(item != undefined){
-                        return process.env.BASE_URL+item;
+                        return item;
                       }
                   })
                 }`}
@@ -232,19 +233,19 @@ function AddPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Base Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
                         type='number'
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
                         type='number'
                       />
                     </td>
@@ -253,19 +254,19 @@ function AddPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Final Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
                         type='number'
                       />
                     </td>
@@ -304,7 +305,7 @@ function AddPlanPriceSetup() {
                     .filter(item => item !== undefined)
                     .map((item, m) => {
                       if(item != undefined){
-                        return process.env.BASE_URL+item;
+                        return item;
                       }
                   })
                 }`}
@@ -405,6 +406,28 @@ function AddPlanPriceSetup() {
     }
   }
 
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(false);
+
+    // if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+    //   setFile(event.dataTransfer.files[0]);
+    // }
+    console.log(event.dataTransfer.files[0]);
+  };
+
+  // Handle drag events
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragActive(false);
+  };
+
   return (
     <div
       className='grid grid-cols-1'
@@ -465,6 +488,9 @@ function AddPlanPriceSetup() {
           <label
             htmlFor="file-upload"
             className="flex flex-col items-center justify-center w-[190px] h-[69px] mt-auto border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
           >
             <div className="flex flex-col items-center justify-center">
               <Upload
@@ -567,7 +593,7 @@ function AddPlanPriceSetup() {
                   return(
                     <tr key={index} className='w-full'>
                       <td className='w-[100px] min-w-[100px] text-center items-center py-5'>{item.logo != '' ? 
-                        <img className={`mx-auto ${index == 0 ? 'min-w-7 max-w-7' : index == 4 ? 'min-w-14 max-w-14' : ''}`} src={`${process.env.BASE_URL}${item.logo}`} alt='logo' />
+                        <img className={`mx-auto ${index == 0 ? 'min-w-7 max-w-7' : index == 4 ? 'min-w-14 max-w-14' : ''}`} src={item.logo} alt='logo' />
                       : ''}</td>
                       <td className='w-[340px] min-w-[300px] text-left items-center py-5'>
                         {item.name}

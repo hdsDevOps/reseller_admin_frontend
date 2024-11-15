@@ -17,7 +17,7 @@ const SEO = () => {
     contentTitle: "Landing Page",
     contentDescription: "",
     altImageText: "",
-    image: "images/flower-image.png",
+    image: "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/flower-image.png?alt=media&token=32a384bf-e79f-477f-9716-5110e40389d1",
     keywords: "",
     urlLink: "",
   });
@@ -71,7 +71,7 @@ const SEO = () => {
                         {
                           item.label == "Image" ?
                           <img
-                            src={process.env.BASE_URL+seoData[item.name]}
+                            src={seoData[item.name]}
                             alt={seoData.altImageText}
                             className="w-[50%] min-w-24 max-w-40"
                           />
