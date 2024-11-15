@@ -6,6 +6,7 @@ import { RiExchangeDollarFill } from "react-icons/ri";
 import { PieChart, Pie, Cell, Label } from "recharts";
 import {format} from 'date-fns';
 import { Chart } from "react-google-charts";
+import { ChevronLeft, ChevronRight, Dot } from "lucide-react";
 
 const Dashboard: React.FC = () => {
   //const { userAuthStatus = "" } = useAppSelector((state) => state.auth);
@@ -22,25 +23,29 @@ const Dashboard: React.FC = () => {
   ];
   const COLORS = ['#12A833', '#EEEEEE',];
 
-  const dataOld = [
-    ["Name", "Popularity"],
-    ["Cesar", 250],
-    ["Rachel", 4200],
-    ["Patrick", 2900],
-    ["Eric", 8200],
+  const data = [
+    ["", ""],
+    ["Jan", 16],
+    ["Feb", 8],
+    ["Mar", 18],
+    ["Apr", 13],
+    ["May", 10],
+    ["Jun", 20],
+    ["Jul", 13],
+    ["Aug", 14],
+    ["Sep", 20],
+    ["Oct", 17],
+    ["Nov", 13],
+    ["Dec", 18],
   ];
-  
-  const dataNew = [
-    ["Name", "Popularity"],
-    ["Cesar", 370],
-    ["Rachel", 600],
-    ["Patrick", 700],
-    ["Eric", 1500],
-  ];
-  
-  const diffdata = {
-    old: dataOld,
-    new: dataNew,
+  const options = {
+    // chart: {
+    //   title: "Company Performance",
+    //   subtitle: "Sales and Expenses over the Years",
+    // },
+    colors: ["#12A833", "#FFC700"],
+    bar: {groupWidth: "15%"},
+    chartArea: { width: '50%' },
   };
 
   return (
@@ -154,12 +159,43 @@ const Dashboard: React.FC = () => {
           <p
             className="p-4 font-inter font-bold text-base tracking-[1px] text-black opacity-50 border-b border-[#D0D3D8]"
           >Growth in the last 12 months</p>
-          <Chart
-            chartType="ColumnChart"
-            width="100%"
-            height="400px"
-            diffdata={diffdata}
-          />
+
+          <div
+            className="p-5 flex flex-row justify-between"
+          >
+            <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">Spending Statistics</p>
+            <div className="flex flex-row justify-between w-[110px]">
+              <button><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
+              <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">2024</p>
+              <button><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
+            </div>
+          </div>
+          <div
+            className="px-5 pb-5"
+          >
+            <Chart
+              width="100%"
+              height="400px"
+              chartType="Bar"
+              data={data}
+              options={options}
+            />
+          </div>
+
+          <div className="flex min-[1190px]:flex-row max-[1190px]:flex-col max-lg:flex-row max-[860px]:flex-col items-center justify-between px-5 pt-2 pb-5">
+            <div className="flex flex-row gap-1">
+              <div className="w-[12px] h-[12px] bg-[#FFC700] rounded-full my-auto"></div>
+              <p className="font-inter font-normal text-base text-[#727A8B]">New customer</p>
+            </div>
+            <div className="flex flex-row gap-1">
+              <div className="w-[12px] h-[12px] bg-[#12A833] rounded-full my-auto"></div>
+              <p className="font-inter font-normal text-base text-[#727A8B]">Old customer</p>
+            </div>
+            <div className="flex flex-row gap-1">
+              <div className="w-[12px] h-[12px] bg-[#905F00] rounded-full my-auto"></div>
+              <p className="font-inter font-normal text-base text-[#727A8B]">Monthly Recurring Revenue</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

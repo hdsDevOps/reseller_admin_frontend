@@ -3,10 +3,20 @@ import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
 
 const PaymentMethod: React.FC = () => {
-  const paymentMethods = [
-    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/stripe.png?alt=media&token=23bd6672-665c-4dfb-9d75-155abd49dc58' },
-    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/paystack.png?alt=media&token=8faf3870-4256-4810-9844-5fd3c147d7a3' },
-  ];
+  const [paymentMethods, setPaymentMethods] = useState([
+    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/stripe.png?alt=media&token=23bd6672-665c-4dfb-9d75-155abd49dc58', status: 'Inactive' },
+    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/paystack.png?alt=media&token=8faf3870-4256-4810-9844-5fd3c147d7a3', status: 'Active' },
+  ]);
+  console.log(paymentMethods);
+  
+
+  const updateStatus = (value, index) => {
+    const data = paymentMethods;
+    data[index].status = value;
+    // console.log(value);
+    // console.log(data);
+    setPaymentMethods(data);
+  };
 
   return (
     <div className="grid">
@@ -23,10 +33,12 @@ const PaymentMethod: React.FC = () => {
                 <div
                   className="select-div"
                 >
-                  <select className="payment-select">
-                    <option selected hidden>Action</option>
-                    <option className="payment-option">Active</option>
-                    <option className="payment-option">Inactive</option>
+                  <select className={`${item.status == 'Inactive' ? 'payment-select-2' : 'payment-select'}`} onChange={(e) => {
+                    updateStatus(e.target.value, index)
+                  }}>
+                    <option selected={item.status == 'Active' ? false : item.status == 'Inactive' ? false : true} hidden>Action</option>
+                    <option selected={item.status == 'Active' ? true:  false} className="payment-option" value='Active'>Active</option>
+                    <option selected={item.status == 'Inactive' ? true:  false} className="payment-option" value='Inactive'>Inactive</option>
                   </select>
                 </div>
 

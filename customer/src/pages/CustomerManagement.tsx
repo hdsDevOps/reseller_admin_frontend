@@ -219,7 +219,7 @@ const CustomerManagement: React.FC = () => {
               <h3 className="text-xl font-medium">Filter</h3>
               <button
                 type="button"
-                className="btn-close mt-[-4px]"
+                className="mt-[1px]"
                 onClick={() => {
                   setFilterShow(false);
                   setFilters({
@@ -234,7 +234,7 @@ const CustomerManagement: React.FC = () => {
                   });
                 }}
               >
-                +
+                <img src="https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6" alt="close" className="w-[25px] h-[25px]" />
               </button>
             </div>
 

@@ -314,6 +314,10 @@
   @apply text-cGreen font-inter font-normal text-base focus:outline-none w-[97px] h-[38px] ;
 }
 
+.payment-select-2{
+  @apply text-cRed font-inter font-normal text-base focus:outline-none w-[97px] h-[38px] ;
+}
+
 .payment-option{
   @apply text-black;
 }
