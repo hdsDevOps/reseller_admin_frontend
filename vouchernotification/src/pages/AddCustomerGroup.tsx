@@ -31,7 +31,7 @@ const AddCustomerGroup: React.FC = () =>  {
         </a>
         <h3
           className='h3-text ml-[10px]'
-        >Customer Information</h3>
+        >Add Customer Group</h3>
       </div>
 
       <form>
@@ -77,6 +77,26 @@ const AddCustomerGroup: React.FC = () =>  {
                       name={item.name}
                       required
                       className='search-input-text px-4'
+                      // onChange={updateCustomer}
+                      // value={customer[item.name]}
+                    />
+                  </div>
+                )
+              }
+              else if(item.type == 'number'){
+                return(
+                  <div
+                    className='flex flex-col px-2 mb-2'
+                  >
+                    <label
+                      className='search-input-label'
+                    >{item.label}</label>
+                    <input
+                      type='number'
+                      placeholder={item.placholder}
+                      name={item.name}
+                      required
+                      className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                       // onChange={updateCustomer}
                       // value={customer[item.name]}
                     />

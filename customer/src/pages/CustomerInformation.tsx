@@ -10,20 +10,13 @@ const CustomerInformation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [customerId, setCustomerId] = useState(location.state.customerId);
-  
-  const [ customerData, setCustomerData ] = useState([]);
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8080/customer/${customerId}`)
-      .then(res => setCustomerData(res.data))
-      .catch(err => console.log(err))
-  }, [customerId]);
+  const [customer, setCustomer] = useState(location.state);
+  console.log(customer);
   
   const bottomData = [
-    { icon: <Mail className='mx-auto' />, title: `Email : ${customerData?.email}` },
-    { icon: <Phone className='mx-auto' />, title: `Phone : ${customerData?.phone}` },
-    { icon: <UserRound className='mx-auto' />, title: customerData?.domain },
+    { icon: <Mail className='mx-auto' />, title: `Email : ${customer?.email}` },
+    { icon: <Phone className='mx-auto' />, title: `Phone : ${customer?.phone_no}` },
+    { icon: <UserRound className='mx-auto' />, title: `${customer?.domain ? customer?.domain : 'N/A'}` },
   ]
 
   const [resetPasswordShow, setResetPasswordShow] = useState(false);
@@ -88,22 +81,22 @@ const CustomerInformation: React.FC = () => {
 
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Customer ID : #{customerId}</p>
+          >Customer ID : #{customer?.record_id}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Business Name : {customerData?.business_name}</p>
+          >Business Name : {customer?.business_name}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Address : {customerData?.address}</p>
+          >Address : {customer?.street_name}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Country : {customerData?.country}</p>
+          >Country : {customer?.region}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Region : {customerData?.region}</p>
+          >Region : {customer?.state}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Domain : {customerData?.domain}</p>
+          >Domain : {customer?.domain ? customer?.domain : 'N/A'}</p>
         </div>
         <div
           className='flex flex-col justify-between text-right max-[631px]:items-center'
@@ -214,6 +207,7 @@ const CustomerInformation: React.FC = () => {
             >
               <button
                 className='w-[181px] h-[46px] btn-green-2'
+                type='button'
               >Save</button>
             </div>
           </form>

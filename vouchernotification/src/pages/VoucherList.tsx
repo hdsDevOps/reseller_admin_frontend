@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaCaretDown, FaTrash } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
@@ -7,7 +7,8 @@ import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
-import { ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
+import Flag from 'react-world-flags'; // Flag component
 
 interface VoucherListData {
   voucherCode: string;
@@ -25,6 +26,7 @@ const VoucherList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 3;
   const modalRef = useRef();
+  const flagRef = useRef(null);
 
   const columns = [
     {
@@ -164,6 +166,44 @@ const VoucherList: React.FC = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sampleData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(sampleData.length / itemsPerPage);
+  
+  const [isOpen, setIsOpen] = useState(false);
+
+  const currencyOptions = [
+    { code: "US", label: "United States", value: '$' },
+    { code: "EU", label: "Europe", value: '€' },
+    { code: "AU", label: "Australia", value: 'A$' },
+    { code: "NG", label: "Nigeria", value: 'N₦' },
+    { code: "GB", label: "United Kingdom", value: '£' },
+    { code: "CA", label: "Canada", value: 'C$' },
+    { code: "IN", label: "India", value: '₹' },
+  ];
+
+  const countryCodes = currencyOptions.map((item) => item?.value);
+  
+  const [selectedOption, setSelectedOption] = useState<{
+    code: string;
+    label: string;
+    value: string;
+  } | { code: "US", label: "United States", value: '$' }>({ code: "US", label: "United States", value: '$' });
+
+  const handleOptionClick = (option: { code: string; flag: string; label: string }) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (flagRef.current && !flagRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-1">
@@ -199,21 +239,38 @@ const VoucherList: React.FC = () => {
 
       <div className="grid grid-cols-1 mt-14 sm:mb-[51px] mb-[31px]">
         <div className="lg:col-start-2 grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 min-sm:w-[300px] max-sm:mx-auto">
-          <div className="px-4 mb-5 sm:mb-0">
-            <select className="select-input">
-              <option selected hidden value=''>Select Currency</option>
-              <option>INR</option>
-              <option>USD</option>
-              <option>GBP</option>
-            </select>
-          </div>
-          <div className="px-4 mb-5 sm:mb-0">
-            <input
-              type="text"
-              className="serach-input-2"
-              name="groupName"
-              placeholder="Group name"
-            />
+          <div
+            className='flex flex-col relative px-4 mb-5 sm:mb-0'
+          >
+            <div
+              className="serach-input-2 flex flex-row"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <div className="relative w-[40px] h-full flex mx-auto items-center justify-between border-0 cursor-pointer">
+                <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
+              </div>
+              <p
+                className="w-full ml-2"
+              >{selectedOption?.label} - {selectedOption?.value}</p>
+              {
+                isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
+              }
+              {/* Dropdown Options */}
+              {isOpen && (
+                <div className="absolute mt-[32px] z-10 w-[88%] max-[1250px]:w-[82%] max-lg:w-[88%] -ml-2 bg-white border border-gray-300 rounded-md shadow-lg" ref={flagRef}>
+                  {currencyOptions.map((option) => (
+                    <div
+                      key={option.code}
+                      className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer border-b-[1px]"
+                      onClick={() => handleOptionClick(option)}
+                    >
+                      <Flag code={option?.code} style={{width: '30px'}} />
+                      <p className="ml-2">{option?.label} - {option?.value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="px-4 mb-5 sm:mb-0">
             <input

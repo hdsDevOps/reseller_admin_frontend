@@ -31,6 +31,7 @@ import { useAppDispatch } from "store/hooks";
 import { setTokenDetails } from "store/authSlice";
 import { RiCashFill } from "react-icons/ri";
 import { RiLogoutCircleLine } from "react-icons/ri";
+import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk } from 'store/user.thunk';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -172,8 +173,25 @@ const Sidebar = () => {
   ]
 
   const handleLogout = async () => {
-    dispatch(setTokenDetails(""));
-    navigate("/login");
+    // dispatch(setTokenDetails(""));
+    // navigate("/login");
+    try {
+      const result = await dispatch(
+        removeUserAuthTokenFromLSThunk()
+      )
+      navigate('/login');
+    } catch (error) {
+      console.log("Error on logging out")
+    } finally {
+      try {
+        const getToken = await dispatch(
+          getUserAuthTokenFromLSThunk()
+        ).unwrap()
+        navigate('/login')
+      } catch (error) {
+        console.log("Error on token")
+      }
+    }
   };  
 
   useEffect(() => {

@@ -6,11 +6,13 @@ import React, {
   KeyboardEvent,
 } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "store/hooks";
-// import { makeUserLoginThunk } from "store/user.thunk";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSThunk, resendUserOtpThunk } from "store/user.thunk";
 import { setTokenDetails } from "store/authSlice";
 import { MoveLeft } from 'lucide-react';
-import '../styles/styles.css'
+import '../styles/styles.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const OTP: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +20,7 @@ const OTP: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const mode = queryParams.get("mode");
+  const adminId = useAppSelector((state: any) => state.auth.userId);
 
   const otp1Ref = useRef<HTMLInputElement>(null);
   const otp2Ref = useRef<HTMLInputElement>(null);
@@ -36,6 +39,10 @@ const OTP: React.FC = () => {
   const [ time, setTime ] = useState(0);
   const [ seconds, setSeconds ] = useState(0);
   const [ minutes, setMinutes ] = useState(0);
+
+  useEffect(() => {
+    toast.success("Otp has been sent to your email!");
+  }, [])
   
 
   useEffect(() => {
@@ -144,7 +151,7 @@ const OTP: React.FC = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
 
@@ -153,16 +160,51 @@ const OTP: React.FC = () => {
 
       if (isValidOtp) {
         if (mode === "signin") {
-          dispatch(setTokenDetails("usy6767jshs688ytmbqa88654sgsgs5sgs6sgs6q"));
-          navigate("/dashboard");
+          // dispatch(setTokenDetails("usy6767jshs688ytmbqa88654sgsgs5sgs6sgs6q"));
+          // navigate("/dashboard");
+          try {
+            const result = await dispatch(
+              verifyUserOtpThunk({
+                admin_id: adminId,
+                otp: otp
+              })
+            ).unwrap()
+            if(result.message == 'Login successful'){
+              try {
+                const setToken = await dispatch(
+                  setUserAuthTokenToLSThunk(result?.token)
+                ).unwrap()
+                navigate('/dashboard', {state: {from: 'otp'}})
+              } catch (error) {
+                console.log("Error on token")
+              } finally {
+                try {
+                  const getToken = await dispatch(
+                    getUserAuthTokenFromLSThunk()
+                  ).unwrap()
+                  navigate('/dashboard', {state: {from: 'otp'}})
+                } catch (error) {
+                  console.log("Error on token")
+                }
+              }
+            }
+            else{
+              navigate('/login')
+            }
+          } catch (error) {
+            // console.log("Error on otp");
+            toast.error("Enter valid otp!");
+          }
         } else {
           navigate("/resetpassword");
         }
       } else {
-        alert("Invalid OTP. Please try again.");
+        // alert("Invalid OTP. Please try again.");
+        toast.error("Enter valid otp!");
       }
     } else {
-      alert("Please enter all 6 digits.");
+      // alert("Please enter all 6 digits.");
+      toast.warning("Please enter all 6 digits.");
     }
   };
 
@@ -170,8 +212,24 @@ const OTP: React.FC = () => {
     navigate("/forgotpassword");
   };
 
+  const resendOtp = async() => {
+    setTime(120);
+    try {
+      const otpResend = await dispatch(
+        resendUserOtpThunk({
+          admin_id: adminId
+        })
+      ).unwrap()
+      toast.success("Otp has been resent to your email!");
+    } catch (error) {
+      console.log("Error sending otp")
+      toast.error("Otp resending is failed!");
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <ToastContainer />
       <div className="w-full max-w-[570px]">
         <div className="p-8 xsm-max:px-4 bg-[#F9FAFB] rounded-lg shadow-sm">
           <div
@@ -303,7 +361,7 @@ const OTP: React.FC = () => {
                     time>0 ? 'text-[#858585]' : 'text-red-600 underline'
                   } ml-4`}
                   onClick={() => {
-                    setTime(120);
+                    resendOtp()
                   }}
                   disabled={
                     time>0 ? true : false

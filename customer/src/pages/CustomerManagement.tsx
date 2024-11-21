@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { getCustomerListThunk } from 'store/user.thunk';
 
 const options: Intl.DateTimeFormatOptions = {
   day: "numeric",
@@ -12,6 +14,7 @@ const options: Intl.DateTimeFormatOptions = {
 
 const CustomerManagement: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState({
     domain: "",
@@ -24,7 +27,9 @@ const CustomerManagement: React.FC = () => {
     name: "",
   });
   const [domainList, setDomainList] = useState([]);
-  const [data, setData] = useState([]);
+  const [customerList, setCustomerList] = useState([]);
+  console.log(customerList);
+  
   const [showList, setShowList] = useState(null);
   const listRef = useRef(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -33,19 +38,26 @@ const CustomerManagement: React.FC = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [commonModal, setCommonModal] = useState(false);
 
-  const getData = () => {
-    axios
-      .get(`http://localhost:8080/customers`)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch(err => {
-        setData([]);
-      })
+  const getCustomerList = async() => {
+    try {
+      const result = await dispatch(
+        getCustomerListThunk()
+      ).unwrap()
+      if(result.data){
+        console.log(result.data);
+        setCustomerList(result.data);
+      }
+      else{
+        setCustomerList([]);
+      }
+    } catch (error) {
+      console.log("Error getting customer list", error);
+      setCustomerList([]);
+    }
   }
 
   useEffect(() => {
-    getData();
+    getCustomerList();
   }, [])
 
   const handleFilterChange = (e: React.ChangeEvent<any>) => {
@@ -57,18 +69,18 @@ const CustomerManagement: React.FC = () => {
 
   const handleAuthorizeChange = (item) => {
     axios
-      .patch(`http://localhost:8080/edit-customer/${item.customerId}`, { makeAuthorization: !item.makeAuthorization})
+      .patch(`http://localhost:8080/edit-customer/${item?.customerId}`, { makeAuthorization: !item?.makeAuthorization})
       .then(res => {
-        getData();
+        getCustomerList();
       })
       .catch(err => console.log(err))
   };
 
   const handleStatusChange = (item) => {
     axios
-      .patch(`http://localhost:8080/edit-customer/${item.customerId}`, { status: !item.status})
+      .patch(`http://localhost:8080/edit-customer/${item?.customerId}`, { status: !item?.status})
       .then(res => {
-        getData();
+        getCustomerList();
       })
       .catch(err => console.log(err))
   };
@@ -416,7 +428,7 @@ const CustomerManagement: React.FC = () => {
               className="h-fit"
             >
               {
-                data && data.map((item, index) => {
+                customerList && customerList.map((item, index) => {
                   return (
                     <tr key={index} className="text-center">
                       <td>
@@ -426,19 +438,19 @@ const CustomerManagement: React.FC = () => {
                       </td>
                       <td
                         className="td-css"
-                      >#{item.customerId}</td>
+                      >#{item?.record_id}</td>
                       <td
                         className="td-css text-[#1F86E5] underline"
                       >
                         <a
-                          onClick={() => navigate('/customer-information', { state: {customerId: item.customerId} })}
+                          onClick={() => navigate('/customer-information', { state: item })}
                           className="cursor-pointer"
-                        >{item.name}</a>
+                        >{item?.first_name} {item?.last_name}</a>
                       </td>
                       <td
                         className="td-css w-[180px]"
                       >
-                        {item.product?.map((e, i) => {
+                        {/* {item?.product?.map((e, i) => {
                           if (i > 0) {
                             return (
                               <p key={i}>
@@ -448,33 +460,48 @@ const CustomerManagement: React.FC = () => {
                           } else {
                             return <p key={i}>{e}</p>;
                           }
-                        })}
+                        })} */}
+                        N/A
                       </td>
                       <td
                         className="td-css"
-                      >{item.domain}</td>
-                      <td
-                        className="td-css"
-                      >{item.subscriptionPlan}</td>
-                      <td
-                        className="td-css"
-                      >{item.licenseUsage}</td>
-                      <td
-                        className="td-css"
                       >
-                        {new Intl.DateTimeFormat("en-GB", options).format(
-                          new Date(item.createDate)
-                        )}
+                        {/* {item?.domain} */}
+                        N/A
                       </td>
                       <td
                         className="td-css"
-                      >{item.paymentCycle}</td>
+                      >
+                        {/* {item?.subscriptionPlan} */}
+                        N/A
+                      </td>
                       <td
                         className="td-css"
                       >
-                        {new Intl.DateTimeFormat("en-GB", options).format(
-                          new Date(item.renewedDate)
-                        )}
+                        {/* {item?.licenseUsage} */}
+                        N/A
+                      </td>
+                      <td
+                        className="td-css"
+                      >
+                        {/* {new Intl.DateTimeFormat("en-GB", options).format(
+                          new Date(item?.createDate)
+                        )} */}
+                        {item?.createdAt?._seconds}
+                      </td>
+                      <td
+                        className="td-css"
+                      >
+                        {/* {item?.paymentCycle} */}
+                        N/A
+                      </td>
+                      <td
+                        className="td-css"
+                      >
+                        {/* {new Intl.DateTimeFormat("en-GB", options).format(
+                          new Date(item?.renewedDate)
+                        )} */}
+                        {item?.createdAt?._nanoseconds}
                       </td>
                       <td>
                         <div className="mt-[7.5px] transition-transform duration-1000 ease-in-out flex justify-center">
@@ -483,8 +510,8 @@ const CustomerManagement: React.FC = () => {
                             <input
                               type="checkbox"
                               className="sr-only peer"
-                              checked={item.makeAuthorization}
-                              onClick={() => handleAuthorizeChange(item)}
+                              // checked={item?.makeAuthorization}
+                              // onClick={() => handleAuthorizeChange(item)}
                             />
                             <div className="w-[30px] h-[15.5px] flex items-center bg-[#E02424] rounded-full peer-checked:text-[#12A833] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[12px] after:absolute after:left-[3px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#12A833]"></div>
                           </label>
@@ -495,12 +522,12 @@ const CustomerManagement: React.FC = () => {
                       >
                         <button
                           className={`w-20 h-[22px] ${
-                          item.status ? 'active-status' : 'inactive-status'
+                          item?.isVerified ? 'active-status' : 'inactive-status'
                           }`}
                           onClick={() => handleStatusChange(item)}
                         >
                           {
-                            item.status ? 'Active' : 'Inactive'
+                            item?.isVerified ? 'Active' : 'Inactive'
                           }
                         </button>
                       </td>
@@ -511,12 +538,12 @@ const CustomerManagement: React.FC = () => {
                         >
                           <Ellipsis
                             className="w-[19px] m-auto"
-                            onClick={() => {toggleList(item?.customerId)}}
+                            onClick={() => {toggleList(item?.record_id)}}
                           />
                         </button>
 
                         {
-                          showList === item?.customerId && (
+                          showList === item?.record_id && (
                             <div
                               className={`absolute right-0 rounded-3xl bg-white border-2 w-[186px]`}
                               ref={listRef}
@@ -530,7 +557,7 @@ const CustomerManagement: React.FC = () => {
                                   <a
                                     className="cursor-pointer"
                                     onClick={() => {
-                                      navigate('/edit-customer', { state: {customerId: item?.customerId }});
+                                      navigate('/edit-customer', { state: item});
                                     }}
                                   >Edit Customer</a>
                                 </li>

@@ -7,9 +7,13 @@ import { PieChart, Pie, Cell, Label } from "recharts";
 import {format} from 'date-fns';
 import { Chart } from "react-google-charts";
 import { ChevronLeft, ChevronRight, Dot } from "lucide-react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useLocation } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   //const { userAuthStatus = "" } = useAppSelector((state) => state.auth);
+  const location = useLocation();
   const revenue = [
     {name: 'Revenue Last Month', amount: '₹0.05k',},
     {name: 'monthly Recurring Income', amount: '₹0.07k',},
@@ -48,10 +52,17 @@ const Dashboard: React.FC = () => {
     chartArea: { width: '50%' },
   };
 
+  useEffect(() => {
+    if(location.state?.from == "otp"){
+      toast.success("Login successful!");
+    }
+  }, [location.state])
+
   return (
     <div
       className='flex flex-col px-2 max-[400px]:px-0'
     >
+      <ToastContainer />
       <div
         className='flex flex-row justify-between'
       >

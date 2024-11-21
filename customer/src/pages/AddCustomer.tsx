@@ -1,22 +1,33 @@
-import { ChevronRight, MoveLeft } from 'lucide-react';
-import React, { useState } from 'react'
+import { ChevronDown, ChevronRight, ChevronUp, MoveLeft } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import '../styles/styles.css'
+import Flag from 'react-world-flags'; // Flag component
 
 const AddCustomer: React.FC = () => {
   const navigate = useNavigate();
   const [customer, setCustomer] = useState({
-    fname: '',
-    lname: '',
-    street: '',
-    state: '',
+    first_name: '',
+    last_name: '',
+    address: '',
+    state_name: '',
     city: '',
     country: '',
-    zipCode: '',
-    phone: '',
+    zipcode: '',
+    phone_no: '',
     email: '',
-    makeAuthorization: false
+    authentication: false
   });
+  const flagRef = useRef(null);
+  const [phoneNumber,setPhoneNumber] = useState();
+  const [phoneCode,setPhoneCode] = useState('+1');
+
+  useEffect(() => {
+    setCustomer({
+      ...customer,
+      phone_no: `${phoneCode}${phoneNumber}`
+    })
+  }, [phoneNumber, phoneCode]);
   
   const updateCustomer = e => {
     setCustomer({
@@ -26,21 +37,60 @@ const AddCustomer: React.FC = () => {
   };
 
   const formList = [
-    {label: 'First name', type: 'text', name: 'fname'},
-    {label: 'Last name', type: 'text', name: 'lname'},
-    {label: 'Street Address', type: 'text', name: 'street'},
+    {label: 'First name', type: 'text', name: 'first_name'},
+    {label: 'Last name', type: 'text', name: 'last_name'},
+    {label: 'Street Address', type: 'text', name: 'street_name'},
     {label: 'Region/State', type: 'text', name: 'city'},
     {label: 'City', type: 'text', name: 'state'},
-    {label: 'Country', type: 'text', name: 'country'},
-    {label: 'Zip code', type: 'number', name: 'zipCode'},
-    {label: 'Business phone number', type: 'number', name: 'phone'},
-    {label: 'EMail address', type: 'email', name: 'email'},
+    {label: 'Country', type: 'text', name: 'region'},
+    {label: 'Zip code', type: 'number', name: 'zipcode'},
+    {label: 'Business phone number', type: 'number', name: 'phone_no'},
+    {label: 'Email address', type: 'email', name: 'email'},
   ];
 
   const submit = e => {
     e.preventDefault();
     navigate(-1);
-  }
+  };
+  
+  const [isOpen, setIsOpen] = useState(false);
+
+  const currencyOptions = [
+    { code: "US", label: "United States", value: '+1' },
+    { code: "EU", label: "Europe", value: '011' },
+    { code: "AU", label: "Australia", value: '+61' },
+    { code: "NG", label: "Nigeria", value: '+234' },
+    { code: "GB", label: "United Kingdom", value: '+44' },
+    { code: "CA", label: "Canada", value: '+1' },
+    { code: "IN", label: "India", value: '+91' },
+  ];
+
+  const countryCodes = currencyOptions.map((item) => item?.value);
+  
+  const [selectedOption, setSelectedOption] = useState<{
+    code: string;
+    label: string;
+    value: string;
+  } | { code: "US", label: "United States", value: '+1' }>({ code: "US", label: "United States", value: '+1' });
+
+  const handleOptionClick = (option: { code: string; flag: string; label: string }) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+    setPhoneCode(option?.value)
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (flagRef.current && !flagRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
   return (
     <div
       className='flex flex-col px-2'
@@ -90,25 +140,82 @@ const AddCustomer: React.FC = () => {
             >
               {
                 formList?.map((item, index) => {
-                  return(
-                    <div
-                      key={index}
-                      className='flex flex-col px-2 mb-2'
-                    >
-                      <label
-                        className='search-input-label'
-                      >{item.label}</label>
-                      <input
-                        type={item.type}
-                        placeholder={item.label}
-                        name={item.name}
-                        required
-                        className='search-input-text'
-                        onChange={updateCustomer}
-                        value={customer[item.name]}
-                      />
-                    </div>
-                  )
+                  if(item.name == 'phone_no'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          key={index}
+                          className="search-input-text flex flex-row"
+                        >
+                          <div
+                            className='w-[60px] flex flex-col'
+                          >
+                            <div className="relative w-[40px] h-full flex mx-auto items-center justify-between border-0 cursor-pointer"
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
+                              {
+                                isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
+                              }
+                            </div>
+
+                            {/* Dropdown Options */}
+                            {isOpen && (
+                              <div className="absolute mt-[44px] z-10 w-[40px] ml-[-3px] bg-white border border-gray-300 rounded-md shadow-lg" ref={flagRef}>
+                                {currencyOptions.map((option) => (
+                                  <div
+                                    key={option.code}
+                                    className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => handleOptionClick(option)}
+                                  >
+                                    <Flag code={option?.code} style={{width: '30px'}} />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <p
+                            className='w-fit my-auto mx-1'
+                          >{selectedOption?.value}</p>
+                          <input
+                            type='number'
+                            className='w-full focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                            defaultValue={phoneNumber}
+                            onChange={e => {
+                              setPhoneNumber(parseInt(e.target.value))
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else{
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <input
+                          type={item.type}
+                          placeholder={item.label}
+                          name={item.name}
+                          required
+                          className='search-input-text'
+                          onChange={updateCustomer}
+                          defaultValue={customer[item.name]}
+                        />
+                      </div>
+                    )
+                  }
                 })
               }
             </div>
@@ -151,16 +258,16 @@ const AddCustomer: React.FC = () => {
                 className='btn-red h-[46px] ml-[30px]'
                 onClick={() => {
                   setCustomer({
-                    fname: '',
-                    lname: '',
-                    street: '',
-                    state: '',
+                    first_name: '',
+                    last_name: '',
+                    address: '',
+                    state_name: '',
                     city: '',
                     country: '',
-                    zipCode: '',
-                    phone: '',
+                    zipcode: '',
+                    phone_no: '',
                     email: '',
-                    makeAuthorization: false
+                    authentication: false
                   });
                 }}
               >Cancel</button>

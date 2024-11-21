@@ -139,7 +139,7 @@ const Faqs: React.FC = () => {
                           key={i}
                         >
                           <label className='search-input-label'>{e.label}</label>
-                          <input placeholder={e.placeholder} type={e.type} className='search-input-text' name={e.name} />
+                          <input placeholder={e.placeholder} type={e.type} className='search-input-text  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' name={e.name} />
                         </div>
                       )
                     })
@@ -253,7 +253,7 @@ const Faqs: React.FC = () => {
                           key={i}
                         >
                           <label className='search-input-label'>{e.label}</label>
-                          <input placeholder={e.placeholder} type={e.type} className='search-input-text' name={e.name} defaultValue={editableFaq[e.name]} />
+                          <input placeholder={e.placeholder} type={e.type} className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' name={e.name} defaultValue={editableFaq[e.name]} />
                         </div>
                       )
                     })

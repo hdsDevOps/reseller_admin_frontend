@@ -1,4 +1,4 @@
 //authenticatedPaths
-export const authenticatedRoutes = ['/dashboard'];
+export const authenticatedRoutes = ['/dashboard', '/customers', '/customer-information', '/add-customer', '/edit-customer', '/payment-method', '/billing-history', '/role', '/user-list', '/add-role', '/edit-role', '/email-log', '/faqs', '/cms', '/customer-agreement', '/privacy-policy', '/terms-and-conditions', '/profile-settings', '/plan-and-price-setup', '/add-plan-and-price-setup', '/gemini-setup', '/voucher-list', '/customer-group', '/add-customer-group', '/add-voucher', '/notification-template'];
 //unauthenticatedPaths
-export const unauthenticatedRoutes = ['/login','/otp','/forgotpassword'];   
+export const unauthenticatedRoutes = ['/login','/otp','/forgotpassword', '/resetpassword', '/password-reset-successful'];   

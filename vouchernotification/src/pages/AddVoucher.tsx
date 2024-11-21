@@ -1,11 +1,13 @@
-import { ChevronRight, MoveLeft } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronUp, MoveLeft } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Flag from 'react-world-flags'; // Flag component
 
 const AddVoucher: React.FC = () =>  {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
+  const flagRef = useRef(null);
 
   const clickOutsideModal = (event) => {
     if(modalRef.current && !modalRef.current.contains(event.target)){
@@ -27,9 +29,44 @@ const AddVoucher: React.FC = () =>  {
     {label: 'Discount -%', placholder: 'Enter Discount', type: 'number', name: 'dicount'},
     {label: 'End Date', placholder: 'Select End Date', type: 'date', name: 'endDate'},
   ];
-  const currencyList = [
-    { icon: 'India-flag.png', name: 'IND'},
+  
+  const [isOpen, setIsOpen] = useState(false);
+
+  const currencyOptions = [
+    { code: "US", label: "United States", value: '$' },
+    { code: "EU", label: "Europe", value: '€' },
+    { code: "AU", label: "Australia", value: 'A$' },
+    { code: "NG", label: "Nigeria", value: 'N₦' },
+    { code: "GB", label: "United Kingdom", value: '£' },
+    { code: "CA", label: "Canada", value: 'C$' },
+    { code: "IN", label: "India", value: '₹' },
   ];
+
+  const countryCodes = currencyOptions.map((item) => item?.value);
+  
+  const [selectedOption, setSelectedOption] = useState<{
+    code: string;
+    label: string;
+    value: string;
+  } | { code: "US", label: "United States", value: '$' }>({ code: "US", label: "United States", value: '$' });
+
+  const handleOptionClick = (option: { code: string; flag: string; label: string }) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (flagRef.current && !flagRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
   return (
     <div>
       <div
@@ -86,29 +123,44 @@ const AddVoucher: React.FC = () =>  {
                       placeholder={item.placholder}
                       name={item.name}
                       required
-                      className='search-input-text px-4'
+                      className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                       // onChange={updateCustomer}
                       // value={customer[item.name]}
                     />
                     <div
-                      className='float-right ml-auto'
+                      key={index}
+                      className="float-right flex flex-row -mt-[34px] ml-auto"
                     >
-                      <select
-                        className='voucher-currency-selector'
+                      <p
+                        className='w-fit my-auto mx-1'
+                      >{selectedOption?.value}</p>
+                      <div
+                        className='w-[60px] flex flex-col'
                       >
-                        {
-                          currencyList && currencyList.map((e, i) => {
-                            return(
-                              <option key={i} selected value={e.name}>
-                                {/* <img src={`${process.env.BASE_URL}images/${e.icon}`} alt={e.name}
-                                  className='w-[31px] h-[31px]'
-                                /> */}
-                                <a>{e.name}</a>
-                              </option>
-                            )
-                          })
-                        }
-                      </select>
+                        <div className="relative w-[40px] h-full flex mx-auto items-center justify-between border-0 cursor-pointer"
+                          onClick={() => setIsOpen(!isOpen)}
+                        >
+                          <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
+                          {
+                            isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
+                          }
+                        </div>
+
+                        {/* Dropdown Options */}
+                        {isOpen && (
+                          <div className="absolute mt-[44px] z-10 w-[40px] ml-[5px] bg-white border border-gray-300 rounded-md shadow-lg" ref={flagRef}>
+                            {currencyOptions.map((option) => (
+                              <div
+                                key={option.code}
+                                className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleOptionClick(option)}
+                              >
+                                <Flag code={option?.code} style={{width: '30px'}} />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )

@@ -1,16 +1,14 @@
 import {endPoints} from '../constants/endPoint';
 import {getApiCall, postApiCall} from '../services/crud.service';
 
-async function checkUserCredentialsApi(
+async function makeUserLoginApi(
   email: string,
-  password: string,
-  login_user_type: number,
+  password: string
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.login, {
       email,
-      password,
-      login_user_type,
+      password
     });
     return result;
   } catch (error: any) {
@@ -18,17 +16,46 @@ async function checkUserCredentialsApi(
   }
 }
 
-async function checkUserTokenApi(): Promise<any> {
+async function verifyUserOtpApi(
+  admin_id: string,
+  otp: string
+): Promise<any> {
   try {
-    const result = await getApiCall(endPoints.checkToken);
+    const result = await postApiCall(endPoints.verifyOtp, {
+      admin_id,
+      otp
+    });
     return result;
   } catch (error: any) {
     throw error;
   }
 }
 
+async function resendOtpApi(
+  admin_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.resendOtp, {
+      admin_id
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+async function customerListApi(): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.customerList, { });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+}
 
 export const userApis = {
-  checkUserCredentialsApi,
-  checkUserTokenApi,
+  makeUserLoginApi,
+  verifyUserOtpApi,
+  resendOtpApi,
+  customerListApi,
 };

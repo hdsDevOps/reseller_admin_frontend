@@ -39,8 +39,8 @@ export default function Header() {
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAN', logo: 'C$',},
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'IND', logo: '₹',},
   ];
-  const [currency, setCurrency] = useState('IND');
-  const [passwordModal, setPasswordModal] = useState(true);
+  const [currency, setCurrency] = useState('US');
+  const [passwordModal, setPasswordModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
   const [password, setPassword] = useState('');

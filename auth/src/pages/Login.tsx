@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "store/hooks";
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
-// import { makeUserLoginThunk } from "store/user.thunk";
-import '../styles/styles.css'
+import { makeUserLoginThunk } from "store/user.thunk";
+import '../styles/styles.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -17,21 +19,21 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    navigate("/otp?mode=signin");
+    // navigate("/otp?mode=signin");
 
-    // try {
-    //   const result = await dispatch(
-    //     makeUserLoginThunk({
-    //       email: email,
-    //       password: password,
-    //       login_user_type: 0,
-    //     })
-    //   ).unwrap();
-    //   console.log("result....", result);
-    //   navigate("/otp?mode=signin");
-    // } catch (error) {
-    //   console.error("Login error:", error);
-    // }
+    try {
+      const result = await dispatch(
+        makeUserLoginThunk({
+          email: email,
+          password: password
+        })
+      ).unwrap();
+      console.log("result....", result);
+      navigate("/otp?mode=signin");
+    } catch (error) {
+      // console.error("Login error:", error);
+      toast.error("Please enter valid email or password!");
+    }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +54,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center h-full xsm-max:px-1 font-inter">
+      <ToastContainer />
       <div className="w-full max-w-[32rem] bg-gray-50 p-12 rounded-3xl xsm-max:px-4">
         <div className="w-full">
           <div className="text-center">

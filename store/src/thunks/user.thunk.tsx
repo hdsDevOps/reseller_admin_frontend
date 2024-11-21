@@ -8,20 +8,52 @@ export const getUserAuthTokenFromLSThunk = createAsyncThunk(
   },
 );
 
-export const checkUserTokenThunk = createAsyncThunk(
-  'users/checkUserToken',
+export const setUserAuthTokenToLSThunk = createAsyncThunk(
+  "users/setUserAuthTokenToLS",
+  async (token: string) => {
+    return localStorage.setItem("LS_KEY_AUTH_TOKEN", token);
+  },
+);
+
+export const removeUserAuthTokenFromLSThunk = createAsyncThunk(
+  "users/removeUserAuthTokenFromLS",
   async () => {
-    return await userApis.checkUserTokenApi();
+    return localStorage.removeItem("LS_KEY_AUTH_TOKEN");
   },
 );
 
 export const makeUserLoginThunk = createAsyncThunk(
   "users/makeUserLogin",
-  async ({ email, password, login_user_type }: any) => {
-    return await userApis.checkUserCredentialsApi(
+  async ({ email, password }: any) => {
+    return await userApis.makeUserLoginApi(
       email,
-      password,
-      login_user_type
+      password
     );
+  }
+);
+
+export const verifyUserOtpThunk = createAsyncThunk(
+  "users/verifyUserOtp",
+  async ({ admin_id, otp }: any) => {
+    return await userApis.verifyUserOtpApi(
+      admin_id,
+      otp
+    );
+  }
+);
+
+export const resendUserOtpThunk = createAsyncThunk(
+  "users/resendUserOtp",
+  async ({ admin_id }: any) => {
+    return await userApis.resendOtpApi(
+      admin_id
+    );
+  }
+);
+
+export const getCustomerListThunk = createAsyncThunk(
+  "users/resendUserOtp",
+  async () => {
+    return await userApis.customerListApi();
   }
 );

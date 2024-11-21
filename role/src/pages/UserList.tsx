@@ -245,7 +245,7 @@ const UserList = () => {
                               placeholder={item.placeholder}
                               name={item.name}
                               required
-                              className='search-input-text px-4'
+                              className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                               defaultValue={modalType == 'add' ? '' : convertToPhoneNumber(modalData[item.name])}
                               onChange={updateModalData}
                             />
@@ -311,7 +311,7 @@ const UserList = () => {
                             key={index}
                           >
                             <label
-                              className='search-input-label'
+                              className='search-input-label [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                             >{item.label}</label>
                             <input
                               type={item.type}

@@ -1,27 +1,26 @@
-import { ChevronRight, MoveLeft } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import { ChevronDown, ChevronRight, ChevronUp, MoveLeft } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
-import '../styles/styles.css'
-import axios from 'axios';
+import '../styles/styles.css';
+import Flag from 'react-world-flags'; // Flag component
 
 function EditCustomer() {
   const navigate = useNavigate();
   const location = useLocation();
-  const customerId = location.state.customerId;
+  const flagRef = useRef(null);
   
-  const [customer, setCustomer] = useState({});
-  console.log(customer);
+  const [customer, setCustomer] = useState(location.state);
+  // console.log(customer?.phone_no);
+  const [phoneNumber,setPhoneNumber] = useState();
+  const [phoneCode,setPhoneCode] = useState('+1');
+  // console.log({phoneCode,phoneNumber});
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/customer/${customerId}`)
-      .then(res => {
-        setCustomer(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  }, [customerId])
+    setCustomer({
+      ...customer,
+      phone_no: `${phoneCode}${phoneNumber}`
+    })
+  }, [phoneNumber, phoneCode]);
   
   const updateCustomer = e => {
     setCustomer({
@@ -31,21 +30,74 @@ function EditCustomer() {
   };
 
   const formList = [
-    {label: 'First name', type: 'text', name: 'fname'},
-    {label: 'Last name', type: 'text', name: 'lname'},
-    {label: 'Street Address', type: 'text', name: 'street'},
-    {label: 'Region/State', type: 'text', name: 'city'},
-    {label: 'City', type: 'text', name: 'state'},
-    {label: 'Country', type: 'text', name: 'country'},
-    {label: 'Zip code', type: 'number', name: 'zipCode'},
-    {label: 'Business phone number', type: 'number', name: 'phone'},
-    {label: 'EMail address', type: 'email', name: 'email'},
-  ]
+    {label: 'First name', type: 'text', name: 'first_name'},
+    {label: 'Last name', type: 'text', name: 'last_name'},
+    {label: 'Street Address', type: 'text', name: 'street_name'},
+    {label: 'Region/State', type: 'text', name: 'state'},
+    {label: 'City', type: 'text', name: 'city'},
+    {label: 'Country', type: 'text', name: 'region'},
+    {label: 'Zip code', type: 'number', name: 'zipcode'},
+    {label: 'Business phone number', type: 'text', name: 'phone_no'},
+    {label: 'Email address', type: 'email', name: 'email'},
+  ];
 
   const submit = e => {
     e.preventDefault();
     navigate(-1);
-  }
+  };
+  
+  const [isOpen, setIsOpen] = useState(false);
+
+  const currencyOptions = [
+    { code: "US", label: "United States", value: '+1' },
+    { code: "EU", label: "Europe", value: '011' },
+    { code: "AU", label: "Australia", value: '+61' },
+    { code: "NG", label: "Nigeria", value: '+234' },
+    { code: "GB", label: "United Kingdom", value: '+44' },
+    { code: "CA", label: "Canada", value: '+1' },
+    { code: "IN", label: "India", value: '+91' },
+  ];
+
+  const countryCodes = currencyOptions.map((item) => item?.value);
+  
+  const [selectedOption, setSelectedOption] = useState<{
+    code: string;
+    label: string;
+    value: string;
+  } | { code: "US", label: "United States", value: '+1' }>({ code: "US", label: "United States", value: '+1' });
+
+  useEffect(() => {
+    const phoneNo = customer?.phone_no;
+    for(const code of countryCodes){
+      if(phoneNo.startsWith(code)){
+        setPhoneNumber(parseInt(phoneNo.slice(code.length)));
+        setPhoneCode(code);
+        const value = currencyOptions.map((item) => item.value === code ? item : null).filter((item) => item !== null)
+        setSelectedOption(value[0]);
+      }
+    };
+  }, []);
+
+  const handleOptionClick = (option: { code: string; flag: string; label: string }) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+    setPhoneCode(option?.value)
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (flagRef.current && !flagRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  
   return (
     <div
       className='flex flex-col px-2'
@@ -91,29 +143,86 @@ function EditCustomer() {
           >
             <div
             // grid-cols-2 max-[546px]:grid-cols-1
-              className='grid grid-cols-2 max-[666px]:grid-cols-1 font-inter'
+              className='grid grid-cols-2 max-[666px]:grid-cols-1 font-inter '
             >
               {
                 formList?.map((item, index) => {
-                  return(
-                    <div
-                      key={index}
-                      className='flex flex-col px-2 mb-2'
-                    >
-                      <label
-                        className='search-input-label'
-                      >{item.label}</label>
-                      <input
-                        type={item.type}
-                        placeholder={item.label}
-                        name={item.name}
-                        required
-                        className='search-input-text'
-                        onChange={updateCustomer}
-                        value={customer[item.name]}
-                      />
-                    </div>
-                  )
+                  if(item.name == 'phone_no'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          key={index}
+                          className="search-input-text flex flex-row"
+                        >
+                          <div
+                            className='w-[60px] flex flex-col'
+                          >
+                            <div className="relative w-[40px] h-full flex mx-auto items-center justify-between border-0 cursor-pointer"
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
+                              {
+                                isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
+                              }
+                            </div>
+
+                            {/* Dropdown Options */}
+                            {isOpen && (
+                              <div className="absolute mt-[44px] z-10 w-[40px] ml-[-3px] bg-white border border-gray-300 rounded-md shadow-lg" ref={flagRef}>
+                                {currencyOptions.map((option) => (
+                                  <div
+                                    key={option.code}
+                                    className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => handleOptionClick(option)}
+                                  >
+                                    <Flag code={option?.code} style={{width: '30px'}} />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <p
+                            className='w-fit my-auto mx-1'
+                          >{selectedOption?.value}</p>
+                          <input
+                            type='number'
+                            className='w-full focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                            defaultValue={phoneNumber}
+                            onChange={e => {
+                              setPhoneNumber(parseInt(e.target.value))
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else{
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <input
+                          type={item.type}
+                          placeholder={item.label}
+                          name={item.name}
+                          required
+                          className='search-input-text'
+                          onChange={updateCustomer}
+                          defaultValue={customer[item.name]}
+                        />
+                      </div>
+                    )
+                  }
                 })
               }
             </div>
@@ -130,12 +239,21 @@ function EditCustomer() {
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    checked={customer?.makeAuthorization}
+                    checked={customer?.authentication}
                     onClick={() => {
-                      setCustomer({
-                        ...customer,
-                        makeAuthorization: !customer.makeAuthorization
-                      })
+                      if(customer?.authentication == undefined){
+                        setCustomer({
+                          ...customer,
+                          authentication: true
+                        });
+                      }
+                      else{
+                        setCustomer({
+                          ...customer,
+                          authentication: !customer.authentication
+                        });
+                      }
+                      console.log(customer?.authentication);
                     }}
                   />
                   <div

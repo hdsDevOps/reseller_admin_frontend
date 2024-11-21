@@ -233,19 +233,19 @@ function AddPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Base Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
@@ -254,19 +254,19 @@ function AddPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Final Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
@@ -359,19 +359,19 @@ function AddPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Base Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
@@ -380,19 +380,19 @@ function AddPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Final Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px]'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                         type='number'
                       />
                     </td>
@@ -532,7 +532,7 @@ function AddPlanPriceSetup() {
             <label className='search-input-label'>Trail Period</label>
             <input
               type='number'
-              className='search-input-text'
+              className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
               placeholder='Select Trial Period'
             />
           </div>
@@ -601,7 +601,7 @@ function AddPlanPriceSetup() {
                       <td className='w-[220px] text-left items-start py-5'>
                         <input
                           type={item.type}
-                          className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${item.type == 'checkbox' ? 'w-7' : 'w-[133px]'}`}
+                          className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${item.type == 'checkbox' ? 'w-7' : 'w-[133px]'}  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                         />
                       </td>
                     </tr>
@@ -629,7 +629,7 @@ function AddPlanPriceSetup() {
                       <td className='w-[220px] text-left items-start py-5'>
                         <input
                           type={item.type}
-                          className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${item.type == 'checkbox' ? 'w-7' : 'w-[133px]'}`}
+                          className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${item.type == 'checkbox' ? 'w-7' : 'w-[133px]'} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                         />
                       </td>
                     </tr>
