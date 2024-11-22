@@ -3,17 +3,35 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/styles.css';
 import Flag from 'react-world-flags'; // Flag component
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { editCustomerThunk } from 'store/user.thunk';
+import { useAppDispatch } from 'store/hooks';
+import {
+  CitySelect,
+  CountrySelect,
+  StateSelect,
+  LanguageSelect,
+  RegionSelect,
+  PhonecodeSelect
+} from "react-country-state-city";
+import "react-country-state-city/dist/react-country-state-city.css";
+import './countryList.css';
+import { CountryList } from '../components/CountryList';
+import 'react-toastify/dist/ReactToastify.css';
 
 function EditCustomer() {
   const navigate = useNavigate();
   const location = useLocation();
   const flagRef = useRef(null);
+  const dispatch = useAppDispatch();
   
   const [customer, setCustomer] = useState(location.state);
-  // console.log(customer?.phone_no);
+  console.log(customer);
   const [phoneNumber,setPhoneNumber] = useState();
   const [phoneCode,setPhoneCode] = useState('+1');
-  // console.log({phoneCode,phoneNumber});
+  const [countryid, setCountryid] = useState(0);
+  const [stateid, setstateid] = useState(0);
 
   useEffect(() => {
     setCustomer({
@@ -30,21 +48,16 @@ function EditCustomer() {
   };
 
   const formList = [
-    {label: 'First name', type: 'text', name: 'first_name'},
-    {label: 'Last name', type: 'text', name: 'last_name'},
-    {label: 'Street Address', type: 'text', name: 'street_name'},
-    {label: 'Region/State', type: 'text', name: 'state'},
-    {label: 'City', type: 'text', name: 'city'},
-    {label: 'Country', type: 'text', name: 'region'},
-    {label: 'Zip code', type: 'number', name: 'zipcode'},
-    {label: 'Business phone number', type: 'text', name: 'phone_no'},
-    {label: 'Email address', type: 'email', name: 'email'},
+    {label: 'First name', type: 'text', name: 'first_name', placeholder: 'Enter the first name',},
+    {label: 'Last name', type: 'text', name: 'last_name', placeholder: 'Enter the last name',},
+    {label: 'Street Address', type: 'text', name: 'address', placeholder: 'Enter the street address',},
+    {label: 'Country/Region', type: 'text', name: 'country', placeholder: 'Select the Country/Region',},
+    {label: 'State/Territory', type: 'text', name: 'state_name', placeholder: 'Select the State/Territory',},
+    {label: 'City', type: 'text', name: 'city', placeholder: 'Enter the city name',},
+    {label: 'Zip code', type: 'number', name: 'zipcode', placeholder: 'Enter the zipcode',},
+    {label: 'Business phone number', type: 'number', name: 'phone_no', placeholder: '0000000000',},
+    {label: 'Email address', type: 'email', name: 'email', placeholder: 'Enter the email address',},
   ];
-
-  const submit = e => {
-    e.preventDefault();
-    navigate(-1);
-  };
   
   const [isOpen, setIsOpen] = useState(false);
 
@@ -61,27 +74,42 @@ function EditCustomer() {
   const countryCodes = currencyOptions.map((item) => item?.value);
   
   const [selectedOption, setSelectedOption] = useState<{
+    name: string;
+    dial_code: string;
     code: string;
-    label: string;
-    value: string;
-  } | { code: "US", label: "United States", value: '+1' }>({ code: "US", label: "United States", value: '+1' });
+  } | { name: "United States", dial_code: '+1', code: "US" }>({ name: "United States", dial_code: '+1', code: "US" });
+
+  useEffect(() => {
+    if(customer?.country != ''){
+      const data = CountryList.find(item => item.name === customer?.country);
+      setSelectedOption(data);
+      setPhoneCode(data?.dial_code);
+    }
+    else{
+      setSelectedOption({ name: "United States", dial_code: '+1', code: "US" });
+      setPhoneCode('+1');
+    }
+  }, [customer?.country])
 
   useEffect(() => {
     const phoneNo = customer?.phone_no;
-    for(const code of countryCodes){
-      if(phoneNo.startsWith(code)){
-        setPhoneNumber(parseInt(phoneNo.slice(code.length)));
-        setPhoneCode(code);
-        const value = currencyOptions.map((item) => item.value === code ? item : null).filter((item) => item !== null)
-        setSelectedOption(value[0]);
+    if(phoneNo){
+      for(const { dial_code } of CountryList){
+        if(phoneNo.startsWith(dial_code)){
+          const nationalNumber = phoneNo.slice(dial_code.length);
+          console.log(nationalNumber, '96')
+          setPhoneNumber(parseInt(nationalNumber));
+          setPhoneCode(dial_code);
+          return;
+        }
       }
-    };
+    }
   }, []);
 
-  const handleOptionClick = (option: { code: string; flag: string; label: string }) => {
+  const handleOptionClick = (option: { name: string; dial_code: string; code: string; }) => {
     setSelectedOption(option);
     setIsOpen(false);
-    setPhoneCode(option?.value)
+    setPhoneCode(option?.dial_code)
   };
 
   const handleOutsideClick = (event: MouseEvent) => {
@@ -97,11 +125,27 @@ function EditCustomer() {
     };
   }, []);
 
+  const submit = async(e) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(
+        editCustomerThunk(customer)
+      ).unwrap();
+      toast.success(result?.message);
+    } catch (error) {
+      toast.error("Error")
+    } finally {
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000);
+    }
+  };
   
   return (
     <div
       className='flex flex-col px-2'
     >
+      <ToastContainer />
       <div
         className='flex flex-row'
       >
@@ -167,36 +211,99 @@ function EditCustomer() {
                               onClick={() => setIsOpen(!isOpen)}
                             >
                               <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
-                              {
-                                isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
-                              }
                             </div>
-
-                            {/* Dropdown Options */}
-                            {isOpen && (
-                              <div className="absolute mt-[44px] z-10 w-[40px] ml-[-3px] bg-white border border-gray-300 rounded-md shadow-lg" ref={flagRef}>
-                                {currencyOptions.map((option) => (
-                                  <div
-                                    key={option.code}
-                                    className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleOptionClick(option)}
-                                  >
-                                    <Flag code={option?.code} style={{width: '30px'}} />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
                           </div>
                           <p
                             className='w-fit my-auto mx-1'
-                          >{selectedOption?.value}</p>
+                          >{selectedOption?.dial_code}</p>
                           <input
                             type='number'
                             className='w-full focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                            defaultValue={phoneNumber}
                             onChange={e => {
                               setPhoneNumber(parseInt(e.target.value))
                             }}
+                            placeHolder={item?.placeholder}
+                            defaultValue={phoneNumber}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else if(item.name == 'state_name'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                        >
+                          <StateSelect
+                            countryid={countryid}
+                            onChange={(e) => {
+                              setCustomer({
+                                ...customer,
+                                state_name: e.name
+                              });
+                              setstateid(e.id);
+                            }}
+                            placeHolder={customer?.state_name}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else if(item.name == 'country'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                        >
+                          <CountrySelect
+                            onChange={(e) => {
+                              setCustomer({
+                                ...customer,
+                                country: e.name
+                              });
+                              setCountryid(e.id);
+                            }}
+                            placeHolder={customer?.country}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else if(item.name == 'city'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                        >
+                          <CitySelect
+                            countryid={countryid}
+                            stateid={stateid}
+                            onChange={(e) => {
+                              setCustomer({
+                                ...customer,
+                                city: e.name
+                              })
+                            }}
+                            placeHolder={customer?.city}
                           />
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "store/hooks";
 import { HiOutlineEye } from "react-icons/hi";
@@ -12,10 +12,20 @@ const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(localStorage.getItem('email') || "");
+  const [password, setPassword] = useState(localStorage.getItem('password') || "");
   const [show, setShow] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+
+  useEffect(() => {
+    if(localStorage.getItem('email') && localStorage.getItem('password')){
+      setRememberMe(true);
+    }
+    else {
+      setRememberMe(false);
+    }
+  }, [])
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -29,6 +39,10 @@ const Login: React.FC = () => {
         })
       ).unwrap();
       console.log("result....", result);
+      if(rememberMe){
+        localStorage.setItem('email', email);
+        localStorage.setItem('password', password);
+      }
       navigate("/otp?mode=signin");
     } catch (error) {
       // console.error("Login error:", error);
@@ -125,16 +139,18 @@ const Login: React.FC = () => {
                 </div>
               </div>
               <div className="mt-[25px] flex justify-between">
-                <div className="flex-row-between w-32 pt-1.5">
+                <div className="flex-row-between w-fit-content gap-2 pt-1.5">
                   <input
                     type="checkbox"
-                    className="border border-[#545454] h-4 w-4"
+                    className="border border-[#545454] h-4 w-4 accent-[#12A833]"
+                    checked={rememberMe}
+                    onClick={() => {setRememberMe(!rememberMe)}}
                   />
 
                   <label
                     className="text-xs text-gray-900"
                   >
-                    Keep me logged in
+                    Remember me
                   </label>
                 </div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { format } from "date-fns";
 
 interface Column<T> {
   header: string;
@@ -12,6 +13,10 @@ interface TableProps<T> {
 }
 
 const Table = <T extends {}>({ columns, data, renderActions }: TableProps<T>) => {
+  const dateFormat = (date) => {
+    const newDate = new Date(date);
+    return format(newDate, "dd MMM yyyy");
+  }
   return (
     <div className="w-full overflow-x-auto pb-[20px]">
       <table className="min-w-[1100px] lg:min-w-full max-h-screen">
@@ -35,14 +40,28 @@ const Table = <T extends {}>({ columns, data, renderActions }: TableProps<T>) =>
         <tbody className="bg-white mt-3">
           {data.map((item, index) => (
             <tr key={index} className="hover:bg-gray-50 my-8">
-              {columns.map((column) => (
-                <td
-                  key={column.accessor as string}
-                  className="td-css-2"
-                >
-                  {String(item[column.accessor])}
-                </td>
-              ))}
+              {columns.map((column) => {
+                if(column.accessor == 'start_date' || column.accessor == 'end_date'){
+                  return(
+                    <td
+                      key={column.accessor as string}
+                      className="td-css-2"
+                    >
+                      {dateFormat(item[column.accessor])}
+                    </td>
+                  )
+                }
+                else{
+                  return(
+                    <td
+                      key={column.accessor as string}
+                      className="td-css-2"
+                    >
+                      {String(item[column.accessor])}
+                    </td>
+                  )
+                }
+              })}
               {renderActions && (
                 <td className="">
                   {renderActions(item)}

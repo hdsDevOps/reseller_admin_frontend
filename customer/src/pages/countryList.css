@@ -1,0 +1,13 @@
+.stdropdown-container{
+  border: 0;
+  font-family: 'Inter';
+  border-radius: 0;
+}
+
+.stdropdown-input input{
+  border: 0;
+}
+
+.stdropdown-input input:focus{
+  outline: none;
+}

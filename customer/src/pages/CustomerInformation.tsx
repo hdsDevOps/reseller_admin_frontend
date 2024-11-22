@@ -11,12 +11,12 @@ const CustomerInformation: React.FC = () => {
   const location = useLocation();
 
   const [customer, setCustomer] = useState(location.state);
-  console.log(customer);
+  console.log(customer, 'customer information');
   
   const bottomData = [
     { icon: <Mail className='mx-auto' />, title: `Email : ${customer?.email}` },
     { icon: <Phone className='mx-auto' />, title: `Phone : ${customer?.phone_no}` },
-    { icon: <UserRound className='mx-auto' />, title: `${customer?.domain ? customer?.domain : 'N/A'}` },
+    { icon: <UserRound className='mx-auto' />, title: `Domain: ${customer?.domain ? customer?.domain : 'N/A'}` },
   ]
 
   const [resetPasswordShow, setResetPasswordShow] = useState(false);
@@ -76,8 +76,8 @@ const CustomerInformation: React.FC = () => {
           className='flex flex-col'
         >
           <h5
-            className='h5-text mb-3'
-          >Robert Clive</h5>
+            className='h5-text mb-3 uppercase'
+          >{customer?.first_name} {customer?.last_name}</h5>
 
           <p
             className='py-2 font-inter-16px-400-custom-gray'
@@ -87,13 +87,13 @@ const CustomerInformation: React.FC = () => {
           >Business Name : {customer?.business_name}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Address : {customer?.street_name}</p>
+          >Address : {customer?.address}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Country : {customer?.region}</p>
+          >Country : {customer?.country}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Region : {customer?.state}</p>
+          >Region : {customer?.state_name}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
           >Domain : {customer?.domain ? customer?.domain : 'N/A'}</p>
@@ -224,7 +224,7 @@ const CustomerInformation: React.FC = () => {
                 key={index}
               >
                 {item.icon}
-                <a className='mx-auto' >{item.title}</a>
+                <a className='mx-auto break-normal text-center'>{item.title}</a>
               </div>
             )
           })

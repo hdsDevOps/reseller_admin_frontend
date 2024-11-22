@@ -1,11 +1,27 @@
 import { ChevronDown, ChevronRight, ChevronUp, MoveLeft } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import '../styles/styles.css'
 import Flag from 'react-world-flags'; // Flag component
+import { useAppDispatch } from 'store/hooks';
+import { addCustomerThunk } from 'store/user.thunk';
+import {
+  CitySelect,
+  CountrySelect,
+  StateSelect,
+  LanguageSelect,
+  RegionSelect,
+  PhonecodeSelect
+} from "react-country-state-city";
+import "react-country-state-city/dist/react-country-state-city.css";
+import './countryList.css';
+import { CountryList } from '../components/CountryList';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddCustomer: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [customer, setCustomer] = useState({
     first_name: '',
     last_name: '',
@@ -18,9 +34,13 @@ const AddCustomer: React.FC = () => {
     email: '',
     authentication: false
   });
+  console.log(customer);
+  
   const flagRef = useRef(null);
   const [phoneNumber,setPhoneNumber] = useState();
   const [phoneCode,setPhoneCode] = useState('+1');
+  const [countryid, setCountryid] = useState(0);
+  const [stateid, setstateid] = useState(0);
 
   useEffect(() => {
     setCustomer({
@@ -37,21 +57,16 @@ const AddCustomer: React.FC = () => {
   };
 
   const formList = [
-    {label: 'First name', type: 'text', name: 'first_name'},
-    {label: 'Last name', type: 'text', name: 'last_name'},
-    {label: 'Street Address', type: 'text', name: 'street_name'},
-    {label: 'Region/State', type: 'text', name: 'city'},
-    {label: 'City', type: 'text', name: 'state'},
-    {label: 'Country', type: 'text', name: 'region'},
-    {label: 'Zip code', type: 'number', name: 'zipcode'},
-    {label: 'Business phone number', type: 'number', name: 'phone_no'},
-    {label: 'Email address', type: 'email', name: 'email'},
+    {label: 'First name', type: 'text', name: 'first_name', placeholder: 'Enter the first name',},
+    {label: 'Last name', type: 'text', name: 'last_name', placeholder: 'Enter the last name',},
+    {label: 'Street Address', type: 'text', name: 'address', placeholder: 'Enter the street address',},
+    {label: 'Country/Region', type: 'text', name: 'country', placeholder: 'Select the Country/Region',},
+    {label: 'State/Territory', type: 'text', name: 'state_name', placeholder: 'Select the State/Territory',},
+    {label: 'City', type: 'text', name: 'city', placeholder: 'Enter the city name',},
+    {label: 'Zip code', type: 'number', name: 'zipcode', placeholder: 'Enter the zipcode',},
+    {label: 'Business phone number', type: 'number', name: 'phone_no', placeholder: '0000000000',},
+    {label: 'Email address', type: 'email', name: 'email', placeholder: 'Enter the email address',},
   ];
-
-  const submit = e => {
-    e.preventDefault();
-    navigate(-1);
-  };
   
   const [isOpen, setIsOpen] = useState(false);
 
@@ -68,16 +83,22 @@ const AddCustomer: React.FC = () => {
   const countryCodes = currencyOptions.map((item) => item?.value);
   
   const [selectedOption, setSelectedOption] = useState<{
+    name: string;
+    dial_code: string;
     code: string;
-    label: string;
-    value: string;
-  } | { code: "US", label: "United States", value: '+1' }>({ code: "US", label: "United States", value: '+1' });
+  } | { name: "United States", dial_code: '+1', code: "US" }>({ name: "United States", dial_code: '+1', code: "US" });
 
-  const handleOptionClick = (option: { code: string; flag: string; label: string }) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-    setPhoneCode(option?.value)
-  };
+  useEffect(() => {
+    if(customer?.country != ''){
+      const data = CountryList.find(item => item.name === customer?.country);
+      setSelectedOption(data);
+      setPhoneCode(data?.dial_code);
+    }
+    else{
+      setSelectedOption({ name: "United States", dial_code: '+1', code: "US" });
+      setPhoneCode('+1');
+    }
+  }, [customer?.country])
 
   const handleOutsideClick = (event: MouseEvent) => {
     if (flagRef.current && !flagRef.current.contains(event.target)) {
@@ -91,10 +112,27 @@ const AddCustomer: React.FC = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
+  const submit = async(e) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(
+        addCustomerThunk(customer)
+      ).unwrap();
+      toast.success(result?.message);
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000);
+    } catch (error) {
+      toast.error("Error adding customer");
+      console.log(error);
+    }
+  };
   return (
     <div
       className='flex flex-col px-2'
     >
+      <ToastContainer />
       <div
         className='flex flex-row'
       >
@@ -160,36 +198,98 @@ const AddCustomer: React.FC = () => {
                               onClick={() => setIsOpen(!isOpen)}
                             >
                               <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
-                              {
-                                isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
-                              }
                             </div>
-
-                            {/* Dropdown Options */}
-                            {isOpen && (
-                              <div className="absolute mt-[44px] z-10 w-[40px] ml-[-3px] bg-white border border-gray-300 rounded-md shadow-lg" ref={flagRef}>
-                                {currencyOptions.map((option) => (
-                                  <div
-                                    key={option.code}
-                                    className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleOptionClick(option)}
-                                  >
-                                    <Flag code={option?.code} style={{width: '30px'}} />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
                           </div>
                           <p
                             className='w-fit my-auto mx-1'
-                          >{selectedOption?.value}</p>
+                          >{selectedOption?.dial_code}</p>
                           <input
                             type='number'
                             className='w-full focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                            defaultValue={phoneNumber}
                             onChange={e => {
                               setPhoneNumber(parseInt(e.target.value))
                             }}
+                            placeholder={item?.placeholder}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else if(item.name == 'state_name'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                        >
+                          <StateSelect
+                            countryid={countryid}
+                            onChange={(e) => {
+                              setCustomer({
+                                ...customer,
+                                state_name: e.name
+                              });
+                              setstateid(e.id);
+                            }}
+                            placeHolder={item?.placeholder}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else if(item.name == 'country'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                        >
+                          <CountrySelect
+                            onChange={(e) => {
+                              setCustomer({
+                                ...customer,
+                                country: e.name
+                              });
+                              setCountryid(e.id);
+                            }}
+                            placeHolder={item?.placeholder}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                  else if(item.name == 'city'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <div
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                        >
+                          <CitySelect
+                            countryid={countryid}
+                            stateid={stateid}
+                            onChange={(e) => {
+                              setCustomer({
+                                ...customer,
+                                city: e.name
+                              })
+                            }}
+                            placeHolder={item?.placeholder}
                           />
                         </div>
                       </div>
@@ -206,12 +306,11 @@ const AddCustomer: React.FC = () => {
                         >{item.label}</label>
                         <input
                           type={item.type}
-                          placeholder={item.label}
                           name={item.name}
                           required
-                          className='search-input-text'
+                          className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                           onChange={updateCustomer}
-                          defaultValue={customer[item.name]}
+                          placeholder={item?.placeholder}
                         />
                       </div>
                     )
@@ -232,11 +331,11 @@ const AddCustomer: React.FC = () => {
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    checked={customer?.makeAuthorization}
+                    checked={customer?.authentication}
                     onClick={() => {
                       setCustomer({
                         ...customer,
-                        makeAuthorization: !customer.makeAuthorization
+                        authentication: !customer.authentication
                       })
                     }}
                   />

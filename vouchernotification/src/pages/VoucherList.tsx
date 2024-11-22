@@ -9,34 +9,29 @@ import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
 import Flag from 'react-world-flags'; // Flag component
-
-interface VoucherListData {
-  voucherCode: string;
-  currency: string;
-  discount: string;
-  startDate: string;
-  endDate: string;
-  image?: string; // Optional image property
-}
+import { vocuherListThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
+import { format } from "date-fns";
 
 const VoucherList: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isModalOpen, setModalOpen] = useState(false);
-  const [, setSelectedGroup] = useState<VoucherListData | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 3;
+  const itemsPerPage = 20;
   const modalRef = useRef();
   const flagRef = useRef(null);
 
   const columns = [
     {
       header: "Voucher Code",
-      accessor: "voucherCode" as keyof VoucherListData,
+      accessor: "voucher_code",
     },
     {
       header: "Currency",
-      accessor: "currency" as keyof VoucherListData,
-      renderCell: (item: VoucherListData) => (
+      accessor: "currency",
+      renderCell: (item) => (
         <div className="flex items-center gap-2">
           {item.image && (
             <img
@@ -49,95 +44,31 @@ const VoucherList: React.FC = () => {
         </div>
       ),
     },
-    { header: "Discount", accessor: "discount" as keyof VoucherListData },
-    { header: "Start Date", accessor: "startDate" as keyof VoucherListData },
-    { header: "End Date", accessor: "endDate" as keyof VoucherListData },
+    { header: "Discount", accessor: "discount_rate" },
+    { header: "Start Date", accessor: "start_date" },
+    { header: "End Date", accessor: "end_date" },
   ];
 
-  const sampleData: VoucherListData[] = [
-    {
-      voucherCode: "HORD21",
-      currency: "INR",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/india-flag.jpg",
-    },
-    {
-      voucherCode: "HORD22",
-      currency: "USD",
-      discount: "30%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/usa-flag.jpg",
-    },
-    {
-      voucherCode: "HORD23",
-      currency: "INR",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/india-flag.jpg",
-    },
-    {
-      voucherCode: "HORD24",
-      currency: "GBP",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/uk-flag.jpg",
-    },
-    {
-      voucherCode: "HORD24",
-      currency: "GBP",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/uk-flag.jpg",
-    },
-    {
-      voucherCode: "HORD24",
-      currency: "GBP",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/uk-flag.jpg",
-    },
-    {
-      voucherCode: "HORD24",
-      currency: "GBP",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/uk-flag.jpg",
-    },
-    {
-      voucherCode: "HORD24",
-      currency: "GBP",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/uk-flag.jpg",
-    },
-    {
-      voucherCode: "HORD24",
-      currency: "GBP",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/uk-flag.jpg",
-    },
-    {
-      voucherCode: "HORD24",
-      currency: "GBP",
-      discount: "50%",
-      startDate: "10 Jan 2024",
-      endDate: "10 Feb 2024",
-      image: "/images/uk-flag.jpg",
-    },
-  ];
+  const [sampleData,setSampleData] = useState([]);
+  
+  const getVoucherList = async() => {
+    try {
+      const result = await dispatch(
+        vocuherListThunk()
+      ).unwrap();
+      console.log(result.data);
+      setSampleData(result.data);
+    } catch (error) {
+      setSampleData([]);
+      console.log(error);
+    }
+  }
 
-  const openModal = (group: VoucherListData) => {
+  useEffect(() => {
+    getVoucherList();
+  },[])
+
+  const openModal = (group) => {
     setSelectedGroup(group);
     setModalOpen(true);
   };
@@ -147,7 +78,7 @@ const VoucherList: React.FC = () => {
     setSelectedGroup(null);
   };
 
-  const renderActions = (item: VoucherListData) => (
+  const renderActions = (item) => (
     <div className="flex items-center justify-center gap-3 my-1">
       <button className="text-black hover:text-red-600 text-md">
         <FaTrash role="img" aria-label="trash" />

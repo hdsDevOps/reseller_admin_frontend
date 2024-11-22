@@ -4,7 +4,10 @@ import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk } from 'store/user.thunk';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { format } from "date-fns";
 
 const options: Intl.DateTimeFormatOptions = {
   day: "numeric",
@@ -28,7 +31,7 @@ const CustomerManagement: React.FC = () => {
   });
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  console.log(customerList);
+  // console.log(customerList, "customer list");
   
   const [showList, setShowList] = useState(null);
   const listRef = useRef(null);
@@ -37,6 +40,7 @@ const CustomerManagement: React.FC = () => {
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [commonModal, setCommonModal] = useState(false);
+  const [selectAll, setSelectAll] = useState<boolean>(false);
 
   const getCustomerList = async() => {
     try {
@@ -44,15 +48,35 @@ const CustomerManagement: React.FC = () => {
         getCustomerListThunk()
       ).unwrap()
       if(result.data){
-        console.log(result.data);
         setCustomerList(result.data);
       }
       else{
         setCustomerList([]);
       }
     } catch (error) {
-      console.log("Error getting customer list", error);
       setCustomerList([]);
+      if(error?.message == "Request failed with status code 401"){
+        try {
+          const result2 = await dispatch(
+            removeUserAuthTokenFromLSThunk()
+          )
+          navigate('/login');
+        } catch (error) {
+          console.log("Error on logging out")
+        } finally {
+          try {
+            const getToken = await dispatch(
+              getUserAuthTokenFromLSThunk()
+            ).unwrap()
+            navigate('/login')
+          } catch (error) {
+            console.log("Error on token")
+          }
+        }
+      }
+      else{
+        console.log(error);
+      }
     }
   }
 
@@ -67,22 +91,38 @@ const CustomerManagement: React.FC = () => {
     });
   };
 
-  const handleAuthorizeChange = (item) => {
-    axios
-      .patch(`http://localhost:8080/edit-customer/${item?.customerId}`, { makeAuthorization: !item?.makeAuthorization})
-      .then(res => {
-        getCustomerList();
-      })
-      .catch(err => console.log(err))
+  const handleAuthorizeChange = async(item) => {
+    const customerItem = item;
+    customerItem.authentication = !customerItem?.authentication;
+    try {
+      const result = await dispatch(
+        editCustomerThunk(customerItem)
+      ).unwrap();
+    } catch (error) {
+      toast.error("Authentication could not be updated");
+    } finally{
+      getCustomerList();
+      setTimeout(() => {
+        toast.success("Authentication updated");
+      }, 1000);
+    }
   };
 
-  const handleStatusChange = (item) => {
-    axios
-      .patch(`http://localhost:8080/edit-customer/${item?.customerId}`, { status: !item?.status})
-      .then(res => {
-        getCustomerList();
-      })
-      .catch(err => console.log(err))
+  const handleStatusChange = async(item) => {
+    const customerItem = item;
+    customerItem.status = !customerItem?.status;
+    try {
+      const result = await dispatch(
+        editCustomerThunk(customerItem)
+      ).unwrap();
+    } catch (error) {
+      toast.error("Status could not be updated");
+    } finally{
+      getCustomerList();
+      setTimeout(() => {
+        toast.success("Status updated");
+      }, 1000);
+    }
   };
 
   const tableHeads = [
@@ -115,11 +155,89 @@ const CustomerManagement: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutOfList);
     };
   }, []);
+  
+  const cancelCustomerSubscription = async(item) => {
+    try {
+      const result = await dispatch(
+        cancelCustomerSubscriptionThunk({record_id: item?.record_id})
+      ).unwrap()
+      console.log(result);
+      setTimeout(() => {
+        toast.success(result?.message);
+      }, 1000);
+      setShowSubscriptionModal(false);
+    } catch (error) {
+      toast.error("Error suspending customer")
+    } finally {
+      getCustomerList();
+    }
+  };
+
+  const deleteCustomer = async(item) => {
+    try {
+      const result = await dispatch(
+        deleteCustomerThunk({record_id: item?.record_id})
+      ).unwrap()
+      console.log(result);
+      setTimeout(() => {
+        toast.success(result?.message);
+      }, 1000);
+      setShowDeleteModal(false);
+      setCommonModal(false);
+    } catch (error) {
+      toast.error("Error deleting customer")
+    } finally {
+      getCustomerList();
+    }
+  };
+
+  const suspendCustomer = async(item) => {
+    try {
+      const result = await dispatch(
+        suspendCustomerThunk({record_id: item?.record_id})
+      ).unwrap()
+      console.log(result);
+      setTimeout(() => {
+        toast.success(result?.message);
+      }, 1000);
+      setShowSuspendModal(false);
+      setCommonModal(false);
+    } catch (error) {
+      toast.error("Error suspending customer")
+    } finally {
+      getCustomerList();
+    }
+  };
+
+  const transferCustomer = async(item) => {
+    console.log('transfer');
+  };
+  
+  function convertToDate(seconds:any, nanoseconds:any) {
+    const milliseconds = parseInt(seconds) * 1000 + parseInt(nanoseconds) / 1_000_000;
+    return new Date(milliseconds);
+  };
+
+  const selectAllButton = () => {
+    const newSelectAllState = !selectAll;
+    setSelectAll(newSelectAllState);
+    setCustomerList(customerList?.map(item => ({ ...item, isChecked: newSelectAllState})));
+  };
+
+  const handleSelectDeselect = (id) => {
+    const updatedItems = customerList?.map(item => 
+      item?.record_id === id ? { ...item, isChecked: !item.isChecked } : item
+    );
+    setCustomerList(updatedItems);
+    const allChecked = updatedItems.every(item => item.isChecked);
+    setSelectAll(allChecked)
+  }
 
   return (
     <div
       className="grid grid-cols-1"
     >
+      <ToastContainer />
       <div className="flex flex-col w-full">
         <div className="flex-row-between-responsive sm:mr-10 max-sm:mr-0">
           <h3 className="h3-text">
@@ -142,7 +260,10 @@ const CustomerManagement: React.FC = () => {
           <div className="flex flex-row w-full">
             <input
               type="checkbox"
-              className="w-3 h-3 border border-black mt-[12px] mr-[6px]"
+              className={`w-3 h-3 border border-black mt-[12px] mr-[6px] accent-[#12A833]`}
+              onChange={selectAllButton}
+              checked={selectAll}
+              disabled={customerList.length>0 ? false : true}
             />
             <p className="font-inter-bold text-[14px] opacity-60 text-custom-blue mt-[8px]">
               Select All
@@ -433,7 +554,9 @@ const CustomerManagement: React.FC = () => {
                     <tr key={index} className="text-center">
                       <td>
                         <input type="checkbox"
-                          className="w-3 h-3 border border-black"
+                          className="w-3 h-3 border border-black accent-[#12A833]"
+                          checked={item.isChecked || false}
+                          onChange={() => {handleSelectDeselect(item?.record_id)}}
                         />
                       </td>
                       <td
@@ -484,10 +607,7 @@ const CustomerManagement: React.FC = () => {
                       <td
                         className="td-css"
                       >
-                        {/* {new Intl.DateTimeFormat("en-GB", options).format(
-                          new Date(item?.createDate)
-                        )} */}
-                        {item?.createdAt?._seconds}
+                        {`${convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds), 'dd MMM yyyy')}`}
                       </td>
                       <td
                         className="td-css"
@@ -498,10 +618,7 @@ const CustomerManagement: React.FC = () => {
                       <td
                         className="td-css"
                       >
-                        {/* {new Intl.DateTimeFormat("en-GB", options).format(
-                          new Date(item?.renewedDate)
-                        )} */}
-                        {item?.createdAt?._nanoseconds}
+                        {`${convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds), 'dd MMM yyyy')}`}
                       </td>
                       <td>
                         <div className="mt-[7.5px] transition-transform duration-1000 ease-in-out flex justify-center">
@@ -510,8 +627,8 @@ const CustomerManagement: React.FC = () => {
                             <input
                               type="checkbox"
                               className="sr-only peer"
-                              // checked={item?.makeAuthorization}
-                              // onClick={() => handleAuthorizeChange(item)}
+                              checked={item?.authentication}
+                              onClick={() => handleAuthorizeChange(item)}
                             />
                             <div className="w-[30px] h-[15.5px] flex items-center bg-[#E02424] rounded-full peer-checked:text-[#12A833] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[12px] after:absolute after:left-[3px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#12A833]"></div>
                           </label>
@@ -522,12 +639,12 @@ const CustomerManagement: React.FC = () => {
                       >
                         <button
                           className={`w-20 h-[22px] ${
-                          item?.isVerified ? 'active-status' : 'inactive-status'
+                          item?.status ? 'active-status' : 'inactive-status'
                           }`}
                           onClick={() => handleStatusChange(item)}
                         >
                           {
-                            item?.isVerified ? 'Active' : 'Inactive'
+                            item?.status ? 'Active' : 'Inactive'
                           }
                         </button>
                       </td>
@@ -629,6 +746,7 @@ const CustomerManagement: React.FC = () => {
                                           >
                                             <button
                                               className="btn-app-dec text-custom-green border-custom-green mb-1"
+                                              onClick={() => {cancelCustomerSubscription(item)}}
                                             >Approve</button>
                                             <button
                                               className="btn-app-dec text-black  border-gray-500 min-[560px]:ml-[26px] max-[560px]:ml-0"
@@ -696,6 +814,11 @@ const CustomerManagement: React.FC = () => {
                                             <button
                                               className="btn-green-2 w-[79px]"
                                               type="button"
+                                              onClick={() => {
+                                                showDeleteModal ? deleteCustomer(item) :
+                                                showSuspendModal ? suspendCustomer(item) :
+                                                showTransferModal ? transferCustomer(item) : ''
+                                              }}
                                             >Yes</button>
                                             <button
                                               className="btn-red ml-[60px]"
