@@ -13,4 +13,14 @@ export const endPoints = {
 
     // voucher notification endpoints
     voucherList: 'voucherservices/voucher/api/v1/voucherlist',
+    addVoucher: 'voucherservices/voucher/api/v1/addnewvoucher',
+    editVoucher: 'voucherservices/voucher/api/v1/editvoucher',
+    deleteVoucher: 'voucherservices/voucher/api/v1/deletevoucher',
+    addCustomerGroup: 'adminservices/voucher/api/v1/addcustomergroup',
+    editCustomerGroup: 'adminservices/voucher/api/v1/editcustomergroup',
+    customerGroupList: 'adminservices/voucher/api/v1/customergrouplist',
+    deleteCustomerGroup: 'adminservices/voucher/api/v1/deletecustomergroup',
+
+    // subscription
+    subscriptionPlansList: 'adminservices/subscription/api/v1/getplansdetailslist',
 }

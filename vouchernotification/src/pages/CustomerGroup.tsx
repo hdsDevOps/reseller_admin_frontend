@@ -2,24 +2,42 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Pencil } from 'lucide-react';
 import Table from "../components/Table";
 import Modal from "../components/Modal";
-import "../styles/styles.css"
-
-interface CustomerGroupData {
-  groupName: string;
-  numberOfCustomers: number;
-  createdDate: string;
-}
+import "../styles/styles.css";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { format } from "date-fns";
+import { useAppDispatch } from "store/hooks";
+import { getCustomerGroupListThunk, deleteCustomerGroupThunk } from 'store/user.thunk';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CustomerGroup: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState<CustomerGroupData | null>(
-    null
-  );
+  const [selectedGroup, setSelectedGroup] = useState();
   const modalRef = useRef();
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [voucherGroup, setVoucherGroup] = useState({});
+  // console.log(voucherGroup);
+  
+
+  const [sampleData, setSampleData] = useState([]);
+  console.log(sampleData);
+  
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 20;
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sampleData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sampleData.length / itemsPerPage);
+
+  const dateFormat = (date) => {
+    const newDate = new Date(date);
+    return format(newDate, "dd MMM yyyy");
+  };
 
   const clickOutsideModal = (event) => {
     if(modalRef.current && !modalRef.current.contains(event.target)){
@@ -35,37 +53,25 @@ const CustomerGroup: React.FC = () => {
     };
   }, []);
 
-  const columns = [
-    { header: "Group Name", accessor: "groupName" as keyof CustomerGroupData },
-    {
-      header: "Number of Customers",
-      accessor: "numberOfCustomers" as keyof CustomerGroupData,
-    },
-    {
-      header: "Created Date",
-      accessor: "createdDate" as keyof CustomerGroupData,
-    },
-  ];
+  const getCustomerGroupListData = async() => {
+    try {
+      const result = await dispatch(
+        getCustomerGroupListThunk()
+      ).unwrap();
+      setSampleData(result.data);
+    } catch (error) {
+      setSampleData([]);
+      console.log(error);
+    }
+  };
 
-  const sampleData: CustomerGroupData[] = [
-    {
-      groupName: "ABC Group",
-      numberOfCustomers: 10,
-      createdDate: "23 Jan 2024",
-    },
-    {
-      groupName: "ABC Group",
-      numberOfCustomers: 15,
-      createdDate: "25 Jan 2024",
-    },
-    {
-      groupName: "ABC Group",
-      numberOfCustomers: 20,
-      createdDate: "30 Jan 2024",
-    },
-  ];
+  useEffect(() => {
+    getCustomerGroupListData();
+  }, []);
 
-  const openModal = (group: CustomerGroupData) => {
+  const tableHeads = ['Group Name', 'Number of Customers', 'Created Date', 'Actions',];
+
+  const openModal = (group) => {
     setSelectedGroup(group);
     setModalOpen(true);
   };
@@ -75,22 +81,31 @@ const CustomerGroup: React.FC = () => {
     setSelectedGroup(null);
   };
 
-  const renderActions = (item: CustomerGroupData) => (
-    <div className="flex items-center justify-center gap-3 my-1">
-      <button className="text-black hover:text-red-600 text-md">
-        <FaTrash role="img" aria-label="trash" />
-      </button>
-      <button
-        className="btn-green-3 w-14 h-7"
-        onClick={() => openModal(item)}
-      >
-        View
-      </button>
-    </div>
-  );
+  const deleteCustomerGroup = async(id:string) => {
+    try {
+      const result = await dispatch(
+        deleteCustomerGroupThunk({record_id: id})
+      ).unwrap()
+      setTimeout(() => {
+        toast.success(result?.message);
+      }, 1000);
+      setDeleteModal(false);
+      setVoucherGroup({});
+    } catch (error) {
+      toast.error("Error suspending customer")
+    } finally {
+      getCustomerGroupListData();
+    }
+  };
+
+  function convertToDate(seconds:any, nanoseconds:any) {
+    const milliseconds = seconds * 1000 + nanoseconds / 1_000_000;
+    return new Date(milliseconds);
+  };
 
   return (
     <div className="grid grid-cols-1">
+      <ToastContainer />
       <div className="flex flex-col">
         <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
           <h3 className="h3-text">Customer Groups</h3>
@@ -146,26 +161,161 @@ const CustomerGroup: React.FC = () => {
           </div>
         </div>
       </div>
-      <Table
-        columns={columns}
-        data={sampleData}
-        renderActions={renderActions}
-      />
+
+      <div className="w-full overflow-x-auto pb-[20px]">
+        <table className="min-w-[1100px] lg:min-w-full max-h-screen">
+          <thead className="bg-custom-blue-6 h-[53px]">
+            <tr>
+              {
+                tableHeads.map((head, index) => (
+                  <th key={index} className="th-css-2">{head}</th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody className="bg-white mt-3">
+            {
+              currentItems && currentItems?.map((item, index) => {
+                return(
+                  <tr key={index} className="text-center">
+                    <td className="td-css-2">{item?.group_name}</td>
+                    <td className="td-css-2">{item?.no_customer}</td>
+                    <td className="td-css-2">
+                      {/* {dateFormat(item?.start_date)} */}
+                      {/* {item?.created_at?._seconds} */}
+                      {`${convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds), 'dd MMM yyyy')}`}
+                    </td>
+                    <td className="">
+                      <div className="flex items-center justify-center gap-3 my-1">
+                        <div className="flex flex-row gap-1">
+                          <button className="text-black hover:text-orange-300" onClick={() => {navigate('/edit-customer-group', {state: item})}}>
+                              <Pencil className=" w-5" />
+                            </button>
+                          <button className="text-black hover:text-red-600 text-md" onClick={() => {
+                            setDeleteModal(true);
+                            setVoucherGroup(item);
+                          }}>
+                            <FaTrash role="img" aria-label="trash" />
+                          </button>
+                        </div>
+                        <button
+                          className="btn-green-3 w-[80px] h-7"
+                          onClick={() => {
+                            openModal(item);
+                            setVoucherGroup(item);
+                          }}
+                        >
+                          Send mail
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+
+      {
+        deleteModal && (
+          <Dialog
+            open={deleteModal}
+            as="div"
+            className="relative z-10 focus:outline-none"
+            onClose={() => {
+              setDeleteModal(false);
+              setVoucherGroup({});
+            }}
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto mt-16">
+              <div className="flex min-h-full items-center justify-center py-4">
+                <DialogPanel
+                  transition
+                  className="w-full max-w-[450px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+                >
+                  <div className="flex justify-between items-center mb-6">
+                    <DialogTitle
+                      as="h3"
+                      className="text-lg font-semibold text-gray-900"
+                    >Delete Voucher</DialogTitle>
+                    <div className='btn-close-bg'>
+                      <button
+                        type='button'
+                        className='text-3xl rotate-45 mt-[-8px] text-white'
+                        onClick={() => {
+                          setDeleteModal(false);
+                          setVoucherGroup({});
+                        }}
+                      >+</button>
+                    </div>
+                  </div>
+
+                  <div
+                    className="mt-8 px-8"
+                  >
+                    <p
+                      className="font-warning-popup-message"
+                    >Are you sure want to delete this voucher?</p>
+                  </div>
+
+                  <div
+                    className="flex flex-row justify-center items-center mt-14"
+                  >
+                    <button
+                      className="btn-green-2 w-[79px]"
+                      type="button"
+                      onClick={() => {deleteCustomerGroup(voucherGroup?.record_id)}}
+                    >Yes</button>
+                    <button
+                      className="btn-red ml-[60px]"
+                      type="button"
+                      onClick={() => {
+                        setDeleteModal(false);
+                        setVoucherGroup({});
+                      }}
+                    >Cancel</button>
+                  </div>
+                </DialogPanel>
+              </div>
+            </div>
+          </Dialog>
+        )
+      }
 
       {/* Modal for Group Details */}
       <Modal isOpen={isModalOpen} onClose={closeModal} modalRef={modalRef} title="Group Details">
         {selectedGroup && (
           <div className="flex justify-between border-b border-black leading-none">
             <p className="">Group Name:</p>
-            <p className="">{selectedGroup.groupName}</p>
+            <p className="">{selectedGroup?.group_name}</p>
           </div>
         )}
         <div className="mt-px flex flex-col">
-          <p className="mt-0">Country:</p>
-          <p className="mt-0">Region:</p>
-          <p className="mt-0">Subscription Plan:</p>
-          <p className="mt-0">Expiry Date:</p>
-          <p className="mt-0">License Usage:</p>
+          <div className="mt-0 flex flex-row justify-between">
+            <p>Country:</p>
+            <p>{selectedGroup?.country}</p>
+          </div>
+          <div className="mt-0 flex flex-row justify-between">
+            <p>Region:</p>
+            <p>{selectedGroup?.region}</p>
+          </div>
+          <div className="mt-0 flex flex-row justify-between">
+            <p>Subscription Plan:</p>
+            <p>{selectedGroup?.plan}</p>
+          </div>
+          <div className="mt-0 flex flex-row justify-between">
+            <p>Expiry Date:</p>
+            <p>{convertToDate(selectedGroup?.created_at?._seconds, selectedGroup?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(selectedGroup?.created_at?._seconds, selectedGroup?.created_at?._nanoseconds), 'dd MMM yyyy')}</p>
+          </div>
+          <div className="mt-0 flex flex-row justify-between">
+            <p>License Usage:</p>
+            <p>{selectedGroup?.license_usage}</p>
+          </div>
+          <div className="mt-0 flex flex-row justify-between">
+            <p>Number of Customers:</p>
+            <p>{selectedGroup?.no_customer}</p>
+          </div>
         </div>
       </Modal>
     </div>

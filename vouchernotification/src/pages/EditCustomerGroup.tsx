@@ -1,6 +1,6 @@
 import { MoveLeft } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   CountrySelect,
   StateSelect,
@@ -8,26 +8,18 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, addCustomerGroupThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, editCustomerGroupThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const AddCustomerGroup: React.FC = () =>  {
+const EditCustomerGroup: React.FC = () =>  {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
 
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   
-  const [customerGroup, setCustomerGroup] = useState({
-    group_name: "",
-    country: "",
-    region: "",
-    plan: "",
-    start_date: "",
-    end_date: "", 
-    license_usage: "", 
-    no_customer: "",
-  });
+  const [customerGroup, setCustomerGroup] = useState(location.state);
   console.log(customerGroup);
 
   const updateCustomerGroup = (e) => {
@@ -86,7 +78,17 @@ const AddCustomerGroup: React.FC = () =>  {
     e.preventDefault();
     try {
       const result = await dispatch(
-        addCustomerGroupThunk(customerGroup)
+        editCustomerGroupThunk({
+          group_name: customerGroup?.group_name,
+          country: customerGroup?.country,
+          region: customerGroup?.region,
+          plan: customerGroup?.plan,
+          start_date: customerGroup?.start_date,
+          end_date: customerGroup?.end_date,
+          license_usage: customerGroup?.license_usage,
+          no_customer: customerGroup?.no_customer,
+          record_id: customerGroup?.record_id
+        })
       ).unwrap()
       toast.success(result?.message);
       setTimeout(() => {
@@ -114,7 +116,7 @@ const AddCustomerGroup: React.FC = () =>  {
         </a>
         <h3
           className='h3-text ml-[10px]'
-        >Add Customer Group</h3>
+        >Edit Customer Group</h3>
       </div>
 
       <form onSubmit={submit}>
@@ -134,10 +136,10 @@ const AddCustomerGroup: React.FC = () =>  {
                       name='plan'
                       onChange={updateCustomerGroup}
                     >
-                      <option hidden selected value=''>{item.placeholder}</option>
+                      <option value="" hidden selected={customerGroup?.plan == "" ? true : false}>Select plan</option>
                       {
                         subscriptionPlans.length> 0 && subscriptionPlans?.map((subscription, idx) => (
-                          <option key={idx} value={subscription?.plan_name}>{subscription?.plan_name}</option>
+                          <option key={idx} value={subscription?.plan_name} selected={subscription?.plan_name == customerGroup?.plan ? true : false}>{subscription?.plan_name}</option>
                         ))
                       }
                     </select>
@@ -161,7 +163,7 @@ const AddCustomerGroup: React.FC = () =>  {
                           });
                           setCountryid(e.id);
                         }}
-                        placeHolder={item?.placeholder}
+                        placeHolder={customerGroup?.country || 'Select country'}
                       />
                     </div>
                   </div>
@@ -185,7 +187,7 @@ const AddCustomerGroup: React.FC = () =>  {
                           });
                           setstateid(e.id);
                         }}
-                        placeHolder={item?.placeholder}
+                        placeHolder={customerGroup?.region || 'Select State/Region'}
                       />
                     </div>
                   </div>
@@ -212,6 +214,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       name={item.name}
                       className='search-input-text px-4'
                       onChange={updateCustomerGroup}
+                      defaultValue={customerGroup?.start_date}
                     />
                   </div>
                 )
@@ -237,6 +240,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       className='search-input-text px-4'
                       onChange={updateCustomerGroup}
                       disabled={endDateEnable}
+                      defaultValue={customerGroup?.end_date}
                       min={customerGroup?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(customerGroup?.start_date)) }
                     />
                   </div>
@@ -257,6 +261,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       name={item.name}
                       className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                       onChange={updateCustomerGroup}
+                      defaultValue={customerGroup[item?.name]}
                     />
                   </div>
                 )
@@ -277,6 +282,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateCustomerGroup}
+                      defaultValue={customerGroup[item?.name]}
                     />
                   </div>
                 )
@@ -299,6 +305,6 @@ const AddCustomerGroup: React.FC = () =>  {
       </form>
     </div>
   )
-}
+};
 
-export default AddCustomerGroup
+export default EditCustomerGroup;

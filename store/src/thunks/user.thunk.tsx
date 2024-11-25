@@ -123,3 +123,93 @@ export const vocuherListThunk = createAsyncThunk(
     return await userApis.voucherListApi();
   }
 );
+
+export const addVoucherThunk = createAsyncThunk(
+  "users/addVocuher",
+  async ({voucher_code, start_date, end_date, discount_rate, template_details, currency}: any) => {
+    return await userApis.addVoucherApi(
+      voucher_code,
+      start_date,
+      end_date,
+      discount_rate,
+      template_details,
+      currency
+    );
+  }
+);
+
+export const editVoucherThunk = createAsyncThunk(
+  "users/editVocuher",
+  async ({voucher_code, start_date, end_date, discount_rate, template_details, currency, record_id}: any) => {
+    return await userApis.editVoucherApi(
+      voucher_code,
+      start_date,
+      end_date,
+      discount_rate,
+      template_details,
+      currency,
+      record_id
+    );
+  }
+);
+
+export const deleteVoucherThunk = createAsyncThunk(
+  "users/deleteVocuher",
+  async ({record_id}: {record_id: string}) => {
+    return await userApis.deleteVoucherApi(record_id);
+  }
+);
+
+export const addCustomerGroupThunk = createAsyncThunk(
+  "users/addCustomerGroup",
+  async ({group_name, country, region, plan, start_date, end_date, license_usage, no_customer}: any) => {
+    return await userApis.addCustomerGroupApi(
+      group_name,
+      country,
+      region,
+      plan,
+      start_date,
+      end_date,
+      license_usage,
+      no_customer
+    );
+  }
+);
+
+export const editCustomerGroupThunk = createAsyncThunk(
+  "users/editCustomerGroup",
+  async ({group_name, country, region, plan, start_date, end_date, license_usage, no_customer, record_id}: any) => {
+    return await userApis.editCustomerGroupApi(
+      group_name,
+      country,
+      region,
+      plan,
+      start_date,
+      end_date,
+      license_usage,
+      no_customer,
+      record_id
+    );
+  }
+);
+
+export const getCustomerGroupListThunk = createAsyncThunk(
+  "users/getCustomerGroupList",
+  async () => {
+    return await userApis.getCustomerGroupListApi();
+  }
+);
+
+export const deleteCustomerGroupThunk = createAsyncThunk(
+  "users/deleteCustomerGroup",
+  async ({record_id}: any) => {
+    return await userApis.deleteCustomerGroupApi(record_id);
+  }
+);
+
+export const getSubscriptonPlansListThunk = createAsyncThunk(
+  "users/getSubscriptonPlansList",
+  async () => {
+    return await userApis.subscriptionPlansListApi();
+  }
+);

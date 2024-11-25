@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronRight, ChevronUp, MoveLeft } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Flag from 'react-world-flags'; // Flag component
-import { addVoucherThunk } from 'store/user.thunk';
+import { editVoucherThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from 'store/hooks';
@@ -11,20 +11,14 @@ interface Props {
   htmlContent: string;
 }
 
-const AddVoucher: React.FC = () =>  {
+const EditVoucher: React.FC = () =>  {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
   const flagRef = useRef(null);
-  const [voucher, setVoucher] = useState({
-    voucher_code: "",
-    start_date: "",
-    end_date: "",
-    discount_rate: "",
-    template_details: "",
-    currency: ""
-  });
+  const [voucher, setVoucher] = useState(location.state);
   console.log(voucher);
 
   const [endDateEnable, setEndDateEnable] = useState(true);
@@ -84,13 +78,16 @@ const AddVoucher: React.FC = () =>  {
     { code: "IN", label: "India", value: '₹', currency_code: "INR", },
   ];
 
-  const countryCodes = currencyOptions.map((item) => item?.value);
-  
   const [selectedOption, setSelectedOption] = useState<{
     code: string;
     label: string;
     value: string;
   } | { code: "US", label: "United States", value: '$', currency_code: "USD" }>({ code: "US", label: "United States", value: '$', currency_code: "USD" });
+
+  useEffect(() => {
+    const data = currencyOptions.filter(item => item.currency_code == location.state.currency)[0];
+    setSelectedOption(data);
+  }, []);
 
   useEffect(() => {
     setVoucher({
@@ -121,14 +118,22 @@ const AddVoucher: React.FC = () =>  {
     e.preventDefault();
     try {
       const result = await dispatch(
-        addVoucherThunk(voucher)
+        editVoucherThunk({
+          voucher_code: voucher?.voucher_code,
+          start_date: voucher?.start_date,
+          end_date: voucher?.end_date,
+          discount_rate: voucher?.discount_rate,
+          template_details: voucher?.template_details,
+          currency: voucher?.currency,
+          record_id: voucher?.id
+        })
       ).unwrap()
       toast.success(result?.message);
       setTimeout(() => {
         navigate(-1);
       }, 1000);
     } catch (error) {
-      toast.error("Error adding voucher");
+      toast.error("Error editing voucher");
     }
   };
   
@@ -157,7 +162,7 @@ const AddVoucher: React.FC = () =>  {
         </a>
         <h3
           className='h3-text ml-[10px]'
-        >Add Voucher</h3>
+        >Edit Voucher</h3>
       </div>
       <div
           className='flex flex-row mt-5 h-[22px]'
@@ -198,6 +203,7 @@ const AddVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                       onChange={updateVoucher}
+                      defaultValue={voucher[item.name]}
                     />
                     <div
                       key={index}
@@ -258,6 +264,7 @@ const AddVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateVoucher}
+                      defaultValue={voucher[item.name]}
                     />
                   </div>
                 )
@@ -285,6 +292,7 @@ const AddVoucher: React.FC = () =>  {
                       onChange={updateVoucher}
                       disabled={endDateEnable}
                       min={voucher?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(voucher?.start_date)) }
+                      defaultValue={voucher[item.name]}
                     />
                   </div>
                 )
@@ -304,6 +312,7 @@ const AddVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateVoucher}
+                      defaultValue={voucher[item.name]}
                     />
                   </div>
                 )
@@ -316,7 +325,7 @@ const AddVoucher: React.FC = () =>  {
             <label
               className='search-input-label'
             >Template</label>
-            <textarea className='textarea-template' placeholder='HTML/CSS script should be here to make the Promotion template' name='template_details' onChange={updateVoucher} />
+            <textarea className='textarea-template' placeholder='HTML/CSS script should be here to make the Promotion template' name='template_details' onChange={updateVoucher} defaultValue={voucher?.template_details}/>
           </div>
 
           <div className='flex flex-col max-sm:mx-auto px-2 mb-2 mt-5'>
@@ -337,6 +346,10 @@ const AddVoucher: React.FC = () =>  {
           <button
             type='button'
             className='btn-red h-[46px] ml-[30px]'
+            onClick={() => {
+              setVoucher(location.state);
+              navigate(-1);
+            }}
           >Cancel</button>
         </div>
       </form>
@@ -373,6 +386,6 @@ const AddVoucher: React.FC = () =>  {
       }
     </div>
   )
-}
+};
 
-export default AddVoucher
+export default EditVoucher;

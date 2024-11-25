@@ -9,9 +9,6 @@ import {
   CitySelect,
   CountrySelect,
   StateSelect,
-  LanguageSelect,
-  RegionSelect,
-  PhonecodeSelect
 } from "react-country-state-city";
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList.css';
@@ -125,7 +122,6 @@ const AddCustomer: React.FC = () => {
       }, 1000);
     } catch (error) {
       toast.error("Error adding customer");
-      console.log(error);
     }
   };
   return (
@@ -148,7 +144,7 @@ const AddCustomer: React.FC = () => {
         </a>
         <h3
           className='h3-text ml-[10px]'
-        >Customer Information</h3>
+        >Add Customer</h3>
       </div>
 
       <div

@@ -161,6 +161,116 @@ async function voucherListApi(): Promise<any> {
   }
 };
 
+async function addVoucherApi(
+  voucher_code: string,
+  start_date: string,
+  end_date: string,
+  discount_rate: number,
+  template_details: string,
+  currency: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addVoucher, {voucher_code, start_date, end_date, discount_rate, template_details, currency});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function editVoucherApi(
+  voucher_code: string,
+  start_date: string,
+  end_date: string,
+  discount_rate: number,
+  template_details: string,
+  currency: string,
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.editVoucher, {voucher_code, start_date, end_date, discount_rate, template_details, currency, record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deleteVoucherApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deleteVoucher, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function addCustomerGroupApi(
+  group_name: string,
+  country: string,
+  region: string,
+  plan: string,
+  start_date: string,
+  end_date: string, 
+  license_usage: string, 
+  no_customer: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addCustomerGroup, {group_name, country, region, plan, start_date, end_date, license_usage, no_customer});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function editCustomerGroupApi(
+  group_name: string,
+  country: string,
+  region: string,
+  plan: string,
+  start_date: string,
+  end_date: string, 
+  license_usage: string, 
+  no_customer: string,
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.editCustomerGroup, {group_name, country, region, plan, start_date, end_date, license_usage, no_customer, record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getCustomerGroupListApi(): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.customerGroupList, {});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deleteCustomerGroupApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deleteCustomerGroup, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function subscriptionPlansListApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.subscriptionPlansList);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -172,4 +282,12 @@ export const userApis = {
   suspendCustomerApi,
   cancelCustomerSubscriptionApi,
   voucherListApi,
+  addVoucherApi,
+  editVoucherApi,
+  deleteVoucherApi,
+  addCustomerGroupApi,
+  editCustomerGroupApi,
+  getCustomerGroupListApi,
+  deleteCustomerGroupApi,
+  subscriptionPlansListApi,
 };

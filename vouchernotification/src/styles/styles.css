@@ -147,7 +147,7 @@
 }
 
 .search-input-text{
-  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2;
+  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60;
 }
 
 .search-select-text{
@@ -243,7 +243,7 @@
 }
 
 .textarea-template{
-  @apply border border-cWhite h-[131.64px] rounded-[10px] font-inter font-normal text-xs leading-6 text-cBlack4 p-2;
+  @apply border border-cWhite h-[131.64px] rounded-[10px] font-inter font-normal text-sm leading-6 text-cBlack4 p-2 mt-[-9px] placeholder:opacity-60;
 }
 
 .notification-select{
@@ -264,4 +264,12 @@
 
 .notification-template-textarea{
   @apply w-full max-h-[208px] min-h-[208px] overflow-y-scroll px-6 py-1 focus:outline-none;
+}
+
+.radio-checked{
+  @apply w-[22px] h-[22px] border border-[#B0B0B0] rounded-full appearance-none bg-[#12A833]  shadow-[inset_0_5px_5px_0px_rgba(0,0,0,0.3)];
+}
+
+.radio-unchecked{
+  @apply w-[22px] h-[22px] border rounded-full appearance-none border-[#B0B0B0] bg-[#929292] shadow-[inset_0_5px_5px_0px_rgba(0,0,0,0.3)];
 }

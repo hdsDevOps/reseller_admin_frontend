@@ -11,7 +11,7 @@ import CustomError from "../customClass/CustomError.class";
 export async function getApiCall(endPoint: string): Promise<any | CustomError> {
   try {
     const fetchedData = await axiosInstance.get(endPoint);
-    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201) {
+    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success") {
       return fetchedData?.data;
     } else if (
       fetchedData.data?.status === 401 ||
