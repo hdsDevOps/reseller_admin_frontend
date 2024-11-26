@@ -144,7 +144,7 @@ const Login: React.FC = () => {
                     type="checkbox"
                     className="border border-[#545454] h-4 w-4 accent-[#12A833]"
                     checked={rememberMe}
-                    onClick={() => {setRememberMe(!rememberMe)}}
+                    onChange={() => {setRememberMe(!rememberMe)}}
                   />
 
                   <label
@@ -157,7 +157,7 @@ const Login: React.FC = () => {
                 <div className="">
                   <Link
                     to="/forgotpassword"
-                    className="text-xs font-normal text-custom-green"
+                    className="text-xs font-normal text-custom-green hover:underline"
                     data-testid="forgot-password"
                   >
                     Forgot Password

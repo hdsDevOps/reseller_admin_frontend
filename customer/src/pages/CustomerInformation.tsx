@@ -5,10 +5,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import '../styles/styles.css';
+import { updateCustomerPasswordThunk } from 'store/user.thunk';
+import { useAppDispatch } from 'store/hooks';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CustomerInformation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
 
   const [customer, setCustomer] = useState(location.state);
   console.log(customer, 'customer information');
@@ -26,17 +31,35 @@ const CustomerInformation: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const resetPasswordSubmit = e => {
+  const resetPasswordSubmit = async(e) => {
     e.preventDefault();
-    setResetPasswordShow(false);
-    setNewPassword('');
-    setConfirmPassword('');
+    if(newPassword != confirmPassword){
+      toast.warning("Password and confirm password do not match");
+    }
+    else{
+      try {
+        const result = await dispatch(
+          updateCustomerPasswordThunk({record_id: customer?.record_id, password: newPassword})
+        ).unwrap()
+        // console.log(result);
+        setResetPasswordShow(false);
+        setNewPassword('');
+        setConfirmPassword('');
+        setTimeout(() => {
+          toast.success("Password updated successfully");
+        }, 1000);
+      } catch (error) {
+        toast.error("Error resetting customer password");
+        console.log(error);
+      }
+    }
   }
   
   return (
     <div
       className='flex flex-col px-2 max-[400px]:px-0'
     >
+      <ToastContainer />
       <div
         className='flex flex-row'
       >
@@ -107,7 +130,7 @@ const CustomerInformation: React.FC = () => {
           >Login as Customer</button>
 
           <a
-            className='a-reset-password max-[631px]:my-2'
+            className='a-reset-password max-[631px]:my-2 hover:underline'
             onClick={() => {
               setResetPasswordShow(true);
             }}
@@ -207,7 +230,7 @@ const CustomerInformation: React.FC = () => {
             >
               <button
                 className='w-[181px] h-[46px] btn-green-2'
-                type='button'
+                type='submit'
               >Save</button>
             </div>
           </form>

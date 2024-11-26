@@ -44,9 +44,83 @@ async function resendOtpApi(
   }
 };
 
-async function customerListApi(): Promise<any> {
+async function forgetPasswordOtpApi(
+  email: string
+): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.customerList, { });
+    const result = await postApiCall(endPoints.forgetPasswordOtp, {
+      email
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function forgetPasswordResendOtpApi(
+  email: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.fogetPasswordResendOtp, {
+      email
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function forgetPasswordVerifyOtpApi(
+  email: string,
+  otp: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.forgetPasswordVerifyOtp, {
+      email,
+      otp
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function forgetPasswordResetApi(
+  email: string,
+  otp: string,
+  newpassword: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.forgetPasswordReset, {
+      email,
+      otp,
+      newpassword
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function customerListApi(
+  search_data: string,
+  country: string,
+  state_name: string,
+  authentication: boolean,
+  license_usage: string,
+  subscritption_date: string,
+  renewal_date: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.customerList, {
+      search_data,
+      country,
+      state_name,
+      authentication,
+      license_usage,
+      subscritption_date,
+      renewal_date
+    });
     return result;
   } catch (error: any) {
     throw error;
@@ -152,6 +226,18 @@ async function cancelCustomerSubscriptionApi(
   }
 };
 
+async function updateCustomerPasswordApi(
+  record_id: string,
+  password: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateCustomerPassword, {record_id, password});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function voucherListApi(): Promise<any> {
   try {
     const result = await postApiCall(endPoints.voucherList, {});
@@ -199,6 +285,19 @@ async function deleteVoucherApi(
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.deleteVoucher, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function sendVoucherEmailApi(
+  record_id: string,
+  customer_id: string,
+  customer_type: number
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.sendVoucherEmail, {record_id, customer_id, customer_type});
     return result;
   } catch (error: any) {
     throw error;
@@ -275,16 +374,22 @@ export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
   resendOtpApi,
+  forgetPasswordOtpApi,
+  forgetPasswordResendOtpApi,
+  forgetPasswordVerifyOtpApi,
+  forgetPasswordResetApi,
   customerListApi,
   addCustomerApi,
   editCustomerApi,
   deleteCustomerApi,
   suspendCustomerApi,
   cancelCustomerSubscriptionApi,
+  updateCustomerPasswordApi,
   voucherListApi,
   addVoucherApi,
   editVoucherApi,
   deleteVoucherApi,
+  sendVoucherEmailApi,
   addCustomerGroupApi,
   editCustomerGroupApi,
   getCustomerGroupListApi,

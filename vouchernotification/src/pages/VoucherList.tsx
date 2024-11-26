@@ -9,12 +9,13 @@ import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { ChevronDown, ChevronRight, ChevronUp, Pencil } from "lucide-react";
 import Flag from 'react-world-flags'; // Flag component
-import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk } from 'store/user.thunk';
+import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, getCustomerListThunk, sendVoucherEmailThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CustomerGroup from "./CustomerGroup";
 
 const VoucherList: React.FC = () => {
   const navigate = useNavigate();
@@ -27,12 +28,98 @@ const VoucherList: React.FC = () => {
   const flagRef = useRef(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const [voucher, setVoucher] = useState({});
+  // console.log(voucher);
+  const [customerId, setCustomerId] = useState<string>("");
+  // console.log(customerId);
+  
   const [customerGroupList, setCustomerGroupList] = useState([]);
+  // console.log(customerGroupList);
+  const [customerList, setCustomerList] = useState([]);
+  // console.log(customerList);
+  const [customerSearch, setCustomerSearch] = useState({
+    search_data: "",
+    country: "",
+    state_name: "",
+    authentication: "",
+    license_usage: "",
+    subscritption_date: "",
+    renewal_date: ""
+  });
+  // console.log(customerSearch);
+
+  const [dropwdownSearch, setDropdownSearch] = useState(false);
+  useEffect(() => {
+    if(customerSearch?.search_data != ""){
+      if(customerList.length > 0){
+        if(customerId == ""){
+          setDropdownSearch(true);
+        }
+        else{
+          setDropdownSearch(false);
+        }
+      }
+      else{
+        setDropdownSearch(false);
+      }
+    }
+    else{
+      setDropdownSearch(false);
+      setCustomerList([]);
+    }
+  }, [customerSearch]);
+
+  const getCustomerList = async() => {
+    try {
+      const result = await dispatch(
+        getCustomerListThunk(customerSearch)
+      ).unwrap()
+      if(result.data){
+        setCustomerList(result.data);
+      }
+      else{
+        setCustomerList([]);
+      }
+    } catch (error) {
+      setCustomerList([]);
+      if(error?.message == "Request failed with status code 401"){
+        try {
+          const result2 = await dispatch(
+            removeUserAuthTokenFromLSThunk()
+          ).unwrap()
+          navigate('/login');
+        } catch (error) {
+          console.log("Error on logging out")
+        } finally {
+          try {
+            const getToken = await dispatch(
+              getUserAuthTokenFromLSThunk()
+            ).unwrap()
+            navigate('/login')
+          } catch (error) {
+            console.log("Error on token")
+          }
+        }
+      }
+      else{
+        console.log(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if(customerSearch?.search_data != ""){
+      getCustomerList();
+    }
+    else{
+      setCustomerList([]);
+    }
+  }, [customerSearch]);
 
   const [selectedRadio, setSelectedRadio] = useState('group');
 
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedRadio(e.target.value);
+    setCustomerId("");
   };
 
   const tableHeads = [ 'Voucher Code', 'Currency', 'Discount', 'Start Date', 'End Date', 'Actions'];
@@ -49,11 +136,31 @@ const VoucherList: React.FC = () => {
       const result = await dispatch(
         vocuherListThunk()
       ).unwrap();
-      console.log(result.data);
       setSampleData(result.data);
     } catch (error) {
       setSampleData([]);
-      console.log(error);
+      if(error?.message == "Request failed with status code 401"){
+        try {
+          const result2 = await dispatch(
+            removeUserAuthTokenFromLSThunk()
+          ).unwrap()
+          navigate('/login');
+        } catch (error) {
+          console.log("Error on logging out")
+        } finally {
+          try {
+            const getToken = await dispatch(
+              getUserAuthTokenFromLSThunk()
+            ).unwrap()
+            navigate('/login')
+          } catch (error) {
+            console.log("Error on token")
+          }
+        }
+      }
+      else{
+        console.log(error);
+      }
     }
   };
 
@@ -147,7 +254,34 @@ const VoucherList: React.FC = () => {
     } finally {
       getVoucherList();
     }
-  }
+  };
+
+  const sendVoucherEmail = async(recordId:string, customerId:string, customerType: number) => {
+    console.log({
+      record_id: recordId,
+      customer_id: customerId,
+      customer_type: customerType
+    });
+    
+    if(customerId == ""){
+      toast.warning("Please select customer group or individual customer");
+    }
+    else{
+      try {
+        const result = await dispatch(
+          sendVoucherEmailThunk({
+            record_id: recordId,
+            customer_id: customerId,
+            customer_type: customerType
+          })
+        ).unwrap();
+        toast.success(result?.message);
+      } catch (error) {
+        toast.error("Voucher email could not be sent");
+        console.log(error);
+      }
+    }
+  };
 
   return (
     <div className="grid grid-cols-1">
@@ -274,7 +408,7 @@ const VoucherList: React.FC = () => {
                   <tr key={index} className="text-center">
                     <td className="td-css-2">{item?.voucher_code}</td>
                     <td className="td-css-2">{item?.currency}</td>
-                    <td className="td-css-2">{item?.discount_rate}</td>
+                    <td className="td-css-2">{item?.discount_rate}%</td>
                     <td className="td-css-2">{dateFormat(item?.start_date)}</td>
                     <td className="td-css-2">{dateFormat(item?.end_date)}</td>
                     <td className="">
@@ -419,49 +553,7 @@ const VoucherList: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* <Modal isOpen={isModalOpen} onClose={closeModal} modalRef={modalRef} title="Send Mail">
-        <div className="flex flex-col gap-2 text-xs font-normal">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="radio-5"
-                className="radio radio-success radio-sm"
-                defaultChecked
-              />
-              <h3 className="text-lg">Group</h3>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="radio-5"
-                className="radio radio-success radio-sm"
-                defaultChecked
-              />
-              <h3 className="text-lg">Individual Customer</h3>
-            </div>
-          </div>
-          <div className="flex items-center relative my-5">
-            <select className="border border-gray-300 w-full bg-gray-100 p-3 pr-10 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 appearance-none text-base">
-              <option value="" disabled selected>
-                Select Group
-              </option>
-              <option value="ABC">ABC Group</option>
-              <option value="XYZ">XYZ Group</option>
-            </select>
-            <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <FaCaretDown className="w-4 h-4 text-gray-500" />
-            </span>
-          </div>
-          <button
-            type="button"
-            className="p-3 rounded-md text-base bg-green-500 w-[30%] hover:bg-opacity-95 self-end text-white transition-all duration-300 ease-in-out hover:shadow-lg"
-          >
-            Send
-          </button>
-        </div>
-      </Modal> */}
+      
       {
         isModalOpen && (
           <div className="fixed-full-screen">
@@ -504,17 +596,54 @@ const VoucherList: React.FC = () => {
                 {
                   selectedRadio === "group" ? 
                   <div className="w-full py-4">
-                    <select className="w-full px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-[80%] font-inter font-extralight text-base text-black">
+                    <select
+                      className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-[80%] font-inter font-extralight text-base text-black"
+                      onChange={e => {
+                        setCustomerId(e.target.value);
+                      }}
+                    >
                       <option selected hidden>Select group</option>
                       {
                         customerGroupList?.map((customerGroup, index) => (
-                          <option value={customerGroup?.group_name} key={index}>{customerGroup?.group_name}</option>
+                          <option value={customerGroup?.record_id} key={index}>{customerGroup?.group_name}</option>
                         ))
                       }
                     </select>
                   </div> :
                   <div className="w-full py-4">
-                    <input className="w-full px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-[80%] font-inter font-extralight text-base text-black" placeholder="Enter customer email id" />
+                    <input className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-[80%] font-inter font-extralight text-base text-black" placeholder="Enter customer email id"
+                      onChange={e => {
+                        setCustomerSearch({
+                          ...customerSearch,
+                          search_data: e.target.value
+                        });
+                        setCustomerId("");
+                      }}
+                      value={customerSearch?.search_data}
+                    />
+
+                    {
+                      dropwdownSearch && (
+                        <div className="absolute bg-[#F4F4F4] max-[321px]:w-[80%] max-[376px]:w-[83%] max-[390px]:w-[84%] max-[426px]:w-[85%] max-[480px]:w-[86%] max-[582px]:w-[88%] min-[582px]:w-[516px] max-h-[200px] overflow-y-scroll flex flex-col">
+                          {
+                            customerList && customerList?.map((customer, index) => {
+                              return(
+                                <a
+                                  key={index}
+                                  className="w-full px-4 py-2 font-inter font-extralight font-base text-black cursor-pointer" onClick={() => {
+                                    setCustomerSearch({
+                                      ...customerSearch,
+                                      search_data: customer?.email
+                                    });
+                                    setCustomerId(customer?.record_id);
+                                  }}
+                                >{customer?.email}</a>
+                              )
+                            })
+                          }
+                        </div>
+                      )
+                    }
                   </div>
                 }
               </div>
@@ -522,6 +651,8 @@ const VoucherList: React.FC = () => {
               <div className="flex justify-end">
                 <button
                   className="btn-green-2 font-inter w-[95px]"
+                  type="button"
+                  onClick={() => {sendVoucherEmail(voucher?.id, customerId, selectedRadio === "group" ? 2 : 1)}}
                 >Send</button>
               </div>
             </div>

@@ -2,23 +2,36 @@ import { MoveLeft } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css'
+import { forgetPasswordOtpThunk } from "store/user.thunk";
+import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async(e: React.FormEvent) => {
     e.preventDefault();
     // Handle the login logic here
-    navigate("/otp");
-  };
-
-  const onGoBackhandler = () => {
-    navigate("/login"); // Replace '/login' with your login route path
+    try {
+      const result = await dispatch(
+        forgetPasswordOtpThunk({
+          email: email
+        })
+      ).unwrap();
+      console.log("result....", result);
+      navigate("/otp", {state: { email: email }});
+    } catch (error) {
+      // console.error("Login error:", error);
+      toast.error("Please enter valid email or password!");
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <ToastContainer />
       <div className="w-full max-w-[570px]">
         <div className="px-[60px] xsm-max:px-4 bg-custom-white5 rounded-lg shadow-sm">
           <div className={`mb-5 flex items-center justify-center`}>

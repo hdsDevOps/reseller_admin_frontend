@@ -1,4 +1,4 @@
-import { MoveLeft } from 'lucide-react';
+import { ChevronDown, MoveLeft } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import {
@@ -6,7 +6,7 @@ import {
   StateSelect,
 } from "react-country-state-city";
 import "react-country-state-city/dist/react-country-state-city.css";
-import './countryList.css';
+import './countryList-2.css';
 import { useAppDispatch } from 'store/hooks';
 import { getSubscriptonPlansListThunk, addCustomerGroupThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
@@ -28,7 +28,7 @@ const AddCustomerGroup: React.FC = () =>  {
     license_usage: "", 
     no_customer: "",
   });
-  console.log(customerGroup);
+  // console.log(customerGroup);
 
   const updateCustomerGroup = (e) => {
     setCustomerGroup({
@@ -130,17 +130,19 @@ const AddCustomerGroup: React.FC = () =>  {
                       className='search-input-label'
                     >{item.label}</label>
                     <select
-                      className='search-select-text'
+                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.plan == "" ? 'text-[#00000038]' : 'text-black'}`}
                       name='plan'
                       onChange={updateCustomerGroup}
                     >
-                      <option hidden selected value=''>{item.placeholder}</option>
+                      <option hidden selected value='' className=''>{item.placeholder}</option>
                       {
                         subscriptionPlans.length> 0 && subscriptionPlans?.map((subscription, idx) => (
-                          <option key={idx} value={subscription?.plan_name}>{subscription?.plan_name}</option>
+                          <option key={idx} value={subscription?.plan_name} className='text-black'>{subscription?.plan_name}</option>
                         ))
                       }
                     </select>
+
+                    <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
                   </div>
                 )
               }

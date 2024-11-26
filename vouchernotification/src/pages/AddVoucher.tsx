@@ -143,7 +143,7 @@ const AddVoucher: React.FC = () =>  {
     <div>
       <ToastContainer />
       <div
-        className='flex flex-row mb-[35px]'
+        className='flex flex-row mb-[20px]'
       >
         <a
           className='cursor-pointer'
@@ -160,7 +160,7 @@ const AddVoucher: React.FC = () =>  {
         >Add Voucher</h3>
       </div>
       <div
-          className='flex flex-row mt-5 h-[22px]'
+          className='flex flex-row my-3 h-[22px]'
         >
           <p
             className='page-indicator-1-1'

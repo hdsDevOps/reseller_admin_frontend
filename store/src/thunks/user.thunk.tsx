@@ -51,10 +51,65 @@ export const resendUserOtpThunk = createAsyncThunk(
   }
 );
 
+export const forgetPasswordOtpThunk = createAsyncThunk(
+  "users/forgetPasswordOtp",
+  async ({ email}: any) => {
+    return await userApis.forgetPasswordOtpApi(
+      email
+    );
+  }
+);
+
+export const forgetPasswordResendOtpThunk = createAsyncThunk(
+  "users/forgetPasswordResendOtp",
+  async ({ email}: any) => {
+    return await userApis.forgetPasswordResendOtpApi(
+      email
+    );
+  }
+);
+
+export const forgetPasswordVerifyOtpThunk = createAsyncThunk(
+  "users/forgetPasswordVerifyOtp",
+  async ({ email, otp }: any) => {
+    return await userApis.forgetPasswordVerifyOtpApi(
+      email,
+      otp
+    );
+  }
+);
+
+export const forgetPasswordResetThunk = createAsyncThunk(
+  "users/forgetPasswordReset",
+  async ({ email, otp, newpassword }: any) => {
+    return await userApis.forgetPasswordResetApi(
+      email,
+      otp,
+      newpassword
+    );
+  }
+);
+
 export const getCustomerListThunk = createAsyncThunk(
   "users/getCustomerList",
-  async () => {
-    return await userApis.customerListApi();
+  async ({
+    search_data,
+    country,
+    state_name,
+    authentication,
+    license_usage,
+    subscritption_date,
+    renewal_date
+  }: any) => {
+    return await userApis.customerListApi(
+      search_data,
+      country,
+      state_name,
+      authentication,
+      license_usage,
+      subscritption_date,
+      renewal_date
+    );
   }
 );
 
@@ -117,6 +172,13 @@ export const cancelCustomerSubscriptionThunk = createAsyncThunk(
   }
 );
 
+export const updateCustomerPasswordThunk = createAsyncThunk(
+  "users/updateCustomerPassword",
+  async ({record_id, password}: any) => {
+    return await userApis.updateCustomerPasswordApi(record_id, password);
+  }
+);
+
 export const vocuherListThunk = createAsyncThunk(
   "users/vocuherList",
   async () => {
@@ -157,6 +219,13 @@ export const deleteVoucherThunk = createAsyncThunk(
   "users/deleteVocuher",
   async ({record_id}: {record_id: string}) => {
     return await userApis.deleteVoucherApi(record_id);
+  }
+);
+
+export const sendVoucherEmailThunk = createAsyncThunk(
+  "users/sendVocuherEmail",
+  async ({record_id, customer_id, customer_type}: any) => {
+    return await userApis.sendVoucherEmailApi(record_id, customer_id, customer_type);
   }
 );
 

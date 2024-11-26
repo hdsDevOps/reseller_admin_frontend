@@ -1,20 +1,30 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "store/hooks";
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
-// import { makeUserLoginThunk } from "store/user.thunk";
+import { forgetPasswordResetThunk } from "store/user.thunk";
 import { RiInformation2Line } from "react-icons/ri";
-import '../styles/styles.css'
+import '../styles/styles.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ResetPassword: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [show, setShow] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const email = location.state?.email;
+  const otp = location.state?.otp;
+  console.log({email, otp});
+
+  useEffect(() => {
+    toast.success("Otp has been verified, please update your password!");
+  }, [])
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -22,7 +32,24 @@ const ResetPassword: React.FC = () => {
       alert('Your passwords do not match');
     }
     else{
-      navigate('/password-reset-successful')
+      try {
+        const result = await dispatch(
+          forgetPasswordResetThunk({
+            email: email,
+            otp: otp,
+            newpassword: password
+          })
+        ).unwrap();
+        if(result.message == 'Password reset successfully'){
+          navigate('/password-reset-successful');
+        }
+        else{
+          toast.error("Enter valid otp!");
+        }
+      } catch (error) {
+        // console.log("Error on otp");
+        toast.error("Enter valid otp!");
+      }
     }
   };
 
@@ -32,6 +59,7 @@ const ResetPassword: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center h-full xsm-max:px-1 font-inter">
+      <ToastContainer />
       <div className="w-full max-w-[32rem] bg-gray-50 p-12 rounded-3xl xsm-max:px-4">
         <div className="w-full">
           <div className="text-center">

@@ -135,7 +135,7 @@
 }
 
 .a-reset-password{
-  @apply font-inter font-normal text-xs text-cBlue5 underline cursor-pointer;
+  @apply font-inter font-normal text-xs text-cBlue5 cursor-pointer;
 }
 
 .serach-input{

@@ -18,20 +18,23 @@ const options: Intl.DateTimeFormatOptions = {
 const CustomerManagement: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [filterShow, setFilterShow] = useState(false);
-  const [filters, setFilters] = useState({
-    domain: "",
+  const intialFilter= {
+    search_data: "",
     country: "",
-    region: "",
-    authorization: "",
-    license: "",
-    subscription: "",
-    renewal: "",
-    name: "",
-  });
+    state_name: "",
+    authentication: "",
+    license_usage: "",
+    subscritption_date: "",
+    renewal_date: ""
+  };
+  const [filterShow, setFilterShow] = useState(false);
+  const [filters, setFilters] = useState(intialFilter);
+  // console.log(filters);
+  
+  const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  // console.log(customerList, "customer list");
+  console.log(customerList, "customer list");
   
   const [showList, setShowList] = useState(null);
   const listRef = useRef(null);
@@ -41,11 +44,32 @@ const CustomerManagement: React.FC = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [commonModal, setCommonModal] = useState(false);
   const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [authorization, setAuthorization] = useState("");
+  useEffect(() => {
+    if(authorization == "true"){
+      setFilters({
+        ...filters,
+        authentication: true
+      })
+    }
+    else if(authorization == "false"){
+      setFilters({
+        ...filters,
+        authentication: false
+      })
+    }
+    else{
+      setFilters({
+        ...filters,
+        authentication: ""
+      })
+    }
+  }, [authorization])
 
   const getCustomerList = async() => {
     try {
       const result = await dispatch(
-        getCustomerListThunk()
+        getCustomerListThunk(filters)
       ).unwrap()
       if(result.data){
         setCustomerList(result.data);
@@ -59,7 +83,7 @@ const CustomerManagement: React.FC = () => {
         try {
           const result2 = await dispatch(
             removeUserAuthTokenFromLSThunk()
-          )
+          ).unwrap()
           navigate('/login');
         } catch (error) {
           console.log("Error on logging out")
@@ -82,9 +106,11 @@ const CustomerManagement: React.FC = () => {
 
   useEffect(() => {
     getCustomerList();
-  }, [])
+  }, [filters]);
 
-  const handleFilterChange = (e: React.ChangeEvent<any>) => {
+  //filters.search_data, filters.country, filters.state_name, filters.authentication, filters.license_usage, filters.subscritption_date, filters.renewal_date
+
+  const handleFilterChange = (e) => {
     setFilters({
       ...filters,
       [e.target.name]: e.target.value,
@@ -214,7 +240,7 @@ const CustomerManagement: React.FC = () => {
   };
   
   function convertToDate(seconds:any, nanoseconds:any) {
-    const milliseconds = parseInt(seconds) * 1000 + parseInt(nanoseconds) / 1_000_000;
+    const milliseconds = seconds * 1000 + nanoseconds / 1_000_000;
     return new Date(milliseconds);
   };
 
@@ -295,8 +321,8 @@ const CustomerManagement: React.FC = () => {
                 placeholder="Auto search domain list"
                 className="serach-input"
                 name="domain"
-                onChange={handleFilterChange}
-                value={filters.domain}
+                onChange={e => {setDomain(e.target.value)}}
+                value={domain}
               />
               <div
                 className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b ${
@@ -320,9 +346,8 @@ const CustomerManagement: React.FC = () => {
             <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
               <input
                 className="serach-input"
-                name="name"
+                name="search_data"
                 onChange={handleFilterChange}
-                value={filters.name}
                 placeholder="Name, Email"
               />
             </div>
@@ -355,16 +380,7 @@ const CustomerManagement: React.FC = () => {
                 className="mt-[1px]"
                 onClick={() => {
                   setFilterShow(false);
-                  setFilters({
-                    domain: "",
-                    country: "",
-                    region: "",
-                    authorization: "",
-                    license: "",
-                    subscription: "",
-                    renewal: "",
-                    name: "",
-                  });
+                  setFilters(intialFilter);
                 }}
               >
                 <img src="https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6" alt="close" className="w-[25px] h-[25px]" />
@@ -376,16 +392,8 @@ const CustomerManagement: React.FC = () => {
                 type="button"
                 className="btn-light-green w-[90px] h-[38px]"
                 onClick={() => {
-                  setFilters({
-                    domain: "",
-                    country: "",
-                    region: "",
-                    authorization: "",
-                    license: "",
-                    subscription: "",
-                    renewal: "",
-                    name: "",
-                  });
+                  setFilters(intialFilter);
+                  setAuthorization("");
                 }}
               >
                 Reset
@@ -412,9 +420,9 @@ const CustomerManagement: React.FC = () => {
                 <div className="w-1/2 px-4">
                   <select
                     className="select-input"
-                    name="region"
+                    name="state_name"
                     onChange={handleFilterChange}
-                    value={filters.region}
+                    value={filters.state_name}
                   >
                     <option selected hidden value="">
                       Select Region
@@ -430,24 +438,25 @@ const CustomerManagement: React.FC = () => {
                 <div className="w-1/2 px-4">
                   <select
                     className="select-input"
-                    name="authorization"
-                    onChange={handleFilterChange}
-                    value={filters.authorization}
+                    name="authentication"
+                    onChange={e => {
+                      setAuthorization(e.target.value)
+                    }}
+                    value={authorization}
                   >
                     <option selected hidden value="">
                       Select Authorization
                     </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                    <option value="true">ON</option>
+                    <option value="false">OFF</option>
                   </select>
                 </div>
                 <div className="w-1/2 px-4">
                   <select
                     className="select-input"
-                    name="license"
+                    name="license_usage"
                     onChange={handleFilterChange}
-                    value={filters.license}
+                    value={filters.license_usage}
                   >
                     <option selected hidden value="">
                       Licnese Usage
@@ -464,9 +473,9 @@ const CustomerManagement: React.FC = () => {
                   <input
                     type="text"
                     className="serach-input"
-                    name="subscription"
+                    name="subscritption_date"
                     onChange={handleFilterChange}
-                    value={filters.subscription}
+                    value={filters.subscritption_date}
                     placeholder="Subscription Date"
                     onFocus={e => {
                       e.target.type='date'
@@ -480,9 +489,9 @@ const CustomerManagement: React.FC = () => {
                   <input
                     type="text"
                     className="serach-input"
-                    name="renewal"
+                    name="renewal_date"
                     onChange={handleFilterChange}
-                    value={filters.renewal}
+                    value={filters.renewal_date}
                     placeholder="Renewal Date"
                     onFocus={e => {
                       e.target.type='date'
@@ -502,16 +511,7 @@ const CustomerManagement: React.FC = () => {
                   className="btn-blue w-[90px] h-[38px] mr-4"
                   onClick={() => {
                     setFilterShow(false);
-                    setFilters({
-                      domain: "",
-                      country: "",
-                      region: "",
-                      authorization: "",
-                      license: "",
-                      subscription: "",
-                      renewal: "",
-                      name: "",
-                    });
+                    setFilters(intialFilter);
                   }}
                 >
                   Cancel
@@ -519,6 +519,10 @@ const CustomerManagement: React.FC = () => {
                 <button
                   type="button"
                   className="btn-green w-[90px] h-[38px]"
+                  onClick={() => {
+                    setFilterShow(false);
+                    // getCustomerList();
+                  }}
                 >
                   Filter
                 </button>
@@ -607,7 +611,7 @@ const CustomerManagement: React.FC = () => {
                       <td
                         className="td-css"
                       >
-                        {`${convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds), 'dd MMM yyyy')}`}
+                        {`${convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds), 'dd MMM yyyy')}`}
                       </td>
                       <td
                         className="td-css"

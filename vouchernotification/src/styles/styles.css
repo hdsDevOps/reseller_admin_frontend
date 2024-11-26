@@ -147,7 +147,7 @@
 }
 
 .search-input-text{
-  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60;
+  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60 font-inter font-normal;
 }
 
 .search-select-text{

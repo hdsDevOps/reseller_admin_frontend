@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSThunk, resendUserOtpThunk } from "store/user.thunk";
+import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSThunk, resendUserOtpThunk, forgetPasswordVerifyOtpThunk, forgetPasswordResendOtpThunk } from "store/user.thunk";
 import { setTokenDetails } from "store/authSlice";
 import { MoveLeft } from 'lucide-react';
 import '../styles/styles.css';
@@ -20,6 +20,7 @@ const OTP: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const mode = queryParams.get("mode");
+  const email = `${location.state != null ? location.state.email : ""}`;
   const adminId = useAppSelector((state: any) => state.auth.userId);
 
   const otp1Ref = useRef<HTMLInputElement>(null);
@@ -160,8 +161,6 @@ const OTP: React.FC = () => {
 
       if (isValidOtp) {
         if (mode === "signin") {
-          // dispatch(setTokenDetails("usy6767jshs688ytmbqa88654sgsgs5sgs6sgs6q"));
-          // navigate("/dashboard");
           try {
             const result = await dispatch(
               verifyUserOtpThunk({
@@ -196,7 +195,23 @@ const OTP: React.FC = () => {
             toast.error("Enter valid otp!");
           }
         } else {
-          navigate("/resetpassword");
+          try {
+            const result = await dispatch(
+              forgetPasswordVerifyOtpThunk({
+                email: email,
+                otp: otp
+              })
+            ).unwrap()
+            if(result.message == 'OTP verified successfully'){
+              navigate('/resetpassword', { state: { email: email, otp: otp } });
+            }
+            else{
+              toast.error("Enter valid otp!")
+            }
+          } catch (error) {
+            // console.log("Error on otp");
+            toast.error("Enter valid otp!");
+          }
         }
       } else {
         // alert("Invalid OTP. Please try again.");
@@ -214,16 +229,32 @@ const OTP: React.FC = () => {
 
   const resendOtp = async() => {
     setTime(120);
-    try {
-      const otpResend = await dispatch(
-        resendUserOtpThunk({
-          admin_id: adminId
-        })
-      ).unwrap()
-      toast.success("Otp has been resent to your email!");
-    } catch (error) {
-      console.log("Error sending otp")
-      toast.error("Otp resending is failed!");
+    if(mode == "signin"){
+      try {
+        const otpResend = await dispatch(
+          resendUserOtpThunk({
+            admin_id: adminId
+          })
+        ).unwrap()
+        toast.success("Otp has been resent to your email!");
+      } catch (error) {
+        console.log("Error sending otp")
+        toast.error("Otp resending is failed!");
+      }
+    }
+    else{
+      try {
+        const otpResend = await dispatch(
+          forgetPasswordResendOtpThunk({
+            email: email
+          })
+        ).unwrap();
+        console.log("result...", otpResend)
+        toast.success("Otp has been resent to your email!");
+      } catch (error) {
+        console.log("Error sending otp")
+        toast.error("Otp resending is failed!");
+      }
     }
   }
 
