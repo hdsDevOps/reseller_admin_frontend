@@ -4,7 +4,7 @@ import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk, editCustomerThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";
@@ -136,7 +136,12 @@ const CustomerManagement: React.FC = () => {
 
   const handleStatusChange = async(item) => {
     const customerItem = item;
-    customerItem.status = !customerItem?.status;
+    const accountStatus = customerItem?.account_status;
+    customerItem.account_status = `${
+      accountStatus == "active" ? "inactive"
+      : accountStatus == "suspended" ? "suspended"
+      : "active"
+    }`;
     try {
       const result = await dispatch(
         editCustomerThunk(customerItem)
@@ -146,7 +151,12 @@ const CustomerManagement: React.FC = () => {
     } finally{
       getCustomerList();
       setTimeout(() => {
-        toast.success("Status updated");
+        if(customerItem?.account_status == "suspended"){
+          toast.warning("Account is suspended!");
+        }
+        else{
+          toast.success("Status updated");
+        }
       }, 1000);
     }
   };
@@ -187,9 +197,24 @@ const CustomerManagement: React.FC = () => {
       const result = await dispatch(
         cancelCustomerSubscriptionThunk({record_id: item?.record_id})
       ).unwrap()
-      console.log(result);
       setTimeout(() => {
         toast.success(result?.message);
+      }, 1000);
+      setShowSubscriptionModal(false);
+    } catch (error) {
+      toast.error("Error suspending customer")
+    } finally {
+      getCustomerList();
+    }
+  };
+  
+  const declineCustomerSubscription = async(item) => {
+    try {
+      const result = await dispatch(
+        declineCustomerSubscriptionThunk({record_id: item?.record_id})
+      ).unwrap()
+      setTimeout(() => {
+        toast.success("Subscription cancellation has been declined.");
       }, 1000);
       setShowSubscriptionModal(false);
     } catch (error) {
@@ -643,12 +668,12 @@ const CustomerManagement: React.FC = () => {
                       >
                         <button
                           className={`w-20 h-[22px] ${
-                          item?.status ? 'active-status' : 'inactive-status'
+                          item?.account_status == "active" ? 'active-status' : 'inactive-status'
                           }`}
                           onClick={() => handleStatusChange(item)}
                         >
                           {
-                            item?.status ? 'Active' : 'Inactive'
+                            item?.account_status == "active" ? 'Active' : 'Inactive'
                           }
                         </button>
                       </td>
@@ -751,9 +776,12 @@ const CustomerManagement: React.FC = () => {
                                             <button
                                               className="btn-app-dec text-custom-green border-custom-green mb-1"
                                               onClick={() => {cancelCustomerSubscription(item)}}
+                                              type="button"
                                             >Approve</button>
                                             <button
                                               className="btn-app-dec text-black  border-gray-500 min-[560px]:ml-[26px] max-[560px]:ml-0"
+                                              type="button"
+                                              onClick={() => {declineCustomerSubscription(item)}}
                                             >Decline</button>
                                           </div>
                                         </div>

@@ -170,7 +170,8 @@ async function editCustomerApi(
   email: string,
   authentication: string,
   record_id: string,
-  status: string
+  status: string,
+  account_status: string
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.editCustomer, {
@@ -185,7 +186,8 @@ async function editCustomerApi(
       email,
       authentication,
       record_id,
-      status
+      status,
+      account_status
     });
     return result;
   } catch (error: any) {
@@ -220,6 +222,17 @@ async function cancelCustomerSubscriptionApi(
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.cancelCustomerSubscription, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function declineCustomerSubscriptionApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.declineCustomerSubscription, {record_id});
     return result;
   } catch (error: any) {
     throw error;
@@ -384,6 +397,7 @@ export const userApis = {
   deleteCustomerApi,
   suspendCustomerApi,
   cancelCustomerSubscriptionApi,
+  declineCustomerSubscriptionApi,
   updateCustomerPasswordApi,
   voucherListApi,
   addVoucherApi,

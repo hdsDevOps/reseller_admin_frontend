@@ -14,6 +14,7 @@ export const endPoints = {
     deleteCustomer: 'adminservices/customer/api/v1/deletecustomer',
     suspendCustomer: 'adminservices/customer/api/v1/suspendcustomer',
     cancelCustomerSubscription: 'adminservices/customer/api/v1/cancelsubscriptioncustomer',
+    declineCustomerSubscription: 'adminservices/customer/api/v1/activecustomer',
     updateCustomerPassword: 'adminservices/customer/api/v1/resetcustomerpassword',
 
     // voucher notification endpoints

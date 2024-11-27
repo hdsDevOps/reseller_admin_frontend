@@ -133,7 +133,7 @@ export const addCustomerThunk = createAsyncThunk(
 
 export const editCustomerThunk = createAsyncThunk(
   "users/editCustomer",
-  async ({first_name, last_name, address, state_name, city, country, zipcode, phone_no, email, authentication, record_id, status}: any) => {
+  async ({first_name, last_name, address, state_name, city, country, zipcode, phone_no, email, authentication, record_id, status, account_status}: any) => {
     return await userApis.editCustomerApi(
       first_name,
       last_name,
@@ -146,7 +146,8 @@ export const editCustomerThunk = createAsyncThunk(
       email,
       authentication,
       record_id,
-      status
+      status,
+      account_status
     );
   }
 );
@@ -169,6 +170,13 @@ export const cancelCustomerSubscriptionThunk = createAsyncThunk(
   "users/cancelCustomerSubscription",
   async ({record_id}: any) => {
     return await userApis.cancelCustomerSubscriptionApi(record_id);
+  }
+);
+
+export const declineCustomerSubscriptionThunk = createAsyncThunk(
+  "users/declineCustomerSubscription",
+  async ({record_id}: any) => {
+    return await userApis.declineCustomerSubscriptionApi(record_id);
   }
 );
 
