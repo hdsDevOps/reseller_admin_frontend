@@ -36,6 +36,4 @@ spec:
             port: 3002
           initialDelaySeconds: 5
           periodSeconds: 3
-        envFrom:
-          - configMapRef:
-              name: auth-config
+        
