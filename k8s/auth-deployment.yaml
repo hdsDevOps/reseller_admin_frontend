@@ -2,19 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontendadmin-auth-service
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "3002"
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: frontendadmin-auth-service
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
   template:
     metadata:
       labels:
