@@ -16,7 +16,7 @@ spec:
       - name: frontendadmin-customer-service
         image: hordansodevops/reseller_admin_frontend_customer:latest
         ports:
-        - containerPort: 3001
+        - containerPort: 3002
         resources:
           limits:
             cpu: "1"
@@ -27,12 +27,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 3001
+            port: 3002
           initialDelaySeconds: 5
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /
-            port: 3001
+            port: 3002
           initialDelaySeconds: 5
           periodSeconds: 3

@@ -12,7 +12,7 @@ services:
     build: ./customer
     container_name: microfrontendadmin_container_customer
     ports:
-      - 3001:3001
+      - 3002:3002
     networks:
       - dev_network
 
@@ -20,7 +20,7 @@ services:
     build: ./auth
     container_name: microfrontendadmin_container_auth
     ports:
-      - 3002:3002
+      - 3001:3001
     networks:
       - dev_network
 
