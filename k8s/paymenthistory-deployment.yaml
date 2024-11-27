@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: adminfrontend-paymenthistory-service
-        image: hordansodevops/reseller_admin_frontend_auth:latest
+        image: hordansodevops/reseller_admin_frontend_paymenthistory:latest
         ports:
         - containerPort: 3005
         resources:
