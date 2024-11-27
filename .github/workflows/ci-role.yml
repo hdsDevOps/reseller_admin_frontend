@@ -5,7 +5,7 @@ on:
         branches:
             - main
         paths:
-            - "role/**"
+            - "roles/**"
     workflow_dispatch: # Allow manual triggering
 
 jobs:
@@ -35,8 +35,8 @@ jobs:
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
-                  context: ./role
-                  file: ./role/Dockerfile
+                  context: ./roles
+                  file: ./roles/Dockerfile
                   push: true
                   tags: >
                       ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}_role:${{ github.sha }},
