@@ -29,7 +29,7 @@ const ResetPassword: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if(password != confirmPassword){
-      alert('Your passwords do not match');
+      toast.warning("Password and confirm password do not match.")
     }
     else{
       try {
@@ -102,6 +102,7 @@ const ResetPassword: React.FC = () => {
                     minLength={8}
                     placeholder="Enter password"
                     required
+                    name="newPassword"
                   />
                   <button
                     type="button"
@@ -131,6 +132,7 @@ const ResetPassword: React.FC = () => {
                     minLength={8}
                     placeholder="Enter password"
                     required
+                    name="confirmPassword"
                   />
                 </div>
               </div>

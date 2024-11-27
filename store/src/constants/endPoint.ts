@@ -16,6 +16,7 @@ export const endPoints = {
     cancelCustomerSubscription: 'adminservices/customer/api/v1/cancelsubscriptioncustomer',
     declineCustomerSubscription: 'adminservices/customer/api/v1/activecustomer',
     updateCustomerPassword: 'adminservices/customer/api/v1/resetcustomerpassword',
+    getCountryList: 'adminservices/customer/api/v1/getcountry_list',
 
     // voucher notification endpoints
     voucherList: 'voucherservices/voucher/api/v1/voucherlist',
@@ -27,6 +28,11 @@ export const endPoints = {
     customerGroupList: 'adminservices/voucher/api/v1/customergrouplist',
     deleteCustomerGroup: 'adminservices/voucher/api/v1/deletecustomergroup',
     sendVoucherEmail: 'voucherservices/voucher/api/v1/sendvochermail',
+
+    // notification templates
+    addNotificationTemplate: 'adminservices/notification/api/v1/addnotificationtemplatedetails',
+    getNotificationTemplate: 'adminservices/notification/api/v1/getnotificationlist',
+    updateNoficationTemplateContent: 'adminservices/notification/api/v1/updatenotificationtemplate',
 
     // subscription
     subscriptionPlansList: 'adminservices/subscription/api/v1/getplansdetailslist',

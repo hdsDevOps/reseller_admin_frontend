@@ -187,6 +187,13 @@ export const updateCustomerPasswordThunk = createAsyncThunk(
   }
 );
 
+export const getCountryListThunk = createAsyncThunk(
+  "users/getCountryList",
+  async () => {
+    return await userApis.getCountryListAPi();
+  }
+);
+
 export const vocuherListThunk = createAsyncThunk(
   "users/vocuherList",
   async () => {
@@ -281,6 +288,27 @@ export const deleteCustomerGroupThunk = createAsyncThunk(
   "users/deleteCustomerGroup",
   async ({record_id}: any) => {
     return await userApis.deleteCustomerGroupApi(record_id);
+  }
+);
+
+export const addNotificationTemplateThunk = createAsyncThunk(
+  "users/addNotificationTemplate",
+  async ({template_heading}: any) => {
+    return await userApis.addNotificationTemplateApi(template_heading);
+  }
+);
+
+export const getNotificationTemplateThunk = createAsyncThunk(
+  "users/getNotificationTemplate",
+  async () => {
+    return await userApis.getNotificationTemplateApi();
+  }
+);
+
+export const updateNoficationTemplateContentThunk = createAsyncThunk(
+  "users/updateNoficationTemplateContent",
+  async ({record_id, template_content}: any) => {
+    return await userApis.updateNoficationTemplateContentApi(record_id, template_content);
   }
 );
 

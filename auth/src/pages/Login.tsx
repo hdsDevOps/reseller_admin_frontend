@@ -108,6 +108,7 @@ const Login: React.FC = () => {
                     className="login-input"
                     data-testid="email"
                     required
+                    name="email"
                   />
                 </div>
               </div>
@@ -124,6 +125,7 @@ const Login: React.FC = () => {
                     minLength={8}
                     placeholder="Enter password"
                     required
+                    name="password"
                   />
                   <button
                     type="button"

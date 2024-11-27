@@ -8,7 +8,7 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList-2.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, addCustomerGroupThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, addCustomerGroupThunk, getCountryListThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -59,6 +59,23 @@ const AddCustomerGroup: React.FC = () =>  {
     {label: 'License Usage', placeholder: 'Select number  ', type: 'number', name: 'license_usage'},
     {label: 'Number of customer', placeholder: 'Auto-filled', type: 'number', name: 'no_customer'},
   ];
+
+  const [countryList, setCountryList] = useState([]);
+
+  const getCountryList = async() => {
+    try {
+      const countries = await dispatch(
+        getCountryListThunk()
+      ).unwrap();
+      setCountryList(countries.countrylist);
+    } catch (error) {
+      console.log("Error on token")
+    }
+  }
+  
+  useEffect(() => {
+    getCountryList();
+  }, []);
 
   const getSubscriptonPlansList = async() => {
     try {
@@ -152,7 +169,21 @@ const AddCustomerGroup: React.FC = () =>  {
                     <label
                       className='search-input-label'
                     >{item.label}</label>
-                    <div
+                    <select
+                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.country == "" ? 'text-[#00000038]' : 'text-black'}`}
+                      onChange={updateCustomerGroup}
+                      name='country'
+                    >
+                      <option selected hidden>Select Country</option>
+                      {
+                        countryList && countryList.map((country, number) => (
+                          <option key={number} value={country} className='text-black'>{country}</option>
+                        ))
+                      }
+                    </select>
+
+                    <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
+                    {/* <div
                       className='search-input-text focus:outline-none w-full h-full p-0'
                     >
                       <CountrySelect
@@ -165,7 +196,7 @@ const AddCustomerGroup: React.FC = () =>  {
                         }}
                         placeHolder={item?.placeholder}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 )
               }

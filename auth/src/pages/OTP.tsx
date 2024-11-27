@@ -320,6 +320,7 @@ const OTP: React.FC = () => {
                 onKeyDown={(e) => handleKeyDown(e, 1)}
                 className="otp-input"
                 placeholder="0"
+                data-otp-index="0"
               />
               <input
                 type="text"
@@ -330,6 +331,7 @@ const OTP: React.FC = () => {
                 onKeyDown={(e) => handleKeyDown(e, 2)}
                 className="otp-input"
                 placeholder="0"
+                data-otp-index="1"
               />
               <input
                 type="text"
@@ -340,6 +342,7 @@ const OTP: React.FC = () => {
                 onKeyDown={(e) => handleKeyDown(e, 3)}
                 className="otp-input"
                 placeholder="0"
+                data-otp-index="2"
               />
               <input
                 type="text"
@@ -350,6 +353,7 @@ const OTP: React.FC = () => {
                 onKeyDown={(e) => handleKeyDown(e, 4)}
                 className="otp-input"
                 placeholder="0"
+                data-otp-index="3"
               />
               <input
                 type="text"
@@ -360,6 +364,7 @@ const OTP: React.FC = () => {
                 onKeyDown={(e) => handleKeyDown(e, 5)}
                 className="otp-input"
                 placeholder="0"
+                data-otp-index="4"
               />
               <input
                 type="text"
@@ -370,6 +375,7 @@ const OTP: React.FC = () => {
                 onKeyDown={(e) => handleKeyDown(e, 6)}
                 className="otp-input"
                 placeholder="0"
+                data-otp-index="5"
               />
             </div>
             <div className="max-w-[451px] mt-[25px]">

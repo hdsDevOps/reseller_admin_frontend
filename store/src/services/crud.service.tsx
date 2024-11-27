@@ -42,7 +42,7 @@ export async function postApiCall<T>(
 ): Promise<any | CustomError> {
   try {
     const fetchedData = await axiosInstance.post(endPoint, body);
-    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201) {
+    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success 111" || fetchedData.data?.status === "success") {
       return fetchedData?.data;
     } else if (
       fetchedData.data?.status === 401 ||

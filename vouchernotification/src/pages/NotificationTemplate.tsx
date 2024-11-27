@@ -4,13 +4,27 @@ import { BsEnvelopePlusFill } from "react-icons/bs";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
+import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const NotificationTemplate = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
+  console.log(selectedItem);
+  
   const [isToggled, setIsToggled] = useState(false);
   const modalRef = useRef();
+  const previewRef = useRef();
+  const [templateHeading, setTemplateHeading] = useState({template_heading: ""});
+  // console.log(templateHeading);
+  const [notificationTemplates, setNotificationTemplates] = useState([]);
+  // console.log(notificationTemplates);
+  const [templateContent, setTemplateContent] = useState("");
 
   const clickOutsideModal = (event) => {
     if(modalRef.current && !modalRef.current.contains(event.target)){
@@ -26,17 +40,80 @@ const NotificationTemplate = () => {
     };
   }, []);
 
-  const dropdownItems = [
-    "Email Verification",
-    "Account Deactivation",
-    "Password Reset",
-    "Two-Factor Authentication",
-    "Profile Update Confirmation",
-    "Subscription Confirmation",
-  ];
+  const clickOutsidePreview = (event) => {
+    if(previewRef.current && !previewRef.current.contains(event.target)){
+      setIsPreviewOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', clickOutsidePreview);
+
+    return () => {
+      document.removeEventListener('mousedown', clickOutsidePreview);
+    };
+  }, []);
+
+  const getNotificationTemplate = async() => {
+    try {
+      const result = await dispatch(
+        getNotificationTemplateThunk()
+      ).unwrap();
+      setNotificationTemplates(result?.data);
+    } catch (error) {
+      setNotificationTemplates([]);
+    }
+  };
+
+  useEffect(() => {
+    getNotificationTemplate();
+  }, []);
+
+  const addNotificationTemplate = async() => {
+    try {
+      const result = await dispatch(
+        addNotificationTemplateThunk(templateHeading)
+      ).unwrap();
+      // console.log(result);
+      setIsModalOpen(false);
+      getNotificationTemplate();
+      setTimeout(() => {
+        toast.success(result?.message);
+      }, 1000);
+    } catch (error) {
+      // console.log(error);
+      toast.error("Error adding customer group");
+    }
+  };
+
+  const HtmlRenderer: React.FC<Props> = ({ htmlContent }) => {
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      />
+    );
+  };
+
+  const updateNoficationTemplateContent = async() => {
+    try {
+      const result = await dispatch(
+        updateNoficationTemplateContentThunk({
+          record_id: selectedItem?.id,
+          template_content: templateContent
+        })
+      ).unwrap();
+      getNotificationTemplate();
+      setTimeout(() => {
+        toast.success(result?.message)
+      }, 1000);
+    } catch (error) {
+      toast.error("Tamplate content could not be updated.")
+    }
+  }
 
   return (
     <div className="grid grid-cols-1">
+      <ToastContainer />
       <div className="flex flex-col">
         <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
           <h3 className="h3-text">Notification Template</h3>
@@ -58,19 +135,16 @@ const NotificationTemplate = () => {
 
         <div className="flex justify-end mt-[46px]">
           <select className="notification-select w-[275px] max-[400px]:w-full" onChange={e => {
-            setSelectedItem(e.target.value);
+            setSelectedItem(notificationTemplates[e.target.value]);
           }}>
             <option selected hidden value=''>Select a notification section </option>
             {
-              dropdownItems && dropdownItems.map((item, index) => {
+              notificationTemplates && notificationTemplates.map((item, index) => {
                 return(
-                  <option key={index} value={item}>{item}</option>
+                  <option key={index} value={index}>{item?.template_header}</option>
                 )
               })
             }
-            <option>INR</option>
-            <option>USD</option>
-            <option>GBP</option>
           </select>
         </div>
 
@@ -103,7 +177,7 @@ const NotificationTemplate = () => {
             <div className="w-full flex flex-col items-center  border-2 border-[#E4E4E4]">
               <div className="notification-template-head">
                 <h3 className="notification-template-header py-3 pl-3">
-                  {selectedItem}
+                  {selectedItem?.template_header}
                 </h3>
                 <select className="select-dynamic-code">
                   <option selected>Dynamic code list</option>
@@ -114,6 +188,9 @@ const NotificationTemplate = () => {
               <textarea
                 className="notification-template-textarea"
                 placeholder="HTML/CSS script should be here to make the Promotion template"
+                name="template_content"
+                onChange={e => {setTemplateContent(e.target.value)}}
+                defaultValue={selectedItem?.template_content || ""}
               />
               </div>
             </div>
@@ -131,9 +208,13 @@ const NotificationTemplate = () => {
               <div className="flex min-[570px]:flex-row max-[570px]:flex-col justify-end gap-[10px] pt-[2px] min-lg:mt-0 max-lg:mt-1">
                 <button
                   className='btn-green'
+                  type="button"
+                  onClick={() => {setIsPreviewOpen(true)}}
                 >Preview</button>
                 <button
                   className='btn-different'
+                  type="button"
+                  onClick={() => {updateNoficationTemplateContent()}}
                 >Update</button>
                 <button
                   className='btn-red-2'
@@ -153,7 +234,7 @@ const NotificationTemplate = () => {
                   >
                     <h4
                       className='text-2xl font-medium'
-                    >Voucher Preview</h4>
+                    >Add Notification Template</h4>
                     <div className='btn-close-bg'>
                       <button
                         type='button'
@@ -178,7 +259,7 @@ const NotificationTemplate = () => {
                     name='subject'
                     required
                     className='search-input-text px-4'
-                    // onChange={updateCustomer}
+                    onChange={e => {setTemplateHeading({template_heading: e.target.value})}}
                     // value={customer[item.name]}
                   />
                 </div>
@@ -195,7 +276,40 @@ const NotificationTemplate = () => {
                   >Cancel</button>
                   <button
                     className='btn-green-2 h-[46px] ml-[30px]'
+                    type="button"
+                    onClick={() => {addNotificationTemplate()}}
                   >Save</button>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          isPreviewOpen && (
+            <div className='fixed-full-screen'>
+              <div className='fixed-popup w-[449px] min-h-[200px] p-[18px]' ref={previewRef}>
+                <div className='flex flex-col'>
+                  <div
+                    className='flex-row-between'
+                  >
+                    <h4
+                      className='text-2xl font-medium'
+                    >Voucher Preview</h4>
+                    <div className='btn-close-bg'>
+                      <button
+                        type='button'
+                        className='text-3xl rotate-45 mt-[-8px] text-white'
+                        onClick={() => {
+                          setIsPreviewOpen(false);
+                        }}
+                      >+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className='w-full border rounded-sm p-1 mt-5 shadow-sm'>
+                  <HtmlRenderer htmlContent={templateContent || `<div style="text-align: center; min-height: 100px; padding-top: 35px;">No data Available</div>`} />
                 </div>
               </div>
             </div>

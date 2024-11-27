@@ -251,6 +251,15 @@ async function updateCustomerPasswordApi(
   }
 };
 
+async function getCountryListAPi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getCountryList);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function voucherListApi(): Promise<any> {
   try {
     const result = await postApiCall(endPoints.voucherList, {});
@@ -374,6 +383,38 @@ async function deleteCustomerGroupApi(
   }
 };
 
+async function addNotificationTemplateApi(
+  template_heading: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addNotificationTemplate, {template_heading});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getNotificationTemplateApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getNotificationTemplate);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updateNoficationTemplateContentApi(
+  record_id: string,
+  template_content: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateNoficationTemplateContent, {record_id, template_content});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function subscriptionPlansListApi(): Promise<any> {
   try {
     const result = await getApiCall(endPoints.subscriptionPlansList);
@@ -399,6 +440,7 @@ export const userApis = {
   cancelCustomerSubscriptionApi,
   declineCustomerSubscriptionApi,
   updateCustomerPasswordApi,
+  getCountryListAPi,
   voucherListApi,
   addVoucherApi,
   editVoucherApi,
@@ -408,5 +450,8 @@ export const userApis = {
   editCustomerGroupApi,
   getCustomerGroupListApi,
   deleteCustomerGroupApi,
+  addNotificationTemplateApi,
+  getNotificationTemplateApi,
+  updateNoficationTemplateContentApi,
   subscriptionPlansListApi,
 };

@@ -4,7 +4,7 @@ import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk, editCustomerThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";
@@ -18,6 +18,7 @@ const options: Intl.DateTimeFormatOptions = {
 const CustomerManagement: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const filterRef = useRef();
   const intialFilter= {
     search_data: "",
     country: "",
@@ -34,7 +35,7 @@ const CustomerManagement: React.FC = () => {
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  console.log(customerList, "customer list");
+  // console.log(customerList, "customer list");
   
   const [showList, setShowList] = useState(null);
   const listRef = useRef(null);
@@ -45,6 +46,9 @@ const CustomerManagement: React.FC = () => {
   const [commonModal, setCommonModal] = useState(false);
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [authorization, setAuthorization] = useState("");
+  const [countryList, setCountryList] = useState([]);
+  // console.log("countryList", countryList);
+  
   useEffect(() => {
     if(authorization == "true"){
       setFilters({
@@ -64,7 +68,7 @@ const CustomerManagement: React.FC = () => {
         authentication: ""
       })
     }
-  }, [authorization])
+  }, [authorization]);
 
   const getCustomerList = async() => {
     try {
@@ -107,6 +111,33 @@ const CustomerManagement: React.FC = () => {
   useEffect(() => {
     getCustomerList();
   }, [filters]);
+
+  const getCountryList = async() => {
+    try {
+      const countries = await dispatch(
+        getCountryListThunk()
+      ).unwrap();
+      setCountryList(countries.countrylist);
+    } catch (error) {
+      console.log("Error on token")
+    }
+  }
+  
+  useEffect(() => {
+    getCountryList();
+  }, []);
+  
+  const handleClickOutOfFilter = e => {
+    if(filterRef.current && !filterRef.current.contains(e.target)){
+      setFilterShow(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutOfFilter);
+    return() => {
+      document.removeEventListener('mousedown', handleClickOutOfFilter);
+    };
+  }, []);
 
   //filters.search_data, filters.country, filters.state_name, filters.authentication, filters.license_usage, filters.subscritption_date, filters.renewal_date
 
@@ -397,7 +428,7 @@ const CustomerManagement: React.FC = () => {
             !filterShow ? "hidden" : ""
           }`}
         >
-          <div className="fixed-popup max-w-xl w-full">
+          <div className="fixed-popup max-w-xl w-full" ref={filterRef}>
             <div className="flex-row-between px-8 pt-2 pb-4 border-b-[1px] border-cWhite3">
               <h3 className="text-xl font-medium">Filter</h3>
               <button
@@ -437,9 +468,11 @@ const CustomerManagement: React.FC = () => {
                     <option selected hidden value="">
                       Select Country
                     </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                    {
+                      countryList && countryList.map((country, number) => (
+                        <option key={number} value={country}>{country}</option>
+                      ))
+                    }
                   </select>
                 </div>
                 <div className="w-1/2 px-4">
