@@ -7,7 +7,7 @@ module.exports = (_, argv) => ({
 	output: {
 		publicPath: "auto",
 	},
-  
+   
 	resolve: {
 		extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
 	},
@@ -17,12 +17,12 @@ module.exports = (_, argv) => ({
 	// 	historyApiFallback: true,
 	// 	allowedHosts: ["all"],
 	// },
-    
+
 	devServer: {
 		port: 3004,
 		historyApiFallback: true,
 		allowedHosts: ["all"],
-		//watchFiles: [path.resolve(__dirname, 'src')],
+		watchFiles: [path.resolve(__dirname, 'src')],
 		onListening: function (devServer) {
 		  const port = devServer.server.address().port
 	
@@ -65,14 +65,14 @@ module.exports = (_, argv) => ({
 
 	plugins: [
 		new ModuleFederationPlugin({
-			name: "subscription",
+			name: "roles",
 			filename: "remoteEntry.js",
 			remotes: {
 				store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
 			},
 			exposes: {
-        "./SubscriptionApp": "./src/pages/index.tsx",
-      },
+				"./RoleApp": "./src/pages/index.tsx",
+			  },
 			shared: {
 				...deps,
 				react: {
