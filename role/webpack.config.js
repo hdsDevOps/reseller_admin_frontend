@@ -59,7 +59,7 @@ module.exports = (_, argv) => ({
       },
     ],
   },
-
+  
   plugins: [
     new ModuleFederationPlugin({
       name: "role",
