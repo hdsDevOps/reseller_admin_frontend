@@ -16,7 +16,7 @@ spec:
       - name: adminfrontend-role-service
         image: hordansodevops/reseller_admin_frontend_role:latest
         ports:
-        - containerPort: 3006
+        - containerPort: 3010
         resources:
           limits:
             cpu: "1"
@@ -27,12 +27,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 3006
+            port: 3010
           initialDelaySeconds: 5
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /
-            port: 3006
+            port: 3010
           initialDelaySeconds: 5
           periodSeconds: 3
