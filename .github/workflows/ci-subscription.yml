@@ -1,4 +1,4 @@
-name: CI for Role Service
+name: CI for Subscription Service
 
 on:
     push:
