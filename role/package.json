@@ -1,10 +1,10 @@
 {
-  "name": "role",
+  "name": "settings",
   "version": "1.0.0",
   "scripts": {
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
-    "build:start": "cd dist && PORT=3006 npx serve",
+    "build:start": "cd dist && PORT=3007 npx serve",
     "start": "webpack serve --mode development",
     "start:live": "webpack serve --mode development --live-reload --hot"
   },
@@ -36,7 +36,10 @@
     "webpack-dev-server": "^4.3.1"
   },
   "dependencies": {
-    "lucide-react": "^0.456.0",
+    "@headlessui/react": "^2.2.0",
+    "@tinymce/tinymce-react": "^5.1.1",
+    "jodit-react": "^4.1.2",
+    "lucide-react": "^0.455.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.3.0",

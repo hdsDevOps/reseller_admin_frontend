@@ -1,23 +1,30 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
-const Role = React.lazy(() => import("./Role"));
-const UserList = React.lazy(() => import("./UserList"));
-const AddRole = React.lazy(() => import("./AddRole"));
-const EditRole = React.lazy(() => import("./EditRole"));
+
+const EmailLog = React.lazy(() => import("./EmailLog"));
+const Faqs = React.lazy(() => import("./Faqs"));
+const CMS = React.lazy(() => import("./CMS"));
+const CustomerAgreement = React.lazy(() => import("./CustomerAgreement"));
+const PrivacyPolicy = React.lazy(() => import("./PrivacyPolicy"));
+const TermsConditions = React.lazy(() => import("./TermsAndConditions"));
+const ProfileSettings = React.lazy(() => import("./ProfileSettings"));
 
 
-const RoleApp: React.FC = () => {
+const SettingsApp: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
-        <Route path="/role" element={<Role />} />
-        <Route path="/user-list" element={<UserList />} />
-        <Route path="/add-role" element={<AddRole />} />
-        <Route path="/edit-role" element={<EditRole />} />
+        <Route path="/email-log" element={<EmailLog />} />
+        <Route path="/faqs" element={<Faqs />} />
+        <Route path="/cms" element={<CMS />} />
+        <Route path="/customer-agreement" element={<CustomerAgreement />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsConditions />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
       </Routes>
     </Suspense>
   );
 };
 
-export default RoleApp;
+export default SettingsApp;
