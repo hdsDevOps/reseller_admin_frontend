@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminfrontend-role-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: adminfrontend-role-service
+  template:
+    metadata:
+      labels:
+        app: adminfrontend-role-service
+    spec:
+      containers:
+      - name: adminfrontend-role-service
+        image: hordansodevops/reseller_admin_frontend_role:latest
+        ports:
+        - containerPort: 3006
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3006
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3006
+          initialDelaySeconds: 5
+          periodSeconds: 3

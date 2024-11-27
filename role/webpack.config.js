@@ -15,7 +15,7 @@ module.exports = (_, argv) => ({
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
   },
-
+   
   devServer: {
     port: 3006,
     historyApiFallback: true,
@@ -65,7 +65,7 @@ module.exports = (_, argv) => ({
       name: "role",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        store: `store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js`,
       },
       exposes: {
         "./RoleApp": "./src/pages/index.tsx",
