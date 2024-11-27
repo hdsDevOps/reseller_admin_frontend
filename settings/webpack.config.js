@@ -9,7 +9,7 @@ const printCompilationMessage = require('./compilation.config.js');
 
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "http://localhost:3007/",
+    publicPath: "auto",
   },
 
   resolve: {
@@ -65,7 +65,7 @@ module.exports = (_, argv) => ({
       name: "settings",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        store: `store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js`,
       },
       exposes: {
         "./SettingsApp": "./src/pages/index.tsx",
