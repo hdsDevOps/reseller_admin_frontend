@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: paymenthistory-config
+data:
+  BASE_URL: https://auth.admin.gworkspace.withhordanso.com/
+  STORE_BASE_URL: https://store.admin.gworkspace.withhordanso.com/
+  CUSTOMER_BASE_URL: https://customer.admin.gworkspace.withhordanso.com/

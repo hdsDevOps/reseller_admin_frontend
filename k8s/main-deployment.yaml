@@ -36,4 +36,7 @@ spec:
             port: 3000
           initialDelaySeconds: 5
           periodSeconds: 3
+        envFrom:
+          - configMapRef:
+              name: main-config
 
