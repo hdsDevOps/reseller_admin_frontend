@@ -12,11 +12,33 @@ module.exports = (_, argv) => ({
 		extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
 	},
 
+	// devServer: {
+	// 	port: 3007,
+	// 	historyApiFallback: true,
+	// 	allowedHosts: ["all"],
+	// },
+
 	devServer: {
 		port: 3007,
 		historyApiFallback: true,
 		allowedHosts: ["all"],
-	},
+		watchFiles: [path.resolve(__dirname, 'src')],
+		onListening: function (devServer) {
+		  const port = devServer.server.address().port
+	
+		  printCompilationMessage('compiling', port)
+	
+		  devServer.compiler.hooks.done.tap('OutputMessagePlugin', (stats) => {
+			setImmediate(() => {
+			  if (stats.hasErrors()) {
+				printCompilationMessage('failure', port)
+			  } else {
+				printCompilationMessage('success', port)
+			  }
+			})
+		  })
+		}
+	  },
 
 	module: {
 		rules: [
