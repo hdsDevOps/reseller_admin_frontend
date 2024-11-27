@@ -1,30 +1,33 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
+const Header = React.lazy(() => import("../components/Heaader"));
+const Home = React.lazy(() => import("./Home"));
+const Login = React.lazy(() => import("./Login"));
+const Register = React.lazy(() => import("./Register"));
+const OTP = React.lazy(() => import("./OTP"));
+const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
 
-const EmailLog = React.lazy(() => import("./EmailLog"));
-const Faqs = React.lazy(() => import("./Faqs"));
-const CMS = React.lazy(() => import("./CMS"));
-const CustomerAgreement = React.lazy(() => import("./CustomerAgreement"));
-const PrivacyPolicy = React.lazy(() => import("./PrivacyPolicy"));
-const TermsConditions = React.lazy(() => import("./TermsAndConditions"));
-const ProfileSettings = React.lazy(() => import("./ProfileSettings"));
-
-
-const SettingsApp: React.FC = () => {
+const AuthApp: React.FC = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Routes>
-        <Route path="/email-log" element={<EmailLog />} />
-        <Route path="/faqs" element={<Faqs />} />
-        <Route path="/cms" element={<CMS />} />
-        <Route path="/customer-agreement" element={<CustomerAgreement />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-and-conditions" element={<TermsConditions />} />
-        <Route path="/profile-settings" element={<ProfileSettings />} />
-      </Routes>
-    </Suspense>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Suspense fallback={<div>Loading...</div>}>
+          <Header />
+          <main className="py-10">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/otp" element={<OTP />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
+            </Routes>
+          </main>
+        </Suspense>
+      </div>
+    </div>
   );
 };
 
-export default SettingsApp;
+export default AuthApp;

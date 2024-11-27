@@ -42,14 +42,15 @@ module.exports = (_, argv) => ({
 
 	plugins: [
 		new ModuleFederationPlugin({
-			name: "role",
+			name: "auth",
 			filename: "remoteEntry.js",
 			remotes: {
 				store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
 			},
 			exposes: {
-				"./SettingsApp": "./src/pages/index.tsx",
-			  },
+				"./AuthApp": "./src/pages/index.tsx",
+				"./AuthCss": "./src/auth.css",
+			},
 			shared: {
 				...deps,
 				react: {
