@@ -15,10 +15,11 @@ module.exports = (_, argv) => ({
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
   },
-   
+
   devServer: {
     port: 3006,
     historyApiFallback: true,
+    allowedHosts: ["all"],
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
       const port = devServer.server.address().port
@@ -59,13 +60,13 @@ module.exports = (_, argv) => ({
       },
     ],
   },
-    
+
   plugins: [
     new ModuleFederationPlugin({
       name: "role",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js`,
+        store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
         "./RoleApp": "./src/pages/index.tsx",
