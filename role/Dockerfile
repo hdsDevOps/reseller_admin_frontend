@@ -22,7 +22,7 @@ RUN npm install
 COPY . /role
 
 # Ensure port 3000 is accessible to our system
-EXPOSE 3006
+EXPOSE 3010
 
 # Run yarn dev, as we would via the command line 
 CMD ["npm", "run", "start"]
