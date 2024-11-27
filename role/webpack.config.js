@@ -5,7 +5,7 @@ const Dotenv = require('dotenv-webpack');
 const printCompilationMessage = require('./compilation.config.js');
 const deps = require("./package.json").dependencies;
 
-
+   
 
 module.exports = (_, argv) => ({
   output: {
