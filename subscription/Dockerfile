@@ -6,23 +6,23 @@ FROM node:18-alpine
 
 # Create the directory on the node image 
 # where our Next.js app will live
-RUN mkdir -p /paymenthistory
+RUN mkdir -p /subscription
 
 # Set /app as the working directory
-WORKDIR /paymenthistory
+WORKDIR /subscription
 
 # Copy package.json and package-lock.json
 # to the /app working directory
-COPY package*.json /paymenthistory
+COPY package*.json /subscription
 
 # Install dependencies in /app
 RUN npm install
 
 # Copy the rest of our Next.js folder into /app
-COPY . /paymenthistory
+COPY . /subscription
 
 # Ensure port 3000 is accessible to our system
-EXPOSE 3005
+EXPOSE 3004
 
 # Run yarn dev, as we would via the command line 
 CMD ["npm", "run", "start"]
