@@ -1,0 +1,445 @@
+.bg-custom-green{
+  @apply bg-cGreen;
+}
+
+.bg-custom-light-green{
+  @apply bg-cGreen2;
+}
+
+.bg-custom-white{
+  @apply bg-cWhite;
+}
+
+.bg-custom-white-2{
+  @apply bg-cWhite2;
+}
+
+.bg-custom-white-5{
+  @apply bg-cWhite5;
+}
+
+
+.bg-custom-blue-6{
+  @apply bg-cBlue6;
+}
+
+.bg-custom-red{
+  @apply bg-cRed;
+}
+
+.text-custom-green{
+  @apply text-cGreen;
+}
+
+.text-custom-blue{
+  @apply text-cBlue2;
+}
+
+.text-custom-blue-2{
+  @apply text-cBlue;
+}
+
+.text-custom-blue-8{
+  @apply text-cBlue8;
+}
+
+.text-custom-blue-9{
+  @apply text-cBlue9;
+}
+
+.text-custom-gray{
+  @apply text-cGray;
+}
+
+.text-custom-gray-6{
+  @apply text-cGray6;
+}
+
+.text-custom-red{
+  @apply text-cRed;
+}
+
+.text-custom-black-4{
+  @apply text-cBlack4;
+}
+
+.text-custom-black-8{
+  @apply text-[#121212];
+}
+
+.rounded-10px{
+  @apply rounded-[10px];
+}
+
+.font-inter-16px-400-white{
+  @apply font-inter font-normal text-base text-white;
+}
+
+.font-inter-16px-400-custom-gray{
+  @apply font-inter font-normal text-base text-[#5A5A5A];
+}
+
+.font-inter-16px-400{
+  @apply font-inter font-normal text-base;
+}
+
+.font-inter-16px-500-black{
+  @apply font-inter font-medium text-base text-black;
+}
+
+.font-inter-20px-500-cBlack4{
+  @apply font-inter font-medium text-xl leading-6 text-cBlack4;
+}
+
+.font-inter-bold{
+  @apply font-inter font-bold;
+}
+
+.font-inter-bold-16px-cGray7{
+  @apply font-inter font-bold text-base text-cGray7;
+}
+
+.font-inter-16px-bold-black{
+  @apply font-inter font-bold text-base text-center text-black;
+}
+
+.font-inter-14px-normal-cGray{
+  @apply font-inter font-normal text-[14px] text-start text-cGray;
+}
+
+.font-inter-14px-bold-cBlack7{
+  @apply font-inter font-bold text-[14px] text-start text-cBlack7;
+}
+
+.flex-row-between{
+  @apply flex flex-row justify-between;
+}
+
+.flex-row-end{
+  @apply flex flex-row justify-end;
+}
+
+.border-custom-white{
+  @apply border-cWhite;
+}
+
+.border-custom-green{
+  @apply border-cGreen;
+}
+
+.border-custom-gray-2{
+  @apply border-cGray2;
+}
+
+.border-custom-gray{
+  @apply border-cGray5;
+}
+
+.active-status{
+  @apply border border-cGreen bg-cGreen3 rounded-[10px] font-inter font-normal text-[13px] text-black;
+}
+
+.inactive-status{
+  @apply border border-cRed bg-cRed2 rounded-[10px] font-inter font-normal text-[13px] text-black;
+}
+
+.btn-blue{
+  @apply bg-cBlue text-base font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px];
+}
+
+.btn-green{
+  @apply bg-cGreen text-base font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px];
+}
+
+.btn-green-2{
+  @apply px-5 py-[10px] rounded-[10px] bg-cGreen text-cWhite4 font-semibold text-base;
+}
+
+.btn-green-3{
+  @apply bg-cGreen2 text-[8px] font-normal font-inter text-cGray2 focus:outline-none rounded-[5px] px-5 py-[5px] text-center;
+}
+
+.btn-green-4{
+  @apply bg-white text-[14px] font-plusJakartaSans font-bold text-center text-cGreen border border-cGreen py-[10px] px-8 hover:bg-cGreen hover:text-white rounded-[4px];
+}
+
+.btn-light-green{
+  @apply bg-cGreen2 border border-cWhite text-black rounded-[10px] px-5 py-[6px];
+}
+
+.btn-close{
+  @apply text-[25px] rotate-45 shadow-md;
+}
+
+.btn-close-bg{
+  @apply bg-cGreen5 w-[25px] h-[25px] rounded-full pl-[5px] mt-1;
+}
+
+.btn-as-customer-login{
+  @apply bg-cBlue4 py-[7px] px-2 rounded-md border border-cGreen4 font-inter text-base leading-6 font-normal text-black;
+}
+
+.btn-red{
+  @apply font-inter font-semibold text-base text-cWhite4 align-middle  focus:outline-none rounded-[10px] px-5 py-[10px] bg-cRed gap-[10px];
+}
+
+.btn-red-2{
+  @apply font-inter font-semibold text-base text-cWhite4 align-middle  focus:outline-none rounded-[10px] px-5 py-[10px] bg-[#F05252] gap-[10px];
+}
+
+.btn-different{
+  @apply font-inter font-semibold text-base text-black align-middle border border-cGreen focus:outline-none rounded-[10px] px-5 py-[10px] bg-white gap-[10px];
+}
+
+.a-reset-password{
+  @apply font-inter font-normal text-xs text-cBlue5 underline cursor-pointer;
+}
+
+.serach-input{
+  @apply h-[38px] w-full border border-cWhite bg-cWhite2 py-2 px-[9px] rounded-lg font-inter font-normal text-base focus:outline-none placeholder-black;
+}
+
+.serach-input-2{
+  @apply h-[38px] w-full border border-cWhite bg-cWhite2 py-[7px] px-[9px] font-inter font-normal text-base focus:outline-cGreen focus:rounded-none focus:ring-0 text-cGray rounded-none;
+}
+
+.select-input{
+  @apply w-full h-10 border border-cWhite py-2 px-[9px] rounded-lg font-inter font-normal text-base focus:outline-none;
+}
+
+.select-notification{
+  @apply rounded-[10px] border border-cWhite bg-cGreen2 pl-[15px] font-inter font-normal text-base focus:outline-none;
+}
+
+.search-input-label{
+  @apply float-left text-sm font-normal text-custom-gray ml-[18px] z-[1] bg-white w-fit px-2;
+}
+
+.search-input-label-2{
+  @apply float-left text-xs font-inter font-normal text-custom-gray ml-[18px] z-[1] bg-white w-fit px-2;
+}
+
+.search-input-text{
+  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2;
+}
+
+.search-input-text-2{
+  @apply border border-[#E4E4E4] rounded-[10px] mt-[-9px];
+}
+
+.search-select-text{
+  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2;
+}
+
+.thead-css{
+  @apply border border-cWhite bg-cWhite2;
+}
+
+.th-css{
+  @apply opacity-60 text-black font-inter text-[12.8px] text-center font-normal;
+}
+
+.th-css-2{
+  @apply opacity-60 text-cBlack2 font-plusJakartaSans font-semibold text-[14px] text-center;
+}
+
+.td-css{
+  @apply font-inter font-normal text-[10px] opacity-60;
+}
+
+.td-css-2{
+  @apply font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60;
+}
+
+.td-css-3{
+  @apply font-inter font-bold text-[10px] text-black leading-6 tracking-[0.3px] text-center opacity-60 my-[15px];
+}
+
+.h3-text{
+  @apply font-inter font-medium text-[28px] text-black leading-8;
+}
+
+.h3-text-2{
+  @apply font-inter font-extrabold text-[13px] text-cPurple leading-[17px];
+}
+
+.h3-text-3{
+  @apply font-inter font-bold text-[28px] text-cGreen leading-7;
+}
+
+.h2-text{
+  @apply font-inter font-bold text-base leading-[20px] text-black opacity-60;
+}
+
+.h4-text{
+  @apply font-inter font-medium text-2xl text-cBlue3 text-nowrap;
+}
+
+.h5-text{
+  @apply font-medium text-xl leading-6 text-cBlue3 uppercase;
+}
+
+.h5-text-2{
+  @apply font-normal text-[10px] font-inter leading-6 text-black;
+}
+
+.h5-text-black{
+  @apply font-inter font-medium text-xl leading-6 text-black;
+}
+
+.h5-text-red{
+  @apply font-inter font-medium text-xl leading-6 text-cRed;
+}
+
+.h6-text{
+  @apply font-plusJakartaSans font-bold sm:text-[32px] text-[30px] text-cBlack6 text-nowrap;
+}
+
+.h6-text-2{
+  @apply font-plusJakartaSans font-bold text-xl text-cBlack6 text-nowrap;
+}
+
+.page-indicator-1{
+  @apply font-inter font-normal text-base;
+}
+
+.page-indicator-1-1{
+  @apply font-inter font-normal text-base max-[417px]:mt-[12.5px];
+}
+
+.page-indicator-arrow{
+  @apply h-[20px] mt-[4px] max-[443px]:mt-[15px] text-[#00000066];
+}
+
+.page-indicator-arrow-2{
+  @apply h-[20px] mt-[4px] max-[495px]:mt-[15px] text-[#00000066];
+}
+
+.page-indicator-arrow-3{
+  @apply h-[20px] mt-[4px] max-[431px]:mt-[15px] text-[#00000066];
+}
+
+.page-indicator-arrow-4{
+  @apply h-[20px] mt-[4px] max-[398px]:mt-[15px] text-[#00000066];
+}
+
+.page-indicator-arrow-5{
+  @apply h-[20px] mt-[4px] max-[417px]:mt-[15px] text-[#00000066];
+}
+
+.page-indicator-2{
+  @apply font-inter font-normal text-base text-cGreen;
+}
+
+.fixed-full-screen{
+  @apply fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50;
+}
+
+.fixed-popup{
+  @apply bg-white rounded-lg shadow-lg;
+}
+
+.fixed-popup-round3xl{
+  @apply bg-white rounded-3xl shadow-lg;
+}
+
+.voucher-table-modal{
+  @apply font-inter font-normal text-[13px] leading-6 text-black;
+}
+
+.voucher-currency-selector{
+  @apply flex flex-row mt-[-32px] mr-1 focus:outline-none font-inter font-normal text-base tracking-[-1.1%] text-cBlack3 leading-5;
+}
+
+.textarea-template{
+  @apply border border-cWhite h-[131.64px] rounded-[10px] font-inter font-normal text-xs leading-6 text-cBlack4 p-2;
+}
+
+.notification-select{
+  @apply h-[41px] bg-cGray3 border border-cGray4 rounded-[3px] p-[5px] font-roboto text-base leading-[18.75px] font-normal text-[#757575] focus:outline-none;
+}
+
+.notification-template-head{
+  @apply w-full sm:h-[46px] h-fit flex sm:flex-row flex-col sm:justify-between items-center border-b border-cWhite;
+}
+
+.notification-template-header{
+  @apply font-roboto font-normal text-base leading-[18.75px] text-[#757575];
+}
+
+.select-dynamic-code{
+  @apply w-[166px] h-[41px] text-center text-white font-roboto font-normal text-xs leading-[14px] bg-[#007BFF] rounded-[3px] focus:outline-none sm:mt-[2px] my-1 sm:mr-[22px] mr-0;
+}
+
+.notification-template-textarea{
+  @apply w-full max-h-[208px] min-h-[208px] overflow-y-scroll px-6 py-1 focus:outline-none;
+}
+
+.payment-select{
+  @apply text-cGreen font-inter font-normal text-base focus:outline-none w-[97px] h-[38px] ;
+}
+
+.payment-option{
+  @apply text-black;
+}
+
+.select-div{
+  @apply text-end px-2 py-[7px];
+}
+
+.view-details{
+  @apply font-inter font-normal text-[10px] leading-6 text-center underline text-[#045014] my-[15px];
+}
+
+.faq-header{
+  @apply font-inter font-semibold text-[22px] leading-7 text-cBlack5;
+}
+
+.faq-details{
+  @apply font-inter font-light text-base leading-5 tracking-[-1.1%] text-cBlack5;
+}
+
+.btn-faq{
+  @apply h-fit font-inter font-semibold text-base leading-9 text-center text-cWhite4 rounded-[10px];
+}
+/*  py-[10px] px-5 */
+
+.btn-chevron-down{
+  @apply w-9 h-9 bg-cGreen bg-opacity-20 rounded-full text-black;
+}
+
+.btn-chevron-up{
+  @apply w-9 h-9 bg-cGray bg-opacity-20 rounded-full text-black;
+}
+
+.btn-cms{
+  @apply h-6 bg-cGreen px-5 rounded-tl-[10px] rounded-tr-[5px] rounded-br-[10px] rounded-bl-[5px] font-inter font-semibold text-base text-center text-cWhite4;
+}
+
+.btn-cms-2{
+  @apply w-[54px] h-[17px] bg-cGreen rounded-tl-[10px] rounded-tr-[5px] rounded-br-[10px] rounded-bl-[5px] font-inter font-semibold text-[12px] text-center text-cWhite4;
+}
+
+.banner-table-td-1{
+  @apply text-nowrap align-top font-inter font-normal text-xs text-black opacity-60;
+}
+
+.banner-table-td-2{
+  @apply align-top font-inter text-[11px] text-left;
+}
+
+.banner-table-td-3{
+  @apply align-top font-inter text-[14px] font-bold text-black text-center leading-5;
+}
+
+.banner-price-span{
+  @apply h-6 rounded-2xl bg-black bg-opacity-[38%] flex flex-row;
+}
+
+.banner-price-p{
+  @apply font-inter font-normal text-[10px] leading-3 tracking-[-1.1%] text-cBlack3 align-middle my-auto;
+}
+
+.photo-p{
+  @apply font-inter font-normal text-[7px] text-center text-[#A6A6A60];
+}
