@@ -1,18 +1,23 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-const AddCustomer = React.lazy(() => import('./AddCustomer'));
-const CustomerList = React.lazy(() => import('./CustomerList'));
+import React, { Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
 
-const CustomerApp: React.FC = () => {
+const Role = React.lazy(() => import("./Role"));
+const UserList = React.lazy(() => import("./UserList"));
+const AddRole = React.lazy(() => import("./AddRole"));
+const EditRole = React.lazy(() => import("./EditRole"));
+
+
+const RoleApp: React.FC = () => {
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <Routes>
-        <Route path="/" element={<CustomerList />} />
-        <Route path="/customer" element={<CustomerList />} />
-        <Route path="/addcustomer" element={<AddCustomer />} />
+        <Route path="/role" element={<Role />} />
+        <Route path="/user-list" element={<UserList />} />
+        <Route path="/add-role" element={<AddRole />} />
+        <Route path="/edit-role" element={<EditRole />} />
       </Routes>
-    </div>
+    </Suspense>
   );
 };
 
-export default CustomerApp;
+export default RoleApp;
