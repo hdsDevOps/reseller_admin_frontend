@@ -9,7 +9,7 @@ const printCompilationMessage = require('./compilation.config.js');
   
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "https://role.admin.gworkspace.withhordanso.com/",
+    publicPath: "auto",
   },
 
   resolve: {
