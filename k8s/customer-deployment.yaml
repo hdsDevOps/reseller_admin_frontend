@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontendadmin-customer-service
+  name: adminfrontend-customer-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: frontendadmin-customer-service
+      app: adminfrontend-customer-service
   template:
     metadata:
       labels:
-        app: frontendadmin-customer-service
+        app: adminfrontend-customer-service
     spec:
       containers:
-      - name: frontendadmin-customer-service
+      - name: adminfrontend-customer-service
         image: hordansodevops/reseller_admin_frontend_customer:latest
         ports:
         - containerPort: 4002
