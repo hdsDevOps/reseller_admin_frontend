@@ -1,7 +1,7 @@
 # Dockerfile
 
 # Use node alpine as it's a small node image
-FROM node:18-alpine
+FROM node:16-alpine
 #FROM node:20-alpine3.19
 
 # Create the directory on the node image 
@@ -25,4 +25,4 @@ COPY . /vouchernotification
 EXPOSE 4003
 
 # Run yarn dev, as we would via the command line 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
