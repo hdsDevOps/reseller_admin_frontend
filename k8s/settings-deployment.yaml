@@ -16,7 +16,7 @@ spec:
       - name: adminfrontend-settings-service
         image: hordansodevops/reseller_admin_frontend_settings:latest
         ports:
-        - containerPort: 3007
+        - containerPort: 4007
         resources:
           limits:
             cpu: "1"
@@ -27,12 +27,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 3007
+            port: 4007
           initialDelaySeconds: 5
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /
-            port: 3007
+            port: 4007
           initialDelaySeconds: 5
           periodSeconds: 3
