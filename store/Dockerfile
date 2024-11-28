@@ -21,8 +21,8 @@ RUN npm install
 # Copy the rest of our Next.js folder into /app
 COPY . /store
 
-# Ensure port 3000 is accessible to our system
-EXPOSE 3030
+# Ensure port 4030 is accessible to our system
+EXPOSE 4030
 
 # Run yarn dev, as we would via the command line 
 CMD ["npm", "run", "start"]
