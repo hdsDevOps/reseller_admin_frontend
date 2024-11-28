@@ -6,7 +6,7 @@ const Dotenv = require('dotenv-webpack');
 const deps = require("./package.json").dependencies;
 
 const printCompilationMessage = require('./compilation.config.js');
-    
+
 module.exports = (_, argv) => ({
   output: {
     publicPath: "auto",
@@ -65,7 +65,7 @@ module.exports = (_, argv) => ({
       name: "customer",
       filename: "remoteEntry.js",
       remotes: {
-        store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
       },
       exposes: {
         "./CustomerApp": "./src/pages/index.tsx",
