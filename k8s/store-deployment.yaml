@@ -16,7 +16,7 @@ spec:
       - name: frontendadmin-store-service
         image: hordansodevops/reseller_admin_frontend_store:latest
         ports:
-        - containerPort: 3030
+        - containerPort: 4030
         resources:
           limits:
             cpu: "1"
@@ -27,12 +27,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 3030
+            port: 4030
           initialDelaySeconds: 5
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /
-            port: 3030
+            port: 4030
           initialDelaySeconds: 5
           periodSeconds: 3
