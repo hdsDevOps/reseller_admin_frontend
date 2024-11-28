@@ -6,6 +6,7 @@ export const endPoints = {
     fogetPasswordResendOtp: 'adminservices/forgotpassword/api/v1/resendotp',
     forgetPasswordVerifyOtp: 'adminservices/forgotpassword/api/v1/verifyotp',
     forgetPasswordReset: 'adminservices/forgotpassword/api/v1/resetpassword',
+    logOut: 'adminservices/admin/api/v1/logout',
     
     // customer endpoints
     customerList: 'adminservices/customer/api/v1/customerlist',

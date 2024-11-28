@@ -102,6 +102,15 @@ async function forgetPasswordResetApi(
   }
 };
 
+async function logOutApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.logOut);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function customerListApi(
   search_data: string,
   country: string,
@@ -432,6 +441,7 @@ export const userApis = {
   forgetPasswordResendOtpApi,
   forgetPasswordVerifyOtpApi,
   forgetPasswordResetApi,
+  logOutApi,
   customerListApi,
   addCustomerApi,
   editCustomerApi,

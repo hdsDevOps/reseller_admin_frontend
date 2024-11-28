@@ -90,6 +90,13 @@ export const forgetPasswordResetThunk = createAsyncThunk(
   }
 );
 
+export const logOutThunk = createAsyncThunk(
+  "users/logOut",
+  async () => {
+    return await userApis.logOutApi();
+  }
+);
+
 export const getCustomerListThunk = createAsyncThunk(
   "users/getCustomerList",
   async ({

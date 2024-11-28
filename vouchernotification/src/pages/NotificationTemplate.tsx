@@ -4,10 +4,11 @@ import { BsEnvelopePlusFill } from "react-icons/bs";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
-import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk } from 'store/user.thunk';
+import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk, getCustomerListThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Send, X } from "lucide-react";
 
 const NotificationTemplate = () => {
   const navigate = useNavigate();
@@ -15,16 +16,176 @@ const NotificationTemplate = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
-  console.log(selectedItem);
-  
+  // console.log("selectedItem", selectedItem);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [showNotification, setShowNotification] = useState(true);
   const [isToggled, setIsToggled] = useState(false);
   const modalRef = useRef();
   const previewRef = useRef();
+  const filterRef = useRef(null);
   const [templateHeading, setTemplateHeading] = useState({template_heading: ""});
   // console.log(templateHeading);
   const [notificationTemplates, setNotificationTemplates] = useState([]);
   // console.log(notificationTemplates);
   const [templateContent, setTemplateContent] = useState("");
+  const intialFilter= {
+    search_data: "",
+    country: "",
+    state_name: "",
+    authentication: "",
+    license_usage: "",
+    subscritption_date: "",
+    renewal_date: ""
+  };
+  const [filters, setFilters] = useState(intialFilter);
+  const [searchData, setSearchData] = useState("");
+  // console.log("filters...", filters);
+  const [customerList, setCustomerList] = useState([]);
+  // console.log("customerList", customerList.length)
+  // console.log("customerList", customerList);
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  // console.log(selectedCustomers);
+  const [showCustomerList, setShowCustomerList] = useState([]);
+  const [dynamicCodes, setDynamicCodes] = useState([
+    "{first_name}",
+    "{last_name}",
+    "{email}",
+  ]);
+  
+  const handleFilterChange = (e) => {
+    // console.log("User Input:", e.target.value);
+    const { value, selectionStart, selectionEnd } = e.target;
+
+    setSearchData((prevContent) => {
+      // Set the new value
+      const newContent = value;
+
+      // Use a timeout to preserve cursor position
+      setTimeout(() => {
+        if (filterRef.current) {
+          filterRef.current.selectionStart = selectionStart;
+          filterRef.current.selectionEnd = selectionEnd;
+        }
+      }, 0);
+
+      return newContent;
+    });
+  };
+
+  useEffect(() => {
+    setFilters({
+      ...filters,
+      search_data: searchData
+    })
+  }, [searchData]);
+
+  useEffect(() => {
+    const getCustomerList = async() => {
+      try {
+        const result = await dispatch(
+          getCustomerListThunk(filters)
+        ).unwrap()
+        if(result.data){
+          setCustomerList(result.data);
+        }
+        else{
+          setCustomerList([]);
+        }
+      } catch (error) {
+        setCustomerList([]);
+      }
+    }
+
+    if(searchData.length > 1){
+      getCustomerList();
+    }
+  }, [searchData]);
+
+  const handleSelectCustomer = (index) => {
+    const array = selectedCustomers;
+    array.push(showCustomerList[index]);
+    setSelectedCustomers(array);
+    setShowCustomerList([]);
+    setSearchData("");
+  };
+
+  const removeSelected = (index) => {
+    const newArray = selectedCustomers.filter((_, number) => number !== index);
+    setSelectedCustomers(newArray);
+  }
+
+  useEffect(() => {
+    const notSelectedArray = customerList.filter(item => !selectedCustomers.some(item2 => item2.record_id === item.record_id));
+    setShowCustomerList(notSelectedArray);
+  }, [customerList, selectedCustomers])
+
+  useEffect(() => {
+    if(selectedItem?.id == null || selectedItem?.id == undefined){
+      setSelectedItem("")
+    }
+    else{
+      setSelectedItem({
+        ...selectedItem,
+        template_content: templateContent
+      });
+    }
+  }, [templateContent]);
+  
+  const handleTextareaChange = (e) => {
+    // console.log("User Input:", e.target.value);
+    const { value, selectionStart, selectionEnd } = e.target;
+
+    setTemplateContent((prevContent) => {
+      // Set the new value
+      const newContent = value;
+
+      // Use a timeout to preserve cursor position
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = selectionStart;
+          textareaRef.current.selectionEnd = selectionEnd;
+        }
+      }, 0);
+
+      return newContent;
+    });
+  };
+
+  const handleInsertCode = (code) => {
+    // Insert the selected code into the textarea at the current cursor position
+    const textarea = textareaRef.current;
+
+    if (textarea) {
+      // Fetch current selection positions
+      const { selectionStart, selectionEnd } = textarea;
+
+      // Update the content with the inserted code
+      setTemplateContent((prevContent) => {
+        const newContent =
+          prevContent.slice(0, selectionStart) +
+          code +
+          prevContent.slice(selectionEnd);
+
+        // Update cursor position after insertion
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = selectionStart + code.length;
+            textareaRef.current.selectionEnd = selectionStart + code.length;
+            textareaRef.current.focus();
+          }
+        }, 0);
+
+        return newContent;
+      });
+
+      setTimeout(() => {
+        const dropdown = document.querySelector(".select-dynamic-code");
+        if (dropdown) {
+          dropdown.value = ""; // Set the dropdown to its default state
+        }
+      }, 0);
+    }
+  };
 
   const clickOutsideModal = (event) => {
     if(modalRef.current && !modalRef.current.contains(event.target)){
@@ -34,7 +195,6 @@ const NotificationTemplate = () => {
 
   useEffect(() => {
     document.addEventListener('mousedown', clickOutsideModal);
-
     return () => {
       document.removeEventListener('mousedown', clickOutsideModal);
     };
@@ -48,7 +208,6 @@ const NotificationTemplate = () => {
 
   useEffect(() => {
     document.addEventListener('mousedown', clickOutsidePreview);
-
     return () => {
       document.removeEventListener('mousedown', clickOutsidePreview);
     };
@@ -135,6 +294,7 @@ const NotificationTemplate = () => {
 
         <div className="flex justify-end mt-[46px]">
           <select className="notification-select w-[275px] max-[400px]:w-full" onChange={e => {
+            setTemplateContent(notificationTemplates[e.target.value]?.template_content);
             setSelectedItem(notificationTemplates[e.target.value]);
           }}>
             <option selected hidden value=''>Select a notification section </option>
@@ -148,7 +308,7 @@ const NotificationTemplate = () => {
           </select>
         </div>
 
-        {!selectedItem ? (
+        {!selectedItem || selectedItem == "" ? (
           <div className="bg-gray-100 border border-gray-300 w-full min-h-48 h-full flex flex-col mt-16">
             <div className="h-[77px] border-b border-custom-white text-center pt-[26px]">
               <h5 className="h5-text-red">
@@ -164,10 +324,10 @@ const NotificationTemplate = () => {
               </h5>
               <div
                 className="mt-[7.5px] transition-transform duration-1000 ease-in-out"
-                // onClick={() => setShowNotfication(!showNotification)}
+                onClick={() => setShowNotification(!showNotification)}
               >
                 <label className="relative cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
+                  <input type="checkbox" className="sr-only peer" defaultChecked={showNotification} />
                   <div
                     className="w-[40px] h-[20px] flex items-center bg-gray-300 rounded-full after:flex after:items-center after:justify-center peer peer-checked:after:translate-x-full after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-[#00D13B]">
                   </div>
@@ -179,8 +339,13 @@ const NotificationTemplate = () => {
                 <h3 className="notification-template-header py-3 pl-3">
                   {selectedItem?.template_header}
                 </h3>
-                <select className="select-dynamic-code">
-                  <option selected>Dynamic code list</option>
+                <select className="select-dynamic-code" onChange={e => {handleInsertCode(e.target.value)}}>
+                  <option selected hidden value="">Dynamic code list</option>
+                  {
+                    dynamicCodes && dynamicCodes.map((code, index) => (
+                      <option key={index} value={code}>{code}</option>
+                    ))
+                  }
                 </select>
               </div>
 
@@ -189,35 +354,72 @@ const NotificationTemplate = () => {
                 className="notification-template-textarea"
                 placeholder="HTML/CSS script should be here to make the Promotion template"
                 name="template_content"
-                onChange={e => {setTemplateContent(e.target.value)}}
-                defaultValue={selectedItem?.template_content || ""}
+                onChange={handleTextareaChange}
+                value={selectedItem?.template_content || ""}
+                ref={textareaRef}
               />
               </div>
             </div>
 
-            <div className="flex min-lg:flex-row max-lg:flex-col justify-between items-center w-full h-[41px]">
-              <div className="flex items-center lg:w-full">
-                <select
-                  className="border border-custom-white h-[41px] lg:ml-[15px] ml-0"
-                >
-                  <option selected>Separate multiple emails with comma'.</option>
-                </select>
-                <BsEnvelopePlusFill className="text-[#525050] hidden sm:block" size={32} />
+            <div
+              className="flex min-[1100px]:flex-row max-[1100px]:flex-col justify-between w-full mt-2 items-start"
+            >
+              <div
+                className="flex flex-col lg:w-full max-sm:w-full"
+              >
+                <div className="flex flex-row gap-3 w-full">
+                  <input
+                    className="border border-custom-white h-[41px] sm:min-w-[400px] max-sm:w-full max-w-[400px] p-2"
+                    name="search_data"
+                    onChange={handleFilterChange}
+                    placeholder="Search email"
+                    value={filters?.search_data}
+                    ref={filterRef}
+                  />
+                  <Send className="w-6 text-[#12A833] sm:block my-auto" size={32} />
+                </div>
+
+                {
+                  filters?.search_data != "" && filters?.search_data.length > 1 && showCustomerList.length > 0 && (
+                    <div
+                      className={`absolute sm:min-w-[400px] flex flex-col max-sm:w-full max-w-[400px] mt-[44px] bg-custom-white shadow-sm max-lg:mx-auto p-2`}
+                    >
+                      {
+                        showCustomerList && showCustomerList?.map((customer, index) => (
+                          <a key={index} className="py-1 font-roboto font-normal text-[14px] text-[#222222] cursor-pointer" onClick={() => {handleSelectCustomer(index)}}>{customer?.email}</a>
+                        ))
+                      }
+                    </div>
+                  )
+                }
+
+                <div className="flex flex-wrap">
+                  {
+                    selectedCustomers.length > 0 && selectedCustomers.map((selected, index) => (
+                      <div className='flex flex-row gap-2 bg-[#C7E5CD] px-2 w-fit rounded-xl m-1' key={index}>
+                        <a className='font-inter font-normal text-[10px] text-[#545454] pt-[6px]'>{selected?.email}</a>
+                        <button className='my-auto' onClick={() => {removeSelected(index)}}>
+                          <X className='text-[10px] text-black' />
+                        </button>
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
 
-              <div className="flex min-[570px]:flex-row max-[570px]:flex-col justify-end gap-[10px] pt-[2px] min-lg:mt-0 max-lg:mt-1">
+              <div className="flex min-[570px]:flex-row max-[570px]:flex-col justify-end mx-auto gap-[10px] pt-[2px] min-lg:mt-0 max-lg:mt-1">
                 <button
-                  className='btn-green'
+                  className='btn-green max-w-fit'
                   type="button"
                   onClick={() => {setIsPreviewOpen(true)}}
                 >Preview</button>
                 <button
-                  className='btn-different'
+                  className='btn-different max-w-fit'
                   type="button"
                   onClick={() => {updateNoficationTemplateContent()}}
                 >Update</button>
                 <button
-                  className='btn-red-2'
+                  className='btn-red-2 max-w-fit'
                 >Cancel</button>
               </div>
             </div>

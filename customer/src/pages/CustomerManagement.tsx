@@ -30,12 +30,10 @@ const CustomerManagement: React.FC = () => {
   };
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(intialFilter);
-  // console.log(filters);
   
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  // console.log(customerList, "customer list");
   
   const [showList, setShowList] = useState(null);
   const listRef = useRef(null);
@@ -47,7 +45,6 @@ const CustomerManagement: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [authorization, setAuthorization] = useState("");
   const [countryList, setCountryList] = useState([]);
-  // console.log("countryList", countryList);
   
   useEffect(() => {
     if(authorization == "true"){
@@ -83,28 +80,6 @@ const CustomerManagement: React.FC = () => {
       }
     } catch (error) {
       setCustomerList([]);
-      if(error?.message == "Request failed with status code 401"){
-        try {
-          const result2 = await dispatch(
-            removeUserAuthTokenFromLSThunk()
-          ).unwrap()
-          navigate('/login');
-        } catch (error) {
-          console.log("Error on logging out")
-        } finally {
-          try {
-            const getToken = await dispatch(
-              getUserAuthTokenFromLSThunk()
-            ).unwrap()
-            navigate('/login')
-          } catch (error) {
-            console.log("Error on token")
-          }
-        }
-      }
-      else{
-        console.log(error);
-      }
     }
   }
 
@@ -138,8 +113,6 @@ const CustomerManagement: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutOfFilter);
     };
   }, []);
-
-  //filters.search_data, filters.country, filters.state_name, filters.authentication, filters.license_usage, filters.subscritption_date, filters.renewal_date
 
   const handleFilterChange = (e) => {
     setFilters({

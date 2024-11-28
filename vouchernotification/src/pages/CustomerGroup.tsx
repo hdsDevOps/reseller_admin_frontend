@@ -9,7 +9,7 @@ import "../styles/styles.css";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { format } from "date-fns";
 import { useAppDispatch } from "store/hooks";
-import { getCustomerGroupListThunk, deleteCustomerGroupThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getCustomerGroupListThunk, deleteCustomerGroupThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -61,28 +61,6 @@ const CustomerGroup: React.FC = () => {
       setSampleData(result.data);
     } catch (error) {
       setSampleData([]);
-      if(error?.message == "Request failed with status code 401"){
-        try {
-          const result2 = await dispatch(
-            removeUserAuthTokenFromLSThunk()
-          ).unwrap()
-          navigate('/login');
-        } catch (error) {
-          console.log("Error on logging out")
-        } finally {
-          try {
-            const getToken = await dispatch(
-              getUserAuthTokenFromLSThunk()
-            ).unwrap()
-            navigate('/login')
-          } catch (error) {
-            console.log("Error on token")
-          }
-        }
-      }
-      else{
-        console.log(error);
-      }
     }
   };
 
