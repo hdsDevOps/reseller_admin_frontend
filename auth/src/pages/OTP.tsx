@@ -5,23 +5,10 @@ import React, {
   ChangeEvent,
   KeyboardEvent,
 } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "store/hooks";
-import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSThunk, resendUserOtpThunk, forgetPasswordVerifyOtpThunk, forgetPasswordResendOtpThunk } from "store/user.thunk";
-import { setTokenDetails } from "store/authSlice";
-import { MoveLeft } from 'lucide-react';
-import '../styles/styles.css';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Link, useNavigate } from "react-router-dom";
 
 const OTP: React.FC = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const mode = queryParams.get("mode");
-  const email = `${location.state != null ? location.state.email : ""}`;
-  const adminId = useAppSelector((state: any) => state.auth.userId);
 
   const otp1Ref = useRef<HTMLInputElement>(null);
   const otp2Ref = useRef<HTMLInputElement>(null);
@@ -37,30 +24,6 @@ const OTP: React.FC = () => {
   const [otp5, setOtp5] = useState<string>("");
   const [otp6, setOtp6] = useState<string>("");
 
-  const [ time, setTime ] = useState(0);
-  const [ seconds, setSeconds ] = useState(0);
-  const [ minutes, setMinutes ] = useState(0);
-
-  useEffect(() => {
-    toast.success("Otp has been sent to your email!");
-  }, [])
-  
-
-  useEffect(() => {
-    if(time>0){
-      setSeconds(time%60);
-      setMinutes((parseInt(time/60)).toFixed(0));
-      setTimeout(() => {
-        setTime(time-1);
-      }, 1000);
-    }
-    else{
-      setSeconds(0);
-      setMinutes(0);
-      setTime(0);
-    }
-  }, [time])
-
   useEffect(() => {
     otp1Ref.current?.focus();
   }, []);
@@ -69,7 +32,7 @@ const OTP: React.FC = () => {
     e: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const value = (e.target as HTMLInputElement).value;
+    const value = e.target.value;
     if (/^\d$/.test(value)) {
       switch (index) {
         case 1:
@@ -152,274 +115,91 @@ const OTP: React.FC = () => {
     }
   };
 
-  const handleLogin = async(e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
-
     if (otp.length === 6) {
-      const isValidOtp = true;
-
-      if (isValidOtp) {
-        if (mode === "signin") {
-          try {
-            const result = await dispatch(
-              verifyUserOtpThunk({
-                admin_id: adminId,
-                otp: otp
-              })
-            ).unwrap()
-            if(result.message == 'Login successful'){
-              try {
-                const setToken = await dispatch(
-                  setUserAuthTokenToLSThunk(result?.token)
-                ).unwrap()
-                navigate('/dashboard', {state: {from: 'otp'}})
-              } catch (error) {
-                console.log("Error on token")
-              } finally {
-                try {
-                  const getToken = await dispatch(
-                    getUserAuthTokenFromLSThunk()
-                  ).unwrap()
-                  navigate('/dashboard', {state: {from: 'otp'}})
-                } catch (error) {
-                  console.log("Error on token")
-                }
-              }
-            }
-            else{
-              navigate('/login')
-            }
-          } catch (error) {
-            // console.log("Error on otp");
-            toast.error("Enter valid otp!");
-          }
-        } else {
-          try {
-            const result = await dispatch(
-              forgetPasswordVerifyOtpThunk({
-                email: email,
-                otp: otp
-              })
-            ).unwrap()
-            if(result.message == 'OTP verified successfully'){
-              navigate('/resetpassword', { state: { email: email, otp: otp } });
-            }
-            else{
-              toast.error("Enter valid otp!")
-            }
-          } catch (error) {
-            // console.log("Error on otp");
-            toast.error("Enter valid otp!");
-          }
-        }
-      } else {
-        // alert("Invalid OTP. Please try again.");
-        toast.error("Enter valid otp!");
-      }
+      // Process the OTP login
+      // Add your login logic here
     } else {
-      // alert("Please enter all 6 digits.");
-      toast.warning("Please enter all 6 digits.");
+      // Add error handling logic here
     }
   };
 
-  const handleEditmail = () => {
-    navigate("/forgotpassword");
+  const onGoBackhandler = () => {
+    navigate("/login");
   };
-
-  const resendOtp = async() => {
-    setTime(120);
-    if(mode == "signin"){
-      try {
-        const otpResend = await dispatch(
-          resendUserOtpThunk({
-            admin_id: adminId
-          })
-        ).unwrap()
-        toast.success("Otp has been resent to your email!");
-      } catch (error) {
-        console.log("Error sending otp")
-        toast.error("Otp resending is failed!");
-      }
-    }
-    else{
-      try {
-        const otpResend = await dispatch(
-          forgetPasswordResendOtpThunk({
-            email: email
-          })
-        ).unwrap();
-        console.log("result...", otpResend)
-        toast.success("Otp has been resent to your email!");
-      } catch (error) {
-        console.log("Error sending otp")
-        toast.error("Otp resending is failed!");
-      }
-    }
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <ToastContainer />
-      <div className="w-full max-w-[570px]">
-        <div className="p-8 xsm-max:px-4 bg-[#F9FAFB] rounded-lg shadow-sm">
-          <div
-            className={`mb-[20px] flex items-center justify-center`}
-          >
-            <img
-              src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
-              alt="logo"
-              className={`w-[108px]`}
-            />
-          </div>
-          <h3 className="text-center h3-text mb-4">
-            {mode === "signin" ? "Sign in your account" : "Verify your email"}
-          </h3>
-          <div
-            className="w-full flex items-start justify-center"
-          >
-            <p
-              className="text-center font-inter-16px-400 w-[430px]"
-            >
-              {
-                mode === "signin" ? "Enter the six digit code we sent to your email address to verify your Hordanso account:" : `Enter the six digit code we sent to your email address to verify your Hordanso account:`
-              }
-              <div className="inline-block ml-[5px]">
-                {/* <p dangerouslySetInnerHTML={{ __html: message }} /> */}
-                {mode !== "signin" && (
-                  <button
-                    type="button"
-                    onClick={() => handleEditmail()}
-                    className="font-medium text-green-600 hover:text-gray-500"
-                    data-testid="back-to-login"
-                  >
-                    Edit
-                  </button>
-                )}
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in your account
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="otp" className="sr-only">
+                OTP Verification
+              </label>
+              <div className="flex justify-between">
+                {[otp1Ref, otp2Ref, otp3Ref, otp4Ref, otp5Ref, otp6Ref].map((ref, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    ref={ref}
+                    value={[otp1, otp2, otp3, otp4, otp5, otp6][index]}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(e, index + 1)
+                    }
+                    onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
+                      handleKeyDown(e, index + 1)
+                    }
+                    className="appearance-none rounded-none relative block w-12 h-12 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm text-center"
+                    data-testid={`otp-${index + 1}`}
+                  />
+                ))}
               </div>
-            </p>
+            </div>
           </div>
-          <form onSubmit={handleLogin}
-            className="flex flex-col w-full text-center"
-          >
-            <div className="flex justify-between mt-12 w-[451px]">
-              <p className="text-md font-bold">OTP verification</p>
-              <span className="text-red-600">{
-                `0${minutes}:${
-                  seconds<10 ? "0"+seconds : seconds
-                }`
-              }</span>
-            </div>
-            <div className="grid grid-cols-6 gap-2 mt-4 w-[451px]">
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp1Ref}
-                value={otp1}
-                onChange={(e) => handleInputChange(e, 1)}
-                onKeyDown={(e) => handleKeyDown(e, 1)}
-                className="otp-input"
-                placeholder="0"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp2Ref}
-                value={otp2}
-                onChange={(e) => handleInputChange(e, 2)}
-                onKeyDown={(e) => handleKeyDown(e, 2)}
-                className="otp-input"
-                placeholder="0"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp3Ref}
-                value={otp3}
-                onChange={(e) => handleInputChange(e, 3)}
-                onKeyDown={(e) => handleKeyDown(e, 3)}
-                className="otp-input"
-                placeholder="0"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp4Ref}
-                value={otp4}
-                onChange={(e) => handleInputChange(e, 4)}
-                onKeyDown={(e) => handleKeyDown(e, 4)}
-                className="otp-input"
-                placeholder="0"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp5Ref}
-                value={otp5}
-                onChange={(e) => handleInputChange(e, 5)}
-                onKeyDown={(e) => handleKeyDown(e, 5)}
-                className="otp-input"
-                placeholder="0"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp6Ref}
-                value={otp6}
-                onChange={(e) => handleInputChange(e, 6)}
-                onKeyDown={(e) => handleKeyDown(e, 6)}
-                className="otp-input"
-                placeholder="0"
-              />
-            </div>
-            <div className="max-w-[451px] mt-[25px]">
-              <button
-                type="submit"
-                data-testid="log-in"
-                className={`w-full ${
-                  mode === "signin" ? "btn-green" : "btn-black"
-                } h-11`}
-              >
-                Submit
-              </button>
-            </div>
-            <div className="text-center mt-8 xsm-max:text-sm">
-              <p>
-                Didn't get an OTP?{" "}
-                <button
-                  type="button"
-                  className={`${
-                    time>0 ? 'text-[#858585]' : 'text-red-600 underline'
-                  } ml-4`}
-                  onClick={() => {
-                    resendOtp()
-                  }}
-                  disabled={
-                    time>0 ? true : false
-                  }
-                >
-                  Resend OTP
-                </button>{" "}
-              </p>
-            </div>
 
-            <div
-              className="text-center flex flex-row justify-center mt-8"
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              data-testid="submit"
             >
-              <button
-                type="button"
-                className="flex flex-row"
-                onClick={() => navigate('/login')}
-              >
-                <MoveLeft
-                  className="w-2 pt-[2px]"
-                />
-                <p
-                  className="ml-2 font-inter font-semibold text-base"
-                >Back to log in</p>
-              </button>
-            </div>
-          </form>
+              Submit
+            </button>
+          </div>
+        </form>
+
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Didn't get an OTP?{" "}
+            <Link
+              to="#"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+              data-testid="resend-otp"
+            >
+              Resend OTP
+            </Link>{" "}
+            <span className="text-gray-500">01:19</span>
+          </p>
+        </div>
+
+        <div className="text-center mt-4">
+          <button
+            type="button"
+            onClick={onGoBackhandler}
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            data-testid="back-to-login"
+          >
+            ← Back to login
+          </button>
         </div>
       </div>
     </div>

@@ -1,37 +1,20 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 const Dotenv = require("dotenv-webpack");
-const path = require('path');
-const printCompilationMessage = require('./compilation.config.js');
 const deps = require("./package.json").dependencies;
 module.exports = (_, argv) => ({
 	output: {
 		publicPath: "auto",
 	},
+
 	resolve: {
 		extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
 	},
-   
+
 	devServer: {
 		port: 4001,
 		historyApiFallback: true,
 		allowedHosts: ["all"],
-		watchFiles: [path.resolve(__dirname, 'src')],
-		onListening: function (devServer) {
-		const port = devServer.server.address().port
-
-		printCompilationMessage('compiling', port)
-
-		devServer.compiler.hooks.done.tap('OutputMessagePlugin', (stats) => {
-			setImmediate(() => {
-			if (stats.hasErrors()) {
-				printCompilationMessage('failure', port)
-			} else {
-				printCompilationMessage('success', port)
-			}
-			})
-		})
-		}
 	},
 
 	module: {
