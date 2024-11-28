@@ -3,12 +3,12 @@ const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPl
 const Dotenv = require('dotenv-webpack');
 const deps = require("./package.json").dependencies;
 const printCompilationMessage = require('./compilation.config.js');
-   
+const path = require('path');   
 module.exports = (_, argv) => ({
 	output: {
 		publicPath: "auto",
 	},
-
+  
 	resolve: {
 		extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
 	},
