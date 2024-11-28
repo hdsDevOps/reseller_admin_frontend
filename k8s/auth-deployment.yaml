@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontendadmin-auth-service
+  name: adminfrontend-auth-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: frontendadmin-auth-service
+      app: adminfrontend-auth-service
   template:
     metadata:
       labels:
-        app: frontendadmin-auth-service
+        app: adminfrontend-auth-service
     spec:
       containers:
-      - name: frontendadmin-auth-service
+      - name: adminfrontend-auth-service
         image: hordansodevops/reseller_admin_frontend_auth:latest
         ports:
         - containerPort: 4001
