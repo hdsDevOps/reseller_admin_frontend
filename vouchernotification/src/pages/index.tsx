@@ -1,30 +1,18 @@
-import React, { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
-import NotificationTemplate from "./NotificationTemplate";
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+const AddCustomer = React.lazy(() => import('./AddCustomer'));
+const CustomerList = React.lazy(() => import('./CustomerList'));
 
-
-const VoucherList = React.lazy(() => import("./VoucherList"));
-const CustomerGroup = React.lazy(() => import("./CustomerGroup"));
-const AddCustomerGroup = React.lazy(() => import("./AddCustomerGroup"));
-const EditCustomerGroup = React.lazy(() => import("./EditCustomerGroup"));
-const AddVoucher = React.lazy(() => import("./AddVoucher"));
-const EditVoucher = React.lazy(() => import("./EditVoucher"));
-
-
-const VoucherApp: React.FC = () => {
+const CustomerApp: React.FC = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <div>
       <Routes>
-        <Route path="/voucher-list" element={<VoucherList />} />
-        <Route path="/customer-group" element={<CustomerGroup />} />
-        <Route path="/add-customer-group" element={<AddCustomerGroup />} />
-        <Route path="/edit-customer-group" element={<EditCustomerGroup />} />
-        <Route path="/add-voucher" element={<AddVoucher />} />
-        <Route path="/edit-voucher" element={<EditVoucher />} />
-        <Route path="/notification-template" element={<NotificationTemplate />} />
+        <Route path="/" element={<CustomerList />} />
+        <Route path="/customer" element={<CustomerList />} />
+        <Route path="/addcustomer" element={<AddCustomer />} />
       </Routes>
-    </Suspense>
+    </div>
   );
 };
 
-export default VoucherApp;
+export default CustomerApp;

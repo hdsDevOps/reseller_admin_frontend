@@ -1,46 +1,9 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  darkMode: false, // or 'media' or 'class'
+  content: [],
   theme: {
-    extend: {
-      fontFamily: {
-        inter: ["Inter", "sans-serif"],
-        plusJakartaSans: ["Plus Jakarta Sans", "sans-serif"],
-        roboto: ["Roboto", "sans-serif"],
-      },
-      colors: {
-        cGreen: "#12A833",
-        cGreen2: "#CDE9D3",
-        cGreen3: "#F3FAF7",
-        cGreen4: "#ECFFF0",
-        cGreen5: '#67C100',
-        cBlue: "#0084FF",
-        cBlue2: "#0066FF",
-        cBlue3: "#0D121F",
-        cBlue4: "#0084ff33",
-        cBlue5: "#2B41FF",
-        cBlue6: '#F7FAFF',
-        cBlue7: '#23B7E5',
-        cWhite: "#E4E4E4",
-        cWhite2: "#F9F9F9",
-        cWhite3: "#F4F4F4",
-        cWhite4: "#F0F0F3",
-        cWhite5: "#F9FAFB",
-        cRed: "#E02424",
-        cRed2: "#F9DEDC",
-        cGray: "#8A8A8A",
-        cGray2: "#5A5A5A",
-        cGray3: "#ACACAC33",
-        cGray4: "#BABABA",
-        cBlack: "#151515",
-        cBlack2: "#00163B",
-        cBlack3: "#312E3C",
-        cBlack4: "#1E1E1E",
-      },
-    },
-  },
-  variants: {
     extend: {},
   },
   plugins: [],
 }
+
