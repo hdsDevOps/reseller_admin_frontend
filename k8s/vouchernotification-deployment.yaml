@@ -26,13 +26,15 @@ spec:
             memory: "256Mi"
         livenessProbe:
           httpGet:
-            path: /
+            path: /health  # If using a different health check endpoint
             port: 4003
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
           periodSeconds: 3
         readinessProbe:
           httpGet:
-            path: /
+            path: /health  # If using a different health check endpoint
             port: 4003
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
           periodSeconds: 3
