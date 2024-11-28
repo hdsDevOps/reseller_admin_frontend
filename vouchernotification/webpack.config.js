@@ -10,6 +10,7 @@ const printCompilationMessage = require('./compilation.config.js');
 module.exports = (_, argv) => ({
   output: {
     publicPath: "auto",
+    hashFunction: 'xxhash64', // or 'sha256' if xxhash64 is unavailable
   },
 
   resolve: {
