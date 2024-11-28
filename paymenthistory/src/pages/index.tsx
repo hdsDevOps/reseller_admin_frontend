@@ -1,20 +1,18 @@
-import React, { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+const AddCustomer = React.lazy(() => import('./AddCustomer'));
+const CustomerList = React.lazy(() => import('./CustomerList'));
 
-
-const Payment = React.lazy(() => import("./Payment"));
-const BillingHistory = React.lazy(() => import("./BillingHistory"));
-
-
-const PaymentApp: React.FC = () => {
+const CustomerApp: React.FC = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <div>
       <Routes>
-        <Route path="/payment-method" element={<Payment />} />
-        <Route path="/billing-history" element={<BillingHistory />} />
+        <Route path="/" element={<CustomerList />} />
+        <Route path="/customer" element={<CustomerList />} />
+        <Route path="/addcustomer" element={<AddCustomer />} />
       </Routes>
-    </Suspense>
+    </div>
   );
 };
 
-export default PaymentApp;
+export default CustomerApp;

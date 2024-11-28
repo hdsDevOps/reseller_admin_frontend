@@ -1,19 +1,29 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React, { Suspense } from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import CustomerApp from "./pages";
+import ReduxProvider from "store/ReduxProvider";
+import "./index.css";
+const App: React.FC = () => {
+  return (
+    <>
+      <Suspense fallback={<h2>Loading.....</h2>}>
+        <CustomerApp />
+      </Suspense>
+    </>
+  );
+};
 
-import './index.scss'
+const rootElement = document.getElementById("app");
+if (!rootElement) throw new Error("Failed to find the root element");
 
-const App = () => (
-  <div className="mt-10 text-3xl mx-auto max-w-6xl">
-    <div>Name: paymenthistory</div>
-    <div>Framework: react</div>
-    <div>Language: TypeScript</div>
-    <div>CSS: Tailwind</div>
-  </div>
-)
-const rootElement = document.getElementById('app')
-if (!rootElement) throw new Error('Failed to find the root element')
-
-const root = ReactDOM.createRoot(rootElement as HTMLElement)
-
-root.render(<App />)
+ReactDOM.render(
+  <React.StrictMode>
+    <ReduxProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ReduxProvider>
+  </React.StrictMode>,
+  rootElement
+);

@@ -22,7 +22,7 @@ RUN npm install
 COPY . /paymenthistory
 
 # Ensure port 3000 is accessible to our system
-EXPOSE 3005
+EXPOSE 4005
 
 # Run yarn dev, as we would via the command line 
 CMD ["npm", "run", "start"]
