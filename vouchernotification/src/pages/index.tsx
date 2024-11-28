@@ -1,30 +1,30 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import NotificationTemplate from "./NotificationTemplate";
 
 
-const VoucherList = React.lazy(() => import("./VoucherList"));
-const CustomerGroup = React.lazy(() => import("./CustomerGroup"));
-const AddCustomerGroup = React.lazy(() => import("./AddCustomerGroup"));
-const EditCustomerGroup = React.lazy(() => import("./EditCustomerGroup"));
-const AddVoucher = React.lazy(() => import("./AddVoucher"));
-const EditVoucher = React.lazy(() => import("./EditVoucher"));
+const EmailLog = React.lazy(() => import("./EmailLog"));
+const Faqs = React.lazy(() => import("./Faqs"));
+const CMS = React.lazy(() => import("./CMS"));
+const CustomerAgreement = React.lazy(() => import("./CustomerAgreement"));
+const PrivacyPolicy = React.lazy(() => import("./PrivacyPolicy"));
+const TermsConditions = React.lazy(() => import("./TermsAndConditions"));
+const ProfileSettings = React.lazy(() => import("./ProfileSettings"));
 
 
-const VoucherApp: React.FC = () => {
+const SettingsApp: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
-        <Route path="/voucher-list" element={<VoucherList />} />
-        <Route path="/customer-group" element={<CustomerGroup />} />
-        <Route path="/add-customer-group" element={<AddCustomerGroup />} />
-        <Route path="/edit-customer-group" element={<EditCustomerGroup />} />
-        <Route path="/add-voucher" element={<AddVoucher />} />
-        <Route path="/edit-voucher" element={<EditVoucher />} />
-        <Route path="/notification-template" element={<NotificationTemplate />} />
+        <Route path="/email-log" element={<EmailLog />} />
+        <Route path="/faqs" element={<Faqs />} />
+        <Route path="/cms" element={<CMS />} />
+        <Route path="/customer-agreement" element={<CustomerAgreement />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsConditions />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
       </Routes>
     </Suspense>
   );
 };
 
-export default VoucherApp;
+export default SettingsApp;

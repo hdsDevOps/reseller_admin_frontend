@@ -6,10 +6,10 @@ const Dotenv = require('dotenv-webpack');
 const deps = require("./package.json").dependencies;
 
 const printCompilationMessage = require('./compilation.config.js');
-
+  
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "http://localhost:3003/",
+    publicPath: "auto",
   },
 
   resolve: {
@@ -17,7 +17,7 @@ module.exports = (_, argv) => ({
   },
 
   devServer: {
-    port: 3003,
+    port: 4007,
     historyApiFallback: true,
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
@@ -62,13 +62,13 @@ module.exports = (_, argv) => ({
 
   plugins: [
     new ModuleFederationPlugin({
-      name: "vouchernotification",
+      name: "settings",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
-        "./VoucherApp": "./src/pages/index.tsx",
+        "./SettingsApp": "./src/pages/index.tsx",
       },
       shared: {
         ...deps,
