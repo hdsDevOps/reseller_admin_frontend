@@ -1,4 +1,4 @@
-name: CI for Subscription Service
+name: CI for vouchernotification Service
 
 on:
     push:
