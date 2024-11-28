@@ -6,13 +6,13 @@ module.exports = (_, argv) => ({
 	output: {
 		publicPath: "auto",
 	},
-
+   
 	resolve: {
 		extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
 	},
 
 	devServer: {
-		port: 3001,
+		port: 4002,
 		historyApiFallback: true,
 		allowedHosts: ["all"],
 	},
