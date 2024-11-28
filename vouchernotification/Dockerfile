@@ -25,4 +25,4 @@ COPY . /settings
 EXPOSE 4003
 
 # Run yarn dev, as we would via the command line 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
