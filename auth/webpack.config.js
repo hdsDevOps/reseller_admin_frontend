@@ -14,7 +14,7 @@ module.exports = (_, argv) => ({
 	},
 
 	devServer: {
-		port: 4002,
+		port: 4001,
 		historyApiFallback: true,
 		allowedHosts: ["all"],
 		watchFiles: [path.resolve(__dirname, 'src')],
@@ -60,7 +60,7 @@ module.exports = (_, argv) => ({
 
 	plugins: [
 		new ModuleFederationPlugin({
-			name: "customer",
+			name: "auth",
 			filename: "remoteEntry.js",
 			remotes: {
 				store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
