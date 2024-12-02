@@ -325,3 +325,80 @@ export const getSubscriptonPlansListThunk = createAsyncThunk(
     return await userApis.subscriptionPlansListApi();
   }
 );
+
+export const getPaymentMethodsListThunk = createAsyncThunk(
+  "users/getPaymentMethodsList",
+  async () => {
+    return await userApis.getPaymentMethodsListApi();
+  }
+);
+
+export const getBannerListThunk = createAsyncThunk(
+  "users/getBannerList",
+  async () => {
+    return await userApis.getBannerListApi();
+  }
+);
+
+export const addBannerThunk = createAsyncThunk(
+  "users/addBanner",
+  async ({title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details}: any) => {
+    return await userApis.addBannerApi(title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details);
+  }
+);
+
+export const editBannerThunk = createAsyncThunk(
+  "users/editBanner",
+  async ({record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active}: any) => {
+    return await userApis.editBannerApi(record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active);
+  }
+);
+
+export const deleteBannerThunk = createAsyncThunk(
+  "users/deleteBanner",
+  async ({record_id}: any) => {
+    return await userApis.deleteBannerApi(record_id);
+  }
+);
+
+export const getPromotionsListThunk = createAsyncThunk(
+  "users/getPromotionsList",
+  async () => {
+    return await userApis.getPromotionsListApi();
+  }
+);
+
+export const addPromotionThunk = createAsyncThunk(
+  "users/addPromotion",
+  async ({code, start_date, end_date, html_template}: any) => {
+    return await userApis.addPromotionApi(code, start_date, end_date, html_template);
+  }
+);
+
+export const editPromotionThunk = createAsyncThunk(
+  "users/editPromotion",
+  async ({record_id, code, start_date, end_date, html_template}: any) => {
+    return await userApis.editPromotionApi(record_id, code, start_date, end_date, html_template);
+  }
+);
+
+export const deletetPromotionThunk = createAsyncThunk(
+  "users/deletePromotion",
+  async ({record_id}: any) => {
+    return await userApis.deletePromotionApi(record_id);
+  }
+);
+
+export const getAboutUsThunk = createAsyncThunk(
+  "users/getAboutUs",
+  async () => {
+    return await userApis.getAboutUsApi();
+  }
+);
+
+export const updateAboutUsThunk = createAsyncThunk(
+  "users/updateAboutUs",
+  async ({heading_section, block1, block2}: any) => {
+    return await userApis.udpateAboutUsApi(heading_section, block1, block2);
+  }
+);

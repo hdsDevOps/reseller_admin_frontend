@@ -4,7 +4,7 @@ import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk, editCustomerThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";

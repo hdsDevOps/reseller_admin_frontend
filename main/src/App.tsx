@@ -22,27 +22,14 @@ const App: React.FC = () => {
   useEffect(() => {
     const getUserAuthToken = async () => {
       try {
-        const result = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
-        if (result) {
-          // console.log("Token fetched:", result);
+        const getTokenFromLocalStorage = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+        if (getTokenFromLocalStorage) {
+          // console.log("Token fetched:", getTokenFromLocalStorage);
           try {
-            const result2 = await dispatch(logOutThunk()).unwrap();
+            const tokenVerify = await dispatch(logOutThunk()).unwrap();
+            // console.log("verify token:", tokenVerify)
           } catch (error) {
-            // console.error("Error fetching token2:", error);
-            try {
-              const result3 = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-            } catch (error) {
-              // console.error("Error fetching token3:", error);
-              navigate('/login');
-            } finally {
-              try {
-                const result4 = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
-                navigate('/login');
-              } catch (error) {
-                // console.error("Error fetching token4:", error);
-                navigate('/login');
-              }
-            }
+            // await handleTokenError();
           }
         }
       } catch (error) {
@@ -50,6 +37,16 @@ const App: React.FC = () => {
         navigate('/login');
       }
     };
+
+    const handleTokenError = async () => {
+      try {
+        await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+      } catch (error) {
+        console.error("Error fetching token:", error);
+      } finally {
+        navigate('/login');
+      }
+    }
 
     getUserAuthToken();
   }, [token, dispatch, navigate]);

@@ -187,7 +187,9 @@ const CustomerGroup: React.FC = () => {
                     <td className="">
                       <div className="flex items-center justify-center gap-3 my-1">
                         <div className="flex flex-row gap-1">
-                          <button className="text-black hover:text-orange-300" onClick={() => {navigate('/edit-customer-group', {state: item})}}>
+                          <button className="text-black hover:text-orange-300"
+                            onClick={() => {navigate('/edit-customer-group', {state: item})}}
+                          >
                               <Pencil className=" w-5" />
                             </button>
                           <button className="text-black hover:text-red-600 text-md" onClick={() => {

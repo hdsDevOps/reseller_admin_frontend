@@ -375,4 +375,4 @@ const AddVoucher: React.FC = () =>  {
   )
 }
 
-export default AddVoucher
+export default AddVoucher;

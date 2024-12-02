@@ -1,18 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
+import { getAboutUsThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
+
+const initialAboutUs = {
+  heading_section: {
+    heading: '',
+    image: ''
+  },
+  block1: {
+    content_title: "",
+    description: "",
+    image: ""
+  },
+  block2: {
+    content_title: "",
+    description: "",
+    image: ""
+  }
+}
 
 const AboutUs: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [isEditModalOpen,setIsEditModalOpen]=useState(false);
-  const [heading, setHeading]=useState({
-    heading: 'Everything you need to know About us',
-    image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/bg-image.jpeg?alt=media&token=4b755044-4c3d-471d-b717-70cd1a24d97a'
-  })
-  const [blocks,setBlock]=useState([
-    { block: 'Block 1', contentTitle: 'Make decisions faster, face to face.', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/meetimage1.png?alt=media&token=c16dfe83-9303-4b2b-a6d0-fe0961b1420b'},
-    { block: 'Block 2', contentTitle: 'Secure your data and devices.', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/about-us.jpeg?alt=media&token=29188efe-f571-46be-b0a6-542eab7b3f48'},
-  ])
+  const [aboutUs, setAboutUs]=useState(initialAboutUs);
+  console.log(aboutUs);
+
+  const fetchAboutUs = async() => {
+    try {
+      const result = await dispatch(getAboutUsThunk()).unwrap();
+      // console.log(result);
+      setAboutUs(result);
+    } catch (error) {
+      // console.log(error);
+      setAboutUs(initialAboutUs);
+    }
+  };
+
+  useEffect(() => {
+    fetchAboutUs();
+  }, []);
 
   return (
     <div className="sm:p-4 p-0 bg-white">
@@ -28,30 +57,28 @@ const AboutUs: React.FC = () => {
           <div className="flex min-sm:flex-row max-sm:flex-col align-middle min-sm:gap-7 max-sm:gap-1">
             <h2 className="h2-text text-nowrap">Heading  :</h2>
             <h3 className="h3-text-2 my-auto">
-              {heading.heading}
+              {aboutUs.heading_section.heading}
             </h3>
           </div>
           <img
-            src={heading.image}
-            alt={heading.heading}
+            src={aboutUs.heading_section.image}
+            alt="About us"
             className="w-full h-16 object-cover"
           />
         </div>
         <div className="px-5 my-2">
-          {
-            blocks && blocks.map((block, index) => {
-              return(
-                <ContentBlock
-                  key={index}
-                  imageSrc={block.image} 
-                  title={block.contentTitle} 
-                  description={block.description} 
-                  block={block.block}
-                />
-              )
-            })
-          }
-          
+          <ContentBlock
+            imageSrc={aboutUs.block1.image} 
+            title={aboutUs.block1.content_title} 
+            description={aboutUs.block1.description} 
+            block="Block 1"
+          />
+          <ContentBlock
+            imageSrc={aboutUs.block2.image} 
+            title={aboutUs.block2.content_title} 
+            description={aboutUs.block2.description} 
+            block="Block 2"
+          />
         </div>
       </div>
       <Dialog
@@ -89,7 +116,7 @@ const AboutUs: React.FC = () => {
                       type="text"
                       placeholder="Enter the page heading here"
                       className="md:col-span-2 h-[69px] p-5 my-auto border border-custom-white rounded-[10px]"
-                      defaultValue={heading.heading}
+                      defaultValue={aboutUs.heading_section.heading}
                     />
                     <label
                         htmlFor="file-upload"
@@ -117,90 +144,163 @@ const AboutUs: React.FC = () => {
                     </label>
                   </div>
                 </div>
-                {
-                  blocks?.map((block, index) => {
-                    return(
-                      <div className="flex flex-col" key={index}>
-                        <label className="search-input-label">{block.block}</label>
-                        <div
-                          className="grid md:grid-cols-2 grid-cols-1 search-input-text-2 p-5 gap-6"
-                        >
-                          <div
-                            className="grid grid-cols-1 gap-4"
-                          >
-                            <div
-                              className="flex flex-col"
-                            >
-                              <label className="search-input-label">Content title</label>
-                              <input
-                                className="search-input-text"
-                                type="text"
-                                placeholder="Enter the content title"
-                                defaultValue={block.contentTitle}
-                              />
-                            </div>
-                            <label
-                              htmlFor="file-upload"
-                              className="flex flex-col items-center justify-center w-full h-[165px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
-                            >
-                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg
-                                    aria-hidden="true"
-                                    className="w-[49px] h-[44px] mb-1 mt-3 text-gray-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M12 4v16m8-8H4"
-                                    ></path>
-                                </svg>
-                                <p className="mb-2 text-sm text-gray-500">Add content image</p>
-                              </div>
-                              <input id="file-upload" type="file" className="hidden" />
-                            </label>
-                          </div>
-
-                          <div
-                            className="flex flex-col w-full h-[230px]"
-                          >
-                            <label
-                              className="search-input-label w-full"
-                            >Description</label>
-                            <div
-                              className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
-                            >
-                              <Editor
-                                apiKey={process.env.TINY_MCE_API}
-                                init={{
-                                  height: 200,
-                                  menubar: false,
-                                  plugins: ["lists", "link", "image", "paste"],
-                                  toolbar:
-                                    "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
-                                }}
-                                initialValue={block.description}
-                                // onEditorChange={(content) => {
-                                //   const newResources = [...resources];
-                                //   newResources[index] = {
-                                //     ...resource,
-                                //     description: content,
-                                //   };
-                                //   console.log(newResources);
-                                  
-                                // }}
-                              />
-                            </div>
-                          </div>
-                        </div>
+                <div className="flex flex-col">
+                  <label className="search-input-label">Block 1</label>
+                  <div
+                    className="grid md:grid-cols-2 grid-cols-1 search-input-text-2 p-5 gap-6"
+                  >
+                    <div
+                      className="grid grid-cols-1 gap-4"
+                    >
+                      <div
+                        className="flex flex-col"
+                      >
+                        <label className="search-input-label">Content title</label>
+                        <input
+                          className="search-input-text"
+                          type="text"
+                          placeholder="Enter the content title"
+                          defaultValue={aboutUs.block1.content_title}
+                        />
                       </div>
-                    )
-                  })
-                }
+                      <label
+                        htmlFor="file-upload"
+                        className="flex flex-col items-center justify-center w-full h-[165px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg
+                              aria-hidden="true"
+                              className="w-[49px] h-[44px] mb-1 mt-3 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                          >
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 4v16m8-8H4"
+                              ></path>
+                          </svg>
+                          <p className="mb-2 text-sm text-gray-500">Add content image</p>
+                        </div>
+                        <input id="file-upload" type="file" className="hidden" />
+                      </label>
+                    </div>
+
+                    <div
+                      className="flex flex-col w-full h-[230px]"
+                    >
+                      <label
+                        className="search-input-label w-full"
+                      >Description</label>
+                      <div
+                        className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
+                      >
+                        <Editor
+                          apiKey={process.env.TINY_MCE_API}
+                          init={{
+                            height: 200,
+                            menubar: false,
+                            plugins: ["lists", "link", "image", "paste"],
+                            toolbar:
+                              "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
+                          }}
+                          initialValue={aboutUs.block1.description}
+                          // onEditorChange={(content) => {
+                          //   const newResources = [...resources];
+                          //   newResources[index] = {
+                          //     ...resource,
+                          //     description: content,
+                          //   };
+                          //   console.log(newResources);
+                            
+                          // }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col">
+                  <label className="search-input-label">Block 2</label>
+                  <div
+                    className="grid md:grid-cols-2 grid-cols-1 search-input-text-2 p-5 gap-6"
+                  >
+                    <div
+                      className="grid grid-cols-1 gap-4"
+                    >
+                      <div
+                        className="flex flex-col"
+                      >
+                        <label className="search-input-label">Content title</label>
+                        <input
+                          className="search-input-text"
+                          type="text"
+                          placeholder="Enter the content title"
+                          defaultValue={aboutUs.block2.content_title}
+                        />
+                      </div>
+                      <label
+                        htmlFor="file-upload"
+                        className="flex flex-col items-center justify-center w-full h-[165px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg
+                              aria-hidden="true"
+                              className="w-[49px] h-[44px] mb-1 mt-3 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                          >
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 4v16m8-8H4"
+                              ></path>
+                          </svg>
+                          <p className="mb-2 text-sm text-gray-500">Add content image</p>
+                        </div>
+                        <input id="file-upload" type="file" className="hidden" />
+                      </label>
+                    </div>
+
+                    <div
+                      className="flex flex-col w-full h-[230px]"
+                    >
+                      <label
+                        className="search-input-label w-full"
+                      >Description</label>
+                      <div
+                        className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
+                      >
+                        <Editor
+                          apiKey={process.env.TINY_MCE_API}
+                          init={{
+                            height: 200,
+                            menubar: false,
+                            plugins: ["lists", "link", "image", "paste"],
+                            toolbar:
+                              "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
+                          }}
+                          initialValue={aboutUs.block2.description}
+                          // onEditorChange={(content) => {
+                          //   const newResources = [...resources];
+                          //   newResources[index] = {
+                          //     ...resource,
+                          //     description: content,
+                          //   };
+                          //   console.log(newResources);
+                            
+                          // }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex flex-row max-sm:justify-center gap-3 pt-4">
                   <button
                     type="button"

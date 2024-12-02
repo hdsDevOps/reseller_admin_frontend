@@ -37,4 +37,24 @@ export const endPoints = {
 
     // subscription
     subscriptionPlansList: 'adminservices/subscription/api/v1/getplansdetailslist',
+
+    // paymenthistory
+    paymentMethodsList: 'adminservices/subscription/api/v1/getpaymentmethods',
+
+    //cms
+        // banners
+        bannerList: 'adminservices/admin/api/v1/cmsgetbannerdata',
+        addBanner: 'adminservices/admin/api/v1/cmsaddbannerdata',
+        editBanner: 'adminservices/admin/api/v1/cmseditbannerdata',
+        deleteBanner: 'adminservices/admin/api/v1/cmsdeletebannerdata',
+
+        // promotions
+        promotionsList: 'adminservices/admin/api/v1/cmsgetpromotiondata',
+        addPromotion: 'adminservices/admin/api/v1/cmsaddpromotion',
+        editPromotion: 'adminservices/admin/api/v1/cmsupdatepromotion',
+        deletePromotion: 'adminservices/admin/api/v1/cmsdeletepromotion',
+
+        // about us
+        getAboutUs: 'adminservices/admin/api/v1/cmsgetaboutus',
+        updateAboutUs: 'adminservices/admin/api/v1/cmsupdateaboutus',
 }

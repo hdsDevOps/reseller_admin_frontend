@@ -334,4 +334,4 @@ const AddCustomerGroup: React.FC = () =>  {
   )
 }
 
-export default AddCustomerGroup
+export default AddCustomerGroup;

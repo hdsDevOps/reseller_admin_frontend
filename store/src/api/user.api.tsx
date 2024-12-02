@@ -272,6 +272,7 @@ async function getCountryListAPi(): Promise<any> {
 async function voucherListApi(): Promise<any> {
   try {
     const result = await postApiCall(endPoints.voucherList, {});
+    console.log(result)
     return result;
   } catch (error: any) {
     throw error;
@@ -433,6 +434,147 @@ async function subscriptionPlansListApi(): Promise<any> {
   }
 };
 
+async function getPaymentMethodsListApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.paymentMethodsList);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getBannerListApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.bannerList);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function addBannerApi(
+  title: string,
+  description: string,
+  video_url: string,
+  button_title: string,
+  button_url: string,
+  background_image: File,
+  show_video_status: boolean,
+  show_promotion_status: boolean, 
+  currency_details: []
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addBanner, {title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function editBannerApi(
+  record_id: string,
+  title: string,
+  description: string,
+  video_url: string,
+  button_title: string,
+  button_url: string,
+  background_image: File,
+  show_video_status: boolean,
+  show_promotion_status: boolean, 
+  currency_details: [],
+  active: boolean
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.editBanner, {record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deleteBannerApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deleteBanner, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getPromotionsListApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.promotionsList);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function addPromotionApi(
+  code: string,
+  start_date: Date,
+  end_date: Date,
+  html_template: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addPromotion, {code, start_date, end_date, html_template});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function editPromotionApi(
+  record_id: string,
+  code: string,
+  start_date: Date,
+  end_date: Date,
+  html_template: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.editPromotion, {record_id, code, start_date, end_date, html_template});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deletePromotionApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deletePromotion, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getAboutUsApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getAboutUs);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function udpateAboutUsApi(
+  heading_section: string,
+  block1: string,
+  block2: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.udpateAboutUs, {heading_section, block1, block2});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -464,4 +606,15 @@ export const userApis = {
   getNotificationTemplateApi,
   updateNoficationTemplateContentApi,
   subscriptionPlansListApi,
+  getPaymentMethodsListApi,
+  getBannerListApi,
+  addBannerApi,
+  editBannerApi,
+  deleteBannerApi,
+  getPromotionsListApi,
+  addPromotionApi,
+  editPromotionApi,
+  deletePromotionApi,
+  getAboutUsApi,
+  udpateAboutUsApi,
 };

@@ -11,7 +11,7 @@ import CustomError from "../customClass/CustomError.class";
 export async function getApiCall(endPoint: string): Promise<any | CustomError> {
   try {
     const fetchedData = await axiosInstance.get(endPoint);
-    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success") {
+    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success" || fetchedData?.status === 200) {
       return fetchedData?.data;
     } else if (
       fetchedData.data?.status === 401 ||
@@ -42,7 +42,8 @@ export async function postApiCall<T>(
 ): Promise<any | CustomError> {
   try {
     const fetchedData = await axiosInstance.post(endPoint, body);
-    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success 111" || fetchedData.data?.status === "success") {
+    console.log("fetchedData...", fetchedData);
+    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success 111" || fetchedData.data?.status === "success" || fetchedData.data?.success === true ) {
       return fetchedData?.data;
     } else if (
       fetchedData.data?.status === 401 ||

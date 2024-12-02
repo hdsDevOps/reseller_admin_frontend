@@ -85,7 +85,7 @@ const EditVoucher: React.FC = () =>  {
   } | { code: "US", label: "United States", value: '$', currency_code: "USD" }>({ code: "US", label: "United States", value: '$', currency_code: "USD" });
 
   useEffect(() => {
-    const data = currencyOptions.filter(item => item.currency_code == location.state.currency)[0];
+    const data = currencyOptions.filter(item => item.currency_code == location.state?.currency)[0];
     setSelectedOption(data);
   }, []);
 

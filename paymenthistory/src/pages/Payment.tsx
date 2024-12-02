@@ -1,14 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
+import { getPaymentMethodsListThunk } from 'store/user.thunk'
+import { useAppDispatch } from "store/hooks";
 
 const PaymentMethod: React.FC = () => {
-  const [paymentMethods, setPaymentMethods] = useState([
-    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/stripe.png?alt=media&token=23bd6672-665c-4dfb-9d75-155abd49dc58', status: 'Inactive' },
-    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/paystack.png?alt=media&token=8faf3870-4256-4810-9844-5fd3c147d7a3', status: 'Active' },
-  ]);
+  const dispatch = useAppDispatch();
+  const [paymentMethods, setPaymentMethods] = useState([]);
   console.log(paymentMethods);
   
+  const getPaymentMethodsList = async() => {
+    try {
+      const result = await dispatch(
+        getPaymentMethodsListThunk()
+      ).unwrap()
+      console.log("result...", result);
+    } catch (error) {
+      setPaymentMethods([]);
+    }
+  };
+
+  useEffect(() => {
+    getPaymentMethodsList()
+  }, []);
 
   const updateStatus = (value, index) => {
     const data = paymentMethods;

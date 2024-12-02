@@ -9,13 +9,12 @@ import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { ChevronDown, ChevronRight, ChevronUp, Pencil } from "lucide-react";
 import Flag from 'react-world-flags'; // Flag component
-import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, getCustomerListThunk, sendVoucherEmailThunk } from 'store/user.thunk';
+import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, getCustomerListThunk, sendVoucherEmailThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import CustomerGroup from "./CustomerGroup";
 
 const VoucherList: React.FC = () => {
   const navigate = useNavigate();
@@ -81,28 +80,6 @@ const VoucherList: React.FC = () => {
       }
     } catch (error) {
       setCustomerList([]);
-      if(error?.message == "Request failed with status code 401"){
-        try {
-          const result2 = await dispatch(
-            removeUserAuthTokenFromLSThunk()
-          ).unwrap()
-          navigate('/login');
-        } catch (error) {
-          console.log("Error on logging out")
-        } finally {
-          try {
-            const getToken = await dispatch(
-              getUserAuthTokenFromLSThunk()
-            ).unwrap()
-            navigate('/login')
-          } catch (error) {
-            console.log("Error on token")
-          }
-        }
-      }
-      else{
-        console.log(error);
-      }
     }
   };
 
@@ -139,28 +116,6 @@ const VoucherList: React.FC = () => {
       setSampleData(result.data);
     } catch (error) {
       setSampleData([]);
-      if(error?.message == "Request failed with status code 401"){
-        try {
-          const result2 = await dispatch(
-            removeUserAuthTokenFromLSThunk()
-          ).unwrap()
-          navigate('/login');
-        } catch (error) {
-          console.log("Error on logging out")
-        } finally {
-          try {
-            const getToken = await dispatch(
-              getUserAuthTokenFromLSThunk()
-            ).unwrap()
-            navigate('/login')
-          } catch (error) {
-            console.log("Error on token")
-          }
-        }
-      }
-      else{
-        console.log(error);
-      }
     }
   };
 
