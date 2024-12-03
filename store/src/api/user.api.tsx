@@ -1,5 +1,5 @@
 import {endPoints} from '../constants/endPoint';
-import {getApiCall, postApiCall} from '../services/crud.service';
+import {getApiCall, postApiCall, uploadImageApiCall} from '../services/crud.service';
 
 async function makeUserLoginApi(
   email: string,
@@ -567,7 +567,100 @@ async function udpateAboutUsApi(
   block2: string
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.udpateAboutUs, {heading_section, block1, block2});
+    const result = await postApiCall(endPoints.updateAboutUs, {heading_section, block1, block2});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getContactUsApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getContactUs);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function udpateContactUsApi(
+  content_description: string,
+  phone_no: string,
+  email: string,
+  address: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateContactUs, {content_description, phone_no, email, address});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getFooterApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getFooter);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getMenuApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getMenu);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function udpateMenuApi(
+  menu1: string,
+  menu2: string,
+  menu3: string,
+  menu4: string,
+  menu5: string,
+  menu6: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateMenu, {menu1, menu2, menu3, menu4, menu5, menu6});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getSeoDataApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getSeoData);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function udpateSeoDataApi(
+  title: string,
+  desc: [],
+  alt_image: string,
+  image_path: string,
+  keywords: [],
+  urllink: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateSeoData, {title, desc, alt_image, image_path, keywords, urllink});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function uploadImageApi(
+  image: any
+): Promise<any> {
+  try {
+    const result = await uploadImageApiCall(endPoints.uploadImage, image);
     return result;
   } catch (error: any) {
     throw error;
@@ -617,4 +710,13 @@ export const userApis = {
   deletePromotionApi,
   getAboutUsApi,
   udpateAboutUsApi,
+  getContactUsApi,
+  udpateContactUsApi,
+  getFooterApi,
+  getMenuApi,
+  udpateMenuApi,
+  getSeoDataApi,
+  udpateSeoDataApi,
+
+  uploadImageApi,
 };

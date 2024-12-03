@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle, Switch } from "@headlessui/react";
 import '../../styles/styles.css';
 import { useNavigate } from "react-router-dom";
 import { PencilIcon, TrashIcon, X } from "lucide-react";
 import { Editor } from "@tinymce/tinymce-react";
-import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk } from 'store/user.thunk';
+import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk, uploadImageThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,7 +31,33 @@ const Banner: React.FC = () => {
   const [newBanner, setNewBanner] = useState(initialBanner);
   const [price,setPrice] = useState(initialPrice);
   const [editBanner, setEditBanner] = useState(false);
-  // console.log(newBanner);
+  console.log(newBanner);
+  const [imageFile, setImage] = useState(null);
+  const imageRef = useRef(null);
+  
+  const showImage = () => {
+    const file = imageFile;
+    if(file){
+      if(file instanceof File){
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (imageRef.current) {
+            imageRef.current.src = reader.result;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      else if(typeof file === 'string'){
+        if (imageRef.current) {
+          imageRef.current.src = file;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    showImage();
+  }, [imageFile]);
   
   const bannerItems = [
     { topic: 'Title', name: 'title'},
@@ -140,50 +166,121 @@ const Banner: React.FC = () => {
 
   const addBannerSubmit = async(e) => {
     e.preventDefault();
-    try {
-      const result = await dispatch(addBannerThunk(newBanner)).unwrap()
-      console.log(result);
-      setTimeout(() => {
-        toast.success(result?.message);
-      }, 1000);
-    } catch (error) {
-      console.log(error);
-      toast.error("Error adding banner");
-    } finally {
-      fetchBannerList();
-      setIsEditModalOpen(false);
-      setNewBanner(initialBanner);
+    if(imageFile !== null || typeof imageFile !== "string"){
+      try {
+        const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
+        console.log("imageUpload", imageUpload);
+        if(imageUpload?.message === "File uploaded successfully!") {
+          try {
+            const result = await dispatch(addBannerThunk({
+              title: newBanner.title,
+              description: newBanner.description,
+              video_url: newBanner.video_url,
+              show_video_status: newBanner.show_video_status,
+              currency_details: newBanner.currency_details,
+              button_title: newBanner.button_title,
+              button_url: newBanner.button_url,
+              background_image: imageUpload.url,
+              show_promotion_status: newBanner.show_promotion_status,
+            })).unwrap()
+            console.log(result);
+            setTimeout(() => {
+              toast.success(result?.message);
+            }, 1000);
+          } catch (error) {
+            console.log(error);
+            toast.error("Error adding banner");
+          } finally {
+            fetchBannerList();
+            setIsEditModalOpen(false);
+            setNewBanner(initialBanner);
+            setImage(null);
+          }
+        }
+        else{
+          toast.error("Error uploading the image.");
+        }
+      } catch (error) {
+        toast.error("Please upload a valid image.");
+      }
+    }
+    else{
+      toast.error("Enter a valid image");
     }
   }
 
   const editBannerSubmit = async(e) => {
     e.preventDefault();
-    try {
-      const result = await dispatch(editBannerThunk({
-        record_id: newBanner?.id,
-        title: newBanner?.title,
-        description: newBanner?.description,
-        video_url: newBanner?.video_url,
-        button_title: newBanner?.button_title,
-        button_url: newBanner?.button_url,
-        background_image: newBanner?.background_image,
-        show_video_status: newBanner?.show_video_status,
-        show_promotion_status: newBanner?.show_promotion_status,
-        currency_details: newBanner?.currency_details,
-        active: newBanner?.active
-      })).unwrap()
-      console.log(result);
-      setIsEditModalOpen(false);
-      setTimeout(() => {
-        toast.success(result?.message);
-      }, 1000);
-    } catch (error) {
-      // console.log(error);
-      toast.error("Error editing banner");
-    } finally {
-      fetchBannerList();
-      setEditBanner(false);
-      setNewBanner(initialBanner);
+    if(imageFile !== null || typeof imageFile !== "string"){
+      try {
+        const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
+        console.log("imageUpload", imageUpload);
+        if(imageUpload?.message === "File uploaded successfully!") {
+          try {
+            const result = await dispatch(editBannerThunk({
+              record_id: newBanner?.id,
+              title: newBanner?.title,
+              description: newBanner?.description,
+              video_url: newBanner?.video_url,
+              button_title: newBanner?.button_title,
+              button_url: newBanner?.button_url,
+              background_image: imageUpload.url,
+              show_video_status: newBanner?.show_video_status,
+              show_promotion_status: newBanner?.show_promotion_status,
+              currency_details: newBanner?.currency_details,
+              active: newBanner?.active
+            })).unwrap()
+            console.log(result);
+            setIsEditModalOpen(false);
+            setImage(null);
+            setTimeout(() => {
+              toast.success(result?.message);
+            }, 1000);
+          } catch (error) {
+            // console.log(error);
+            toast.error("Error editing banner");
+          } finally {
+            fetchBannerList();
+            setEditBanner(false);
+            setNewBanner(initialBanner);
+          }
+        }
+        else{
+          toast.error("Error uploading the image.");
+        }
+      } catch (error) {
+        toast.error("Please upload a valid image.");
+      }
+    }
+    else{
+      try {
+        const result = await dispatch(editBannerThunk({
+          record_id: newBanner?.id,
+          title: newBanner?.title,
+          description: newBanner?.description,
+          video_url: newBanner?.video_url,
+          button_title: newBanner?.button_title,
+          button_url: newBanner?.button_url,
+          background_image: newBanner?.background_image,
+          show_video_status: newBanner?.show_video_status,
+          show_promotion_status: newBanner?.show_promotion_status,
+          currency_details: newBanner?.currency_details,
+          active: newBanner?.active
+        })).unwrap()
+        console.log(result);
+        setIsEditModalOpen(false);
+        setImage(null);
+        setTimeout(() => {
+          toast.success(result?.message);
+        }, 1000);
+      } catch (error) {
+        // console.log(error);
+        toast.error("Error editing banner");
+      } finally {
+        fetchBannerList();
+        setEditBanner(false);
+        setNewBanner(initialBanner);
+      }
     }
   }
 
@@ -269,7 +366,9 @@ const Banner: React.FC = () => {
       <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-6">
         <button className="btn-cms"
-          onClick={() => {setIsEditModalOpen(true)}}
+          onClick={() => {
+            setIsEditModalOpen(true);
+          }}
         >
           ADD
         </button>
@@ -439,6 +538,7 @@ const Banner: React.FC = () => {
                     setEditBanner(true);
                     setIsEditModalOpen(true);
                     setNewBanner(banner);
+                    setImage(banner?.background_image);
                   }}
                 >
                   <PencilIcon className="w-5 h-5" />
@@ -462,7 +562,13 @@ const Banner: React.FC = () => {
         open={isEditModalOpen}
         as="div"
         className="relative z-10 focus:outline-none"
-        onClose={() => {setIsEditModalOpen(false)}}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setNewBanner(initialBanner);
+          setEditBanner(false);
+          setImage(null);
+
+        }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
@@ -481,7 +587,12 @@ const Banner: React.FC = () => {
                   <button
                     type='button'
                     className='text-3xl rotate-45 mt-[-8px] text-white'
-                    onClick={() => {setIsEditModalOpen(false)}}
+                    onClick={() => {
+                      setIsEditModalOpen(false);
+                      setNewBanner(initialBanner);
+                      setEditBanner(false);
+                      setImage(null);
+                    }}
                   >+</button>
                 </div>
               </div>
@@ -743,30 +854,31 @@ const Banner: React.FC = () => {
                                 htmlFor="file-upload"
                                 className="flex flex-col items-center justify-center w-full h-[45px] mt-auto border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
                               >
-                                <div className="flex flex-col items-center justify-center">
-                                  <svg
-                                      aria-hidden="true"
-                                      className="w-3 h-3 mt-2 mb-1 text-gray-400"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                      <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth="2"
-                                          d="M12 4v16m8-8H4"
-                                      ></path>
-                                  </svg>
-                                  <p className="text-[10px] font-inter text-gray-500">Add photo</p>
+                                <div className="flex flex-col items-center justify-center w-full h-full">
+                                  {
+                                    imageFile === null
+                                    ? (<React.Fragment>
+                                        <svg
+                                          aria-hidden="true"
+                                          className="w-3 h-3 mt-2 mb-1 text-gray-400"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                          <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M12 4v16m8-8H4"
+                                          ></path>
+                                      </svg>
+                                      <p className="text-[10px] font-inter text-gray-500">Add photo</p>
+                                    </React.Fragment>)
+                                    : (<img ref={imageRef} src={imageFile} alt="image" className="h-full object-cover" />)
+                                  }
                                 </div>
-                                <input id="file-upload" type="file" className="hidden" name={banner.name} accept="image/*" onChange={e => {
-                                  setNewBanner({
-                                    ...newBanner,
-                                    background_image: e.target.files[0],
-                                  })
-                                }} />
+                                <input id="file-upload" type="file" className="hidden" name={banner.name} accept="image/*" onChange={e => {setImage(e.target.files[0])}} />
                               </label>
                             </div>
                           )
@@ -808,6 +920,7 @@ const Banner: React.FC = () => {
                       setIsEditModalOpen(false);
                       setNewBanner(initialBanner);
                       setEditBanner(false);
+                      setImage(null);
                     }}
                     className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
                   >

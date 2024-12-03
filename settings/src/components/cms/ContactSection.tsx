@@ -1,31 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import '../../styles/styles.css';
+import { getContactUsThunk, updateContactUsThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const initialContactUs = {
+  content_description: "",
+  phone_no: "",
+  email: "",
+  address: ""
+}
 
 const ContactSection = () => {
+  const dispatch = useAppDispatch();
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const contactItems = [
-    { topic: 'Page Description', name: 'pageDescription', placeholder: 'Enter the text here',},
-    { topic: 'Call Us', name: 'callUs', placeholder: 'Enter the contact number here',},
-    { topic: 'Email ID', name: 'email', placeholder: 'Enter the email id here',},
-    { topic: 'Address', name: 'address', placeholder: 'Enter the address here',},
+    { topic: 'Page Description', name: 'content_description', placeholder: 'Enter the text here',},
+    { topic: 'Call Us', name: 'phone_no', placeholder: 'Enter the contact number here with country code',},
+    { topic: 'email ID', name: 'email', placeholder: 'Enter the email id here',},
+    { topic: 'address', name: 'address', placeholder: 'Enter the address here',},
   ];
-  const [contactData, setContactData] = React.useState({
-    pageDescription: "For any information not hesitate to reach us.",
-    callUs: "+1 469-893-0678",
-    email: "contact@hordanso.com",
-    address: "Hordanso LLC 4364 Western Center Blvd PMB 2012 Fort Worth"
-  });
+  const [contactData, setContactData] = React.useState(initialContactUs);
+  const [newContactData, setNewContactData] = useState(contactData);
+  
+  const fetchContactUs = async() => {
+    try {
+      const result = await dispatch(getContactUsThunk()).unwrap();
+      setContactData(result);
+    } catch (error) {
+      setContactData(initialContactUs)
+    }
+  };
+
+  useEffect(() => {
+    fetchContactUs();
+  }, []);
 
   const handleInputChange = e => {
-    setContactData({
-      ...contactData,
+    setNewContactData({
+      ...newContactData,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
+    setIsEditModalOpen(false);
+    try {
+      const updateContactUs = await dispatch(updateContactUsThunk({
+        content_description: newContactData.content_description,
+        phone_no: newContactData.phone_no,
+        email: newContactData.email,
+        address: newContactData.address
+      }));
+      setTimeout(() => {
+        toast.success(updateContactUs?.payload.message);
+      }, 1000);
+    } catch (error) {
+      toast.error("Error updating contact us");
+    } finally {
+      fetchContactUs();
+    }
   };
 
   const convertToPhoneNumber = (phoneString) => {
@@ -34,8 +71,12 @@ const ContactSection = () => {
 
   return (
     <div className="sm:p-4 p-0 bg-white">
+      <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
-        <button className="btn-cms" onClick={() => {setIsEditModalOpen(true)}}>
+        <button className="btn-cms" onClick={() => {
+          setIsEditModalOpen(true);
+          setNewContactData(contactData);
+        }}>
           EDIT
         </button>
       </div>
@@ -54,7 +95,7 @@ const ContactSection = () => {
                       className="banner-table-td-1 w-[100px] py-2 sm:pl-7 pl-1"
                     >{item.topic}</td>
                     <td
-                      className="px-3 text-center banner-table-td-1 py-2"
+                      className="px-3 text-center banner-table-td-1 py-2 w-[20px]"
                     >:</td>
                     <td
                       className={`banner-table-td-2 py-2 pr-7 text-black ${
@@ -74,7 +115,10 @@ const ContactSection = () => {
         open={isEditModalOpen}
         as="div"
         className="relative z-10 focus:outline-none"
-        onClose={() => {setIsEditModalOpen(false)}}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setNewContactData(contactData);
+        }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
@@ -93,12 +137,15 @@ const ContactSection = () => {
                   <button
                     type='button'
                     className='text-3xl rotate-45 mt-[-8px] text-white'
-                    onClick={() => {setIsEditModalOpen(false)}}
+                    onClick={() => {
+                      setIsEditModalOpen(false);
+                      setNewContactData(contactData);
+                    }}
                   >+</button>
                 </div>
               </div>
 
-              <form className="grid sm:grid-cols-2 grid-cols-1 gap-4">
+              <form className="grid sm:grid-cols-2 grid-cols-1 gap-4" onSubmit={handleSubmit}>
                 {
                   contactItems.map((item, index) => {
                     return(
@@ -108,11 +155,12 @@ const ContactSection = () => {
                       >
                         <label className="search-input-label">{item.topic}</label>
                         <input
-                          type={item.name == 'callUs' ? 'number' : item.name == 'email' ? 'email' : 'text'}
+                          type={item.name == 'email' ? 'email' : 'text'}
                           name={item.name}
                           className="w-full search-input-text"
                           placeholder={item.placeholder}
-                          defaultValue={item.name == 'callUs' ? convertToPhoneNumber(contactData[item.name]) : contactData[item.name]}
+                          // defaultValue={item.name == 'phone_no' ? convertToPhoneNumber(contactData[item.name]) : contactData[item.name]}
+                          defaultValue={newContactData[item.name]}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -122,15 +170,17 @@ const ContactSection = () => {
 
                 <div className="flex flex-row max-sm:justify-center gap-3 pt-4">
                   <button
-                    type="button"
-                    onClick={handleSubmit}
+                    type="submit"
                     className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
                   >
                     Save
                   </button>
                   <button
                     type="button"
-                    onClick={() => {setIsEditModalOpen(false)}}
+                    onClick={() => {
+                      setIsEditModalOpen(false);
+                      setNewContactData(contactData);
+                    }}
                     className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
                   >
                     Cancel

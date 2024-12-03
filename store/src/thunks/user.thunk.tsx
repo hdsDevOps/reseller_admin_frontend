@@ -402,3 +402,59 @@ export const updateAboutUsThunk = createAsyncThunk(
     return await userApis.udpateAboutUsApi(heading_section, block1, block2);
   }
 );
+
+export const getContactUsThunk = createAsyncThunk(
+  "users/getContactUs",
+  async () => {
+    return await userApis.getContactUsApi();
+  }
+);
+
+export const updateContactUsThunk = createAsyncThunk(
+  "users/updateContactUs",
+  async ({content_description, phone_no, email, address}: any) => {
+    return await userApis.udpateContactUsApi(content_description, phone_no, email, address);
+  }
+);
+
+export const getFooterThunk = createAsyncThunk(
+  "users/getFooter",
+  async () => {
+    return await userApis.getFooterApi();
+  }
+);
+
+export const getMenuThunk = createAsyncThunk(
+  "users/getMenu",
+  async () => {
+    return await userApis.getMenuApi();
+  }
+);
+
+export const updateMenuThunk = createAsyncThunk(
+  "users/updateMenu",
+  async ({menu1, menu2, menu3, menu4, menu5, menu6}: any) => {
+    return await userApis.udpateMenuApi(menu1, menu2, menu3, menu4, menu5, menu6);
+  }
+);
+
+export const getSeoDataThunk = createAsyncThunk(
+  "users/getSeoData",
+  async () => {
+    return await userApis.getSeoDataApi();
+  }
+);
+
+export const updateSeoDataThunk = createAsyncThunk(
+  "users/updateSeoData",
+  async ({title, desc, alt_image, image_path, keywords, urllink}: any) => {
+    return await userApis.udpateSeoDataApi(title, desc, alt_image, image_path, keywords, urllink);
+  }
+);
+
+export const uploadImageThunk = createAsyncThunk(
+  "users/uploadImage",
+  async ({image}: any) => {
+    return await userApis.uploadImageApi(image);
+  }
+);

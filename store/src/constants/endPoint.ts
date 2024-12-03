@@ -57,4 +57,22 @@ export const endPoints = {
         // about us
         getAboutUs: 'adminservices/admin/api/v1/cmsgetaboutus',
         updateAboutUs: 'adminservices/admin/api/v1/cmsupdateaboutus',
+
+        // contact us
+        getContactUs: 'adminservices/admin/api/v1/cmsgetcontactus',
+        updateContactUs: 'adminservices/admin/api/v1/cmsupdatecontactus',
+
+        // footer
+        getFooter: 'adminservices/admin/api/v1/cmsgetfooter',
+
+        // menu
+        getMenu: 'adminservices/admin/api/v1/cmsgetheader',
+        updateMenu: 'adminservices/admin/api/v1/cmsupdateheader',
+
+        // seo
+        getSeoData: 'adminservices/admin/api/v1/cmsgetseodata',
+        updateSeoData: 'adminservices/admin/api/v1/cmsupdateseodata',
+
+    // image upload
+    uploadImage: 'adminservices/admin/api/v1/uploadimage',
 }

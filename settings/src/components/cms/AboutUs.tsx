@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
-import { getAboutUsThunk } from 'store/user.thunk';
+import { getAboutUsThunk, updateAboutUsThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const initialAboutUs = {
   heading_section: {
@@ -43,8 +45,28 @@ const AboutUs: React.FC = () => {
     fetchAboutUs();
   }, []);
 
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    try {
+      const updateAboutUs = await dispatch(updateAboutUsThunk({
+        heading_section: aboutUs.heading_section,
+        block1: aboutUs.block1,
+        block2: aboutUs.block2
+      })).unwrap();
+      console.log(updateAboutUs);
+      setTimeout(() => {
+        toast.success("Successfully updated about us");
+      }, 1000);
+    } catch (error) {
+      toast.error("Error on updating About Us")
+    } finally {
+      fetchAboutUs();
+    }
+  }
+
   return (
     <div className="sm:p-4 p-0 bg-white">
+      <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
         <button className="btn-cms" onClick={() => {setIsEditModalOpen(true)}}>
           EDIT
@@ -81,11 +103,15 @@ const AboutUs: React.FC = () => {
           />
         </div>
       </div>
+      
       <Dialog
         open={isEditModalOpen}
         as="div"
         className="relative z-10 focus:outline-none"
-        onClose={() => {setIsEditModalOpen(false)}}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          fetchAboutUs();
+        }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto mt-16">
           <div className="flex min-h-full items-center justify-center p-4">
@@ -102,12 +128,16 @@ const AboutUs: React.FC = () => {
                   <button
                     type='button'
                     className='text-3xl rotate-45 mt-[-8px] text-white'
-                    onClick={() => {setIsEditModalOpen(false)}}
+                    onClick={() => {
+                      setIsEditModalOpen(false);
+                      fetchAboutUs();
+                    }}
                   >+</button>
                 </div>
               </div>
               <form
                 className="grid grid-cols-1 max-h-[400px] overflow-y-scroll"
+                onSubmit={handleSubmit}
               >
                 <div className="flex flex-col">
                   <label className="search-input-label">Page Heading</label>
@@ -117,6 +147,15 @@ const AboutUs: React.FC = () => {
                       placeholder="Enter the page heading here"
                       className="md:col-span-2 h-[69px] p-5 my-auto border border-custom-white rounded-[10px]"
                       defaultValue={aboutUs.heading_section.heading}
+                      onChange={e => {
+                        setAboutUs((prevAboutsUs) => ({
+                          ...prevAboutsUs,
+                          heading_section: {
+                            ...prevAboutsUs.heading_section,
+                            heading: e.target.value,
+                          }
+                        }))
+                      }}
                     />
                     <label
                         htmlFor="file-upload"
@@ -140,7 +179,17 @@ const AboutUs: React.FC = () => {
                             </svg>
                             <p className="mb-2 text-sm text-gray-500">Add banner image</p>
                         </div>
-                        <input id="file-upload" type="file" className="hidden" />
+                        <input id="file-upload" type="file" className="hidden" accept="image/*"
+                          onChange={e => {
+                            setAboutUs({
+                              ...aboutUs,
+                              heading_section: {
+                                heading: aboutUs.heading_section.heading,
+                                image:  e.target.files[0]
+                              }
+                            })
+                          }}
+                        />
                     </label>
                   </div>
                 </div>
@@ -161,6 +210,15 @@ const AboutUs: React.FC = () => {
                           type="text"
                           placeholder="Enter the content title"
                           defaultValue={aboutUs.block1.content_title}
+                          onChange={e => {
+                            setAboutUs((prevAboutsUs) => ({
+                              ...prevAboutsUs,
+                              block1: {
+                                ...prevAboutsUs.block1,
+                                content_title: e.target.value,
+                              }
+                            }))
+                          }}
                         />
                       </div>
                       <label
@@ -185,7 +243,18 @@ const AboutUs: React.FC = () => {
                           </svg>
                           <p className="mb-2 text-sm text-gray-500">Add content image</p>
                         </div>
-                        <input id="file-upload" type="file" className="hidden" />
+                        <input id="file-upload" type="file" className="hidden"accept="image/*"
+                          onChange={e => {
+                            setAboutUs({
+                              ...aboutUs,
+                              block1: {
+                                content_title: aboutUs.block1.content_title,
+                                description: aboutUs.block1.description,
+                                image: e.target.files[0]
+                              }
+                            })
+                          }}
+                        />
                       </label>
                     </div>
 
@@ -207,16 +276,16 @@ const AboutUs: React.FC = () => {
                             toolbar:
                               "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
                           }}
-                          initialValue={aboutUs.block1.description}
-                          // onEditorChange={(content) => {
-                          //   const newResources = [...resources];
-                          //   newResources[index] = {
-                          //     ...resource,
-                          //     description: content,
-                          //   };
-                          //   console.log(newResources);
-                            
-                          // }}
+                          value={aboutUs.block1.description}
+                          onEditorChange={(content) => {
+                            setAboutUs((prevAboutsUs) => ({
+                              ...prevAboutsUs,
+                              block1: {
+                                ...prevAboutsUs.block1,
+                                description: content,
+                              }
+                            }));
+                          }}
                         />
                       </div>
                     </div>
@@ -240,6 +309,15 @@ const AboutUs: React.FC = () => {
                           type="text"
                           placeholder="Enter the content title"
                           defaultValue={aboutUs.block2.content_title}
+                          onChange={e => {
+                            setAboutUs((prevAboutsUs) => ({
+                              ...prevAboutsUs,
+                              block2: {
+                                ...prevAboutsUs.block2,
+                                content_title: e.target.value,
+                              }
+                            }))
+                          }}
                         />
                       </div>
                       <label
@@ -264,7 +342,18 @@ const AboutUs: React.FC = () => {
                           </svg>
                           <p className="mb-2 text-sm text-gray-500">Add content image</p>
                         </div>
-                        <input id="file-upload" type="file" className="hidden" />
+                        <input id="file-upload" type="file" className="hidden"accept="image/*"
+                          onChange={e => {
+                            setAboutUs({
+                              ...aboutUs,
+                              block2: {
+                                content_title: aboutUs.block2.content_title,
+                                description: aboutUs.block2.description,
+                                image: e.target.files[0]
+                              }
+                            })
+                          }}
+                        />
                       </label>
                     </div>
 
@@ -286,16 +375,16 @@ const AboutUs: React.FC = () => {
                             toolbar:
                               "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
                           }}
-                          initialValue={aboutUs.block2.description}
-                          // onEditorChange={(content) => {
-                          //   const newResources = [...resources];
-                          //   newResources[index] = {
-                          //     ...resource,
-                          //     description: content,
-                          //   };
-                          //   console.log(newResources);
-                            
-                          // }}
+                          value={aboutUs.block2.description}
+                          onEditorChange={(content) => {
+                            setAboutUs((prevAboutsUs) => ({
+                              ...prevAboutsUs,
+                              block2: {
+                                ...prevAboutsUs.block2,
+                                description: content,
+                              }
+                            }));
+                          }}
                         />
                       </div>
                     </div>
@@ -303,8 +392,10 @@ const AboutUs: React.FC = () => {
                 </div>
                 <div className="flex flex-row max-sm:justify-center gap-3 pt-4">
                   <button
-                    type="button"
-                    // onClick={handleSubmit}
+                    type="submit"
+                    onClick={e => {
+                      setIsEditModalOpen(false);
+                    }}
                     className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
                   >
                     Save
@@ -313,6 +404,7 @@ const AboutUs: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setIsEditModalOpen(false);
+                      fetchAboutUs();
                     }}
                     className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
                   >
@@ -365,7 +457,7 @@ const ContentBlock: React.FC<ContentBlockProps> = ({ imageSrc, title, descriptio
                     className=""
                   >
                     <td
-                      className="banner-table-td-1 py-2 sm:pl-7 pl-1"
+                      className="banner-table-td-1 py-2 sm:pl-7 pl-1 w-[100px]"
                     >{item.topic}</td>
                     <td
                       className="px-3 text-center banner-table-td-1 py-2"
@@ -375,7 +467,11 @@ const ContentBlock: React.FC<ContentBlockProps> = ({ imageSrc, title, descriptio
                         item.name == "title" ? "font-medium" : "font-normal"
                       }`}
                     >
-                      {item.name}
+                      {item.topic === 'Content Description'
+                      ? <div className=""
+                        dangerouslySetInnerHTML={{ __html: item.name }}
+                      ></div>
+                      : item.name}
                     </td>
                   </tr>
                 )
