@@ -373,9 +373,12 @@ async function editCustomerGroupApi(
   }
 };
 
-async function getCustomerGroupListApi(): Promise<any> {
+async function getCustomerGroupListApi(
+  group_name: string,
+  start_date: string,
+): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.customerGroupList, {});
+    const result = await postApiCall(endPoints.customerGroupList, {group_name, start_date});
     return result;
   } catch (error: any) {
     throw error;
@@ -437,6 +440,18 @@ async function subscriptionPlansListApi(): Promise<any> {
 async function getPaymentMethodsListApi(): Promise<any> {
   try {
     const result = await getApiCall(endPoints.paymentMethodsList);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updatePaymentMethodStatusApi(
+  record_id: string,
+  status: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updatePaymentMethodStatus, {record_id, status});
     return result;
   } catch (error: any) {
     throw error;
@@ -574,6 +589,29 @@ async function udpateAboutUsApi(
   }
 };
 
+async function getResourcesApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getResources);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function udpateResourcesApi(
+  connect: string,
+  create: string,
+  Access: string,
+  contact: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateResources, {connect, create, Access, contact});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function getContactUsApi(): Promise<any> {
   try {
     const result = await getApiCall(endPoints.getContactUs);
@@ -667,6 +705,53 @@ async function uploadImageApi(
   }
 };
 
+async function getFaqsApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getFaqs);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function addFaqsApi(
+  question: string,
+  answer: string,
+  order: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addFaq, {question, answer, order});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updateFaqsApi(
+  question: string,
+  answer: string,
+  order: string,
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateFaq, {question, answer, order, record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deleteFaqsApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deleteFaq, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 
 export const userApis = {
   makeUserLoginApi,
@@ -700,6 +785,7 @@ export const userApis = {
   updateNoficationTemplateContentApi,
   subscriptionPlansListApi,
   getPaymentMethodsListApi,
+  updatePaymentMethodStatusApi,
   getBannerListApi,
   addBannerApi,
   editBannerApi,
@@ -710,6 +796,8 @@ export const userApis = {
   deletePromotionApi,
   getAboutUsApi,
   udpateAboutUsApi,
+  getResourcesApi,
+  udpateResourcesApi,
   getContactUsApi,
   udpateContactUsApi,
   getFooterApi,
@@ -717,6 +805,9 @@ export const userApis = {
   udpateMenuApi,
   getSeoDataApi,
   udpateSeoDataApi,
-
   uploadImageApi,
+  getFaqsApi,
+  addFaqsApi,
+  updateFaqsApi,
+  deleteFaqsApi,
 };

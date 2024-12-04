@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, Plus, Grid, LayoutGrid } from "lucide-react";
+import { ChevronDown, Plus, Grid, LayoutGrid, TableProperties } from "lucide-react";
 import { FaTrash } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import { RiHeart2Fill, RiCheckboxCircleFill, RiVipCrownFill, RiFlashlightFill } from "react-icons/ri";
@@ -55,7 +55,7 @@ const PlanPriceSetup = () => {
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'IND', logo: '₹',},
   ];
 
-  const [currencyIndex, setCurrencyIndex] = useState('IND');
+  const [currencyIndex, setCurrencyIndex] = useState('US');
   
   const [prices, setPrices] = useState(initialPrice);
   const getPrices = (name, data) => {
@@ -593,7 +593,7 @@ const PlanPriceSetup = () => {
         </tbody>
       </table>
     </div>
-  );
+  );  
 
   return (
     <div className="grid grid-cols-1">
@@ -610,22 +610,22 @@ const PlanPriceSetup = () => {
             <button
               className={`p-2 border rounded-md ${
                 viewMode === "table"
-                  ? "bg-green-50 border-green-500"
+                  ? "bg-green-50 border-green-500 "
                   : "bg-white"
               }`}
               onClick={() => setViewMode("table")}
             >
-              <LayoutGrid size={20} />
+              <TableProperties className={`rotate-180 ${viewMode === "table" ? "text-black" : "text-[#737373]"}`} size={20} />
             </button>
             <button
               className={`p-2 border rounded-md ${
                 viewMode === "grid"
-                  ? "bg-green-50 border-green-500"
-                  : "bg-white"
+                  ? "bg-green-50 border-green-500 text-black"
+                  : "bg-white text-cGray8"
               }`}
               onClick={() => setViewMode("grid")}
             >
-              <Grid size={20} />
+              <LayoutGrid className={`${viewMode === "grid" ? "text-black" : "text-[#737373]"}`} size={20} />
             </button>
           </div>
         </div>

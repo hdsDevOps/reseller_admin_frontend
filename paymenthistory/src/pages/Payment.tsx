@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
-import { getPaymentMethodsListThunk } from 'store/user.thunk'
+import { getPaymentMethodsListThunk, updatePaymentMethodStatusThunk } from 'store/user.thunk'
 import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PaymentMethod: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -11,10 +13,8 @@ const PaymentMethod: React.FC = () => {
   
   const getPaymentMethodsList = async() => {
     try {
-      const result = await dispatch(
-        getPaymentMethodsListThunk()
-      ).unwrap()
-      console.log("result...", result);
+      const result = await dispatch(getPaymentMethodsListThunk()).unwrap();
+      setPaymentMethods(result.data);
     } catch (error) {
       setPaymentMethods([]);
     }
@@ -24,12 +24,25 @@ const PaymentMethod: React.FC = () => {
     getPaymentMethodsList()
   }, []);
 
-  const updateStatus = (value, index) => {
-    const data = paymentMethods;
-    data[index].status = value;
-    // console.log(value);
-    // console.log(data);
-    setPaymentMethods(data);
+  const updateStatus = async(value, index) => {
+    if(value === paymentMethods[index].status){
+      //
+    }
+    else{
+      try {
+        const statusResult = await dispatch(updatePaymentMethodStatusThunk({
+          record_id: paymentMethods[index].id,
+          status: value,
+        })).unwrap();
+        setTimeout(() => {
+          toast.success(statusResult.message);
+        }, 1000);
+      } catch (error) {
+        toast.error(`Error updating ${paymentMethods[index].method_name} status`);
+      } finally {
+        getPaymentMethodsList();
+      }
+    }
   };
 
   return (
@@ -47,16 +60,16 @@ const PaymentMethod: React.FC = () => {
                 <div
                   className="select-div"
                 >
-                  <select className={`${item.status == 'Inactive' ? 'payment-select-2' : 'payment-select'}`} onChange={(e) => {
+                  <select className={`${item.status == 'INACTIVE' ? 'payment-select-2' : 'payment-select'}`} onChange={(e) => {
                     updateStatus(e.target.value, index)
                   }}>
-                    <option selected={item.status == 'Active' ? false : item.status == 'Inactive' ? false : true} hidden>Action</option>
-                    <option selected={item.status == 'Active' ? true:  false} className="payment-option" value='Active'>Active</option>
-                    <option selected={item.status == 'Inactive' ? true:  false} className="payment-option" value='Inactive'>Inactive</option>
+                    <option selected={item.status == 'ACTIVE' ? false : item.status == 'INACTIVE' ? false : true} hidden>Action</option>
+                    <option selected={item.status == 'ACTIVE' ? true:  false} className="payment-option" value='ACTIVE'>Active</option>
+                    <option selected={item.status == 'INACTIVE' ? true:  false} className="payment-option" value='INACTIVE'>Inactive</option>
                   </select>
                 </div>
 
-                <img src={item.image} alt='image' className="w-[150px] h-[71px] object-cover mx-auto mt-4" />
+                <img src={item.method_image} alt='image' className="w-[150px] h-[71px] object-cover mx-auto mt-4" />
               </div>
             )
           })

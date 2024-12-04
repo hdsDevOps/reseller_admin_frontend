@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { getSeoDataThunk, updateSeoDataThunk, uploadImageThunk } from 'store/user.thunk';import { useAppDispatch } from "store/hooks";
+import { getSeoDataThunk, updateSeoDataThunk, uploadImageThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { X } from "lucide-react";
@@ -154,7 +155,7 @@ const SEO = () => {
   const handleSave = async(e) => {
     e.preventDefault();
     // setIsModalOpen(false);
-    if(imageFile !== null || typeof imageFile !== "string"){
+    if(imageFile !== null && typeof imageFile !== "string"){
       try {
         const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
         console.log("imageUpload", imageUpload);
@@ -267,7 +268,7 @@ const SEO = () => {
                               className="w-[50%] min-w-24 max-w-40"
                             />
                             : item.label == "URL Link"
-                            ? <a href={seoData.urllink} target="_blank" className="text-blue">{seoData.urllink}</a> 
+                            ? <a href={seoData.urllink} target="_blank" className="cursor-pointer text-cBlue">{seoData.urllink}</a> 
                             : seoData[item.name]
                           }
                         </td>
@@ -286,7 +287,7 @@ const SEO = () => {
         className="relative z-10 focus:outline-none"
         onClose={() => {
           setIsModalOpen(false);
-          setImage(null);
+          setImage(seoData?.image_path);
           setEditedSeo(seoData);
         }}
       >
@@ -306,8 +307,8 @@ const SEO = () => {
                       type='button'
                       className='text-3xl rotate-45 mt-[-8px] text-white'
                       onClick={() => {
-                        setIsModalOpen(false)
-                        setImage(null);
+                        setIsModalOpen(false);
+                        setImage(seoData?.image_path);
                         setEditedSeo(seoData);
                       }}
                     >+</button>
@@ -429,7 +430,7 @@ const SEO = () => {
                       type="button"
                       onClick={() => {
                         setIsModalOpen(false);
-                        setImage(null);
+                        setImage(seoData?.image_path);
                         setEditedSeo(seoData);
                       }}
                       className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"

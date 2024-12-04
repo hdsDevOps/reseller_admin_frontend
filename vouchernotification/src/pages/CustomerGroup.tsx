@@ -13,6 +13,11 @@ import { getCustomerGroupListThunk, deleteCustomerGroupThunk } from 'store/user.
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const initialFilters = {
+  group_name: "",
+  start_date: "",
+};
+
 const CustomerGroup: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -22,7 +27,7 @@ const CustomerGroup: React.FC = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [voucherGroup, setVoucherGroup] = useState({});
   // console.log(voucherGroup);
-  
+  const [filters, setFilters] = useState(initialFilters);
 
   const [sampleData, setSampleData] = useState([]);
   console.log(sampleData);
@@ -56,7 +61,7 @@ const CustomerGroup: React.FC = () => {
   const getCustomerGroupListData = async() => {
     try {
       const result = await dispatch(
-        getCustomerGroupListThunk()
+        getCustomerGroupListThunk(filters)
       ).unwrap();
       setSampleData(result.data);
     } catch (error) {
@@ -66,7 +71,7 @@ const CustomerGroup: React.FC = () => {
 
   useEffect(() => {
     getCustomerGroupListData();
-  }, []);
+  }, [filters]);
 
   const tableHeads = ['Group Name', 'Number of Customers', 'Created Date', 'Actions',];
 
@@ -100,6 +105,13 @@ const CustomerGroup: React.FC = () => {
   function convertToDate(seconds:any, nanoseconds:any) {
     const milliseconds = seconds * 1000 + nanoseconds / 1_000_000;
     return new Date(milliseconds);
+  };
+
+  const updateFilters = (e) => {
+    setFilters({
+      ...filters,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
@@ -142,12 +154,13 @@ const CustomerGroup: React.FC = () => {
               className="serach-input-2"
               name="groupName"
               placeholder="Group name"
+              onChange={updateFilters}
             />
           </div>
           <div className="px-4 sm:mt-0 mt-1">
             <input
               type="text"
-              className="serach-input-2 placeholder-black"
+              className="serach-input-2 placeholder-cGray"
               name="createdDate"
               placeholder="Created date"
               onFocus={e => {
@@ -156,6 +169,7 @@ const CustomerGroup: React.FC = () => {
               onBlur={e => {
                 e.target.type='text'
               }}
+              onChange={updateFilters}
             />
           </div>
         </div>
@@ -216,6 +230,51 @@ const CustomerGroup: React.FC = () => {
             }
           </tbody>
         </table>
+      </div>
+
+      <div className="flex flex-col mt-12 relative bottom-2 right-0">
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 text-sm ${
+              currentPage === 0
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-l transition`}
+          >
+            Prev
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`px-3 py-1 text-sm mx-1 rounded ${
+                currentPage === index
+                  ? "bg-green-500 text-white"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } transition`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+            }
+            disabled={currentPage === totalPages - 1}
+            className={`px-3 py-1 text-sm ${
+              currentPage === totalPages - 1
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-r transition`}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {

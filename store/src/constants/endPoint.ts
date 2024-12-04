@@ -40,6 +40,7 @@ export const endPoints = {
 
     // paymenthistory
     paymentMethodsList: 'adminservices/subscription/api/v1/getpaymentmethods',
+    updatePaymentMethodStatus: 'adminservices/subscription/api/v1/updatepaymentmethodstatus',
 
     //cms
         // banners
@@ -58,6 +59,10 @@ export const endPoints = {
         getAboutUs: 'adminservices/admin/api/v1/cmsgetaboutus',
         updateAboutUs: 'adminservices/admin/api/v1/cmsupdateaboutus',
 
+        // resources
+        getResources: 'adminservices/admin/api/v1/cmsgetresourcedata',
+        updateResources: 'adminservices/admin/api/v1/cmsupdatecontactus',
+
         // contact us
         getContactUs: 'adminservices/admin/api/v1/cmsgetcontactus',
         updateContactUs: 'adminservices/admin/api/v1/cmsupdatecontactus',
@@ -75,4 +80,10 @@ export const endPoints = {
 
     // image upload
     uploadImage: 'adminservices/admin/api/v1/uploadimage',
+
+    // faqs
+    getFaqs: 'adminservices/admin/api/v1/faqlist',
+    addFaq: 'adminservices/admin/api/v1/addfaq',
+    updateFaq: 'adminservices/admin/api/v1/editfaq',
+    deleteFaq: 'adminservices/admin/api/v1/deletefaq',
 }

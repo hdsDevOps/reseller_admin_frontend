@@ -26,7 +26,7 @@ function AddPlanPriceSetup() {
     iconImage: '',
     amount: [
       {
-        country: 'IND',
+        country: 'US',
         amount: {
           monthly: {
             basePrice: '',
@@ -118,7 +118,7 @@ function AddPlanPriceSetup() {
   const addAmountCount = () => {
     const amounts = subscription.amount;
     const newAmounts = [...amounts, {
-      country: 'IND',
+      country: 'US',
       amount: {
         monthly: {
           basePrice: '',

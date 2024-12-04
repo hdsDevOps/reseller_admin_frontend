@@ -1,82 +1,146 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ResourcesModal from "./components/ResourcesModal";
 import '../../styles/styles.css';
 import { Dialog } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
+import { getResourcesThunk, updateResourcesThunk } from 'store/user.thunk';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAppDispatch } from "store/hooks";
+
+const initialResources = {
+  connect: {
+    content_title: "",
+    description: ""
+  },
+  create: {
+    content_title: "",
+    description: ""
+  },
+  Access: {
+    content_title: "",
+    description: ""
+  },
+  contact: {
+    content_title: "",
+    description: ""
+  }
+}
 
 const Resources: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const resourceItems = [
-    { topic: 'Content title', name: 'title'},
+    { topic: 'Content title', name: 'content_title'},
     { topic: 'Content Description', name: 'description'},
   ];
-  const [resources, setResources] = useState([
-    {
-      title: "Connect",
-      description: "Lorem ipsum dolor sit amet consectetur.",
-    },
-    { title: "Create", description: "Lorem ipsum dolor sit amet consectetur." },
-    { title: "Access", description: "Lorem ipsum dolor sit amet consectetur." },
-    { title: "Contact", description: "Lorem ipsum dolor sit amet consectetur." },
-  ]);
-  console.log(resources);
+  const [resources, setResources] = useState(initialResources);
+  // console.log(resources);
+  const [newResources, setNewResources] = useState(resources);
   
+  const fetchResources = async() => {
+    try {
+      const result = await dispatch(getResourcesThunk()).unwrap();
+      setResources(result);
+    } catch (error) {
+      setResources(initialResources);
+    }
+  };
 
-  const updateResouces = (value, index) => {
-    const updateData = [...resources];
-    updateData[index] = { ...updateData[index], title: value};
-    setResources(updateData);
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const updateResouces = (key: string, field: string, value: string) => {
+    setNewResources((prev) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleEditorChange = (key: string, content: string) => {
+    setNewResources((prev) => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        description: content,
+      },
+    }));
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    try {
+      // const updateResouce = await dispatch(updateResourcesThunk(newResources)).unwrap();
+      const updateResouce = '';
+      console.log("updateResouce", updateResouce);
+    } catch (error) {
+      toast.error("Error updating the resources.")
+    } finally {
+      fetchResources();
+      // setResources(newResources);
+      // setIsEditModalOpen(false);
+    }
   }
 
   return (
     <div className="sm:p-4 p-0 bg-white">
+      <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
         <button className="btn-cms"
           onClick={() => {
             setIsEditModalOpen(true);
+            setNewResources(resources);
           }}
         >
           EDIT
         </button>
       </div>
       {
-        resources?.map((resource, i) => {
-          return(
-            <div className="grid grid-cols-1 overflow-x-auto border border-custom-white bg-custom-white-2 my-4">
-              <table
-                className="sm:px-7 px-2 min-w-full"
+        Object.entries(resources).map(([key, value]) => (
+          <div className="grid grid-cols-1 overflow-x-auto border border-custom-white bg-custom-white-2 my-4" key={key}>
+            <table
+              className="sm:px-7 px-2 min-w-full"
+            >
+              <tbody
+                className=""
               >
-                <tbody
-                  className=""
-                >
-                  {
-                    resourceItems.map((item, index) => {
-                      return(
-                        <tr key={index}
-                          className=""
+                {
+                  resourceItems.map((item, index) => {
+                    return(
+                      <tr key={index}
+                        className=""
+                      >
+                        <td
+                          className="banner-table-td-1 w-[100px] py-2 sm:pl-7 pl-1"
+                        >{item.topic}</td>
+                        <td
+                          className="px-3 text-center banner-table-td-1 py-2 w-[10px]"
+                        >:</td>
+                        <td
+                          className={`banner-table-td-2 py-2 pr-7 text-black ${
+                            item.name == "content_title" ? "font-medium" : "font-normal"
+                          }`}
                         >
-                          <td
-                            className="banner-table-td-1 w-[100px] py-2 sm:pl-7 pl-1"
-                          >{item.topic}</td>
-                          <td
-                            className="px-3 text-center banner-table-td-1 py-2"
-                          >:</td>
-                          <td
-                            className={`banner-table-td-2 py-2 pr-7 text-black ${
-                              item.name == "title" ? "font-medium" : "font-normal"
-                            }`}
-                          >
-                            {resource[item.name]}
-                          </td>
-                        </tr>
-                      )
-                    })
-                  }
-                </tbody>
-              </table>
-            </div>
-          )
-        })
+                          {
+                            item.name === "content_title" ?
+                            value.content_title :
+                            <div className=""
+                              dangerouslySetInnerHTML={{ __html: value.description }}
+                            ></div>
+                          }
+                        </td>
+                      </tr>
+                    )
+                  })
+                }
+              </tbody>
+            </table>
+          </div>
+        ))
       }
       <Dialog
         open={isEditModalOpen}
@@ -84,6 +148,7 @@ const Resources: React.FC = () => {
         className="fixed-full-screen"
         onClose={() => {
           setIsEditModalOpen(false);
+          setNewResources(resources);
         }}
       >
         <div
@@ -101,6 +166,7 @@ const Resources: React.FC = () => {
                 className='text-3xl rotate-45 mt-[-8px] text-white'
                 onClick={() => {
                   setIsEditModalOpen(false);
+                  setNewResources(resources);
                 }}
               >+</button>
             </div>
@@ -108,13 +174,13 @@ const Resources: React.FC = () => {
 
           <form
             className="grid md:grid-cols-2 grid-cols-1 overflow-y-auto h-[600px]"
+            onSubmit={handleSubmit}
           >
             {
-              resources?.map((resource, index) => {
-                return(
-                  <div
+              Object.entries(newResources).map(([key, value], index) => (
+                <div
                     className="p-4 flex flex-col"
-                    key={index}
+                    key={key}
                   >
                     <p
                       className="search-input-label-2 font-inter"
@@ -131,8 +197,8 @@ const Resources: React.FC = () => {
                         <input
                           className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base"
                           placeholder="Enter title here"
-                          defaultValue={resource.title}
-                          onChange={(e) => updateResouces(e.target.value, index)}
+                          defaultValue={value.content_title}
+                          onChange={(e) => updateResouces(key, "content_title", e.target.value)}
                         />
                       </div>
                       <div
@@ -153,30 +219,21 @@ const Resources: React.FC = () => {
                               toolbar:
                                 "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
                             }}
-                            initialValue={resource.description}
-                            onEditorChange={(content) => {
-                              const newResources = [...resources];
-                              newResources[index] = {
-                                ...resource,
-                                description: content,
-                              };
-                              console.log(newResources);
-                              
-                            }}
+                            value={value.description}
+                            onEditorChange={(content) => {handleEditorChange (key, content)}}
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-                )
-              })
+              ))
             }
 
             <div
               className="p-4 flex flex-row min-sm:justify-start max-sm:justify-center gap-[26px]"
             >
               <button
-                type="button"
+                type="submit"
                 className="btn-green h-[46px]"
               >Save</button>
               <button
@@ -184,6 +241,7 @@ const Resources: React.FC = () => {
                 className="btn-red h-[46px]"
                 onClick={() => {
                   setIsEditModalOpen(false);
+                  setNewResources(resources);
                 }}
               >Cancel</button>
             </div>

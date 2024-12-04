@@ -3,46 +3,43 @@ import '../styles/styles.css';
 import { ChevronUp, ChevronDown, Trash, Pencil } from 'lucide-react';
 import { FiPlus } from "react-icons/fi";
 import { FaTimes } from 'react-icons/fa';
+import { getFaqsThunk, addFaqThunk, updateFaqThunk, deleteFaqThunk } from 'store/user.thunk';
+import { useAppDispatch } from 'store/hooks';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 
-interface FAQItem {
-  question: string;
-  answer: string;
-  order: Number;
+const initialFaq = {
+  question: '',
+  answer: '',
+  order: '',
 }
 
 const Faqs: React.FC = () => {
+  const dispatch = useAppDispatch();
   const modalRef = useRef();
-  const modalRef2 = useRef();
+  const [deleteModal, setDeleteModal] = useState(false);
   const [faqModal, setFaqModal] = useState(false);
-  const [faqModal2, setFaqModal2] = useState(false);
+  const [editFaq, setEditFaq] = useState(false);
   const [showList, setShowList] = useState(null);
-  console.log(showList);
-  
-  const [faqs, setFaqs] = useState<FAQItem[]>([
-    {
-      question: "What is Google Workspace?",
-      answer: "Google Workspace is a cloud-based productivity suite that includes everything you need to get work done, like email, calendars, video conferencing, online storage, and more. It's a powerful tool that makes collaboration easy and efficient, and it's trusted by millions of businesses around the world. At Bluehive, we offer Google Workspace as a way to help our customers streamline their workflow and focus on what they do best. For a more in-depth look, read our introduction to Google Workspace.",
-      order: 1,
-    },
-    {
-      question: "How much is Google Workspace?",
-      answer: "Contact us for pricing details.",
-      order: 2,
-    },
-    {
-      question: "What is Google Workspace used for?",
-      answer: "Google Workspace is used for business collaboration and productivity.",
-      order: 3,
-    },
-    {
-      question: "What does Google Workspace include?",
-      answer: "Google Workspace includes Gmail, Calendar, Drive, Docs, Sheets, Slides, Meet, and more.",
-      order: 4,
-    }
-  ]);
+  const [deleteId, setDeleteId] = useState('');
+  const [faqs, setFaqs] = useState([]);
 
-  const toggleShow = (order) => {
-    setShowList((prev) => (prev === order ? null : order))
+  const fetchFaqs = async() => {
+    try {
+      const result = await dispatch(getFaqsThunk()).unwrap();
+      setFaqs(result.data);
+    } catch (error) {
+      setFaqs([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
+
+  const toggleShow = (index) => {
+    setShowList((prev) => (prev === index ? null : index))
   };
 
   const editFaqArray = [
@@ -51,43 +48,99 @@ const Faqs: React.FC = () => {
     { label: 'Order', type: 'number', placeholder: 'Enter your Order', name: 'order'},
   ];
 
-  const [ editableFaq, setEditableFaq ] = useState({
-    question: '',
-    answer: '',
-    order: '',
-  });
-  
+  const [ newFaq, setFaq ] = useState(initialFaq);
+  console.log(newFaq);
 
   const clickOutsideModal = (event) => {
     if(modalRef.current && !modalRef.current.contains(event.target)){
       setFaqModal(false);
+      setFaq(initialFaq);
+      setEditFaq(false);
     }
   };
 
   useEffect(() => {
     document.addEventListener('mousedown', clickOutsideModal);
-
     return () => {
       document.removeEventListener('mousedown', clickOutsideModal);
     };
   }, []);
 
-  const clickOutsideModal2 = (event) => {
-    if(modalRef2.current && !modalRef2.current.contains(event.target)){
-      setFaqModal2(false);
+  const handleChangeFaq = e => {
+    setFaq({
+      ...newFaq,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const addFaqSubmit = async() => {
+    try {
+      const addResult = await dispatch(addFaqThunk(newFaq)).unwrap();
+      setTimeout(() => {
+        toast.success(addResult?.message)
+      }, 1000);
+      setEditFaq(false);
+      setFaq(initialFaq);
+      setFaqModal(false);
+    } catch (error) {
+      toast.error("Error adding FAQ");
+    } finally {
+      fetchFaqs();
     }
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', clickOutsideModal2);
+  const editFaqSubmit = async() => {
+    try {
+      const editResult = await dispatch(updateFaqThunk({
+        record_id: newFaq?.record_id,
+        question: newFaq?.question,
+        answer: newFaq?.answer,
+        order: newFaq?.order
+      })).unwrap();
+      setTimeout(() => {
+        toast.success(editResult?.message)
+      }, 1000);
+      setEditFaq(false);
+      setFaq(initialFaq);
+      setFaqModal(false);
+    } catch (error) {
+      toast.error("Error editing faq");
+    } finally {
+      fetchFaqs();
+    }
+  };
 
-    return () => {
-      document.removeEventListener('mousedown', clickOutsideModal2);
-    };
-  }, []);
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    if(editFaq){
+      editFaqSubmit();
+    }
+    else{
+      addFaqSubmit();
+    }
+  };
+
+  const deleteFaqSubmit = async(e) => {
+    e.preventDefault();
+    try {
+      const deleteResult = await dispatch(deleteFaqThunk({record_id: deleteId})).unwrap();
+      setDeleteId('');
+      setDeleteModal(false);
+      setTimeout(() => {
+        toast.success(deleteResult?.message);
+      }, 1000);
+    } catch (error) {
+      toast.error("Error deleting FAQ");
+      setDeleteId('');
+      setDeleteModal(false);
+    } finally {
+      fetchFaqs();
+    }
+  }
 
   return (
     <div className="grid grid-cols-1">
+      <ToastContainer />
       <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
         <h3 className="h3-text">FAQ's</h3>
         <div
@@ -96,7 +149,9 @@ const Faqs: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              setFaqModal2(true);
+              setFaqModal(true);
+              setEditFaq(false);
+              setFaq(initialFaq);
             }}
             className="btn-green w-[139px] items-center"
           >
@@ -105,69 +160,6 @@ const Faqs: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {
-        faqModal2 && (
-          <div
-            className='fixed-full-screen'
-          >
-            <div
-              className='fixed-popup w-[488px] h-[511px] py-9 px-[46px]'
-              ref={modalRef2}
-            >
-              <div className="flex-row-between">
-                <p className="font-inter-16px-500-black">Add FAQ Content</p>
-                <button
-                  className="top-10 right-10 bg-green-600 rounded-full text-white pl-[3.5px] hover:bg-green-500 shadow-md w-[23px] h-[23px]"
-                  onClick={() => {
-                    setFaqModal2(false);
-                  }}
-                  aria-label="Close"
-                >
-                  <FaTimes />
-                </button>
-              </div>
-              <div
-                className='w-full'
-              >
-                <form>
-                  {
-                    editFaqArray && editFaqArray.map((e, i) => {
-                      return(
-                        <div
-                          className='flex flex-col w-full mt-10'
-                          key={i}
-                        >
-                          <label className='search-input-label'>{e.label}</label>
-                          <input placeholder={e.placeholder} type={e.type} className='search-input-text  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' name={e.name} />
-                        </div>
-                      )
-                    })
-                  }
-
-                  <div className="flex flex-row gap-3 mt-[70px] justify-end">
-                    <button
-                      type="button"
-                      className="btn-red w-[105px] h-[45px]"
-                      onClick={() => {
-                        setFaqModal2(false);
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-green w-[105px] h-[45px]"
-                    >
-                      Send
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )
-      }
       
       <div className="space-y-4">
         {faqs.map((faq, index) => (
@@ -178,7 +170,7 @@ const Faqs: React.FC = () => {
             <button
               className="w-full flex justify-between items-center py-4 text-left"
               onClick={() => {
-                toggleShow(faq?.order)
+                toggleShow(index+1)
               }}
             >
               <span className="faq-header">{faq.question}</span>
@@ -207,12 +199,17 @@ const Faqs: React.FC = () => {
                   type='button'
                   onClick={() => {
                     setFaqModal(true);
-                    setEditableFaq(faq);
+                    setFaq(faq);
+                    setEditFaq(true);
                   }}
                 ><Pencil className='text-custom-green' /></button>
                 <button
                   className='btn-faq'
                   type='button'
+                  onClick={() => {
+                    setDeleteModal(true);
+                    setDeleteId(faq?.record_id);
+                  }}
                 ><Trash className='text-custom-red' /></button>
               </div>
             </div>
@@ -230,11 +227,13 @@ const Faqs: React.FC = () => {
               ref={modalRef}
             >
               <div className="flex-row-between">
-                <p className="font-inter-16px-500-black">Edit FAQ Content</p>
+                <p className="font-inter-16px-500-black">{editFaq ? "Edit FAQ Content" : 'Add FAQ Content'}</p>
                 <button
                   className="top-10 right-10 bg-green-600 rounded-full text-white pl-[3.5px] hover:bg-green-500 shadow-md w-[23px] h-[23px]"
                   onClick={() => {
                     setFaqModal(false);
+                    setEditFaq(false);
+                    setFaq(initialFaq);
                   }}
                   aria-label="Close"
                 >
@@ -244,7 +243,7 @@ const Faqs: React.FC = () => {
               <div
                 className='w-full'
               >
-                <form>
+                <form onSubmit={handleSubmit}>
                   {
                     editFaqArray && editFaqArray.map((e, i) => {
                       return(
@@ -253,7 +252,7 @@ const Faqs: React.FC = () => {
                           key={i}
                         >
                           <label className='search-input-label'>{e.label}</label>
-                          <input placeholder={e.placeholder} type={e.type} className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' name={e.name} defaultValue={editableFaq[e.name]} />
+                          <input placeholder={e.placeholder} type={e.type} className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' name={e.name} defaultValue={newFaq[e.name]} onChange={handleChangeFaq} />
                         </div>
                       )
                     })
@@ -263,14 +262,16 @@ const Faqs: React.FC = () => {
                     <button
                       type="button"
                       className="btn-red w-[105px] h-[45px]"
-                        onClick={() => {  
-                      setFaqModal(false);
+                      onClick={() => {  
+                        setFaqModal(false);
+                        setEditFaq(false);
+                        setFaq(initialFaq);
                       }}
                     >
                       Cancel
                     </button>
                     <button
-                      type="button"
+                      type="submit"
                       className="btn-green w-[105px] h-[45px]"
                     >
                       Send
@@ -282,6 +283,60 @@ const Faqs: React.FC = () => {
           </div>
         )
       }
+      <Dialog
+        open={deleteModal}
+        className="relative z-10 focus:outline-none"
+        onClose={() => {
+          setDeleteModal(false);
+          setDeleteId('');
+        }}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <DialogPanel
+              transition
+              className="w-full max-w-2xl rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <DialogTitle
+                  as="h3"
+                  className="text-lg font-semibold text-gray-900"
+                >Delete FAQ</DialogTitle>
+                <div className='btn-close-bg'>
+                  <button
+                    type='button'
+                    className='text-3xl rotate-45 mt-[-8px] text-white'
+                    onClick={() => {
+                      setDeleteModal(false);
+                      setDeleteId('');
+                    }}
+                  >+</button>
+                </div>
+              </div>
+
+              <div className="flex flex-row justify-center gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={deleteFaqSubmit}
+                  className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteModal(false);
+                    setDeleteId('');
+                  }}
+                  className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
+                >
+                  Cancel
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

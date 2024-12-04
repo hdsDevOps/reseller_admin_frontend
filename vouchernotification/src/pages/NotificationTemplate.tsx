@@ -420,6 +420,7 @@ const NotificationTemplate = () => {
                 >Update</button>
                 <button
                   className='btn-red-2 max-w-fit'
+                  onClick={() => {setSelectedItem("")}}
                 >Cancel</button>
               </div>
             </div>

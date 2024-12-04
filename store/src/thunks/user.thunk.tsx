@@ -286,8 +286,8 @@ export const editCustomerGroupThunk = createAsyncThunk(
 
 export const getCustomerGroupListThunk = createAsyncThunk(
   "users/getCustomerGroupList",
-  async () => {
-    return await userApis.getCustomerGroupListApi();
+  async ({group_name, start_date}:any) => {
+    return await userApis.getCustomerGroupListApi(group_name, start_date);
   }
 );
 
@@ -330,6 +330,13 @@ export const getPaymentMethodsListThunk = createAsyncThunk(
   "users/getPaymentMethodsList",
   async () => {
     return await userApis.getPaymentMethodsListApi();
+  }
+);
+
+export const updatePaymentMethodStatusThunk = createAsyncThunk(
+  "users/updatePaymentMethodStatus",
+  async ({record_id, status}: any) => {
+    return await userApis.updatePaymentMethodStatusApi(record_id, status);
   }
 );
 
@@ -417,6 +424,20 @@ export const updateContactUsThunk = createAsyncThunk(
   }
 );
 
+export const getResourcesThunk = createAsyncThunk(
+  "users/getResources",
+  async () => {
+    return await userApis.getResourcesApi();
+  }
+);
+
+export const updateResourcesThunk = createAsyncThunk(
+  "users/updateResources",
+  async ({connect, create, Access, contact}: any) => {
+    return await userApis.udpateResourcesApi(connect, create, Access, contact);
+  }
+);
+
 export const getFooterThunk = createAsyncThunk(
   "users/getFooter",
   async () => {
@@ -456,5 +477,33 @@ export const uploadImageThunk = createAsyncThunk(
   "users/uploadImage",
   async ({image}: any) => {
     return await userApis.uploadImageApi(image);
+  }
+);
+
+export const getFaqsThunk = createAsyncThunk(
+  "users/getFaqs",
+  async () => {
+    return await userApis.getFaqsApi();
+  }
+);
+
+export const addFaqThunk = createAsyncThunk(
+  "users/addFaqData",
+  async ({question, answer, order}: any) => {
+    return await userApis.addFaqsApi(question, answer, order);
+  }
+);
+
+export const updateFaqThunk = createAsyncThunk(
+  "users/updateFaqData",
+  async ({question, answer, order, record_id}: any) => {
+    return await userApis.updateFaqsApi(question, answer, order, record_id);
+  }
+);
+
+export const deleteFaqThunk = createAsyncThunk(
+  "users/deleteFaqData",
+  async ({record_id}: any) => {
+    return await userApis.deleteFaqsApi(record_id);
   }
 );

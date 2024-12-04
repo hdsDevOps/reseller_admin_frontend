@@ -23,6 +23,8 @@ const ContactSection = () => {
     { topic: 'address', name: 'address', placeholder: 'Enter the address here',},
   ];
   const [contactData, setContactData] = React.useState(initialContactUs);
+  console.log("contact", contactData);
+  
   const [newContactData, setNewContactData] = useState(contactData);
   
   const fetchContactUs = async() => {

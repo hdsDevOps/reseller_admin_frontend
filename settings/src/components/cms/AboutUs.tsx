@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
-import { getAboutUsThunk, updateAboutUsThunk } from 'store/user.thunk';
+import { getAboutUsThunk, updateAboutUsThunk, uploadImageThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,7 +28,40 @@ const AboutUs: React.FC = () => {
   const dispatch = useAppDispatch();
   const [isEditModalOpen,setIsEditModalOpen]=useState(false);
   const [aboutUs, setAboutUs]=useState(initialAboutUs);
-  console.log(aboutUs);
+  // console.log(aboutUs);
+  const [imageFile1, setImageFile1] = useState(null);
+  const [imageFile2, setImageFile2] = useState(null);
+  const [imageFile3, setImageFile3] = useState(null);
+  console.log({imageFile1, imageFile2, imageFile3});
+  const imageRef1 = useRef(null);
+  const imageRef2 = useRef(null);
+  const imageRef3 = useRef(null);
+
+  const showImage = (imageFile: any, imageRef: any) => {
+    const file = imageFile;
+    if(file){
+      if(file instanceof File){
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (imageRef.current) {
+            imageRef.current.src = reader.result;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      else if(typeof file === 'string'){
+        if (imageRef.current) {
+          imageRef.current.src = file;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    showImage(imageFile1, imageRef1);
+    showImage(imageFile2, imageRef2);
+    showImage(imageFile3, imageRef3);
+  }, [imageFile1, imageFile2, imageFile3]);
 
   const fetchAboutUs = async() => {
     try {
@@ -45,22 +78,258 @@ const AboutUs: React.FC = () => {
     fetchAboutUs();
   }, []);
 
+  const handleImageUpload = async(imageFile: any, fileName: string) => {
+    try {
+      const imageUplaod = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
+      return imageUplaod;
+    } catch (error) {
+      return {message: `Error uploading ${fileName}`};
+    }
+  };
+
   const handleSubmit = async(e) => {
     e.preventDefault();
-    try {
-      const updateAboutUs = await dispatch(updateAboutUsThunk({
-        heading_section: aboutUs.heading_section,
-        block1: aboutUs.block1,
-        block2: aboutUs.block2
-      })).unwrap();
-      console.log(updateAboutUs);
-      setTimeout(() => {
-        toast.success("Successfully updated about us");
-      }, 1000);
-    } catch (error) {
-      toast.error("Error on updating About Us")
-    } finally {
-      fetchAboutUs();
+    if(imageFile3 !== null && typeof imageFile3 !== "string"){
+      const imageUpload3 = await handleImageUpload(imageFile3, 'heading image');
+      if(imageUpload3?.message == "File uploaded successfully!"){
+        if(imageFile1 !== null && typeof imageFile1 !== "string"){
+          const imageUpload1 = await handleImageUpload(imageFile1, 'block1 image');
+          if(imageUpload1?.message == "File uploaded successfully!"){
+            if(imageFile2 !== null && typeof imageFile2 !== "string"){
+              const imageUpload2 = await handleImageUpload(imageFile2, 'block2 image');
+              if(imageUpload2?.message == "File uploaded successfully!"){
+                try {
+                  const updateAboutUs = await dispatch(updateAboutUsThunk({
+                    heading_section: {
+                      heading: aboutUs.heading_section.heading,
+                      image: imageUpload3?.url
+                    },
+                    block1: {
+                      content_title: aboutUs.block1.content_title,
+                      description: aboutUs.block1.description,
+                      image: imageUpload1?.url
+                    },
+                    block2: {
+                      content_title: aboutUs.block2.content_title,
+                      description: aboutUs.block2.description,
+                      image: imageUpload2?.url
+                    }
+                  })).unwrap();
+                  console.log(updateAboutUs);
+                  setTimeout(() => {
+                    toast.success("Successfully updated about us");
+                  }, 1000);
+                } catch (error) {
+                  toast.error("Error on updating About Us")
+                } finally {
+                  fetchAboutUs();
+                }
+              }
+              else{
+                toast.error(imageUpload2?.message);
+              }
+            }
+            else{
+              try {
+                const updateAboutUs = await dispatch(updateAboutUsThunk({
+                  heading_section: {
+                    heading: aboutUs.heading_section.heading,
+                    image: imageUpload3?.url
+                  },
+                  block1: {
+                    content_title: aboutUs.block1.content_title,
+                    description: aboutUs.block1.description,
+                    image: imageUpload1?.url
+                  },
+                  block2: {
+                    content_title: aboutUs.block2.content_title,
+                    description: aboutUs.block2.description,
+                    image: aboutUs.block2.image
+                  }
+                })).unwrap();
+                console.log(updateAboutUs);
+                setTimeout(() => {
+                  toast.success("Successfully updated about us");
+                }, 1000);
+              } catch (error) {
+                toast.error("Error on updating About Us")
+              } finally {
+                fetchAboutUs();
+              }
+            }
+          }
+          else{
+            toast.error(imageUpload1?.message);
+          }
+        }
+        else{
+          try {
+            const updateAboutUs = await dispatch(updateAboutUsThunk({
+              heading_section: {
+                heading: aboutUs.heading_section.heading,
+                image: imageUpload3?.url
+              },
+              block1: {
+                content_title: aboutUs.block1.content_title,
+                description: aboutUs.block1.description,
+                image: aboutUs.block1.image
+              },
+              block2: {
+                content_title: aboutUs.block2.content_title,
+                description: aboutUs.block2.description,
+                image: aboutUs.block2.image
+              }
+            })).unwrap();
+            console.log(updateAboutUs);
+            setTimeout(() => {
+              toast.success("Successfully updated about us");
+            }, 1000);
+          } catch (error) {
+            toast.error("Error on updating About Us")
+          } finally {
+            fetchAboutUs();
+          }
+        }
+      }
+      else{
+        toast.error(imageUpload3?.message);
+      }
+    }
+    else{
+      if(imageFile1 !== null && typeof imageFile1 !== "string"){
+        const imageUpload1 = await handleImageUpload(imageFile1, 'block1 image');
+        if(imageUpload1?.message == "File uploaded successfully!"){
+          if(imageFile2 !== null && typeof imageFile2 !== "string"){
+            const imageUpload2 = await handleImageUpload(imageFile2, 'block2 image');
+            if(imageUpload2?.message == "File uploaded successfully!"){
+              try {
+                const updateAboutUs = await dispatch(updateAboutUsThunk({
+                  heading_section: {
+                    heading: aboutUs.heading_section.heading,
+                    image: aboutUs.heading_section.image
+                  },
+                  block1: {
+                    content_title: aboutUs.block1.content_title,
+                    description: aboutUs.block1.description,
+                    image: imageUpload1?.url
+                  },
+                  block2: {
+                    content_title: aboutUs.block2.content_title,
+                    description: aboutUs.block2.description,
+                    image: imageUpload2?.url
+                  }
+                })).unwrap();
+                console.log(updateAboutUs);
+                setTimeout(() => {
+                  toast.success("Successfully updated about us");
+                }, 1000);
+              } catch (error) {
+                toast.error("Error on updating About Us")
+              } finally {
+                fetchAboutUs();
+              }
+            }
+            else{
+              toast.error(imageUpload2?.message);
+            }
+          }
+          else{
+            try {
+              const updateAboutUs = await dispatch(updateAboutUsThunk({
+                heading_section: {
+                  heading: aboutUs.heading_section.heading,
+                  image: aboutUs.heading_section.image
+                },
+                block1: {
+                  content_title: aboutUs.block1.content_title,
+                  description: aboutUs.block1.description,
+                  image: imageUpload1?.url
+                },
+                block2: {
+                  content_title: aboutUs.block2.content_title,
+                  description: aboutUs.block2.description,
+                  image: aboutUs.block2.image
+                }
+              })).unwrap();
+              console.log(updateAboutUs);
+              setTimeout(() => {
+                toast.success("Successfully updated about us");
+              }, 1000);
+            } catch (error) {
+              toast.error("Error on updating About Us")
+            } finally {
+              fetchAboutUs();
+            }
+          }
+        }
+        else{
+          toast.error(imageUpload1?.message);
+        }
+      }
+      else{
+        if(imageFile2 !== null && typeof imageFile2 !== "string"){
+          const imageUpload2 = await handleImageUpload(imageFile2, 'block2 image');
+          if(imageUpload2?.message == "File uploaded successfully!"){
+            try {
+              const updateAboutUs = await dispatch(updateAboutUsThunk({
+                heading_section: {
+                  heading: aboutUs.heading_section.heading,
+                  image: aboutUs.heading_section.image
+                },
+                block1: {
+                  content_title: aboutUs.block1.content_title,
+                  description: aboutUs.block1.description,
+                  image: aboutUs.block1.image
+                },
+                block2: {
+                  content_title: aboutUs.block2.content_title,
+                  description: aboutUs.block2.description,
+                  image: imageUpload2?.url
+                }
+              })).unwrap();
+              console.log(updateAboutUs);
+              setTimeout(() => {
+                toast.success("Successfully updated about us");
+              }, 1000);
+            } catch (error) {
+              toast.error("Error on updating About Us")
+            } finally {
+              fetchAboutUs();
+            }
+          }
+          else{
+            toast.error(imageUpload2?.message);
+          }
+        }
+        else{
+          try {
+            const updateAboutUs = await dispatch(updateAboutUsThunk({
+              heading_section: {
+                heading: aboutUs.heading_section.heading,
+                image: aboutUs.heading_section.image
+              },
+              block1: {
+                content_title: aboutUs.block1.content_title,
+                description: aboutUs.block1.description,
+                image: aboutUs.block1.image
+              },
+              block2: {
+                content_title: aboutUs.block2.content_title,
+                description: aboutUs.block2.description,
+                image: aboutUs.block2.image
+              }
+            })).unwrap();
+            console.log(updateAboutUs);
+            setTimeout(() => {
+              toast.success("Successfully updated about us");
+            }, 1000);
+          } catch (error) {
+            toast.error("Error on updating About Us")
+          } finally {
+            fetchAboutUs();
+          }
+        }
+      }
     }
   }
 
@@ -68,7 +337,12 @@ const AboutUs: React.FC = () => {
     <div className="sm:p-4 p-0 bg-white">
       <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
-        <button className="btn-cms" onClick={() => {setIsEditModalOpen(true)}}>
+        <button className="btn-cms" onClick={() => {
+          setIsEditModalOpen(true);
+          setImageFile1(aboutUs.block1.image);
+          setImageFile2(aboutUs.block2.image);
+          setImageFile3(aboutUs.heading_section.image);
+        }}>
           EDIT
         </button>
       </div>
@@ -111,6 +385,9 @@ const AboutUs: React.FC = () => {
         onClose={() => {
           setIsEditModalOpen(false);
           fetchAboutUs();
+          setImageFile1(null);
+          setImageFile2(null);
+          setImageFile3(null);
         }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto mt-16">
@@ -131,6 +408,9 @@ const AboutUs: React.FC = () => {
                     onClick={() => {
                       setIsEditModalOpen(false);
                       fetchAboutUs();
+                      setImageFile1(null);
+                      setImageFile2(null);
+                      setImageFile3(null);
                     }}
                   >+</button>
                 </div>
@@ -161,34 +441,32 @@ const AboutUs: React.FC = () => {
                         htmlFor="file-upload"
                         className="flex flex-col items-center justify-center md:w-48 w-full h-[73px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100 md:mx-0 mx-auto"
                     >
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg
+                        <div className={`flex flex-col items-center justify-center ${imageFile3 === null ? 'pt-5 pb-6' : ''} w-full h-full`}>
+                          {
+                            imageFile3 === null ?
+                            (<React.Fragment>
+                              <svg
                                 aria-hidden="true"
                                 className="w-[25px] h-5 mb-1 mt-3 text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg"
-                            >
+                              >
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     strokeWidth="2"
                                     d="M12 4v16m8-8H4"
                                 ></path>
-                            </svg>
-                            <p className="mb-2 text-sm text-gray-500">Add banner image</p>
+                              </svg>
+                              <p className="mb-2 text-sm text-gray-500">Add banner image</p>
+                            </React.Fragment>) :
+                            (<img ref={imageRef3} src={imageFile3} alt="image" className="h-full object-cover" />)
+                          }
                         </div>
                         <input id="file-upload" type="file" className="hidden" accept="image/*"
-                          onChange={e => {
-                            setAboutUs({
-                              ...aboutUs,
-                              heading_section: {
-                                heading: aboutUs.heading_section.heading,
-                                image:  e.target.files[0]
-                              }
-                            })
-                          }}
+                          onChange={e => { setImageFile3(e.target.files[0]) }}
                         />
                     </label>
                   </div>
@@ -225,34 +503,33 @@ const AboutUs: React.FC = () => {
                         htmlFor="file-upload"
                         className="flex flex-col items-center justify-center w-full h-[165px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
                       >
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <svg
-                              aria-hidden="true"
-                              className="w-[49px] h-[44px] mb-1 mt-3 text-gray-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                          >
-                              <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M12 4v16m8-8H4"
-                              ></path>
-                          </svg>
-                          <p className="mb-2 text-sm text-gray-500">Add content image</p>
+                        <div className={`flex flex-col items-center justify-center ${imageFile1 === null ? 'pt-5 pb-6' : ''} w-full h-full`}>
+                          {
+                            imageFile1 === null ?
+                            (<React.Fragment>
+                              <svg
+                                aria-hidden="true"
+                                className="w-[49px] h-[44px] mb-1 mt-3 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M12 4v16m8-8H4"
+                                ></path>
+                              </svg>
+                              <p className="mb-2 text-sm text-gray-500">Add content image</p>
+                            </React.Fragment>) :
+                            (<img ref={imageRef1} src={imageFile1} alt="image" className="h-full object-cover" />)
+                          }
                         </div>
                         <input id="file-upload" type="file" className="hidden"accept="image/*"
                           onChange={e => {
-                            setAboutUs({
-                              ...aboutUs,
-                              block1: {
-                                content_title: aboutUs.block1.content_title,
-                                description: aboutUs.block1.description,
-                                image: e.target.files[0]
-                              }
-                            })
+                            setImageFile1(e.target.files[0])
                           }}
                         />
                       </label>
@@ -324,34 +601,33 @@ const AboutUs: React.FC = () => {
                         htmlFor="file-upload"
                         className="flex flex-col items-center justify-center w-full h-[165px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
                       >
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <svg
-                              aria-hidden="true"
-                              className="w-[49px] h-[44px] mb-1 mt-3 text-gray-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                          >
-                              <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M12 4v16m8-8H4"
-                              ></path>
-                          </svg>
-                          <p className="mb-2 text-sm text-gray-500">Add content image</p>
+                        <div className={`flex flex-col items-center justify-center ${imageFile2 === null ? 'pt-5 pb-6' : ''} w-full h-full`}>
+                          {
+                            imageFile2 === null ?
+                            (<React.Fragment>
+                              <svg
+                                aria-hidden="true"
+                                className="w-[49px] h-[44px] mb-1 mt-3 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M12 4v16m8-8H4"
+                                ></path>
+                              </svg>
+                              <p className="mb-2 text-sm text-gray-500">Add content image</p>
+                            </React.Fragment>) :
+                            (<img ref={imageRef2} src={imageFile2} alt="image" className="h-full object-cover" />)
+                          }
                         </div>
                         <input id="file-upload" type="file" className="hidden"accept="image/*"
                           onChange={e => {
-                            setAboutUs({
-                              ...aboutUs,
-                              block2: {
-                                content_title: aboutUs.block2.content_title,
-                                description: aboutUs.block2.description,
-                                image: e.target.files[0]
-                              }
-                            })
+                            setImageFile2(e.target.files[0])
                           }}
                         />
                       </label>
@@ -393,9 +669,6 @@ const AboutUs: React.FC = () => {
                 <div className="flex flex-row max-sm:justify-center gap-3 pt-4">
                   <button
                     type="submit"
-                    onClick={e => {
-                      setIsEditModalOpen(false);
-                    }}
                     className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
                   >
                     Save
@@ -405,6 +678,9 @@ const AboutUs: React.FC = () => {
                     onClick={() => {
                       setIsEditModalOpen(false);
                       fetchAboutUs();
+                      setImageFile1(null);
+                      setImageFile2(null);
+                      setImageFile3(null);
                     }}
                     className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
                   >

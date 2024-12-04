@@ -40,7 +40,7 @@ const Role = () => {
         <Link to="/add-role"
           className="btn-green ml-[19px]"
         >
-          Add User
+          Add Role
         </Link>
 
         <div className="sm:px-4 max-sm:px-0 sm:w-[350px] max-sm:w-full max-[835px]:mt-2">

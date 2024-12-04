@@ -166,7 +166,7 @@ const Banner: React.FC = () => {
 
   const addBannerSubmit = async(e) => {
     e.preventDefault();
-    if(imageFile !== null || typeof imageFile !== "string"){
+    if(imageFile !== null && typeof imageFile !== "string"){
       try {
         const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
         console.log("imageUpload", imageUpload);
@@ -211,7 +211,7 @@ const Banner: React.FC = () => {
 
   const editBannerSubmit = async(e) => {
     e.preventDefault();
-    if(imageFile !== null || typeof imageFile !== "string"){
+    if(imageFile !== null && typeof imageFile !== "string"){
       try {
         const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
         console.log("imageUpload", imageUpload);
@@ -513,13 +513,13 @@ const Banner: React.FC = () => {
                                 }`}
                               >
                                 {
-                                  e.name == "buttonURL" ? <a href={banner?.button_url} target="_blank" rel="noopener noreferrer"
-                                    // onClick={() => {
-                                    //   // window.open(banner?.button_url, "_blank", 'noopener,noreferrer')
-                                    //   window.open("https://www.google.com", "_blank", 'noopener,noreferrer')
-                                    // }}
-                                    className="cursor-pointer text-cBlue"
-                                  >{banner?.button_url}</a> : banner[e.name]
+                                  e.name == "button_url" ?
+                                  <a href={banner?.button_url} target="_blank" className="cursor-pointer text-cBlue">{banner?.button_url}</a> :
+                                  e.name === "description" ?
+                                  <div className=""
+                                    dangerouslySetInnerHTML={{ __html: banner?.description }}
+                                  ></div> :
+                                  banner[e.name]
                                 }
                               </td>
                             </tr>
