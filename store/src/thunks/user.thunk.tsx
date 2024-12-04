@@ -507,3 +507,10 @@ export const deleteFaqThunk = createAsyncThunk(
     return await userApis.deleteFaqsApi(record_id);
   }
 );
+
+export const getPlanAndPriceThunk = createAsyncThunk(
+  "users/getPlanAndPrice",
+  async () => {
+    return await userApis.getPlanAndPriceApi();
+  }
+);

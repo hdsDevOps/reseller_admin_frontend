@@ -752,6 +752,14 @@ async function deleteFaqsApi(
   }
 };
 
+async function getPlanAndPriceApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getPlanAndPrice);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
 
 export const userApis = {
   makeUserLoginApi,
@@ -810,4 +818,5 @@ export const userApis = {
   addFaqsApi,
   updateFaqsApi,
   deleteFaqsApi,
+  getPlanAndPriceApi,
 };

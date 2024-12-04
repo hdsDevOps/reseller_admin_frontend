@@ -86,4 +86,7 @@ export const endPoints = {
     addFaq: 'adminservices/admin/api/v1/addfaq',
     updateFaq: 'adminservices/admin/api/v1/editfaq',
     deleteFaq: 'adminservices/admin/api/v1/deletefaq',
+
+    // plan & price
+    getPlanAndPrice: 'adminservices/subscription/api/v1/getplansdetailslist',
 }
