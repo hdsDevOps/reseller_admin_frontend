@@ -3,7 +3,7 @@ import ResourcesModal from "./components/ResourcesModal";
 import '../../styles/styles.css';
 import { Dialog } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
-import { getResourcesThunk, updateResourcesThunk } from 'store/user.thunk';
+import { getResourcesThunk, updateResourcesThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from "store/hooks";
@@ -44,6 +44,14 @@ const Resources: React.FC = () => {
       setResources(result);
     } catch (error) {
       setResources(initialResources);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

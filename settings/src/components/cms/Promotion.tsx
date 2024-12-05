@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { TrashIcon, PencilIcon } from "lucide-react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { getPromotionsListThunk, addPromotionThunk,editPromotionThunk, deletetPromotionThunk } from 'store/user.thunk';
+import { getPromotionsListThunk, addPromotionThunk,editPromotionThunk, deletetPromotionThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { format } from "date-fns";
 import { ToastContainer, toast } from 'react-toastify';
@@ -34,24 +34,6 @@ const Promotion: React.FC = () => {
     { label: 'Template', placeholder: 'HTML/CSS script should be here to make the Promotion template', name: 'html_template', type: 'textarea'},
     { label: 'End date', placeholder: 'Select here', name: 'end_date', type: 'date'},
   ];
-  // const promotions = [
-  //   {
-  //     template: "2x1",
-  //     promoCode: "HOr20%TsDmN",
-  //     startDate: "17-07-2024",
-  //     endDate: "21-07-2024",
-  //     status: true,
-  //     image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/coupon-2x1.png?alt=media&token=c83ac2c6-827b-4d17-b2fc-4e9776fe6eaf',
-  //   },
-  //   {
-  //     template: "50%",
-  //     promoCode: "Hor50%DonSa",
-  //     startDate: "19-07-2024",
-  //     endDate: "25-07-2024",
-  //     status: false,
-  //     image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/coupon-50%25.png?alt=media&token=84ea9b03-3ef2-4f17-8f04-eb7f8c70cb34',
-  //   },
-  // ];
 
   const [promotions, setPromotions] = useState([]);
   console.log(promotions);
@@ -62,6 +44,14 @@ const Promotion: React.FC = () => {
       setPromotions(result);
     } catch (error) {
       setPromotions([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

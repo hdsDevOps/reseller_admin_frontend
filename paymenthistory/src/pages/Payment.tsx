@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
-import { getPaymentMethodsListThunk, updatePaymentMethodStatusThunk } from 'store/user.thunk'
+import { getPaymentMethodsListThunk, updatePaymentMethodStatusThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk'
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,6 +17,14 @@ const PaymentMethod: React.FC = () => {
       setPaymentMethods(result.data);
     } catch (error) {
       setPaymentMethods([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

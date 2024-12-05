@@ -5,7 +5,7 @@ import '../styles/styles.css';
 import Flag from 'react-world-flags'; // Flag component
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { editCustomerThunk } from 'store/user.thunk';
+import { editCustomerThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from 'store/hooks';
 import {
   CitySelect,
@@ -133,7 +133,15 @@ function EditCustomer() {
       ).unwrap();
       toast.success(result?.message);
     } catch (error) {
-      toast.error("Error")
+      toast.error("Error");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     } finally {
       setTimeout(() => {
         navigate(-1);

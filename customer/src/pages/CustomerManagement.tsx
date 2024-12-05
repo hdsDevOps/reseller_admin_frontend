@@ -4,7 +4,7 @@ import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";
@@ -80,6 +80,14 @@ const CustomerManagement: React.FC = () => {
       }
     } catch (error) {
       setCustomerList([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   }
 
@@ -94,7 +102,7 @@ const CustomerManagement: React.FC = () => {
       ).unwrap();
       setCountryList(countries.countrylist);
     } catch (error) {
-      console.log("Error on token")
+      // console.log("Error on token");
     }
   }
   

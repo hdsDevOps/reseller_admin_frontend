@@ -9,7 +9,7 @@ import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { ChevronDown, ChevronRight, ChevronUp, Pencil } from "lucide-react";
 import Flag from 'react-world-flags'; // Flag component
-import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, getCustomerListThunk, sendVoucherEmailThunk } from 'store/user.thunk';
+import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, getCustomerListThunk, sendVoucherEmailThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
@@ -80,6 +80,14 @@ const VoucherList: React.FC = () => {
       }
     } catch (error) {
       setCustomerList([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

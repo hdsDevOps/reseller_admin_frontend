@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/styles.css'
 import Flag from 'react-world-flags'; // Flag component
 import { useAppDispatch } from 'store/hooks';
-import { addCustomerThunk } from 'store/user.thunk';
+import { addCustomerThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import {
   CitySelect,
   CountrySelect,
@@ -122,6 +122,14 @@ const AddCustomer: React.FC = () => {
       }, 1000);
     } catch (error) {
       toast.error("Error adding customer");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
   return (

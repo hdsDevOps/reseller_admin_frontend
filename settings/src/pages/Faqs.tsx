@@ -3,7 +3,7 @@ import '../styles/styles.css';
 import { ChevronUp, ChevronDown, Trash, Pencil } from 'lucide-react';
 import { FiPlus } from "react-icons/fi";
 import { FaTimes } from 'react-icons/fa';
-import { getFaqsThunk, addFaqThunk, updateFaqThunk, deleteFaqThunk } from 'store/user.thunk';
+import { getFaqsThunk, addFaqThunk, updateFaqThunk, deleteFaqThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from 'store/hooks';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,6 +31,14 @@ const Faqs: React.FC = () => {
       setFaqs(result.data);
     } catch (error) {
       setFaqs([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

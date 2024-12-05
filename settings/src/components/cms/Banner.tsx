@@ -4,7 +4,7 @@ import '../../styles/styles.css';
 import { useNavigate } from "react-router-dom";
 import { PencilIcon, TrashIcon, X } from "lucide-react";
 import { Editor } from "@tinymce/tinymce-react";
-import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk, uploadImageThunk } from 'store/user.thunk';
+import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -76,6 +76,14 @@ const Banner: React.FC = () => {
       setBanners(result.data);
     } catch (error) {
       setBanners([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

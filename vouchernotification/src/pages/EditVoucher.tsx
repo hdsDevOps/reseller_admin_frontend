@@ -2,7 +2,7 @@ import { ChevronDown, ChevronRight, ChevronUp, MoveLeft } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Flag from 'react-world-flags'; // Flag component
-import { editVoucherThunk } from 'store/user.thunk';
+import { editVoucherThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from 'store/hooks';
@@ -134,6 +134,14 @@ const EditVoucher: React.FC = () =>  {
       }, 1000);
     } catch (error) {
       toast.error("Error editing voucher");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
   

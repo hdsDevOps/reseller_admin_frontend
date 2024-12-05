@@ -8,7 +8,7 @@ import MainApp from "./pages";
 import AuthApp from "auth/AuthApp";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import "auth/AuthCss";
-import { getUserAuthTokenFromLSThunk, removeUserAuthTokenFromLSThunk, logOutThunk } from "store/user.thunk";
+import { getUserAuthTokenFromLSThunk } from "store/user.thunk";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -23,30 +23,11 @@ const App: React.FC = () => {
     const getUserAuthToken = async () => {
       try {
         const getTokenFromLocalStorage = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
-        if (getTokenFromLocalStorage) {
-          // console.log("Token fetched:", getTokenFromLocalStorage);
-          try {
-            const tokenVerify = await dispatch(logOutThunk()).unwrap();
-            // console.log("verify token:", tokenVerify)
-          } catch (error) {
-            // await handleTokenError();
-          }
-        }
       } catch (error) {
         // console.error("Error fetching token:", error);
         navigate('/login');
       }
     };
-
-    const handleTokenError = async () => {
-      try {
-        await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-      } catch (error) {
-        console.error("Error fetching token:", error);
-      } finally {
-        navigate('/login');
-      }
-    }
 
     getUserAuthToken();
   }, [token, dispatch, navigate]);

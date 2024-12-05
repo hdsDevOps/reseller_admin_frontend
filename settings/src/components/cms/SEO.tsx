@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { getSeoDataThunk, updateSeoDataThunk, uploadImageThunk } from 'store/user.thunk';
+import { getSeoDataThunk, updateSeoDataThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -138,6 +138,14 @@ const SEO = () => {
       setSeoData(result);
     } catch (error) {
       setSeoData(initialSeoData);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 
@@ -175,7 +183,7 @@ const SEO = () => {
               toast.success(udpateSeo?.message)
             }, 1000);
           } catch (error) {
-            toast.error("Error updating SEO data1");
+            toast.error("Error updating SEO data");
           } finally {
             fetchSeoData();
           }

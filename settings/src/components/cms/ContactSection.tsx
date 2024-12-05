@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import '../../styles/styles.css';
-import { getContactUsThunk, updateContactUsThunk } from 'store/user.thunk';
+import { getContactUsThunk, updateContactUsThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,7 +32,15 @@ const ContactSection = () => {
       const result = await dispatch(getContactUsThunk()).unwrap();
       setContactData(result);
     } catch (error) {
-      setContactData(initialContactUs)
+      setContactData(initialContactUs);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

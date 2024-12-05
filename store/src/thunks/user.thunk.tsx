@@ -508,9 +508,30 @@ export const deleteFaqThunk = createAsyncThunk(
   }
 );
 
-export const getPlanAndPriceThunk = createAsyncThunk(
+export const getPlansAndPricesThunk = createAsyncThunk(
   "users/getPlanAndPrice",
   async () => {
-    return await userApis.getPlanAndPriceApi();
+    return await userApis.getPlansAndPricesApi();
+  }
+);
+
+export const addPlanAndPriceThunk = createAsyncThunk(
+  "users/addPlanAndPrice",
+  async ({icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists}: any) => {
+    return await userApis.addPlanAndPriceApiApi(icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists);
+  }
+);
+
+export const editPlanAndPriceThunk = createAsyncThunk(
+  "users/editPlanAndPrice",
+  async ({icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists, record_id}: any) => {
+    return await userApis.editPlanAndPriceApiApi(icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists, record_id);
+  }
+);
+
+export const deletePlanAndPriceThunk = createAsyncThunk(
+  "users/deletePlanAndPrice",
+  async ({record_id}: any) => {
+    return await userApis.deletePlanAndPriceApi(record_id);
   }
 );

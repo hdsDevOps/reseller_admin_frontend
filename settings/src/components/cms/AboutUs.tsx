@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
-import { getAboutUsThunk, updateAboutUsThunk, uploadImageThunk } from 'store/user.thunk';
+import { getAboutUsThunk, updateAboutUsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -71,6 +71,14 @@ const AboutUs: React.FC = () => {
     } catch (error) {
       // console.log(error);
       setAboutUs(initialAboutUs);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 

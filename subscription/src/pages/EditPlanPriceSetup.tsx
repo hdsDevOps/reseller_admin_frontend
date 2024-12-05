@@ -1,9 +1,9 @@
 import { ChevronRight, MoveLeft, Upload, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/styles.css';
 import { RiAddCircleFill, RiCheckboxCircleFill, RiCloseCircleFill } from "react-icons/ri";
-import { addPlanAndPriceThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { editPlanAndPriceThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from 'store/hooks';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,9 +13,10 @@ interface AmountBoxProps {
   number: number;
 }
 
-function AddPlanPriceSetup() {
+function EditPlanPriceSetup() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const flagList = [
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/australia-flag.png?alt=media&token=5a2db638-131e-49c7-be83-d0c84db8d440', name: 'AUD', logo: 'A$',},
@@ -25,59 +26,11 @@ function AddPlanPriceSetup() {
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAD', logo: 'C$',},
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'INR', logo: '₹',},
   ];
-
-  const initialSubscription = {
-    icon_image: '',
-    services: {
-      gmail_business_email: false,
-      custom_email_for_business: false,
-      phising_protection: false,
-      add_free_email: false,
-      meet_video_conferencing: '',
-      meeting_lenght: '',
-      us_or_internation_phone_number: false,
-      digital_whiteboarding: false,
-      noise_cancellation: false,
-      meeting_recodings_save: false,
-      two_step_verification: false,
-      group_base_policy_control: false,
-      advanced_protection_program: false,
-      endpoint_management: '',
-      google_wokspace_migrate_tool: false,
-    },
-    top_features: [],
-    trial_period: 0,
-    plan_name: '',
-    sticker_text: '',
-    sticker_exists: false,
-    amount_details: [
-      {
-        currency_code: 'USD',
-        price: [
-          {
-            type: 'Monthly',
-            price: null,
-            discount_price: null,
-          },
-          {
-            type: 'Yearly',
-            price: null,
-            discount_price: null,
-          },
-          {
-            type: 'Yearly Subscription with monthly billing',
-            price: null,
-            discount_price: null,
-          },
-        ],
-      },
-    ],
-  };
-  const [subscription, setSubscription] = useState(initialSubscription);
+  const [subscription, setSubscription] = useState(location.state);
   console.log(subscription);
   const [amountCount, setAMountCount] = useState(1);
   const [dragActive, setDragActive] = useState(false);
-  const [iconImage, setIconImage] = useState(null);
+  const [iconImage, setIconImage] = useState(location.state?.icon_image || null);
   // console.log("image...", iconImage);
   const [localPrice, setLocalPrice] = useState(subscription?.amount_details);
   const [featureTag, setFeatureTag] = useState('');
@@ -569,7 +522,7 @@ function AddPlanPriceSetup() {
         const imageUpload = await dispatch(uploadImageThunk({image: iconImage})).unwrap();
         if(imageUpload?.message === "File uploaded successfully!") {
           try {
-            const addPlan = await dispatch(addPlanAndPriceThunk({
+            const addPlan = await dispatch(editPlanAndPriceThunk({
               icon_image: imageUpload?.url,
               services: subscription?.services,
               top_features: subscription?.top_features,
@@ -577,7 +530,8 @@ function AddPlanPriceSetup() {
               plan_name: subscription?.plan_name,
               sticker_text: subscription?.sticker_text,
               sticker_exists: subscription?.sticker_exists,
-              amount_details: subscription?.amount_details
+              amount_details: subscription?.amount_details,
+              record_id: subscription?.id
             })).unwrap();
             setTimeout(() => {
               toast.success(addPlan?.message)
@@ -585,8 +539,6 @@ function AddPlanPriceSetup() {
           } catch (error) {
             toast.error("Error adding plan.");
             console.log(error)
-          } finally {
-            navigate(-1);
           }
         }
       } catch (error) {
@@ -601,6 +553,37 @@ function AddPlanPriceSetup() {
         else{
           toast.error("Please upload a valid image.");
         }
+      }
+    }
+    else{
+      try {
+        const addPlan = await dispatch(editPlanAndPriceThunk({
+          icon_image: subscription?.icon_image,
+          services: subscription?.services,
+          top_features: subscription?.top_features,
+          trial_period: subscription?.trial_period,
+          plan_name: subscription?.plan_name,
+          sticker_text: subscription?.sticker_text,
+          sticker_exists: subscription?.sticker_exists,
+          amount_details: subscription?.amount_details,
+          record_id: subscription?.id
+        })).unwrap();
+        setTimeout(() => {
+          toast.success(addPlan?.message)
+        }, 1000);
+      } catch (error) {
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+        else{
+          toast.error("Error editing plan.");
+        }
+        console.log(error)
       }
     }
   }
@@ -659,6 +642,7 @@ function AddPlanPriceSetup() {
             name="plan_name"
             onChange={handleSubscriptionChange}
             required
+            defaultValue={subscription?.plan_name}
           />
         </div>
         <div
@@ -674,21 +658,28 @@ function AddPlanPriceSetup() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <div className="flex flex-col items-center justify-center">
-              <Upload
-                className='text-xl text-custom-green'
-              />
-              <p className="font-mulish font-semibold text-xs text-custom-black-8">
-                Drag & drop files or <span className='text-custom-green underline'>Browse</span>
-              </p>
-            </div>
+            {
+              typeof iconImage === "string" ?
+              <img src={iconImage} className='h-full object-cover' /> :
+              (
+                <div className="flex flex-col items-center justify-center">
+                  <Upload
+                    className='text-xl text-custom-green'
+                  />
+                  <p className="font-mulish font-semibold text-xs text-custom-black-8">
+                    Drag & drop files or <span className='text-custom-green underline'>Browse</span>
+                  </p>
+                </div>
+              )
+               
+            }
             <input
               id="file-upload"
               type="file"
               className="hidden"
               onChange={e => {setIconImage(e.target.files[0])}}
               name="icon_image"
-              required
+              required={iconImage === null ? true : false}
             />
           </label>
           <p
@@ -705,7 +696,7 @@ function AddPlanPriceSetup() {
         >Amount</h5>
 
         {
-          subscription?.amount_details.map((amount, index) => {
+          subscription?.amount_details?.map((amount, index) => {
             return(
               <AmountBox
                 item={amount}
@@ -730,6 +721,7 @@ function AddPlanPriceSetup() {
               required
               name='trial_period'
               onChange={handleSubscriptionChange}
+              defaultValue={subscription?.trial_period}
             />
           </div>
           <p className='font-inter font-normal text-base text-[#A6A6A6] w-10 my-auto px-1'>Days</p>
@@ -746,6 +738,7 @@ function AddPlanPriceSetup() {
                 })
               }}
               name='sticker_exists'
+              defaultChecked={subscription?.sticker_exists}
             />
             <label className='my-auto -mt-[1px] ml-1 font-inter font-medium text-base text-custom-black-4'>Sticker exist</label>
           </div>
@@ -756,6 +749,7 @@ function AddPlanPriceSetup() {
               className='h-[45px] border border-custom-white rounded-[10px] w-full pl-2'
               onChange={handleSubscriptionChange}
               name='sticker_text'
+              defaultValue={subscription?.sticker_text}
             />
           </div>
         </div>
@@ -764,7 +758,7 @@ function AddPlanPriceSetup() {
       <div className='grid grid-cols-1 sm:px-0 px-2'>
         <div className='flex flex-wrap gap-2 my-1'>
           {
-            subscription?.top_features && Object.entries(subscription?.top_features).map(([key, value]) => {
+            subscription?.top_features && Object.entries(subscription?.top_features)?.map(([key, value]) => {
               return(
                 <div className='flex flex-row gap-12 bg-[#C7E5CD] px-2 w-fit rounded-xl' key={key}>
                   <a className='font-inter font-normal text-[10px] text-[#545454] pt-[6px]'>{value}</a>
@@ -810,6 +804,8 @@ function AddPlanPriceSetup() {
                           className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${item.type == 'checkbox' ? 'w-7' : 'w-[133px]'}  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                           onChange={item.type === 'checkbox' ? handleServicesChange : handleServicesChange2}
                           name={item.name}
+                          defaultValue={subscription?.services[item.name] || null}
+                          defaultChecked={subscription?.services[item.name] || false}
                         />
                       </td>
                     </tr>
@@ -840,6 +836,8 @@ function AddPlanPriceSetup() {
                           className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${item.type == 'checkbox' ? 'w-7' : 'w-[133px]'} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                           onChange={item.type === 'checkbox' ? handleServicesChange : handleServicesChange2}
                           name={item.name}
+                          defaultValue={subscription?.services[item.name] || null}
+                          defaultChecked={subscription?.services[item.name] || false}
                         />
                       </td>
                     </tr>
@@ -865,4 +863,4 @@ function AddPlanPriceSetup() {
   )
 };
 
-export default AddPlanPriceSetup;
+export default EditPlanPriceSetup;

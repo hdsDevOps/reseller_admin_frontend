@@ -752,9 +752,57 @@ async function deleteFaqsApi(
   }
 };
 
-async function getPlanAndPriceApi(): Promise<any> {
+async function getPlansAndPricesApi(): Promise<any> {
   try {
-    const result = await getApiCall(endPoints.getPlanAndPrice);
+    const result = await getApiCall(endPoints.getPlansAndPrices);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function addPlanAndPriceApiApi(
+  icon_image: string,
+  services: string,
+  top_features: [],
+  trial_period: Number,
+  plan_name: string,
+  sticker_text: string,
+  amount_details: [],
+  sticker_exists: Boolean
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addPlanAndPrice, {icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function editPlanAndPriceApiApi(
+  icon_image: string,
+  services: string,
+  top_features: [],
+  trial_period: Number,
+  plan_name: string,
+  sticker_text: string,
+  amount_details: [],
+  sticker_exists: Boolean,
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.editPlanAndPrice, {icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists, record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deletePlanAndPriceApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deletePlanAndPrice, {record_id});
     return result;
   } catch (error: any) {
     throw error;
@@ -818,5 +866,8 @@ export const userApis = {
   addFaqsApi,
   updateFaqsApi,
   deleteFaqsApi,
-  getPlanAndPriceApi,
+  getPlansAndPricesApi,
+  addPlanAndPriceApiApi,
+  editPlanAndPriceApiApi,
+  deletePlanAndPriceApi,
 };

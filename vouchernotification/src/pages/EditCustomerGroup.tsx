@@ -8,7 +8,7 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, editCustomerGroupThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, editCustomerGroupThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -59,8 +59,15 @@ const EditCustomerGroup: React.FC = () =>  {
       ).unwrap()
       setSubscriptionPlans(result?.data);
     } catch (error) {
-      console.log(error);
       setSubscriptionPlans([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     }
   };
 
