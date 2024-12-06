@@ -4,7 +4,7 @@ import { BsEnvelopePlusFill } from "react-icons/bs";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
-import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk, getCustomerListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk, getCustomerListThunk, removeUserAuthTokenFromLSThunk, sendTestEmailNotificationThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,7 +26,7 @@ const NotificationTemplate = () => {
   const [templateHeading, setTemplateHeading] = useState({template_heading: ""});
   // console.log(templateHeading);
   const [notificationTemplates, setNotificationTemplates] = useState([]);
-  // console.log(notificationTemplates);
+  // console.log("notificationTemplates...", notificationTemplates);
   const [templateContent, setTemplateContent] = useState("");
   const intialFilter= {
     search_data: "",
@@ -38,13 +38,13 @@ const NotificationTemplate = () => {
     renewal_date: ""
   };
   const [filters, setFilters] = useState(intialFilter);
-  const [searchData, setSearchData] = useState("");
   // console.log("filters...", filters);
+  const [searchData, setSearchData] = useState("");
   const [customerList, setCustomerList] = useState([]);
   // console.log("customerList", customerList.length)
   // console.log("customerList", customerList);
   const [selectedCustomers, setSelectedCustomers] = useState([]);
-  // console.log(selectedCustomers);
+  // console.log("selectedCustomers...", selectedCustomers);
   const [showCustomerList, setShowCustomerList] = useState([]);
   const [dynamicCodes, setDynamicCodes] = useState([
     "{first_name}",
@@ -276,6 +276,32 @@ const NotificationTemplate = () => {
     } catch (error) {
       toast.error("Tamplate content could not be updated.")
     }
+  };
+
+  const sendNotificationEmail = async(e) => {
+    e.preventDefault();
+    if(selectedCustomers.length < 1) {
+      toast.warning("No emails are selected");
+    } else {
+      const emailLists = selectedCustomers.map(item => item?.email);
+      try {
+        const result = await dispatch(sendTestEmailNotificationThunk({
+          email_ids: emailLists,
+          record_id: selectedItem?.id
+        })).unwrap();
+        toast.success("Email sent");
+      } catch (error) {
+        toast.error("Error sending email.")
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      }
+    }
   }
 
   return (
@@ -384,7 +410,9 @@ const NotificationTemplate = () => {
                     value={filters?.search_data}
                     ref={filterRef}
                   />
-                  <Send className="w-6 text-[#12A833] sm:block my-auto" size={32} />
+                  <button type="button" onClick={(e) => {sendNotificationEmail(e)}}>
+                    <Send className="w-6 text-[#12A833] sm:block my-auto" size={32} />
+                  </button>
                 </div>
 
                 {

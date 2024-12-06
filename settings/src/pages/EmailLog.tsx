@@ -1,30 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/styles.css';
-
-interface EmailLogEntry {
-  email: string;
-  subject: string;
-  sentDate: string;
-  numberOfRecipient: number;
-};
+import { getEmailLogsThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { useAppDispatch } from 'store/hooks';
+import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 const EmailLog: React.FC = () => {
-  const emailLogs: EmailLogEntry[] = [
-    {
-      email: "Johndoe@gmail.com",
-      subject: "Email Verification",
-      sentDate: "12 Jan 2024",
-      numberOfRecipient: 3,
-    },
-    {
-      email: "Johndoe@gmail.com",
-      subject: "OTP verification",
-      sentDate: "12 Jan 2024",
-      numberOfRecipient: 5,
-    },
-  ];
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const tableHeads = ['Email', 'Subject', 'Sent date', 'Number of Recipient', 'Action']
+  const [emailLogs, setEmailLogs] = useState([]);
+  console.log("emailLogs...", emailLogs);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState("");
+
+  const tableHeads = ['Email', 'Subject', 'Sent date', 'Number of Recipient', 'Action'];
+
+  const fetchEmailLogs = async() => {
+    try {
+      const result = await dispatch(getEmailLogsThunk()).unwrap();
+      setEmailLogs(result?.data);
+    } catch (error) {
+      setEmailLogs([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchEmailLogs();
+  }, []);
+
+  const dateToIsoString = (date) => {
+    const newDate = new Date(date);
+    const isoDate = newDate.toISOString().split('T')[0];
+    const formatted = format(isoDate, 'dd MMM yyyy');
+    return formatted;
+  };
 
   return (
     <div className="grid grid-cols-1">
@@ -49,14 +68,17 @@ const EmailLog: React.FC = () => {
                 key={index}
                 className=""
               >
-                <td className="td-css-3">{log.email}</td>
-                <td className="td-css-3">{log.subject}</td>
-                <td className="td-css-3">{log.sentDate}</td>
-                <td className="td-css-3">{log.numberOfRecipient}</td>
+                <td className="td-css-3">{log?.email}</td>
+                <td className="td-css-3">{log?.subject}</td>
+                <td className="td-css-3">{dateToIsoString(log?.created_at)}</td>
+                <td className="td-css-3">{log?.no_receipt}</td>
                 <td className="text-center">
                   <button 
                     className="view-details"
-                    onClick={() => console.log(`View details for ${log.email}`)}
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setModalData(log?.content);
+                    }}
                   >
                     View Details
                   </button>
@@ -66,6 +88,48 @@ const EmailLog: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      <Dialog
+        open={isModalOpen}
+        as="div"
+        className="relative z-10 focus:outline-none"
+        onClose={() => {
+          setIsModalOpen(false);
+          setModalData("");
+        }}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto mt-16">
+          <div className="flex min-h-full items-center justify-center py-4">
+            <DialogPanel
+              transition
+              className="w-full max-w-[450px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <DialogTitle
+                  as="h3"
+                  className="text-lg font-semibold text-gray-900"
+                >Email Template</DialogTitle>
+                <div className='btn-close-bg'>
+                  <button
+                    type='button'
+                    className='text-3xl rotate-45 mt-[-8px] text-white'
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setModalData("");
+                    }}
+                  >+</button>
+                </div>
+              </div>
+
+              <div
+                className="mt-8 px-8"
+                dangerouslySetInnerHTML={{ __html: modalData }}
+              >
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

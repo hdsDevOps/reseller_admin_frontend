@@ -7,7 +7,7 @@ import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
-import { ChevronDown, ChevronRight, ChevronUp, Pencil } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, FilterX, Pencil } from "lucide-react";
 import Flag from 'react-world-flags'; // Flag component
 import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, getCustomerListThunk, sendVoucherEmailThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
@@ -15,6 +15,13 @@ import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const initialFilters = {
+  currency: "",
+  voucher_code: "",
+  start_date: "",
+  end_date: ""
+}
 
 const VoucherList: React.FC = () => {
   const navigate = useNavigate();
@@ -36,7 +43,7 @@ const VoucherList: React.FC = () => {
   const [customerList, setCustomerList] = useState([]);
   // console.log(customerList);
   const [customerSearch, setCustomerSearch] = useState({
-    search_data: "",
+    z: "",
     country: "",
     state_name: "",
     authentication: "",
@@ -110,17 +117,29 @@ const VoucherList: React.FC = () => {
   const tableHeads = [ 'Voucher Code', 'Currency', 'Discount', 'Start Date', 'End Date', 'Actions'];
 
   const dateFormat = (date) => {
-    const newDate = new Date(date);
+    const milliseconds = parseInt(date?._seconds) * 1000;
+    const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
+    const totalMilliseconds = milliseconds+extraMilliseconds;
+    const newDate = new Date(totalMilliseconds);
     return format(newDate, "dd MMM yyyy");
   };
 
   const [sampleData,setSampleData] = useState([]);
+  console.log(sampleData);
+  
+  const [filters, setFilters] = useState(initialFilters);
+  console.log("filters....", filters);
+
+  const handleFilterChange = e => {
+    setFilters({
+      ...filters,
+      [e.target.name]: e.target.value,
+    });
+  };
   
   const getVoucherList = async() => {
     try {
-      const result = await dispatch(
-        vocuherListThunk()
-      ).unwrap();
+      const result = await dispatch(vocuherListThunk(filters)).unwrap();
       setSampleData(result.data);
     } catch (error) {
       setSampleData([]);
@@ -129,7 +148,7 @@ const VoucherList: React.FC = () => {
 
   useEffect(() => {
     getVoucherList();
-  },[]);
+  },[filters]);
 
   const openModal = (group) => {
     setSelectedGroup(group);
@@ -176,17 +195,23 @@ const VoucherList: React.FC = () => {
   ];
 
   const countryCodes = currencyOptions.map((item) => item?.value);
+
+  const initialSelectedOption = { code: "", label: "", value: 'Currency', currency_code: "Select", };
   
   const [selectedOption, setSelectedOption] = useState<{
     code: string;
     label: string;
     value: string;
     currency_code: string;
-  } | { code: "US", label: "United States", value: '$', currency_code: "USD", }>({ code: "US", label: "United States", value: '$', currency_code: "USD", });
+  } | { code: "US", label: "United States", value: '$', currency_code: "USD", }>(initialSelectedOption);
 
   const handleOptionClick = (option: { code: string; flag: string; label: string }) => {
     setSelectedOption(option);
     setIsOpen(false);
+    setFilters({
+      ...filters,
+      currency: option?.currency_code,
+    });
   };
 
   const handleOutsideClick = (event: MouseEvent) => {
@@ -320,6 +345,8 @@ const VoucherList: React.FC = () => {
               className="serach-input-2 placeholder-black"
               name="voucher_code"
               placeholder="Voucher Code"
+              onChange={handleFilterChange}
+              value={filters?.voucher_code}
             />
           </div>
           <div className="px-4 mb-5 sm:mb-0">
@@ -334,9 +361,11 @@ const VoucherList: React.FC = () => {
               onBlur={e => {
                 e.target.type='text'
               }}
+              onChange={handleFilterChange}
+              value={filters?.start_date}
             />
           </div>
-          <div className="px-4 mb-5 sm:mb-0">
+          <div className="px-4 mb-5 sm:mb-0 flex gap-1s">
             <input
               type="text"
               className="serach-input-2 placeholder-black"
@@ -348,7 +377,17 @@ const VoucherList: React.FC = () => {
               onBlur={e => {
                 e.target.type='text'
               }}
+              onChange={handleFilterChange}
+              value={filters?.end_date}
             />
+            <button className="ml-1" onClick={() => {
+              setFilters(initialFilters);
+              setSelectedOption(initialSelectedOption);
+            }}>
+              <FilterX
+                className="text-[20px] text-custom-green"
+              />
+            </button>
           </div>
         </div>
       </div>

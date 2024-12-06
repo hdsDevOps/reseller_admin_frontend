@@ -95,7 +95,6 @@ const PlanPriceSetup = () => {
       }
     });
     const sortedData = newData?.filter(item => item !== undefined)
-    console.log(sortedData)
     if(sortedData?.length > 0){
       return sortedData[0];
     } else {
@@ -136,7 +135,6 @@ const PlanPriceSetup = () => {
       item.name === currencyIndex ? item.logo : undefined
     )
     const sortedData = data?.filter(item => item !== undefined);
-    console.log(sortedData);
     
     if(sortedData?.length > 0){
       return sortedData;
@@ -343,7 +341,7 @@ const PlanPriceSetup = () => {
                   >
                     {
                       formatPrice()?.map((data, k) => (
-                        `${data} ${price?.price}`
+                        `${data} ${price?.discount_price}`
                       ))
                     }
                   </td>
@@ -355,33 +353,31 @@ const PlanPriceSetup = () => {
                   > </td>
                 ))
               }
-              <td className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60">
-                {/* {
-                  getPrices(currencyIndex, plan?.amount_details)?.map((price, i) => {
-                    while(index === 0){
-                      return(
-                        <td
-                          className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
-                          key={i}
-                        >
-                          {
-                            price?.price ?
-                            formatPrice().map((data, k) => {
-                              if(data != undefined){
-                                return(
-                                  `${data} ${price?.price}`
-                                )
-                              }
-                            }) :
-                            ''
-                          }
-                        </td>
-                      )
-                    }
-                  })
-                } */}
-                 
-              </td>
+              {
+                getPrices(currencyIndex, plan?.amount_details).length > 0 ?
+                getPrices(currencyIndex, plan?.amount_details)?.map((price, i) => {
+                  if(price?.type === "Monthly"){
+                    return (
+                      <td
+                        className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
+                        key={i}
+                      >
+                        {
+                          formatPrice()?.map((data, k) => (
+                            `${data} ${price?.price}`
+                          ))
+                        }
+                      </td>
+                    )
+                  }
+                }) :
+                Array.from({ length: 1 }).map((_, index) => (
+                  <td
+                    className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
+                    key={index}
+                  > </td>
+                ))
+              }
               <td className="px-6 py-4 text-center flex flex-row gap-2 font-inter font-bold text-[10px] text-black">
                 <div
                   className="flex flex-row px-2 py-[3px] rounded-sm gap-1"
@@ -492,8 +488,8 @@ const PlanPriceSetup = () => {
             <button
               className={`p-2 border rounded-md ${
                 viewMode === "table"
-                  ? "bg-green-50 border-green-500"
-                  : "bg-white"
+                  ? "bg-green-50 border-green-500 text-black"
+                  : "bg-white text-[#737373]"
               }`}
               onClick={() => setViewMode("table")}
             >
@@ -502,8 +498,8 @@ const PlanPriceSetup = () => {
             <button
               className={`p-2 border rounded-md ${
                 viewMode === "grid"
-                  ? "bg-green-50 border-green-500"
-                  : "bg-white"
+                  ? "bg-green-50 border-green-500 text-black"
+                  : "bg-white text-[#737373]"
               }`}
               onClick={() => setViewMode("grid")}
             >

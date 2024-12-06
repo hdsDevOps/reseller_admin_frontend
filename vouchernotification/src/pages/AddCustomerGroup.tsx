@@ -8,7 +8,7 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList-2.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, addCustomerGroupThunk, getCountryListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, addCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -61,6 +61,7 @@ const AddCustomerGroup: React.FC = () =>  {
   ];
 
   const [countryList, setCountryList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
 
   const getCountryList = async() => {
     try {
@@ -75,6 +76,19 @@ const AddCustomerGroup: React.FC = () =>  {
   
   useEffect(() => {
     getCountryList();
+  }, []);
+
+  const getRegionList = async() => {
+    try {
+      const regions = await dispatch(getRegionListThunk()).unwrap();
+      setRegionList(regions?.regionlist);
+    } catch (error) {
+      // console.log("Error on token");
+    }
+  }
+  
+  useEffect(() => {
+    getRegionList();
   }, []);
 
   const getSubscriptonPlansList = async() => {
@@ -213,21 +227,30 @@ const AddCustomerGroup: React.FC = () =>  {
                     <label
                       className='search-input-label'
                     >{item.label}</label>
-                    <div
-                      className='search-input-text focus:outline-none w-full h-full p-0'
+                    <select
+                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.country == "" ? 'text-[#00000038]' : 'text-black'}`}
+                      onChange={updateCustomerGroup}
+                      name='country'
                     >
-                      <StateSelect
-                        countryid={countryid}
-                        onChange={(e) => {
-                          setCustomerGroup({
-                            ...customerGroup,
-                            region: e.name
-                          });
-                          setstateid(e.id);
-                        }}
-                        placeHolder={item?.placeholder}
-                      />
-                    </div>
+                      <option selected hidden>Select Country</option>
+                      {
+                        regionList && regionList.map((region, number) => (
+                          <option key={number} value={region} className='text-black'>{region}</option>
+                        ))
+                      }
+                    </select>
+                    <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
+                    {/* <StateSelect
+                      countryid={countryid}
+                      onChange={(e) => {
+                        setCustomerGroup({
+                          ...customerGroup,
+                          region: e.name
+                        });
+                        setstateid(e.id);
+                      }}
+                      placeHolder={item?.placeholder}
+                    /> */}
                   </div>
                 )
               }

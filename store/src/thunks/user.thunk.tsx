@@ -201,10 +201,24 @@ export const getCountryListThunk = createAsyncThunk(
   }
 );
 
+export const getRegionListThunk = createAsyncThunk(
+  "users/getRegionList",
+  async () => {
+    return await userApis.getRegionListAPi();
+  }
+);
+
+export const sendEmailToCustomerThunk = createAsyncThunk(
+  "users/sendEmailToCustomer",
+  async ({email_ids, record_id}:any) => {
+    return await userApis.sendEmailToCustomerApi(email_ids, record_id);
+  }
+);
+
 export const vocuherListThunk = createAsyncThunk(
   "users/vocuherList",
-  async () => {
-    return await userApis.voucherListApi();
+  async ({currency, voucher_code, start_date, end_date}:any) => {
+    return await userApis.voucherListApi(currency, voucher_code, start_date, end_date);
   }
 );
 
@@ -286,8 +300,8 @@ export const editCustomerGroupThunk = createAsyncThunk(
 
 export const getCustomerGroupListThunk = createAsyncThunk(
   "users/getCustomerGroupList",
-  async ({group_name, start_date}:any) => {
-    return await userApis.getCustomerGroupListApi(group_name, start_date);
+  async ({group_name, create_date}:any) => {
+    return await userApis.getCustomerGroupListApi(group_name, create_date);
   }
 );
 
@@ -316,6 +330,13 @@ export const updateNoficationTemplateContentThunk = createAsyncThunk(
   "users/updateNoficationTemplateContent",
   async ({record_id, template_content}: any) => {
     return await userApis.updateNoficationTemplateContentApi(record_id, template_content);
+  }
+);
+
+export const sendTestEmailNotificationThunk = createAsyncThunk(
+  "users/sendTestEmailNotification",
+  async ({email_ids, record_id}: any) => {
+    return await userApis.sendTestEmailNotificationApi(email_ids, record_id);
   }
 );
 
@@ -445,6 +466,13 @@ export const getFooterThunk = createAsyncThunk(
   }
 );
 
+export const updateFooterThunk = createAsyncThunk(
+  "users/updateFooter",
+  async ({marketing_section_data, website_section_data, contact_us_section_data, newsletter_section_data, social_section_data}: any) => {
+    return await userApis.updateFooterApi(marketing_section_data, website_section_data, contact_us_section_data, newsletter_section_data, social_section_data);
+  }
+);
+
 export const getMenuThunk = createAsyncThunk(
   "users/getMenu",
   async () => {
@@ -518,14 +546,14 @@ export const getPlansAndPricesThunk = createAsyncThunk(
 export const addPlanAndPriceThunk = createAsyncThunk(
   "users/addPlanAndPrice",
   async ({icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists}: any) => {
-    return await userApis.addPlanAndPriceApiApi(icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists);
+    return await userApis.addPlanAndPriceApi(icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists);
   }
 );
 
 export const editPlanAndPriceThunk = createAsyncThunk(
   "users/editPlanAndPrice",
   async ({icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists, record_id}: any) => {
-    return await userApis.editPlanAndPriceApiApi(icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists, record_id);
+    return await userApis.editPlanAndPriceApi(icon_image, services, top_features, trial_period, plan_name, sticker_text, amount_details, sticker_exists, record_id);
   }
 );
 
@@ -533,5 +561,19 @@ export const deletePlanAndPriceThunk = createAsyncThunk(
   "users/deletePlanAndPrice",
   async ({record_id}: any) => {
     return await userApis.deletePlanAndPriceApi(record_id);
+  }
+);
+
+export const getBillingHistoryThunk = createAsyncThunk(
+  "users/getBillingHistory",
+  async ({start_date, end_date, domain_id, search_data}: any) => {
+    return await userApis.getBillingHistoryApi(start_date, end_date, domain_id, search_data);
+  }
+);
+
+export const getEmailLogsThunk = createAsyncThunk(
+  "users/getEmailLogs",
+  async () => {
+    return await userApis.getEmailLogsApi();
   }
 );

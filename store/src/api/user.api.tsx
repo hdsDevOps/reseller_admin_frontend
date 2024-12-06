@@ -269,9 +269,35 @@ async function getCountryListAPi(): Promise<any> {
   }
 };
 
-async function voucherListApi(): Promise<any> {
+async function getRegionListAPi(): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.voucherList, {});
+    const result = await getApiCall(endPoints.getRegionList);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function sendEmailToCustomerApi(
+  email_ids: [],
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.sendEmailToCustomer, {email_ids, record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function voucherListApi(
+  currency: string,
+  voucher_code: string,
+  start_date: string,
+  end_date: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.voucherList, {currency, voucher_code, start_date, end_date});
     console.log(result)
     return result;
   } catch (error: any) {
@@ -375,10 +401,10 @@ async function editCustomerGroupApi(
 
 async function getCustomerGroupListApi(
   group_name: string,
-  start_date: string,
+  create_date: string,
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.customerGroupList, {group_name, start_date});
+    const result = await postApiCall(endPoints.customerGroupList, {group_name, create_date});
     return result;
   } catch (error: any) {
     throw error;
@@ -422,6 +448,18 @@ async function updateNoficationTemplateContentApi(
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.updateNoficationTemplateContent, {record_id, template_content});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function sendTestEmailNotificationApi(
+  email_ids: [],
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.sendTestEmailNotification, {email_ids, record_id});
     return result;
   } catch (error: any) {
     throw error;
@@ -644,6 +682,21 @@ async function getFooterApi(): Promise<any> {
   }
 };
 
+async function updateFooterApi(
+  marketing_section_data: string,
+  website_section_data: string,
+  contact_us_section_data: string,
+  newsletter_section_data: string,
+  social_section_data: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getFooter, {marketing_section_data, website_section_data, contact_us_section_data, newsletter_section_data, social_section_data});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function getMenuApi(): Promise<any> {
   try {
     const result = await getApiCall(endPoints.getMenu);
@@ -761,7 +814,7 @@ async function getPlansAndPricesApi(): Promise<any> {
   }
 };
 
-async function addPlanAndPriceApiApi(
+async function addPlanAndPriceApi(
   icon_image: string,
   services: string,
   top_features: [],
@@ -779,7 +832,7 @@ async function addPlanAndPriceApiApi(
   }
 };
 
-async function editPlanAndPriceApiApi(
+async function editPlanAndPriceApi(
   icon_image: string,
   services: string,
   top_features: [],
@@ -809,6 +862,29 @@ async function deletePlanAndPriceApi(
   }
 };
 
+async function getBillingHistoryApi(
+  start_date: string,
+  end_date: string,
+  domain_id: string,
+  search_data: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getBillingHistory, {start_date, end_date, domain_id, search_data});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getEmailLogsApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getEmailLogs);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -827,6 +903,8 @@ export const userApis = {
   declineCustomerSubscriptionApi,
   updateCustomerPasswordApi,
   getCountryListAPi,
+  getRegionListAPi,
+  sendEmailToCustomerApi,
   voucherListApi,
   addVoucherApi,
   editVoucherApi,
@@ -839,6 +917,7 @@ export const userApis = {
   addNotificationTemplateApi,
   getNotificationTemplateApi,
   updateNoficationTemplateContentApi,
+  sendTestEmailNotificationApi,
   subscriptionPlansListApi,
   getPaymentMethodsListApi,
   updatePaymentMethodStatusApi,
@@ -857,6 +936,7 @@ export const userApis = {
   getContactUsApi,
   udpateContactUsApi,
   getFooterApi,
+  updateFooterApi,
   getMenuApi,
   udpateMenuApi,
   getSeoDataApi,
@@ -867,7 +947,9 @@ export const userApis = {
   updateFaqsApi,
   deleteFaqsApi,
   getPlansAndPricesApi,
-  addPlanAndPriceApiApi,
-  editPlanAndPriceApiApi,
+  addPlanAndPriceApi,
+  editPlanAndPriceApi,
   deletePlanAndPriceApi,
+  getBillingHistoryApi,
+  getEmailLogsApi,
 };

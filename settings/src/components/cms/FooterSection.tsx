@@ -1,53 +1,70 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
 import '../../styles/styles.css';
+import { getFooterThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
+import { useNavigate } from "react-router-dom";
 
 const FooterSection = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [showModal, setShowModal] = React.useState(false);
   const footerItems = [
     { topic: 'Heading', name: 'heading',},
     { topic: 'Menu', name: 'menu',},
   ];
 
-  const [footerData, setFooterData] = useState([
-    {heading: 'Marketing', menu: [
-      {name: 'Video', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'SEO', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'SMO', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'Mobile', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'Campaign', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'Terms & Conditions', value: 'https://simplify.jobs/', type: 'url'},
-    ]},
-    {heading: 'Websites', menu: [
-      {name: 'Domain Name', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'Design', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'Hosting', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'WordPress', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'Develop', value: 'https://simplify.jobs/', type: 'url'},
-      {name: 'Privacy & Policy', value: 'https://simplify.jobs/', type: 'url'},
-    ]},
-    {heading: 'Contact Us', menu: [
-      {name: 'Address 1', value: 'Hordanso LLC 4364 Western Center Blvd PMB 2012 Fort Worth', type: 'text'},
-      {name: 'Call Us', value: '+1 469-893-0678', type: 'number'},
-      {name: 'Email ID', value: 'contact@hordanso.com', type: 'email'},
-      {name: 'Address 2', value: 'Hordanso LTD 479 Ikorodu Rd, Ketu, Lagos 100243', type: 'text'},
-      {name: 'Call Us', value: '+2348060440510', type: 'number'},
-      {name: 'Email ID', value: 'contact@hordanso.ng', type: 'email'},
-    ]},
-    {heading: 'Our NewsLetter', menu: [
-      {name: 'Description', value: 'From mobile apps, marketing & websites; to automation & extreme software engineering. We tackle the difficult & not so easy technical issues of today in the always on digital world of tomorrow.', type: 'text'},
-    ]},
-    {heading: 'Social Link', menu: [
-      {name: 'Twitter', value: 'www.twitter.com', type: 'url'},
-      {name: 'Facebook', value: 'www.facebook.com', type: 'url'},
-      {name: 'Pinterest', value: 'www.pinterest.com', type: 'url'},
-      {name: 'Instagram', value: 'www.instagram.com', type: 'url'},
-      {name: 'Youtube', value: 'www.youtube.com', type: 'url'},
-    ]}
-  ]);
+  const footerNames = [
+    {
+      header: "Marketing",
+      name: "marketing_section_data",
+    },
+    {
+      header: "Websites",
+      name: "website_section_data",
+    },
+    {
+      header: "Contact Us",
+      name: "contact_us_section_data",
+    },
+    {
+      header: "Our NewsLetter",
+      name: "newsletter_section_data",
+    },
+    {
+      header: "Social Link",
+      name: "social_section_data",
+    },
+  ];
+
+  const [footerData, setFooterData] = useState([]);
   console.log(footerData);
+
+  const fetchFooterData = async() => {
+    try {
+      const result = await dispatch(getFooterThunk()).unwrap();
+      setFooterData(result);
+    } catch (error) {
+      setFooterData([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
   
+  useEffect(() => {
+    fetchFooterData();
+  }, []);
+
+  const handleFooterChange = e => {
+    
+  }
 
   return (
     <div className="sm:p-4 p-0 bg-white">
@@ -58,7 +75,7 @@ const FooterSection = () => {
       </div>
       <div className="space-y-4">
         {
-          footerData.map((footer, index) => {
+          footerNames.map((footer, index) => {
             return(
               <div
                 className="grid grid-cols-1 overflow-x-auto border border-custom-white bg-custom-white-2 my-4"
@@ -85,7 +102,8 @@ const FooterSection = () => {
                                 }`}
                               >
                                 {
-                                  footer?.menu.map((me, n) => {
+                                  footer?.name !== "newsletter_section_data" ?
+                                  footerData[footer?.name]?.map((me, n) => {
                                     return(
                                       <tr
                                         key={n}
@@ -108,7 +126,24 @@ const FooterSection = () => {
                                         </td>
                                       </tr>
                                     )
-                                  })
+                                  }) :
+                                  (
+                                    <tr
+                                      className="py-0"
+                                    >
+                                      <td
+                                        className="banner-table-td-1 w-[150px] py-2 sm:pl-7 pl-1"
+                                      >{footerData?.newsletter_section_data?.name}</td>
+                                      <td
+                                        className="px-3 text-center banner-table-td-1 py-2"
+                                      >:</td>
+                                      <td
+                                        className={`banner-table-td-2 py-2 pr-7 text-black`}
+                                      >
+                                        {footerData?.newsletter_section_data?.value}
+                                      </td>
+                                    </tr>
+                                  )
                                 }
                               </td>
                             </tr>
@@ -126,7 +161,7 @@ const FooterSection = () => {
                               <td
                                 className={`banner-table-td-1 py-3 sm:pl-7 pl-1`}
                               >
-                                {footer[item.name]}
+                                {footer.header}
                               </td>
                             </tr>
                           )
@@ -173,7 +208,7 @@ const FooterSection = () => {
                   className="grid grid-cols-1 max-h-[400px] overflow-y-scroll"
                 >
                   {
-                    footerData && footerData.map((footer, index) => {
+                    footerNames && footerNames.map((footer, index) => {
                       return(
                         <div
                           key={index}
@@ -181,71 +216,137 @@ const FooterSection = () => {
                         >
                           <label
                             className="search-input-label"
-                          >{footer.heading}</label>
+                          >{footer.header}</label>
                           <div
                             className="search-input-text-2 p-3"
                           >
                             {
-                              index < 2 && (
-                                <div
-                                  className={`flex flex-row ${
-                                    index < 2 ? 'gap-4 justify-between' : ''
-                                  }`}
-                                >
-                                  <div
-                                    className={`grid sm:grid-cols-3 grid-cols-1 gap-4 w-full`}
-                                  >
+                              index < 2 && footerData[footer.name]?.map((item, idx) => {
+                                if(idx == 0){
+                                  return (
                                     <div
-                                      className="sm:col-span-1 flex flex-col"
+                                      className={`flex flex-row ${
+                                        index < 2 ? 'gap-4 justify-between' : ''
+                                      }`}
                                     >
-                                      <label
-                                        className="search-input-label"
-                                      >Name</label>
-                                      <input
-                                        type="text"
-                                        className="search-input-text"
-                                        placeholder="Enter the name"
-                                      />
+                                      <div
+                                        className={`grid sm:grid-cols-3 grid-cols-1 gap-4 w-full`}
+                                      >
+                                        <div
+                                          className="sm:col-span-1 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Name</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the name"
+                                            value={item?.name}
+                                          />
+                                        </div>
+                                        <div
+                                          className="sm:col-span-2 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Link</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the link"
+                                            value={item?.value}
+                                          />
+                                        </div>
+                                      </div>
+                                      <button
+                                        className={`flex flex-col items-center justify-center w-9 h-[46px] border border-custom-white rounded-[5px] sm:mt-3 my-auto`}
+                                        type="button"
+                                      >
+                                        <svg
+                                          aria-hidden="true"
+                                          className="w-4 h-4 text-custom-gray-6"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M12 4v16m8-8H4"
+                                          ></path>
+                                        </svg>
+                                      </button>
                                     </div>
+                                  )
+                                }
+                                else {
+                                  return (
                                     <div
-                                      className="sm:col-span-2 flex flex-col"
+                                      className={`flex flex-row ${
+                                        index < 2 ? 'gap-4 justify-between' : ''
+                                      }`}
                                     >
-                                      <label
-                                        className="search-input-label"
-                                      >Link</label>
-                                      <input
-                                        type="text"
-                                        className="search-input-text"
-                                        placeholder="Enter the link"
-                                      />
+                                      <div
+                                        className={`grid sm:grid-cols-3 grid-cols-1 gap-4 w-full`}
+                                      >
+                                        <div
+                                          className="sm:col-span-1 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Name</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the name"
+                                            value={item?.name}
+                                          />
+                                        </div>
+                                        <div
+                                          className="sm:col-span-2 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Link</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the link"
+                                            value={item?.value}
+                                          />
+                                        </div>
+                                      </div>
+                                      <button
+                                        className={`flex flex-col items-center justify-center w-9 h-[46px] border border-custom-white rounded-[5px] sm:mt-3 my-auto`}
+                                        type="button"
+                                      >
+                                        <svg
+                                          aria-hidden="true"
+                                          className="w-4 h-4 text-custom-gray-6"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M5 12h14"
+                                          ></path>
+                                        </svg>
+                                      </button>
                                     </div>
-                                  </div>
-                                  <button
-                                    className={`flex flex-col items-center justify-center w-9 h-[46px] border border-custom-white rounded-[5px] sm:mt-3 my-auto`}
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      className="w-4 h-4 text-custom-gray-6"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth="2"
-                                          d="M12 4v16m8-8H4"
-                                      ></path>
-                                    </svg>
-                                  </button>
-                                </div>
-                              )
+                                  )
+                                }
+                              })
                             }
 
                             {
-                              index == 2 && (
+                              index === 2 && (
                                 <div
                                   className={`flex flex-col h-[235px] mb-3`}
                                 >
@@ -281,7 +382,7 @@ const FooterSection = () => {
                             }
 
                             {
-                              index == 3 && (
+                              index === 3 && (
                                 <div
                                   className="flex flex-col"
                                 >
@@ -292,18 +393,19 @@ const FooterSection = () => {
                                     type="text"
                                     className="search-input-text"
                                     placeholder="Enter the news letter"
+                                    value={footerData?.newsletter_section_data?.value}
                                   />
                                 </div>
                               )
                             }
 
                             {
-                              index == 4 && (
+                              index === 4 && (
                                 <div
                                   className={`grid sm:grid-cols-3 grid-cols-1 gap-4 w-full`}
                                 >
                                   {
-                                    footer.menu.map((social, ind) => {
+                                    footerData?.social_section_data?.map((social, ind) => {
                                       return(
                                         <div
                                           key={ind}
@@ -311,12 +413,12 @@ const FooterSection = () => {
                                         >
                                           <label
                                             className="search-input-label"
-                                          >{social.name}</label>
+                                          >{social?.name}</label>
                                           <input
                                             type="text"
                                             className="search-input-text"
                                             placeholder="Enter the link"
-                                            defaultValue={social.value}
+                                            defaultValue={social?.value}
                                           />
                                         </div>
                                       )

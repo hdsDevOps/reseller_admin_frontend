@@ -4,7 +4,7 @@ import { Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getNotificationTemplateThunk, sendEmailToCustomerThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";
@@ -34,6 +34,10 @@ const CustomerManagement: React.FC = () => {
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
+  // console.log(customerList);
+  const [checked, setChecked] = useState([]);
+  // console.log("checked...", checked);
+  
   
   const [showList, setShowList] = useState(null);
   const listRef = useRef(null);
@@ -45,6 +49,17 @@ const CustomerManagement: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [authorization, setAuthorization] = useState("");
   const [countryList, setCountryList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
+  const [notificationTemplates, setNotificationTemplates] = useState([]);
+  // console.log("notificationTemplates...", notificationTemplates);
+  const [notificationId, setNotificationId] = useState("");
+  
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 20;
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = customerList.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(customerList.length / itemsPerPage);
   
   useEffect(() => {
     if(authorization == "true"){
@@ -108,6 +123,32 @@ const CustomerManagement: React.FC = () => {
   
   useEffect(() => {
     getCountryList();
+  }, []);
+
+  const getRegionList = async() => {
+    try {
+      const regions = await dispatch(getRegionListThunk()).unwrap();
+      setRegionList(regions?.regionlist);
+    } catch (error) {
+      // console.log("Error on token");
+    }
+  }
+  
+  useEffect(() => {
+    getRegionList();
+  }, []);
+
+  const getNotificationTemplate = async() => {
+    try {
+      const result = await dispatch(getNotificationTemplateThunk()).unwrap();
+      setNotificationTemplates(result?.data);
+    } catch (error) {
+      setNotificationTemplates([]);
+    }
+  };
+
+  useEffect(() => {
+    getNotificationTemplate();
   }, []);
   
   const handleClickOutOfFilter = e => {
@@ -241,7 +282,7 @@ const CustomerManagement: React.FC = () => {
       const result = await dispatch(
         deleteCustomerThunk({record_id: item?.record_id})
       ).unwrap()
-      console.log(result);
+      // console.log(result);
       setTimeout(() => {
         toast.success(result?.message);
       }, 1000);
@@ -259,7 +300,7 @@ const CustomerManagement: React.FC = () => {
       const result = await dispatch(
         suspendCustomerThunk({record_id: item?.record_id})
       ).unwrap()
-      console.log(result);
+      // console.log(result);
       setTimeout(() => {
         toast.success(result?.message);
       }, 1000);
@@ -284,16 +325,55 @@ const CustomerManagement: React.FC = () => {
   const selectAllButton = () => {
     const newSelectAllState = !selectAll;
     setSelectAll(newSelectAllState);
-    setCustomerList(customerList?.map(item => ({ ...item, isChecked: newSelectAllState})));
+    setChecked(customerList);
   };
 
-  const handleSelectDeselect = (id) => {
-    const updatedItems = customerList?.map(item => 
-      item?.record_id === id ? { ...item, isChecked: !item.isChecked } : item
-    );
-    setCustomerList(updatedItems);
-    const allChecked = updatedItems.every(item => item.isChecked);
-    setSelectAll(allChecked)
+  const toggleCheck = (newJson) => {
+    setChecked((prevChecked) => {
+      const index = prevChecked.findIndex((item) => item?.id === newJson?.id);
+
+      if (index !== -1) {
+        // If found, remove it
+        return prevChecked.filter((item) => item?.id !== newJson?.id);
+      } else {
+        // If not found, add it
+        return [...prevChecked, newJson];
+      }
+    });
+  };
+
+  const sendEmailToCustomer = async(e) => {
+    e.preventDefault();
+    try {
+      const emails = checked?.map(item => item?.email);
+      // console.log("emails...", emails);
+      // console.log("notificationId...", notificationId);
+      if(emails.length === 0){
+        toast.warning("Please select customer");
+      }
+      else{
+        if(notificationId === ""){
+          toast.warning("Please select a notification");
+        }
+        else{
+          const sendMail = await dispatch(sendEmailToCustomerThunk({
+            email_ids: emails,
+            record_id: notificationId
+          })).unwrap();
+          toast.success(sendMail?.message);
+        }
+      }
+    } catch (error) {
+      toast.error("Error sending email");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
   }
 
   return (
@@ -324,24 +404,27 @@ const CustomerManagement: React.FC = () => {
             <input
               type="checkbox"
               className={`w-3 h-3 border border-black mt-[12px] mr-[6px] accent-[#12A833]`}
-              onChange={selectAllButton}
-              checked={selectAll}
-              disabled={customerList.length>0 ? false : true}
+              onClick={() => {selectAllButton()}}
+              checked={customerList.length !== checked.length ? false : customerList.length === 0 ? false : true}
             />
             <p className="font-inter-bold text-[14px] opacity-60 text-custom-blue mt-[8px]">
               Select All
             </p>
           </div>
           <div className="flex sm:flex-row max-sm:flex-col sm:justify-end max-sm:items-end w-full">
-            <select className="sm:mr-2 max-sm:mr-0 w-[198px] h-[38px] select-notification">
-              <option selected hidden>
-                Select a notification
-              </option>
+            <select className="sm:mr-2 max-sm:mr-0 w-[198px] h-[38px] select-notification" onChange={(e) => {setNotificationId(e.target.value)}}>
+              <option selected value="">Select a notification</option>
+              {
+                notificationTemplates && notificationTemplates?.map((notification, index) => (
+                  <option value={notification?.id} key={index}>{notification?.template_header}</option>
+                ))
+              }
             </select>
 
             <button
               type="button"
               className="w-[79px] h-[38px] btn-blue max-sm:mt-1"
+              onClick={(e) => {sendEmailToCustomer(e)}}
             >
               Send
             </button>
@@ -466,9 +549,11 @@ const CustomerManagement: React.FC = () => {
                     <option selected hidden value="">
                       Select Region
                     </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                    {
+                      regionList && regionList.map((region, number) => (
+                        <option key={number} value={region}>{region}</option>
+                      ))
+                    }
                   </select>
                 </div>
               </div>
@@ -491,19 +576,14 @@ const CustomerManagement: React.FC = () => {
                   </select>
                 </div>
                 <div className="w-1/2 px-4">
-                  <select
-                    className="select-input"
+                  <input
+                    type="number"
+                    className="serach-input"
                     name="license_usage"
                     onChange={handleFilterChange}
                     value={filters.license_usage}
-                  >
-                    <option selected hidden value="">
-                      Licnese Usage
-                    </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                  </select>
+                    placeholder="Enter License Usage Value"
+                  />
                 </div>
               </div>
 
@@ -592,14 +672,14 @@ const CustomerManagement: React.FC = () => {
               className="h-fit"
             >
               {
-                customerList && customerList.map((item, index) => {
+                currentItems && currentItems.map((item, index) => {
                   return (
                     <tr key={index} className="text-center">
                       <td>
                         <input type="checkbox"
                           className="w-3 h-3 border border-black accent-[#12A833]"
-                          checked={item.isChecked || false}
-                          onChange={() => {handleSelectDeselect(item?.record_id)}}
+                          checked={checked?.some((check) => check?.id === item?.id)}
+                          onClick={() => {toggleCheck(item)}}
                         />
                       </td>
                       <td
@@ -915,6 +995,51 @@ const CustomerManagement: React.FC = () => {
               }
             </tbody>
           </table>
+
+          <div className="flex flex-col mt-12 relative bottom-2 right-0">
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+                disabled={currentPage === 0}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === 0
+                    ? "bg-transparent text-gray-300"
+                    : "bg-transparent hover:bg-green-500 hover:text-white"
+                } rounded-l transition`}
+              >
+                Prev
+              </button>
+
+              {/* Page numbers */}
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index)}
+                  className={`px-3 py-1 text-sm mx-1 rounded ${
+                    currentPage === index
+                      ? "bg-green-500 text-white"
+                      : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                  } transition`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+                }
+                disabled={currentPage === totalPages - 1}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === totalPages - 1
+                    ? "bg-transparent text-gray-300"
+                    : "bg-transparent hover:bg-green-500 hover:text-white"
+                } rounded-r transition`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

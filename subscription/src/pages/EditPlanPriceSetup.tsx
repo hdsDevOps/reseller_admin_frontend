@@ -609,7 +609,7 @@ function EditPlanPriceSetup() {
         </a>
         <h3
           className='h3-text ml-[10px]'
-        >Add Subscription</h3>
+        >Edit Subscription</h3>
       </div>
 
       <div
@@ -623,7 +623,7 @@ function EditPlanPriceSetup() {
         />
         <p
           className='page-indicator-2'
-        >Add subscription</p>
+        >Edit subscription</p>
       </div>
 
       <div

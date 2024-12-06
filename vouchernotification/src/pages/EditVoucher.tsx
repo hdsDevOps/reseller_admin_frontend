@@ -6,6 +6,7 @@ import { editVoucherThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thu
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from 'store/hooks';
+import { format } from 'date-fns';
 
 interface Props {
   htmlContent: string;
@@ -32,11 +33,30 @@ const EditVoucher: React.FC = () =>  {
   }, [voucher?.start_date]);
 
   const dateToIsoString = (date) => {
-    const newDate = new Date(date);
-    const isoDate = newDate.toISOString().split('T')[0];
-    return isoDate;
+    if(typeof date === "string"){
+      const newDate = new Date(date);
+      return format(newDate, "dd MMM yyyy");
+    } else {
+      const milliseconds = date?._seconds * 1000;
+      const extraMilliseconds = date?._nanoseconds / 1000000;
+      const totalMilliseconds = milliseconds+extraMilliseconds;
+      const newDate = new Date(totalMilliseconds);
+      return format(newDate, "dd MMM yyyy");
+    }
   };
   
+  const finalDate = (date) => {
+    if(typeof date === "string"){
+      const newDate = new Date(date);
+      return format(newDate, "yyyy-MM-dd");
+    } else {
+      const milliseconds = date?._seconds * 1000;
+      const extraMilliseconds = date?._nanoseconds / 1000000;
+      const totalMilliseconds = milliseconds+extraMilliseconds;
+      const newDate = new Date(totalMilliseconds);
+      return format(newDate, "yyyy-MM-dd");
+    }
+  }
 
   const updateVoucher = (e) => {
     setVoucher({
@@ -117,23 +137,22 @@ const EditVoucher: React.FC = () =>  {
   const addVoucher = async(e) => {
     e.preventDefault();
     try {
-      const result = await dispatch(
-        editVoucherThunk({
-          voucher_code: voucher?.voucher_code,
-          start_date: voucher?.start_date,
-          end_date: voucher?.end_date,
-          discount_rate: voucher?.discount_rate,
-          template_details: voucher?.template_details,
-          currency: voucher?.currency,
-          record_id: voucher?.id
-        })
-      ).unwrap()
+      const result = await dispatch(editVoucherThunk({
+        voucher_code: voucher?.voucher_code,
+        start_date: finalDate(voucher?.start_date),
+        end_date: finalDate(voucher?.end_date),
+        discount_rate: voucher?.discount_rate,
+        template_details: voucher?.template_details,
+        currency: voucher?.currency,
+        record_id: voucher?.id
+      })).unwrap()
       toast.success(result?.message);
       setTimeout(() => {
         navigate(-1);
       }, 1000);
     } catch (error) {
       toast.error("Error editing voucher");
+      console.log("error...", error)
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -272,7 +291,7 @@ const EditVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateVoucher}
-                      defaultValue={voucher[item.name]}
+                      defaultValue={dateToIsoString(voucher?.start_date)}
                     />
                   </div>
                 )
@@ -299,8 +318,8 @@ const EditVoucher: React.FC = () =>  {
                       className='search-input-text px-4'
                       onChange={updateVoucher}
                       disabled={endDateEnable}
-                      min={voucher?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(voucher?.start_date)) }
-                      defaultValue={voucher[item.name]}
+                      min={dateToIsoString(voucher?.end_date)}
+                      defaultValue={dateToIsoString(voucher?.end_date)}
                     />
                   </div>
                 )

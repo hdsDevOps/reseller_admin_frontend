@@ -18,6 +18,8 @@ export const endPoints = {
     declineCustomerSubscription: 'adminservices/customer/api/v1/activecustomer',
     updateCustomerPassword: 'adminservices/customer/api/v1/resetcustomerpassword',
     getCountryList: 'adminservices/customer/api/v1/getcountry_list',
+    getRegionList: 'adminservices/customer/api/v1/getregion_list',
+    sendEmailToCustomer: 'adminservices/notification/api/v1/sendmailtocustomer',
 
     // voucher notification endpoints
     voucherList: 'voucherservices/voucher/api/v1/voucherlist',
@@ -34,6 +36,7 @@ export const endPoints = {
     addNotificationTemplate: 'adminservices/notification/api/v1/addnotificationtemplatedetails',
     getNotificationTemplate: 'adminservices/notification/api/v1/getnotificationlist',
     updateNoficationTemplateContent: 'adminservices/notification/api/v1/updatenotificationtemplate',
+    sendTestEmailNotification: 'adminservices/notification/api/v1/sendtestemailnotification',
 
     // subscription
     subscriptionPlansList: 'adminservices/subscription/api/v1/getplansdetailslist',
@@ -69,6 +72,7 @@ export const endPoints = {
 
         // footer
         getFooter: 'adminservices/admin/api/v1/cmsgetfooter',
+        updateFooter: 'adminservices/admin/api/v1/cmsupdatefooterdata',
 
         // menu
         getMenu: 'adminservices/admin/api/v1/cmsgetheader',
@@ -92,4 +96,10 @@ export const endPoints = {
     addPlanAndPrice: 'adminservices/subscription/api/v1/addnewplandetails',
     editPlanAndPrice: 'adminservices/subscription/api/v1/editnewplandetails',
     deletePlanAndPrice: 'adminservices/subscription/api/v1/deleteplandetails',
+
+    // billing history
+    getBillingHistory: 'subscriptionservices/billing/api/v1/billinghistory',
+
+    //email log
+    getEmailLogs: 'adminservices/notification/api/v1/emaillog',
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
-import { ChevronRight, Pencil } from 'lucide-react';
+import { ChevronRight, FilterX, Pencil } from 'lucide-react';
 import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css";
@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const initialFilters = {
   group_name: "",
-  start_date: "",
+  create_date: "",
 };
 
 const CustomerGroup: React.FC = () => {
@@ -28,6 +28,7 @@ const CustomerGroup: React.FC = () => {
   const [voucherGroup, setVoucherGroup] = useState({});
   // console.log(voucherGroup);
   const [filters, setFilters] = useState(initialFilters);
+  console.log(filters);
 
   const [sampleData, setSampleData] = useState([]);
   console.log(sampleData);
@@ -41,7 +42,14 @@ const CustomerGroup: React.FC = () => {
 
   const dateFormat = (date) => {
     const newDate = new Date(date);
-    return format(newDate, "dd MMM yyyy");
+    const formatted = format(newDate, "dd MMM yyyy");
+    if(formatted === "Invalid Date"){
+      return "Invalid Date";
+    }
+    else{
+      return `${formatted}`;
+    }
+    // console.log({date, newDate})
   };
 
   const clickOutsideModal = (event) => {
@@ -160,16 +168,17 @@ const CustomerGroup: React.FC = () => {
             <input
               type="text"
               className="serach-input-2"
-              name="groupName"
+              name="group_name"
               placeholder="Group name"
               onChange={updateFilters}
+              value={filters?.group_name}
             />
           </div>
-          <div className="px-4 sm:mt-0 mt-1">
+          <div className="px-4 sm:mt-0 mt-1 flex gap-1">
             <input
               type="text"
               className="serach-input-2 placeholder-cGray"
-              name="createdDate"
+              name="create_date"
               placeholder="Created date"
               onFocus={e => {
                 e.target.type='date'
@@ -178,7 +187,15 @@ const CustomerGroup: React.FC = () => {
                 e.target.type='text'
               }}
               onChange={updateFilters}
+              value={filters?.create_date}
             />
+            <button className="ml-1" onClick={() => {
+              setFilters(initialFilters);
+            }}>
+              <FilterX
+                className="text-[20px] text-custom-green"
+              />
+            </button>
           </div>
         </div>
       </div>
@@ -204,7 +221,8 @@ const CustomerGroup: React.FC = () => {
                     <td className="td-css-2">
                       {/* {dateFormat(item?.start_date)} */}
                       {/* {item?.created_at?._seconds} */}
-                      {`${convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds), 'dd MMM yyyy')}`}
+                      {/* {`${convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds), 'dd MMM yyyy')}`} */}
+                      {item?.create_date ? dateFormat(item?.create_date) : "N/A"}
                     </td>
                     <td className="">
                       <div className="flex items-center justify-center gap-3 my-1">
@@ -374,7 +392,8 @@ const CustomerGroup: React.FC = () => {
           </div>
           <div className="mt-0 flex flex-row justify-between">
             <p>Expiry Date:</p>
-            <p>{convertToDate(selectedGroup?.created_at?._seconds, selectedGroup?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(selectedGroup?.created_at?._seconds, selectedGroup?.created_at?._nanoseconds), 'dd MMM yyyy')}</p>
+            {/* <p>{convertToDate(selectedGroup?.created_at?._seconds, selectedGroup?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(selectedGroup?.created_at?._seconds, selectedGroup?.created_at?._nanoseconds), 'dd MMM yyyy')}</p> */}
+            <p>{selectedGroup?.create_date ? dateFormat(selectedGroup?.create_date) : "N/A"}</p>
           </div>
           <div className="mt-0 flex flex-row justify-between">
             <p>License Usage:</p>
