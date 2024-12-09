@@ -14,6 +14,10 @@
   @apply bg-cBlue6;
 }
 
+.bg-custom-white{
+  @apply bg-cWhite2;
+}
+
 .text-custom-green{
   @apply text-cGreen;
 }
@@ -28,6 +32,10 @@
 
 .text-custom-gray{
   @apply text-cGray;
+}
+
+.text-custom-black-5{
+  @apply text-cBlack5;
 }
 
 .rounded-10px{
@@ -54,6 +62,10 @@
   @apply font-inter font-bold;
 }
 
+.font-inter-bold-xs-60percent-black{
+  @apply font-inter font-bold text-xs leading-6 tracking-[1px] text-black opacity-60;
+}
+
 .flex-row-between{
   @apply flex flex-row justify-between;
 }
@@ -68,6 +80,10 @@
 
 .border-custom-green{
   @apply border-cGreen;
+}
+
+.border-custom-gray{
+  @apply border-cGray5;
 }
 
 .active-status{
@@ -86,12 +102,20 @@
   @apply bg-cGreen text-base font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px];
 }
 
+.btn-green-no-radius{
+  @apply bg-cGreen text-base font-normal font-inter text-white focus:outline-none rounded-none px-5 py-[7px];
+}
+
 .btn-green-2{
   @apply px-5 py-[10px] rounded-[10px] bg-cGreen text-cWhite4 font-semibold text-base;
 }
 
 .btn-green-3{
   @apply bg-cGreen2 text-[8px] font-normal font-inter text-cGray2 focus:outline-none rounded-[5px] px-5 py-[5px] text-center;
+}
+
+.btn-green-4{
+  @apply bg-cGreen text-xs font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px];
 }
 
 .btn-light-green{
@@ -134,8 +158,16 @@
   @apply h-[38px] w-full border border-cWhite bg-cWhite2 py-[7px] px-[9px] font-inter font-normal text-base focus:outline-cGreen focus:rounded-none focus:ring-0 text-cGray rounded-none;
 }
 
+.serach-input-3{
+  @apply h-[38px] w-full font-inter font-normal text-[11px] text-black rounded-none bg-white border border-cWhite py-[7px] px-2;
+}
+
 .select-input{
   @apply w-full h-10 border border-cWhite py-2 px-[9px] rounded-lg font-inter font-normal text-base focus:outline-none;
+}
+
+.select-input-no-radius{
+  @apply w-full h-10 border border-cWhite py-2 px-[9px] font-inter font-normal text-base focus:outline-none;
 }
 
 .select-notification{
@@ -147,7 +179,7 @@
 }
 
 .search-input-text{
-  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60 font-inter font-normal;
+  @apply border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2;
 }
 
 .search-select-text{
@@ -172,6 +204,18 @@
 
 .td-css-2{
   @apply font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60;
+}
+
+.td-css-3{
+  @apply font-inter font-normal text-xs leading-6 tracking-[1px] text-center opacity-60 min-w-[120px] px-[10px];
+}
+
+.td-css-4{
+  @apply font-inter font-bold text-xs leading-6 tracking-[1px] text-center opacity-60 min-w-[120px] px-[10px];
+}
+
+.td-css-full-opactiy{
+  @apply font-inter font-normal text-xs leading-6 tracking-[1px] text-center opacity-100 px-[10px];
 }
 
 .h3-text{
@@ -243,7 +287,7 @@
 }
 
 .textarea-template{
-  @apply border border-cWhite h-[131.64px] rounded-[10px] font-inter font-normal text-sm leading-6 text-cBlack4 p-2 mt-[-9px] placeholder:opacity-60;
+  @apply border border-cWhite h-[131.64px] rounded-[10px] font-inter font-normal text-xs leading-6 text-cBlack4 p-2;
 }
 
 .notification-select{
@@ -266,10 +310,18 @@
   @apply w-full max-h-[208px] min-h-[208px] overflow-y-scroll px-6 py-1 focus:outline-none;
 }
 
-.radio-checked{
-  @apply w-[22px] h-[22px] border border-[#B0B0B0] rounded-full appearance-none bg-[#12A833]  shadow-[inset_0_5px_5px_0px_rgba(0,0,0,0.3)];
+.payment-select{
+  @apply text-cGreen font-inter font-normal text-base focus:outline-none w-[97px] h-[38px] ;
 }
 
-.radio-unchecked{
-  @apply w-[22px] h-[22px] border rounded-full appearance-none border-[#B0B0B0] bg-[#929292] shadow-[inset_0_5px_5px_0px_rgba(0,0,0,0.3)];
+.payment-select-2{
+  @apply text-cRed font-inter font-normal text-base focus:outline-none w-[97px] h-[38px] ;
+}
+
+.payment-option{
+  @apply text-black;
+}
+
+.select-div{
+  @apply text-end px-2 py-[7px];
 }
