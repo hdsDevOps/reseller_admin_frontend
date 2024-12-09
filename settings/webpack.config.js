@@ -2,11 +2,11 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
-   
+
 const deps = require("./package.json").dependencies;
 
 const printCompilationMessage = require('./compilation.config.js');
-   
+     
 module.exports = (_, argv) => ({
   output: {
     publicPath: "auto",
@@ -63,13 +63,13 @@ module.exports = (_, argv) => ({
 
   plugins: [
     new ModuleFederationPlugin({
-      name: "settings",
+      name: "paymenthistory",
       filename: "remoteEntry.js",
       remotes: {
         store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
-        "./SettingsApp": "./src/pages/index.tsx",
+        "./PaymentApp": "./src/pages/index.tsx",
       },
       shared: {
         ...deps,
