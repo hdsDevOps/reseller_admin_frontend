@@ -5,7 +5,7 @@ on:
         branches:
             - main
         paths:
-            - "roles/**"
+            - "role/**"
     workflow_dispatch: # Allow manual triggering
 
 jobs:
