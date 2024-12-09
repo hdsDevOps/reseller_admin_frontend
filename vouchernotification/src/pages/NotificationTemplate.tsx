@@ -331,7 +331,7 @@ const NotificationTemplate = () => {
             setTemplateContent(notificationTemplates[e.target.value]?.template_content);
             setSelectedItem(notificationTemplates[e.target.value]);
           }}>
-            <option selected hidden value=''>Select a notification section </option>
+            <option selected value=''>Select a notification section </option>
             {
               notificationTemplates && notificationTemplates.map((item, index) => {
                 return(

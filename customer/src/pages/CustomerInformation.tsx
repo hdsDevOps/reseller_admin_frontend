@@ -138,104 +138,106 @@ const CustomerInformation: React.FC = () => {
         </div>
       </div>
 
-      <div
-        className={`fixed-full-screen ${
-          !resetPasswordShow ? "hidden" : ""
-        }`}
-      >
-        <div className="fixed-popup-round3xl min-[546px]:w-[538px] max-[546px]:w-full h-[284px] p-6 flex flex-col font-inter">
+      {
+        resetPasswordShow && (
           <div
-            className='flex-row-between'
+            className={`fixed-full-screen`}
           >
-            <h4
-              className='text-2xl font-medium'
-            >Reset Password</h4>
-            <button
-              type='button'
-              className='text-3xl rotate-45'
-              onClick={() => {
-                setResetPasswordShow(false);
-                setNewPassword('');
-                setConfirmPassword('');
-              }}
-            >+</button>
+            <div className="fixed-popup-round3xl min-[546px]:w-[538px] max-[546px]:w-full h-[284px] p-6 flex flex-col font-inter">
+              <div
+                className='flex-row-between'
+              >
+                <h4
+                  className='text-2xl font-medium'
+                >Reset Password</h4>
+                <button
+                  type='button'
+                  className='text-3xl rotate-45'
+                  onClick={() => {
+                    setResetPasswordShow(false);
+                    setNewPassword('');
+                    setConfirmPassword('');
+                  }}
+                >+</button>
+              </div>
+
+              <form
+                onSubmit={resetPasswordSubmit}
+              >
+                <div
+                  className='grid min-[546px]:grid-cols-2 max-[546px]:grid-cols-1 font-inter min-[546px]:mt-[37px] max-[546px]:mt-[20px]'
+                >
+                  <div
+                    className='flex flex-col px-2 max-[546px]:mb-3'
+                  >
+                    <label
+                      className='search-input-label'
+                    >New Password</label>
+                    <input type={showNewPassword ? 'text' : 'password'} placeholder='New Password' minLength={8} required
+                      className='search-input-text'
+                      onChange={e => {
+                        setNewPassword(e.target.value);
+                      }}
+                      value={newPassword}
+                    />
+                    <button
+                      type="button"
+                      // onClick={togglePasswordVisibility}
+                      className="float-right mt-[-35px] mr-2 ml-auto"
+                      onClick={() => {
+                        setShowNewPassword(!showNewPassword);
+                      }}
+                    >
+                      {showNewPassword ? (
+                        <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
+                      ) : (
+                        <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
+                      )}
+                    </button>
+                  </div>
+                  <div
+                    className='flex flex-col px-2'
+                  >
+                    <label
+                      className='search-input-label'
+                    >Confirm Password</label>
+                    <input type={showConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' minLength={8} required
+                      className='search-input-text'
+                      onChange={e => {
+                        setConfirmPassword(e.target.value);
+                      }}
+                      value={confirmPassword}
+                    />
+                    <button
+                      type="button"
+                      // onClick={togglePasswordVisibility}
+                      className="float-right mt-[-35px] mr-2 ml-auto"
+                      onClick={() => {
+                        setShowConfirmPassword(!showConfirmPassword);
+                      }}
+                    >
+                      {showConfirmPassword ? (
+                        <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
+                      ) : (
+                        <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  className='flex justify-center mt-[39px]'
+                >
+                  <button
+                    className='w-[181px] h-[46px] btn-green-2'
+                    type='submit'
+                  >Save</button>
+                </div>
+              </form>
+            </div>
           </div>
-
-          <form
-            onSubmit={resetPasswordSubmit}
-          >
-            <div
-              className='grid min-[546px]:grid-cols-2 max-[546px]:grid-cols-1 font-inter min-[546px]:mt-[37px] max-[546px]:mt-[20px]'
-            >
-              <div
-                className='flex flex-col px-2 max-[546px]:mb-3'
-              >
-                <label
-                  className='search-input-label'
-                >New Password</label>
-                <input type={showNewPassword ? 'text' : 'password'} placeholder='New Password' minLength={8} required
-                  className='search-input-text'
-                  onChange={e => {
-                    setNewPassword(e.target.value);
-                  }}
-                  value={newPassword}
-                />
-                <button
-                  type="button"
-                  // onClick={togglePasswordVisibility}
-                  className="float-right mt-[-35px] mr-2 ml-auto"
-                  onClick={() => {
-                    setShowNewPassword(!showNewPassword);
-                  }}
-                >
-                  {showNewPassword ? (
-                    <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
-                  ) : (
-                    <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
-                  )}
-                </button>
-              </div>
-              <div
-                className='flex flex-col px-2'
-              >
-                <label
-                  className='search-input-label'
-                >Confirm Password</label>
-                <input type={showConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' minLength={8} required
-                  className='search-input-text'
-                  onChange={e => {
-                    setConfirmPassword(e.target.value);
-                  }}
-                  value={confirmPassword}
-                />
-                <button
-                  type="button"
-                  // onClick={togglePasswordVisibility}
-                  className="float-right mt-[-35px] mr-2 ml-auto"
-                  onClick={() => {
-                    setShowConfirmPassword(!showConfirmPassword);
-                  }}
-                >
-                  {showConfirmPassword ? (
-                    <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
-                  ) : (
-                    <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div
-              className='flex justify-center mt-[39px]'
-            >
-              <button
-                className='w-[181px] h-[46px] btn-green-2'
-                type='submit'
-              >Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
+        )
+      }
       <div
         className='w-full grid min-[1150px]:grid-cols-3 grid-cols-1 mt-8'
       >

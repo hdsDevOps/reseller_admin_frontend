@@ -36,14 +36,15 @@ const VoucherList: React.FC = () => {
   const [voucher, setVoucher] = useState({});
   // console.log(voucher);
   const [customerId, setCustomerId] = useState<string>("");
-  // console.log(customerId);
+  // console.log("customerId...", customerId);
   
   const [customerGroupList, setCustomerGroupList] = useState([]);
-  // console.log(customerGroupList);
+  // console.log("customerGroupList...", customerGroupList);
+  const [customerGroupName, setCustomerGroupName] = useState("");
   const [customerList, setCustomerList] = useState([]);
   // console.log(customerList);
   const [customerSearch, setCustomerSearch] = useState({
-    z: "",
+    search_data: "",
     country: "",
     state_name: "",
     authentication: "",
@@ -72,7 +73,28 @@ const VoucherList: React.FC = () => {
       setDropdownSearch(false);
       setCustomerList([]);
     }
-  }, [customerSearch]);
+  }, [customerSearch, customerId]);
+
+  const [dropwdownSearch2, setDropdownSearch2] = useState(false);
+  useEffect(() => {
+    if(customerGroupName != ""){
+      if(customerGroupList.length >= 2){
+        if(customerId == ""){
+          setDropdownSearch2(true);
+        }
+        else{
+          setDropdownSearch2(false);
+        }
+      }
+      else{
+        setDropdownSearch2(false);
+      }
+    }
+    else{
+      setDropdownSearch2(false);
+      setCustomerGroupList([]);
+    }
+  }, [customerGroupName, customerId]);
 
   const getCustomerList = async() => {
     try {
@@ -125,10 +147,10 @@ const VoucherList: React.FC = () => {
   };
 
   const [sampleData,setSampleData] = useState([]);
-  console.log(sampleData);
+  // console.log(sampleData);
   
   const [filters, setFilters] = useState(initialFilters);
-  console.log("filters....", filters);
+  // console.log("filters....", filters);
 
   const handleFilterChange = e => {
     setFilters({
@@ -163,7 +185,7 @@ const VoucherList: React.FC = () => {
   const getCustomerGroupListData = async() => {
     try {
       const result = await dispatch(
-        getCustomerGroupListThunk()
+        getCustomerGroupListThunk({group_name: customerGroupName, create_date: ""})
       ).unwrap();
       setCustomerGroupList(result.data);
     } catch (error) {
@@ -173,8 +195,12 @@ const VoucherList: React.FC = () => {
   };
 
   useEffect(() => {
-    getCustomerGroupListData();
-  }, []);
+    if(customerGroupName !== "" && customerGroupName.length >= 2){
+      getCustomerGroupListData();
+    } else {
+      setCustomerGroupList([]);
+    }
+  }, [customerGroupName]);
 
   // Calculate displayed data based on current page
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
@@ -193,6 +219,8 @@ const VoucherList: React.FC = () => {
     { code: "CA", label: "Canada", value: 'C$', currency_code: "CAD", },
     { code: "IN", label: "India", value: '₹', currency_code: "INR", },
   ];
+
+  const initialCurrencyOption = { code: "", label: "", value: '', currency_code: "", };
 
   const countryCodes = currencyOptions.map((item) => item?.value);
 
@@ -325,6 +353,13 @@ const VoucherList: React.FC = () => {
               {/* Dropdown Options */}
               {isOpen && (
                 <div className="absolute mt-[32px] z-10 w-[88%] max-[1250px]:w-[82%] max-lg:w-[88%] -ml-2 bg-white border border-gray-300 rounded-md shadow-lg" ref={flagRef}>
+                  <div
+                    className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer border-b-[1px]"
+                    onClick={() => handleOptionClick(initialCurrencyOption)}
+                  >
+                    <Flag code={initialSelectedOption?.code} style={{width: '30px', margin: 'auto'}} />
+                    <p className="ml-2">{initialSelectedOption.currency_code} - {initialSelectedOption.value}</p>
+                  </div>
                   {currencyOptions.map((option) => (
                     <div
                       key={option.code}
@@ -597,23 +632,28 @@ const VoucherList: React.FC = () => {
               <div className="w-full my-5">
                 {
                   selectedRadio === "group" ? 
-                  <div className="w-full py-4">
-                    <select
-                      className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-[80%] font-inter font-extralight text-base text-black"
-                      onChange={e => {
-                        setCustomerId(e.target.value);
-                      }}
-                    >
-                      <option selected hidden>Select group</option>
-                      {
-                        customerGroupList?.map((customerGroup, index) => (
-                          <option value={customerGroup?.record_id} key={index}>{customerGroup?.group_name}</option>
-                        ))
-                      }
-                    </select>
+                  <div className="w-full py-4 relative">
+                    <input type="text" className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-80 font-inter font-extralight text-base text-black" onChange={e => {
+                      setCustomerGroupName(e.target.value);
+                      setCustomerId("");
+                    }} placeholder="Search group" value={customerGroupName} />
+                    {
+                      dropwdownSearch2 && (
+                        <div className="absolute bg-[#F4F4F4] w-full max-h-40 overflow-y-auto p-1 grid grid-cols-1">
+                          {
+                            customerGroupList?.map((group, index) => (
+                              <div key={index} className="py-1 px-4 font-inter font-extralight text-base text-black border-b border-[#C9C9C9] last:border-0 cursor-pointer w-full" onClick={() => {
+                                setCustomerId(group?.record_id);
+                                setCustomerGroupName(group?.group_name)
+                              }}>{group?.group_name}</div>
+                            ))
+                          }
+                        </div>
+                      )
+                    }
                   </div> :
                   <div className="w-full py-4">
-                    <input className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-[80%] font-inter font-extralight text-base text-black" placeholder="Enter customer email id"
+                    <input className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-80 font-inter font-extralight text-base text-black" placeholder="Enter customer email id"
                       onChange={e => {
                         setCustomerSearch({
                           ...customerSearch,

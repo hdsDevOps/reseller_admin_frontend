@@ -2,9 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Editor } from "@tinymce/tinymce-react";
 import '../../styles/styles.css';
-import { getFooterThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getFooterThunk, updateFooterThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const initialJson = {
+  name: "",
+  value: "",
+  type: "url",
+}
 
 const FooterSection = () => {
   const dispatch = useAppDispatch();
@@ -62,12 +70,90 @@ const FooterSection = () => {
     fetchFooterData();
   }, []);
 
-  const handleFooterChange = e => {
-    
+  const handleFooterArrayChange = (e, fieldName, index, field) => {
+    const data = footerData[fieldName];
+    // console.log(data[index]);
+    data[index][field] = e.target.value;
+    setFooterData({
+      ...footerData,
+      [fieldName]: data
+    });
+  };
+
+  const handleFooterChange = (e, fieldName) => {
+    var data = footerData[fieldName];
+    data.value = e.target.value;
+    console.log(data)
+    setFooterData({
+      ...footerData,
+      [fieldName]: data
+    });
+  };
+
+  const handleEditorChange = (content) => {
+    setFooterData((prev) => ({
+      ...prev,
+      contact_us_section_data: {
+        ...prev.contact_us_section_data,
+        value: content,
+      },
+    }));
+    console.log("Updated content:", content);
+  }
+
+  const addNewJson = (fieldName) => {
+    const newArray = footerData[fieldName];
+    newArray.push(initialJson);
+    setFooterData({
+      ...footerData,
+      [fieldName]: newArray
+    })
+    console.log(newArray)
+  };
+
+  const removeJson = (index, fieldName) => {
+    // setItems((prevItems) => prevItems.filter((_, i) => i !== index));
+    const array = footerData[fieldName];
+    const newArray = array?.filter((_, i) => i !== index);
+    // console.log(newArray);
+    setFooterData({
+      ...footerData,
+      [fieldName]: newArray
+    })
+  };
+
+  const updateFooterData = async(e) => {
+    e.preventDefault();
+    try {
+      const updateFooter = await dispatch(updateFooterThunk({
+        marketing_section_data : footerData?.marketing_section_data,
+        website_section_data: footerData?.website_section_data,
+        contact_us_section_data: footerData?.contact_us_section_data,
+        newsletter_section_data: footerData?.newsletter_section_data,
+        social_section_data: footerData?.social_section_data,
+      })).unwrap();
+      setTimeout(() => {
+        toast.success(updateFooter?.message);
+      }, 1000);
+      setShowModal(false);
+    } catch (error) {
+      toast.error("Error updating footer");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    } finally {
+      fetchFooterData();
+    }
   }
 
   return (
     <div className="sm:p-4 p-0 bg-white">
+      <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
         <button className="btn-cms" onClick={() => {setShowModal(true)}}>
           EDIT
@@ -102,7 +188,45 @@ const FooterSection = () => {
                                 }`}
                               >
                                 {
-                                  footer?.name !== "newsletter_section_data" ?
+                                  footer?.name === "newsletter_section_data" ?
+                                  (
+                                    <tr
+                                      className="py-0"
+                                    >
+                                      <td
+                                        className="banner-table-td-1 w-[150px] py-2 sm:pl-7 pl-1"
+                                      >{footerData?.newsletter_section_data?.name}</td>
+                                      <td
+                                        className="px-3 text-center banner-table-td-1 py-2"
+                                      >:</td>
+                                      <td
+                                        className={`banner-table-td-2 py-2 pr-7 text-black`}
+                                      >
+                                        {footerData?.newsletter_section_data?.value}
+                                      </td>
+                                    </tr>
+                                  ) :
+                                  footer?.name === "contact_us_section_data" ?
+                                  (
+                                    <tr
+                                      className="py-0"
+                                    >
+                                      <td
+                                        className="banner-table-td-1 w-[150px] py-2 sm:pl-7 pl-1"
+                                      >{footerData?.contact_us_section_data?.name}</td>
+                                      <td
+                                        className="px-3 text-center banner-table-td-1 py-2"
+                                      >:</td>
+                                      <td
+                                        className={`banner-table-td-2 py-2 pr-7 text-black`}
+                                      >
+                                        <div className=""
+                                          dangerouslySetInnerHTML={{ __html: footerData?.contact_us_section_data?.value }}
+                                        ></div>
+                                        {/* {footerData?.newsletter_section_data?.value} */}
+                                      </td>
+                                    </tr>
+                                  ) :
                                   footerData[footer?.name]?.map((me, n) => {
                                     return(
                                       <tr
@@ -121,29 +245,12 @@ const FooterSection = () => {
                                           }`}
                                         >
                                           {
-                                            me.type == 'url' ? <a onClick={() => {window.open(me.value)}}>{me.value}</a> : me.value
+                                            me.type == 'url' ? <a href={me.value} target="_blank">{me.value}</a> : me.value
                                           }
                                         </td>
                                       </tr>
                                     )
-                                  }) :
-                                  (
-                                    <tr
-                                      className="py-0"
-                                    >
-                                      <td
-                                        className="banner-table-td-1 w-[150px] py-2 sm:pl-7 pl-1"
-                                      >{footerData?.newsletter_section_data?.name}</td>
-                                      <td
-                                        className="px-3 text-center banner-table-td-1 py-2"
-                                      >:</td>
-                                      <td
-                                        className={`banner-table-td-2 py-2 pr-7 text-black`}
-                                      >
-                                        {footerData?.newsletter_section_data?.value}
-                                      </td>
-                                    </tr>
-                                  )
+                                  })
                                 }
                               </td>
                             </tr>
@@ -195,7 +302,7 @@ const FooterSection = () => {
                   <DialogTitle
                     as="h3"
                     className="text-lg font-semibold text-gray-900"
-                  >Edit about us</DialogTitle>
+                  >Edit Footer</DialogTitle>
                   <div className='btn-close-bg'>
                     <button
                       type='button'
@@ -206,6 +313,7 @@ const FooterSection = () => {
                 </div>
                 <form
                   className="grid grid-cols-1 max-h-[400px] overflow-y-scroll"
+                  onSubmit={updateFooterData}
                 >
                   {
                     footerNames && footerNames.map((footer, index) => {
@@ -243,6 +351,8 @@ const FooterSection = () => {
                                             className="search-input-text"
                                             placeholder="Enter the name"
                                             value={item?.name}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "name")}}
+                                            required
                                           />
                                         </div>
                                         <div
@@ -256,12 +366,15 @@ const FooterSection = () => {
                                             className="search-input-text"
                                             placeholder="Enter the link"
                                             value={item?.value}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "value")}}
+                                            required
                                           />
                                         </div>
                                       </div>
                                       <button
                                         className={`flex flex-col items-center justify-center w-9 h-[46px] border border-custom-white rounded-[5px] sm:mt-3 my-auto`}
                                         type="button"
+                                        onClick={() => {addNewJson(footer.name)}}
                                       >
                                         <svg
                                           aria-hidden="true"
@@ -303,6 +416,8 @@ const FooterSection = () => {
                                             className="search-input-text"
                                             placeholder="Enter the name"
                                             value={item?.name}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "name")}}
+                                            required
                                           />
                                         </div>
                                         <div
@@ -316,12 +431,15 @@ const FooterSection = () => {
                                             className="search-input-text"
                                             placeholder="Enter the link"
                                             value={item?.value}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "value")}}
+                                            required
                                           />
                                         </div>
                                       </div>
                                       <button
                                         className={`flex flex-col items-center justify-center w-9 h-[46px] border border-custom-white rounded-[5px] sm:mt-3 my-auto`}
                                         type="button"
+                                        onClick={() => {removeJson(idx, footer.name)}}
                                       >
                                         <svg
                                           aria-hidden="true"
@@ -365,16 +483,8 @@ const FooterSection = () => {
                                         toolbar:
                                           "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
                                       }}
-                                      // initialValue={block.description}
-                                      // onEditorChange={(content) => {
-                                      //   const newResources = [...resources];
-                                      //   newResources[index] = {
-                                      //     ...resource,
-                                      //     description: content,
-                                      //   };
-                                      //   console.log(newResources);
-                                        
-                                      // }}
+                                      value={footerData?.contact_us_section_data?.value}
+                                      onEditorChange={handleEditorChange}
                                     />
                                   </div>
                                 </div>
@@ -394,6 +504,8 @@ const FooterSection = () => {
                                     className="search-input-text"
                                     placeholder="Enter the news letter"
                                     value={footerData?.newsletter_section_data?.value}
+                                    onChange={e => {handleFooterChange(e, "newsletter_section_data")}}
+                                    required
                                   />
                                 </div>
                               )
@@ -418,7 +530,9 @@ const FooterSection = () => {
                                             type="text"
                                             className="search-input-text"
                                             placeholder="Enter the link"
-                                            defaultValue={social?.value}
+                                            value={social?.value}
+                                            onChange={(e) => {handleFooterArrayChange(e, "social_section_data", ind, "value")}}
+                                            required
                                           />
                                         </div>
                                       )
@@ -434,8 +548,7 @@ const FooterSection = () => {
                   }
                   <div className="flex flex-row max-sm:justify-center gap-3 pt-4">
                     <button
-                      type="button"
-                      // onClick={handleSubmit}
+                      type="submit"
                       className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
                     >
                       Save

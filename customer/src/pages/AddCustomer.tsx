@@ -15,6 +15,8 @@ import './countryList-2.css';
 import { CountryList } from '../components/CountryList';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Country, State, City }  from 'country-state-city';
+import axios from 'axios';
 
 const AddCustomer: React.FC = () => {
   const navigate = useNavigate();
@@ -31,14 +33,22 @@ const AddCustomer: React.FC = () => {
     email: '',
     authentication: false
   });
-  console.log(customer);
+  console.log("customer...", customer);
   
   const flagRef = useRef(null);
   const [phoneNumber,setPhoneNumber] = useState();
   const [phoneCode,setPhoneCode] = useState('+1');
-  const [countryid, setCountryid] = useState(0);
-  const [stateid, setstateid] = useState(0);
-
+  const [countryName, setCountryName] = useState("");
+  const [stateName, setStateName] = useState("");
+  const [cityName, setCityName] = useState("");
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCitites] = useState([]);
+  // console.log("countries...", countries);
+  // console.log("states...", states);
+  // console.log("cities...", cities);
+  // console.log({countryName, stateName, cityName})
+  
   useEffect(() => {
     setCustomer({
       ...customer,
@@ -52,6 +62,92 @@ const AddCustomer: React.FC = () => {
       [e.target.name]: e.target.value
     })
   };
+
+  useEffect(() => {
+    axios
+      .get("https://www.universal-tutorial.com/api/getaccesstoken", {headers: {
+        "Accept": "application/json",
+        "api-token": "AtAMX2sSL0P0xiNSJ5gEmgL9uNc9MH31bPRqvD4dlqQvl9KEfHiAjzJUYjrbDLdAS6Q",
+        "user-email": "hesham.reza@schemaphic.com"
+      }})
+      .then(res => {
+        axios
+          .get("https://www.universal-tutorial.com/api/countries/", { headers: {
+            "Authorization": `Bearer ${res.data.auth_token}`,
+            "Accept": "application/json"
+          }})
+          .then(response => {
+            setCountries(response.data);
+          })
+          .catch(error => {
+            setCountries([]);
+            console.log("error...", error);
+          })
+      })
+      .catch(err => {
+        console.log("err...", err);
+      })
+  }, []);
+  
+  useEffect(() => {
+    axios
+      .get("https://www.universal-tutorial.com/api/getaccesstoken", {headers: {
+        "Accept": "application/json",
+        "api-token": "AtAMX2sSL0P0xiNSJ5gEmgL9uNc9MH31bPRqvD4dlqQvl9KEfHiAjzJUYjrbDLdAS6Q",
+        "user-email": "hesham.reza@schemaphic.com"
+      }})
+      .then(res => {
+        if(customer?.country !== ""){
+          axios
+          .get(`https://www.universal-tutorial.com/api/states/${customer?.country}`, { headers: {
+            "Authorization": `Bearer ${res.data.auth_token}`,
+            "Accept": "application/json"
+          }})
+          .then(response => {
+            setStates(response.data);
+          })
+          .catch(error => {
+            setStates([]);
+            console.log("error...", error);
+          })
+        } else {
+          setStates([]);
+        }
+      })
+      .catch(err => {
+        console.log("err...", err);
+      })
+  }, [customer]);
+  
+  useEffect(() => {
+    axios
+      .get("https://www.universal-tutorial.com/api/getaccesstoken", {headers: {
+        "Accept": "application/json",
+        "api-token": "AtAMX2sSL0P0xiNSJ5gEmgL9uNc9MH31bPRqvD4dlqQvl9KEfHiAjzJUYjrbDLdAS6Q",
+        "user-email": "hesham.reza@schemaphic.com"
+      }})
+      .then(res => {
+        if(customer?.state_name !== ""){
+          axios
+          .get(`https://www.universal-tutorial.com/api/cities/${customer?.state_name}`, { headers: {
+            "Authorization": `Bearer ${res.data.auth_token}`,
+            "Accept": "application/json"
+          }})
+          .then(response => {
+            setCitites(response.data);
+          })
+          .catch(error => {
+            setCitites([]);
+            console.log("error...", error);
+          })
+        } else {
+          setCitites([]);
+        }
+      })
+      .catch(err => {
+        console.log("err...", err);
+      })
+  }, [customer]);
 
   const formList = [
     {label: 'First name', type: 'text', name: 'first_name', placeholder: 'Enter the first name',},
@@ -219,56 +315,107 @@ const AddCustomer: React.FC = () => {
                       </div>
                     )
                   }
-                  else if(item.name == 'state_name'){
-                    return(
-                      <div
-                        key={index}
-                        className='flex flex-col px-2 mb-2'
-                      >
-                        <label
-                          className='search-input-label'
-                        >{item.label}</label>
-                        <div
-                          className='search-input-text focus:outline-none w-full h-full p-0'
-                        >
-                          <StateSelect
-                            countryid={countryid}
-                            onChange={(e) => {
-                              setCustomer({
-                                ...customer,
-                                state_name: e.name
-                              });
-                              setstateid(e.id);
-                            }}
-                            placeHolder={item?.placeholder}
-                          />
-                        </div>
-                      </div>
-                    )
-                  }
                   else if(item.name == 'country'){
                     return(
                       <div
                         key={index}
-                        className='flex flex-col px-2 mb-2'
+                        className='flex flex-col px-2 mb-2 relative'
                       >
                         <label
                           className='search-input-label'
                         >{item.label}</label>
-                        <div
+                        <input
+                          className='search-input-text relative focus:outline-none w-full h-full p-0'
+                          type='text'
+                          placeholder={item?.placeholder}
+                          name='country'
+                          onChange={e => {
+                            setCustomer({
+                              ...customer,
+                              country: e.target.value,
+                              state_name: '',
+                              city: ''
+                            });
+                            setCountryName(e.target.value);
+                            setStateName("");
+                            setCityName("");
+                          }}
+                          value={customer?.country}
+                        />
+                        {
+                          countryName?.length>2 && (
+                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                              {
+                                countries?.filter(name => name?.country_name.toLowerCase().includes(countryName.toLowerCase())).map((country, idx) => (
+                                  <p
+                                    key={idx}
+                                    className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                    onClick={() => {
+                                      setCustomer({
+                                        ...customer,
+                                        country: country?.country_name
+                                      });
+                                      setCountryName("");
+                                      setStateName("");
+                                      setCityName("");
+                                    }}
+                                  >{country?.country_name}</p>
+                                ))
+                              }
+                            </div>
+                          )
+                        }
+                      </div>
+                    )
+                  }
+                  else if(item.name == 'state_name'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2 relative'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <input
+                          type='text'
                           className='search-input-text focus:outline-none w-full h-full p-0'
-                        >
-                          <CountrySelect
-                            onChange={(e) => {
-                              setCustomer({
-                                ...customer,
-                                country: e.name
-                              });
-                              setCountryid(e.id);
-                            }}
-                            placeHolder={item?.placeholder}
-                          />
-                        </div>
+                          placeholder={item?.placeholder}
+                          name='state_name'
+                          onChange={e => {
+                            setCustomer({
+                              ...customer,
+                              state_name: e.target.value,
+                              city: ""
+                            });
+                            setStateName(e.target.value);
+                            setCityName("");
+                          }}
+                          value={customer?.state_name}
+                        />
+                        {
+                          stateName?.length>2 && (
+                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                              {
+                                states?.filter(name => name?.state_name.toLowerCase().includes(stateName.toLowerCase())).map((state, idx) => (
+                                  <p
+                                    key={idx}
+                                    className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                    onClick={() => {
+                                      setCustomer({
+                                        ...customer,
+                                        state_name: state?.state_name,
+                                        city: ""
+                                      });
+                                      setStateName("");
+                                      setCityName("");
+                                    }}
+                                  >{state?.state_name}</p>
+                                ))
+                              }
+                            </div>
+                          )
+                        }
                       </div>
                     )
                   }
@@ -281,21 +428,41 @@ const AddCustomer: React.FC = () => {
                         <label
                           className='search-input-label'
                         >{item.label}</label>
-                        <div
+                        <input
+                          type='text'
                           className='search-input-text focus:outline-none w-full h-full p-0'
-                        >
-                          <CitySelect
-                            countryid={countryid}
-                            stateid={stateid}
-                            onChange={(e) => {
-                              setCustomer({
-                                ...customer,
-                                city: e.name
-                              })
-                            }}
-                            placeHolder={item?.placeholder}
-                          />
-                        </div>
+                          placeholder={item?.placeholder}
+                          name='city'
+                          onChange={e => {
+                            setCustomer({
+                              ...customer,
+                              city: e.target.value
+                            });
+                            setCityName(e.target.value);
+                          }}
+                          value={customer?.city}
+                        />
+                        {
+                          cityName?.length>2 && (
+                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                              {
+                                cities?.filter(name => name?.city_name.toLowerCase().includes(cityName.toLowerCase())).map((city, idx) => (
+                                  <p
+                                    key={idx}
+                                    className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                    onClick={() => {
+                                      setCustomer({
+                                        ...customer,
+                                        city: city?.city_name
+                                      });
+                                      setCityName("");
+                                    }}
+                                  >{city?.city_name}</p>
+                                ))
+                              }
+                            </div>
+                          )
+                        }
                       </div>
                     )
                   }

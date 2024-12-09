@@ -172,7 +172,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       name='plan'
                       onChange={updateCustomerGroup}
                     >
-                      <option hidden selected value='' className=''>{item.placeholder}</option>
+                      <option selected value='' className=''>{item.placeholder}</option>
                       {
                         subscriptionPlans.length> 0 && subscriptionPlans?.map((subscription, idx) => (
                           <option key={idx} value={subscription?.plan_name} className='text-black'>{subscription?.plan_name}</option>
@@ -195,7 +195,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       onChange={updateCustomerGroup}
                       name='country'
                     >
-                      <option selected hidden>Select Country</option>
+                      <option selected>Select Country</option>
                       {
                         countryList && countryList.map((country, number) => (
                           <option key={number} value={country} className='text-black'>{country}</option>
@@ -204,20 +204,6 @@ const AddCustomerGroup: React.FC = () =>  {
                     </select>
 
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
-                    {/* <div
-                      className='search-input-text focus:outline-none w-full h-full p-0'
-                    >
-                      <CountrySelect
-                        onChange={(e) => {
-                          setCustomerGroup({
-                            ...customerGroup,
-                            country: e.name
-                          });
-                          setCountryid(e.id);
-                        }}
-                        placeHolder={item?.placeholder}
-                      />
-                    </div> */}
                   </div>
                 )
               }
@@ -232,7 +218,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       onChange={updateCustomerGroup}
                       name='country'
                     >
-                      <option selected hidden>Select Country</option>
+                      <option selected>Select Country</option>
                       {
                         regionList && regionList.map((region, number) => (
                           <option key={number} value={region} className='text-black'>{region}</option>
@@ -240,17 +226,6 @@ const AddCustomerGroup: React.FC = () =>  {
                       }
                     </select>
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
-                    {/* <StateSelect
-                      countryid={countryid}
-                      onChange={(e) => {
-                        setCustomerGroup({
-                          ...customerGroup,
-                          region: e.name
-                        });
-                        setstateid(e.id);
-                      }}
-                      placeHolder={item?.placeholder}
-                    /> */}
                   </div>
                 )
               }

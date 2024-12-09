@@ -12,7 +12,8 @@ const initialPromotion = {
   html_template: "",
   code: "",
   start_date: "",
-  end_date: ""
+  end_date: "",
+  status: ""
 };
 
 const Promotion: React.FC = () => {
@@ -76,6 +77,14 @@ const Promotion: React.FC = () => {
     } catch (error) {
       // console.log(error);
       toast.error("Error on promotion adding");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     } finally {
       fetchPromotionsList();
       setIsEditModalOpen(false);
@@ -90,7 +99,8 @@ const Promotion: React.FC = () => {
         code: newPromotion?.code,
         start_date: newPromotion?.start_date,
         end_date: newPromotion?.end_date,
-        html_template: newPromotion?.html_template
+        html_template: newPromotion?.html_template,
+        status: newPromotion?.status
       })).unwrap();
       // console.log(result);
       setTimeout(() => {
@@ -98,6 +108,14 @@ const Promotion: React.FC = () => {
       }, 1000);
     } catch (error) {
       // console.log(error);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
       toast.error("Error on promotion editing");
     } finally {
       fetchPromotionsList();
@@ -127,10 +145,71 @@ const Promotion: React.FC = () => {
     } catch (error) {
       // console.log(error);
       toast.error("Error on promotion deleting");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     } finally {
       fetchPromotionsList();
       setIsDeleteModalOpen(false);
       setNewPromotion(initialPromotion);
+    }
+  };
+
+  const dateFormat = (date) => {
+    // const milliseconds = parseInt(date?._seconds) * 1000;
+    // const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
+    // const totalMilliseconds = milliseconds+extraMilliseconds;
+    const newDate = new Date(date);
+    if(newDate != "Invalid Date"){
+      return format(newDate, "dd MMM yyyy");
+    }
+  };
+
+  const dateFormat2 = (date) => {
+    // const milliseconds = parseInt(date?._seconds) * 1000;
+    // const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
+    // const totalMilliseconds = milliseconds+extraMilliseconds;
+    const newDate = new Date(date);
+    if(newDate != "Invalid Date"){
+      return format(newDate, "dd MMM yyyy");
+    } else {
+      return 'N/A';
+    }
+  };
+
+  const udpatePromotionStatus = async(e, promo) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(editPromotionThunk({
+        record_id: promo?.id,
+        code: promo?.code,
+        start_date: promo?.start_date,
+        end_date: promo?.end_date,
+        html_template: promo?.html_template,
+        status: !promo?.status
+      })).unwrap();
+      // console.log(result);
+      setTimeout(() => {
+        toast.success("Updated promotion status.");
+      }, 1000);
+    } catch (error) {
+      // console.log(error);
+      toast.error("Error on promotion status updating");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    } finally {
+      fetchPromotionsList();
     }
   };
   
@@ -162,13 +241,15 @@ const Promotion: React.FC = () => {
                       <span
                         className="font-inter-16px-bold-black"
                       >Status:</span>
-                      <span
+                      <button
                         className={`px-3 h-[24px] font-inter-16px-400 rounded-full text-white ${
                           promo.status ? "bg-custom-green" : "bg-custom-red"
                         }`}
+                        type="button"
+                        onClick={(e) => {udpatePromotionStatus(e, promo)}}
                       >
                         {promo.status ? 'Active' : 'Inactive'}
-                      </span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -194,7 +275,7 @@ const Promotion: React.FC = () => {
                               <td
                                 className="banner-table-td-2 py-2 pr-7 min-w-[100px]"
                               >
-                                {item.name !== "code" ? format(new Date(promo[item.name]), 'dd MMM yyyy') : promo[item.name]}
+                                {item.name !== "code" ? dateFormat2(promo[item.name]) : promo[item.name]}
                               </td>
                             </tr>
                           )
@@ -283,7 +364,7 @@ const Promotion: React.FC = () => {
                         </div>
                       )
                     }
-                    else if(item.name == 'endDate'){
+                    else if(item.name == 'end_date'){
                       return(
                         <div
                           className="flex flex-col justify-between"
@@ -299,7 +380,7 @@ const Promotion: React.FC = () => {
                               className="w-full search-input-text"
                               placeholder={item.placeholder}
                               onChange={handleChange}
-                              defaultValue={newPromotion[item.name]}
+                              defaultValue={dateFormat(newPromotion[item.name])}
                               onFocus={e => {
                                 item.type == 'date' ? e.target.type='date' : e.target.type='text'
                               }}
@@ -329,7 +410,7 @@ const Promotion: React.FC = () => {
                             className="w-full search-input-text"
                             placeholder={item.placeholder}
                             onChange={handleChange}
-                            defaultValue={newPromotion[item.name]}
+                            defaultValue={item?.name === "start_date" ? dateFormat(newPromotion[item.name]) : newPromotion[item?.name]}
                             onFocus={e => {
                               item.type == 'date' ? e.target.type='date' : e.target.type='text'
                             }}

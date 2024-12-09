@@ -64,7 +64,7 @@ export const endPoints = {
 
         // resources
         getResources: 'adminservices/admin/api/v1/cmsgetresourcedata',
-        updateResources: 'adminservices/admin/api/v1/cmsupdatecontactus',
+        updateResources: 'adminservices/admin/api/v1/cmsupdateresourcedata',
 
         // contact us
         getContactUs: 'adminservices/admin/api/v1/cmsgetcontactus',

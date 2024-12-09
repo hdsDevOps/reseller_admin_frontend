@@ -298,7 +298,6 @@ async function voucherListApi(
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.voucherList, {currency, voucher_code, start_date, end_date});
-    console.log(result)
     return result;
   } catch (error: any) {
     throw error;
@@ -584,10 +583,11 @@ async function editPromotionApi(
   code: string,
   start_date: Date,
   end_date: Date,
-  html_template: string
+  html_template: string,
+  status: Boolean
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.editPromotion, {record_id, code, start_date, end_date, html_template});
+    const result = await postApiCall(endPoints.editPromotion, {record_id, code, start_date, end_date, html_template, status});
     return result;
   } catch (error: any) {
     throw error;
@@ -690,7 +690,7 @@ async function updateFooterApi(
   social_section_data: string
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.getFooter, {marketing_section_data, website_section_data, contact_us_section_data, newsletter_section_data, social_section_data});
+    const result = await postApiCall(endPoints.updateFooter, {marketing_section_data, website_section_data, contact_us_section_data, newsletter_section_data, social_section_data});
     return result;
   } catch (error: any) {
     throw error;

@@ -174,7 +174,7 @@ const EditCustomerGroup: React.FC = () =>  {
                       name='plan'
                       onChange={updateCustomerGroup}
                     >
-                      <option value="" hidden selected={customerGroup?.plan == "" ? true : false}>Select plan</option>
+                      <option value="" selected={customerGroup?.plan == "" ? true : false}>Select plan</option>
                       {
                         subscriptionPlans.length> 0 && subscriptionPlans?.map((subscription, idx) => (
                           <option key={idx} value={subscription?.plan_name} selected={subscription?.plan_name == customerGroup?.plan ? true : false}>{subscription?.plan_name}</option>

@@ -405,8 +405,8 @@ export const addPromotionThunk = createAsyncThunk(
 
 export const editPromotionThunk = createAsyncThunk(
   "users/editPromotion",
-  async ({record_id, code, start_date, end_date, html_template}: any) => {
-    return await userApis.editPromotionApi(record_id, code, start_date, end_date, html_template);
+  async ({record_id, code, start_date, end_date, html_template, status}: any) => {
+    return await userApis.editPromotionApi(record_id, code, start_date, end_date, html_template, status);
   }
 );
 

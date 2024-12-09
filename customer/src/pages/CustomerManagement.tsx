@@ -444,24 +444,27 @@ const CustomerManagement: React.FC = () => {
                 onChange={e => {setDomain(e.target.value)}}
                 value={domain}
               />
-              <div
-                className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b ${
-                  domainList.length == 0 ? "hidden" : ""
-                }`}
-              >
-                {domainList.map((item, index) => {
-                  return (
-                    <a
-                      key={index}
-                      className={`font-inter-16px-400 pl-4 py-1 ${
-                        index != 0 && `border-t border-white`
-                      }`}
-                    >
-                      {item}
-                    </a>
-                  );
-                })}
-              </div>
+              {
+                domainList.length !== 0 && (
+                  <div
+                    className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b`}
+                  >
+                    {domainList.map((item, index) => {
+                      return (
+                        <a
+                          key={index}
+                          className={`font-inter-16px-400 pl-4 py-1 ${
+                            index != 0 && `border-t border-white`
+                          }`}
+                        >
+                          {item}
+                        </a>
+                      );
+                    })}
+                  </div>
+                )
+              }
+              
             </div>
             <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
               <input
@@ -487,168 +490,170 @@ const CustomerManagement: React.FC = () => {
           </div>
         </div>
         
-        <div
-          className={`fixed-full-screen ${
-            !filterShow ? "hidden" : ""
-          }`}
-        >
-          <div className="fixed-popup max-w-xl w-full" ref={filterRef}>
-            <div className="flex-row-between px-8 pt-2 pb-4 border-b-[1px] border-cWhite3">
-              <h3 className="text-xl font-medium">Filter</h3>
-              <button
-                type="button"
-                className="mt-[1px]"
-                onClick={() => {
-                  setFilterShow(false);
-                  setFilters(intialFilter);
-                }}
-              >
-                <img src="https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6" alt="close" className="w-[25px] h-[25px]" />
-              </button>
-            </div>
-
-            <div className="flex-row-end px-8 pt-4 pb-2">
-              <button
-                type="button"
-                className="btn-light-green w-[90px] h-[38px]"
-                onClick={() => {
-                  setFilters(intialFilter);
-                  setAuthorization("");
-                }}
-              >
-                Reset
-              </button>
-            </div>
-
-            <div className="flex flex-col pb-8 border-b-[1px] border-cWhite3">
-              <div className="flex flex-row px-4 py-2">
-                <div className="w-1/2 px-4">
-                  <select
-                    className="select-input"
-                    name="country"
-                    onChange={handleFilterChange}
-                    value={filters.country}
+        {
+          filterShow && (
+            <div
+              className={`fixed-full-screen`}
+            >
+              <div className="fixed-popup max-w-xl w-full" ref={filterRef}>
+                <div className="flex-row-between px-8 pt-2 pb-4 border-b-[1px] border-cWhite3">
+                  <h3 className="text-xl font-medium">Filter</h3>
+                  <button
+                    type="button"
+                    className="mt-[1px]"
+                    onClick={() => {
+                      setFilterShow(false);
+                      setFilters(intialFilter);
+                    }}
                   >
-                    <option selected hidden value="">
-                      Select Country
-                    </option>
-                    {
-                      countryList && countryList.map((country, number) => (
-                        <option key={number} value={country}>{country}</option>
-                      ))
-                    }
-                  </select>
+                    <img src="https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6" alt="close" className="w-[25px] h-[25px]" />
+                  </button>
                 </div>
-                <div className="w-1/2 px-4">
-                  <select
-                    className="select-input"
-                    name="state_name"
-                    onChange={handleFilterChange}
-                    value={filters.state_name}
-                  >
-                    <option selected hidden value="">
-                      Select Region
-                    </option>
-                    {
-                      regionList && regionList.map((region, number) => (
-                        <option key={number} value={region}>{region}</option>
-                      ))
-                    }
-                  </select>
-                </div>
-              </div>
 
-              <div className="flex flex-row px-4 py-2">
-                <div className="w-1/2 px-4">
-                  <select
-                    className="select-input"
-                    name="authentication"
-                    onChange={e => {
-                      setAuthorization(e.target.value)
+                <div className="flex-row-end px-8 pt-4 pb-2">
+                  <button
+                    type="button"
+                    className="btn-light-green w-[90px] h-[38px]"
+                    onClick={() => {
+                      setFilters(intialFilter);
+                      setAuthorization("");
                     }}
-                    value={authorization}
                   >
-                    <option selected hidden value="">
-                      Select Authorization
-                    </option>
-                    <option value="true">ON</option>
-                    <option value="false">OFF</option>
-                  </select>
+                    Reset
+                  </button>
                 </div>
-                <div className="w-1/2 px-4">
-                  <input
-                    type="number"
-                    className="serach-input"
-                    name="license_usage"
-                    onChange={handleFilterChange}
-                    value={filters.license_usage}
-                    placeholder="Enter License Usage Value"
-                  />
-                </div>
-              </div>
 
-              <div className="flex flex-row px-4 py-2">
-                <div className="w-1/2 px-4">
-                  <input
-                    type="text"
-                    className="serach-input"
-                    name="subscritption_date"
-                    onChange={handleFilterChange}
-                    value={filters.subscritption_date}
-                    placeholder="Subscription Date"
-                    onFocus={e => {
-                      e.target.type='date'
-                    }}
-                    onBlur={e => {
-                      e.target.type='text'
-                    }}
-                  />
+                <div className="flex flex-col pb-8 border-b-[1px] border-cWhite3">
+                  <div className="flex flex-row px-4 py-2">
+                    <div className="w-1/2 px-4">
+                      <select
+                        className="select-input"
+                        name="country"
+                        onChange={handleFilterChange}
+                        value={filters.country}
+                      >
+                        <option selected value="">
+                          Select Country
+                        </option>
+                        {
+                          countryList && countryList.map((country, number) => (
+                            <option key={number} value={country}>{country}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div className="w-1/2 px-4">
+                      <select
+                        className="select-input"
+                        name="state_name"
+                        onChange={handleFilterChange}
+                        value={filters.state_name}
+                      >
+                        <option selected value="">
+                          Select Region
+                        </option>
+                        {
+                          regionList && regionList.map((region, number) => (
+                            <option key={number} value={region}>{region}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row px-4 py-2">
+                    <div className="w-1/2 px-4">
+                      <select
+                        className="select-input"
+                        name="authentication"
+                        onChange={e => {
+                          setAuthorization(e.target.value)
+                        }}
+                        value={authorization}
+                      >
+                        <option selected value="">
+                          Select Authorization
+                        </option>
+                        <option value="true">ON</option>
+                        <option value="false">OFF</option>
+                      </select>
+                    </div>
+                    <div className="w-1/2 px-4">
+                      <input
+                        type="number"
+                        className="serach-input"
+                        name="license_usage"
+                        onChange={handleFilterChange}
+                        value={filters.license_usage}
+                        placeholder="Enter License Usage Value"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row px-4 py-2">
+                    <div className="w-1/2 px-4">
+                      <input
+                        type="text"
+                        className="serach-input"
+                        name="subscritption_date"
+                        onChange={handleFilterChange}
+                        value={filters.subscritption_date}
+                        placeholder="Subscription Date"
+                        onFocus={e => {
+                          e.target.type='date'
+                        }}
+                        onBlur={e => {
+                          e.target.type='text'
+                        }}
+                      />
+                    </div>
+                    <div className="w-1/2 px-4">
+                      <input
+                        type="text"
+                        className="serach-input"
+                        name="renewal_date"
+                        onChange={handleFilterChange}
+                        value={filters.renewal_date}
+                        placeholder="Renewal Date"
+                        onFocus={e => {
+                          e.target.type='date'
+                        }}
+                        onBlur={e => {
+                          e.target.type='text'
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="w-1/2 px-4">
-                  <input
-                    type="text"
-                    className="serach-input"
-                    name="renewal_date"
-                    onChange={handleFilterChange}
-                    value={filters.renewal_date}
-                    placeholder="Renewal Date"
-                    onFocus={e => {
-                      e.target.type='date'
-                    }}
-                    onBlur={e => {
-                      e.target.type='text'
-                    }}
-                  />
+
+                <div className="flex-row-end pt-8 pb-4 px-8">
+                  <div className="flex flex-row">
+                    <button
+                      type="button"
+                      className="btn-blue w-[90px] h-[38px] mr-4"
+                      onClick={() => {
+                        setFilterShow(false);
+                        setFilters(intialFilter);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-green w-[90px] h-[38px]"
+                      onClick={() => {
+                        setFilterShow(false);
+                        // getCustomerList();
+                      }}
+                    >
+                      Filter
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="flex-row-end pt-8 pb-4 px-8">
-              <div className="flex flex-row">
-                <button
-                  type="button"
-                  className="btn-blue w-[90px] h-[38px] mr-4"
-                  onClick={() => {
-                    setFilterShow(false);
-                    setFilters(intialFilter);
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn-green w-[90px] h-[38px]"
-                  onClick={() => {
-                    setFilterShow(false);
-                    // getCustomerList();
-                  }}
-                >
-                  Filter
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+          )
+        }
 
         <div className="w-full overflow-x-auto pb-[20px]">
           <table className="min-w-[1100px] max-h-screen">

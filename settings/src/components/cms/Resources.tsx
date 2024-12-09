@@ -82,15 +82,23 @@ const Resources: React.FC = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
     try {
-      // const updateResouce = await dispatch(updateResourcesThunk(newResources)).unwrap();
-      const updateResouce = '';
-      console.log("updateResouce", updateResouce);
+      const updateResouce = await dispatch(updateResourcesThunk(newResources)).unwrap();
+      setTimeout(() => {
+        toast.success("Updated Recources data.");
+      }, 1000);
     } catch (error) {
-      toast.error("Error updating the resources.")
+      toast.error("Error updating the resources.");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
     } finally {
       fetchResources();
-      // setResources(newResources);
-      // setIsEditModalOpen(false);
+      setIsEditModalOpen(false);
     }
   }
 
@@ -108,47 +116,51 @@ const Resources: React.FC = () => {
         </button>
       </div>
       {
-        Object.entries(resources).map(([key, value]) => (
-          <div className="grid grid-cols-1 overflow-x-auto border border-custom-white bg-custom-white-2 my-4" key={key}>
-            <table
-              className="sm:px-7 px-2 min-w-full"
-            >
-              <tbody
-                className=""
-              >
-                {
-                  resourceItems.map((item, index) => {
-                    return(
-                      <tr key={index}
-                        className=""
-                      >
-                        <td
-                          className="banner-table-td-1 w-[100px] py-2 sm:pl-7 pl-1"
-                        >{item.topic}</td>
-                        <td
-                          className="px-3 text-center banner-table-td-1 py-2 w-[10px]"
-                        >:</td>
-                        <td
-                          className={`banner-table-td-2 py-2 pr-7 text-black ${
-                            item.name == "content_title" ? "font-medium" : "font-normal"
-                          }`}
-                        >
-                          {
-                            item.name === "content_title" ?
-                            value.content_title :
-                            <div className=""
-                              dangerouslySetInnerHTML={{ __html: value.description }}
-                            ></div>
-                          }
-                        </td>
-                      </tr>
-                    )
-                  })
-                }
-              </tbody>
-            </table>
-          </div>
-        ))
+        Object.entries(resources).map(([key, value]) => {
+          if(key === "connect" || key === "create" || key === "Access" || key === "contact") {
+            return (
+              <div className="grid grid-cols-1 overflow-x-auto border border-custom-white bg-custom-white-2 my-4" key={key}>
+                <table
+                  className="sm:px-7 px-2 min-w-full"
+                >
+                  <tbody
+                    className=""
+                  >
+                    {
+                      resourceItems.map((item, index) => {
+                        return(
+                          <tr key={index}
+                            className=""
+                          >
+                            <td
+                              className="banner-table-td-1 w-[100px] py-2 sm:pl-7 pl-1"
+                            >{item.topic}</td>
+                            <td
+                              className="px-3 text-center banner-table-td-1 py-2 w-[10px]"
+                            >:</td>
+                            <td
+                              className={`banner-table-td-2 py-2 pr-7 text-black ${
+                                item.name == "content_title" ? "font-medium" : "font-normal"
+                              }`}
+                            >
+                              {
+                                item.name === "content_title" ?
+                                value.content_title :
+                                <div className=""
+                                  dangerouslySetInnerHTML={{ __html: value.description }}
+                                ></div>
+                              }
+                            </td>
+                          </tr>
+                        )
+                      })
+                    }
+                  </tbody>
+                </table>
+              </div>
+            )
+          }
+        })
       }
       <Dialog
         open={isEditModalOpen}
@@ -185,56 +197,60 @@ const Resources: React.FC = () => {
             onSubmit={handleSubmit}
           >
             {
-              Object.entries(newResources).map(([key, value], index) => (
-                <div
-                    className="p-4 flex flex-col"
-                    key={key}
-                  >
-                    <p
-                      className="search-input-label-2 font-inter"
-                    >Content {index+1}</p>
+              Object.entries(newResources).map(([key, value], index) => {
+                if(key === "connect" || key === "create" || key === "Access" || key === "contact") {
+                  return (
                     <div
-                      className="p-[10px] pb-5 search-input-text-2 w-full"
+                      className="p-4 flex flex-col"
+                      key={key}
                     >
+                      <p
+                        className="search-input-label-2 font-inter"
+                      >Content {index+1}</p>
                       <div
-                        className="flex flex-col w-full"
+                        className="p-[10px] pb-5 search-input-text-2 w-full"
                       >
-                        <label
-                          className="search-input-label w-full"
-                        >Content title</label>
-                        <input
-                          className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base"
-                          placeholder="Enter title here"
-                          defaultValue={value.content_title}
-                          onChange={(e) => updateResouces(key, "content_title", e.target.value)}
-                        />
-                      </div>
-                      <div
-                        className="flex flex-col w-full h-[230px]"
-                      >
-                        <label
-                          className="search-input-label w-full"
-                        >Description</label>
                         <div
-                          className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
+                          className="flex flex-col w-full"
                         >
-                          <Editor
-                            apiKey={process.env.TINY_MCE_API}
-                            init={{
-                              height: 200,
-                              menubar: false,
-                              plugins: ["lists", "link", "image", "paste"],
-                              toolbar:
-                                "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
-                            }}
-                            value={value.description}
-                            onEditorChange={(content) => {handleEditorChange (key, content)}}
+                          <label
+                            className="search-input-label w-full"
+                          >Content title</label>
+                          <input
+                            className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base"
+                            placeholder="Enter title here"
+                            defaultValue={value.content_title}
+                            onChange={(e) => updateResouces(key, "content_title", e.target.value)}
                           />
+                        </div>
+                        <div
+                          className="flex flex-col w-full h-[230px]"
+                        >
+                          <label
+                            className="search-input-label w-full"
+                          >Description</label>
+                          <div
+                            className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
+                          >
+                            <Editor
+                              apiKey={process.env.TINY_MCE_API}
+                              init={{
+                                height: 200,
+                                menubar: false,
+                                plugins: ["lists", "link", "image", "paste"],
+                                toolbar:
+                                  "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
+                              }}
+                              value={value.description}
+                              onEditorChange={(content) => {handleEditorChange (key, content)}}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-              ))
+                  )
+                }
+              })
             }
 
             <div
