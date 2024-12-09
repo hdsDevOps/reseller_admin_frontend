@@ -32,6 +32,14 @@ services:
     networks:
       - dev_network
 
+  role:
+    build: ./role
+    container_name: microfrontendadmin_container_role
+    ports:
+      - 4006:4006
+    networks:
+      - dev_network
+
   store:
     build: ./store
     container_name: microfrontendadmin_container_store
