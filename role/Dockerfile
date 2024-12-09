@@ -6,10 +6,10 @@ FROM node:18-alpine
 
 # Create the directory on the node image 
 # where our Next.js app will live
-RUN mkdir -p /roles
+RUN mkdir -p /role
 
 # Set /app as the working directory
-WORKDIR /roles
+WORKDIR /role
 
 # Copy package.json and package-lock.json
 # to the /app working directory
@@ -19,7 +19,7 @@ COPY package*.json /roles
 RUN npm install
 
 # Copy the rest of our Next.js folder into /app
-COPY . /roles
+COPY . /role
 
 # Ensure port 4006 is accessible to our system
 EXPOSE 4006
