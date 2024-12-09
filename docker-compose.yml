@@ -48,6 +48,14 @@ services:
     networks:
       - dev_network
 
+  subscription:
+    build: ./subscription
+    container_name: microfrontendadmin_container_subscription
+    ports:
+      - 4004:4004
+    networks:
+      - dev_network
+
   store:
     build: ./store
     container_name: microfrontendadmin_container_store
