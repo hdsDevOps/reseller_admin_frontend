@@ -4,14 +4,14 @@ const path = require('path');
 const Dotenv = require('dotenv-webpack');
 
 const deps = require("./package.json").dependencies;
-
+   
 const printCompilationMessage = require('./compilation.config.js');
-
+  
 module.exports = (_, argv) => ({
   output: {
     publicPath: "auto",
   },
-   
+
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
   },
@@ -19,7 +19,6 @@ module.exports = (_, argv) => ({
   devServer: {
     port: 4000,
     historyApiFallback: true,
-    allowedHosts: ["all"],
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
       const port = devServer.server.address().port
@@ -66,14 +65,14 @@ module.exports = (_, argv) => ({
       name: "main",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        auth: `auth@https://auth.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        customer: `customer@https://customer.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        paymenthistory: `paymenthistory@https://paymenthistory.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        role: `role@https://role.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        settings: `settings@https://settings.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        subscription: `subscription@https://subscription.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        vouchernotification: `vouchernotification@https://vouchernotification.admin.gworkspace.withhordanso.com/remoteEntry.js`,
+        store: "https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        auth: "https://auth.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        customer: "https://customer.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        paymenthistory: "https://paymenthistory.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        role: "https://role.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        settings: "https://settings.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        subscription: "https://subscription.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        vouchernotification: "https://voucher.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {},
       shared: {
