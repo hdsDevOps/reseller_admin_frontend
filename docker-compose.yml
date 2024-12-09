@@ -24,6 +24,14 @@ services:
     networks:
       - dev_network
 
+  paymenthistory:
+    build: ./paymenthistory
+    container_name: microfrontendadmin_container_paymenthistory
+    ports:
+      - 4005:4005
+    networks:
+      - dev_network
+
   store:
     build: ./store
     container_name: microfrontendadmin_container_store
