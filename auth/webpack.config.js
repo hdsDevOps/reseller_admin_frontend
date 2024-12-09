@@ -42,16 +42,14 @@ module.exports = (_, argv) => ({
 
 	plugins: [
 		new ModuleFederationPlugin({
-			name: "main",
+			name: "auth",
 			filename: "remoteEntry.js",
 			remotes: {
 				store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				
-				customer: "customer@https://customer.admin.gworkspace.withhordanso.com/remoteEntry.js",
 			},
 			exposes: {
-				"./Navbar": "./src/components/Navbar.tsx",
-				"./Footer": "./src/components/Footer.tsx",
+				"./AuthApp": "./src/pages/index.tsx",
+				"./AuthCss": "./src/auth.css",
 			},
 			shared: {
 				...deps,

@@ -1,22 +1,18 @@
-// src/index.tsx
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import ReduxProvider from "store/ReduxProvider";
-import UserAuth from "./hoc/UserAuth.hoc";
-import MainApp from "./pages";
-import AuthApp from "auth/AuthApp";
-import { useAppSelector } from "store/hooks";
-import "auth/AuthCss";
-import "./index.css";
+import AuthApp from "./pages";
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import "./auth.css";
 
 const App: React.FC = () => {
-  const { token } = useAppSelector((state) => state.auth);
-
   return (
-    <Suspense fallback={<h2>Loading.....</h2>}>
-      {token ? <MainApp /> : <AuthApp />}
-    </Suspense>
+    <>
+      <Suspense fallback={<h2>Loading.....</h2>}>
+       <AuthApp/>
+      </Suspense>
+    </>
   );
 };
 
@@ -27,9 +23,7 @@ ReactDOM.render(
   <React.StrictMode>
     <ReduxProvider>
       <BrowserRouter>
-        <UserAuth>
-          <App />
-        </UserAuth>
+        <App />
       </BrowserRouter>
     </ReduxProvider>
   </React.StrictMode>,
