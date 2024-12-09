@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: adminfrontend-auth-service
+  name: frontendadmin-auth-service
 spec:
   selector:
-    app: adminfrontend-auth-service
+    app: frontendadmin-auth-service
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 4001
+    targetPort: 4002

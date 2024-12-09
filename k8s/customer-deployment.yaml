@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: adminfrontend-customer-service
+  name: frontendadmin-customer-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: adminfrontend-customer-service
+      app: frontendadmin-customer-service
   template:
     metadata:
       labels:
-        app: adminfrontend-customer-service
+        app: frontendadmin-customer-service
     spec:
       containers:
-      - name: adminfrontend-customer-service
+      - name: frontendadmin-customer-service
         image: hordansodevops/reseller_admin_frontend_customer:latest
         ports:
-        - containerPort: 4002
+        - containerPort: 4001
         resources:
           limits:
             cpu: "1"
@@ -27,12 +27,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 4002
+            port: 4001
           initialDelaySeconds: 5
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /
-            port: 4002
+            port: 4001
           initialDelaySeconds: 5
           periodSeconds: 3

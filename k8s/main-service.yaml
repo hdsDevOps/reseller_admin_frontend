@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: adminfrontend-main-service
+  name: frontendadmin-main-service
 spec:
   selector:
-    app: adminfrontend-main-service
+    app: frontendadmin-main-service
   ports:
   - protocol: TCP
     port: 80

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: adminfrontend-auth-service
+  name: frontendadmin-auth-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: adminfrontend-auth-service
+      app: frontendadmin-auth-service
   template:
     metadata:
       labels:
-        app: adminfrontend-auth-service
+        app: frontendadmin-auth-service
     spec:
       containers:
-      - name: adminfrontend-auth-service
+      - name: frontendadmin-auth-service
         image: hordansodevops/reseller_admin_frontend_auth:latest
         ports:
-        - containerPort: 4001
+        - containerPort: 4002
         resources:
           limits:
             cpu: "1"
@@ -27,12 +27,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 4001
+            port: 4002
           initialDelaySeconds: 5
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /
-            port: 4001
+            port: 4002
           initialDelaySeconds: 5
           periodSeconds: 3

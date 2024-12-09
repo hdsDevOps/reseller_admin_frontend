@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: adminfrontend-main-service
+  name: frontendadmin-main-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: adminfrontend-main-service
+      app: frontendadmin-main-service
   template:
     metadata:
       labels:
-        app: adminfrontend-main-service
+        app: frontendadmin-main-service
     spec:
       containers:
-      - name: adminfrontend-main-service
+      - name: frontendadmin-main-service
         image: hordansodevops/reseller_admin_frontend_main:latest
         ports:
         - containerPort: 4000

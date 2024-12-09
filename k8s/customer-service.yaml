@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: adminfrontend-customer-service
+  name: frontendadmin-customer-service
 spec:
   selector:
-    app: adminfrontend-customer-service
+    app: frontendadmin-customer-service
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 4002
+    targetPort: 4001
