@@ -13,7 +13,7 @@ WORKDIR /role
 
 # Copy package.json and package-lock.json
 # to the /app working directory
-COPY package*.json /roles
+COPY package*.json /role
 
 # Install dependencies in /app
 RUN npm install

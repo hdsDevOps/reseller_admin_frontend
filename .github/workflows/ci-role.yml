@@ -35,8 +35,8 @@ jobs:
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
-                  context: ./roles
-                  file: ./roles/Dockerfile
+                  context: ./role
+                  file: ./role/Dockerfile
                   push: true
                   tags: >
                       ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}_role:${{ github.sha }},
