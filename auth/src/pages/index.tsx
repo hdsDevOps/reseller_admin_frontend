@@ -1,33 +1,32 @@
-import React, { Suspense } from "react";
+import React from 'react';
 import { Route, Routes } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import CustomerApp from "customer/CustomerApp";
 
-const Header = React.lazy(() => import("../components/Heaader"));
-const Home = React.lazy(() => import("./Home"));
-const Login = React.lazy(() => import("./Login"));
-const Register = React.lazy(() => import("./Register"));
-const OTP = React.lazy(() => import("./OTP"));
-const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
+const Dashboard = React.lazy(() => import("./Dashboard"));
+const About = React.lazy(() => import("./About"));
 
-const AuthApp: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Suspense fallback={<div>Loading...</div>}>
-          <Header />
-          <main className="py-10">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/otp" element={<OTP />} />
-              <Route path="/forgotpassword" element={<ForgotPassword />} />
-            </Routes>
-          </main>
-        </Suspense>
-      </div>
+const routes = [
+  
+  { path: "/", element: <Dashboard /> },
+  { path: "/dashboard", element: <Dashboard /> },
+  { path: "/about", element: <About /> },
+  { path: "/customer/*", element: <CustomerApp /> },
+];
+
+const MainApp: React.FC = () => (
+  <div className="main-wrapper">
+    <Navbar />
+    <div className="content-body">
+      <Routes>
+        {routes.map((route, index) => (
+          <Route key={index} path={route.path} element={route.element} />
+        ))}
+      </Routes>
     </div>
-  );
-};
+    <Footer />
+  </div>
+);
 
-export default AuthApp;
+export default MainApp;
