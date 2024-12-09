@@ -31,7 +31,6 @@ import { useAppDispatch } from "store/hooks";
 import { setTokenDetails } from "store/authSlice";
 import { RiCashFill } from "react-icons/ri";
 import { RiLogoutCircleLine } from "react-icons/ri";
-import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk } from 'store/user.thunk';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -85,13 +84,13 @@ const Sidebar = () => {
     {
       path: ["/customers"],
       label: "Customer Management",
-      icon: <ListChecks className="w-[18.5px] h-[15.5px]  border-[2px] border-[#000000] rounded-[5px]" />,
+      icon: <ListChecks className="w-[18.5px] h-[15.5px] my-auto border-[2px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
     },
     {
       path: ["/customer-group", "/voucher-list"],
       label: "Voucher Management",
-      icon: <TicketPercent className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
+      icon: <TicketPercent className={`${isOpen ? "navbar-w-h-2 my-auto" : "navbar-w-h"}`} />,
       subDomain: [
         { path: '/customer-group', label: 'Customer group' },
         { path: '/voucher-list', label: 'Voucher list' }
@@ -100,13 +99,13 @@ const Sidebar = () => {
     {
       path: ["/notification-template"],
       label: "Notification Template",
-      icon: <LayoutTemplate className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
+      icon: <LayoutTemplate className={`${isOpen ? "navbar-w-h-2 my-auto" : "navbar-w-h"}`} />,
       subDomain: [],
     },
     {
       path: ["/plan-and-price-setup", "/gemini-setup"],
       label: "Subscription Master",
-      icon: <i className={`bi bi-cash-stack ${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`}></i>,
+      icon: <i className={`bi bi-cash-stack ${isOpen ? "navbar-w-h-2 max-[1026px]:my-auto min-[1028px]:my-0" : "navbar-w-h"}`}></i>,
       subDomain: [
         { path: '/plan-and-price-setup', label: 'Plan & price setup' },
         { path: '/gemini-setup', label: 'Gemini setup' },
@@ -139,7 +138,7 @@ const Sidebar = () => {
     {
       path: ["/user-list", "/role"],
       label: "Role Management",
-      icon: <UserPen className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
+      icon: <UserPen className={`${isOpen ? "navbar-w-h-2 my-auto" : "navbar-w-h"}`} />,
       subDomain: [
         { path: '/user-list', label: 'User list' },
         { path: '/role', label: 'Role' },
@@ -173,25 +172,8 @@ const Sidebar = () => {
   ]
 
   const handleLogout = async () => {
-    // dispatch(setTokenDetails(""));
-    // navigate("/login");
-    try {
-      const result = await dispatch(
-        removeUserAuthTokenFromLSThunk()
-      )
-      navigate('/login');
-    } catch (error) {
-      console.log("Error on logging out")
-    } finally {
-      try {
-        const getToken = await dispatch(
-          getUserAuthTokenFromLSThunk()
-        ).unwrap()
-        navigate('/login')
-      } catch (error) {
-        console.log("Error on token")
-      }
-    }
+    dispatch(setTokenDetails(""));
+    navigate("/login");
   };  
 
   useEffect(() => {
@@ -239,7 +221,7 @@ const Sidebar = () => {
                       className="w-full"
                     >
                       <div
-                        className={`grid grid-cols-[auto,1fr] w-full py-[12px] px-[10px] ${
+                        className={`flex flex-row items-start w-full py-[12px] px-[10px] ${
                           location.pathname == item.path[0]  && `bg-[#12A83333] rounded-[8px]`
                         } hover:bg-[#12A83333] hover:rounded-[8px] ${
                           !isOpen && (
@@ -247,7 +229,7 @@ const Sidebar = () => {
                           )
                         }`}
                       >
-                        <span>{item.icon}</span>
+                        {item.icon}
                         <p
                           className={`ml-[12px] font-poppins text-[16px] font-medium ${
                             !isOpen && (
@@ -278,7 +260,7 @@ const Sidebar = () => {
               return(
                 <>
                   <div key={index}
-                    className="flex flex-col px-[7px] whitespace-nowrap"
+                    className="flex flex-row px-[7px]"
                   >
                     <button
                       type='button'
@@ -311,9 +293,9 @@ const Sidebar = () => {
                         } `}
                       >
                         <div
-                          className="grid grid-cols-[auto,1fr]"
+                          className="flex flex-row transition-all duration-300 ease-in-out"
                         >
-                          <span>{item.icon}</span>
+                          {item.icon}
                           <p
                             className={`ml-[12px] font-poppins text-[16px] font-medium text-left ${
                               !isOpen && (
@@ -334,7 +316,7 @@ const Sidebar = () => {
                     {
                       dropdowns[index] && (
                         <div
-                          className={`flex flex-col bg-white rounded-b-lg shadow-xl h-fit absolute w-[93.5%] mt-[53px]`}
+                          className={`flex flex-col bg-white rounded-b-lg shadow-xl h-fit absolute w-[92%] mt-[74px]`}
                           ref={(el) => (dropdownRef.current[index] = el)}
                         >
                           {
@@ -395,9 +377,9 @@ const Sidebar = () => {
                           }`}
                       >
                         <div
-                          className="grid grid-cols-[auto,1fr]"
+                          className="flex flex-row"
                         >
-                          <span>{item.icon}</span>
+                          {item.icon}
                           <p
                             className={`ml-[12px] font-poppins text-[16px] font-medium ${
                               !isOpen && (
@@ -417,7 +399,7 @@ const Sidebar = () => {
         }
 
         <div
-          className="sticky top-[100vh] border-t-[1px] border-custom-white6 pt-[30px] pb-[15px] mt-[35px]"
+          className="sticky top-[100vh] border-t-[1px] border-custom-white6 pt-[30px] pb-[15px] mt-[15px]"
         >
           {
             links2 && links2.map((item, index) => {
@@ -432,7 +414,7 @@ const Sidebar = () => {
                       onClick={handleLogout}
                     >
                       <div
-                        className={`flex flex-row py-[12px] px-[10px] ${
+                        className={`flex flex-row w-full py-[12px] px-[10px] ${
                           location.pathname == item.path[0] && `bg-custom-red text-white rounded-lg`
                         } hover:bg-[#E02424] hover:rounded-lg hover:text-white ${
                           !isOpen && (
@@ -440,7 +422,7 @@ const Sidebar = () => {
                           )
                         }`}
                       >
-                        <span>{item.icon}</span>
+                        {item.icon}
                         <p
                           className={`ml-3 font-poppins text-base font-medium ${
                             !isOpen && (
@@ -530,9 +512,9 @@ const Sidebar = () => {
                           }`}
                         >
                           <div
-                            className="grid grid-cols-[auto,1fr]"
+                            className="flex flex-row transition-all duration-300 ease-in-out"
                           >
-                            <span>{item.icon}</span>
+                            {item.icon}
                             <p
                               className={`ml-3 font-poppins text-base font-medium ${
                                 !isOpen && (
