@@ -22,6 +22,28 @@ export const removeUserAuthTokenFromLSThunk = createAsyncThunk(
   },
 );
 
+export const getUserIdFromLSThunk = createAsyncThunk(
+  "users/getUserIdnFromLS",
+  async () => {
+    return localStorage.getItem("LS_KEY_USER_ID");
+  },
+);
+
+export const setUserIdToLSThunk = createAsyncThunk(
+  "users/setUserIdToLS",
+  async (adminId: string) => {
+    // console.log("id....", adminId);
+    return localStorage.setItem("LS_KEY_USER_ID", adminId);
+  },
+);
+
+export const removeUserIdFromLSThunk = createAsyncThunk(
+  "users/removeUserIdFromLS",
+  async () => {
+    return localStorage.removeItem("LS_KEY_USER_ID");
+  },
+);
+
 export const makeUserLoginThunk = createAsyncThunk(
   "users/makeUserLogin",
   async ({ email, password }: any) => {
@@ -575,5 +597,110 @@ export const getEmailLogsThunk = createAsyncThunk(
   "users/getEmailLogs",
   async () => {
     return await userApis.getEmailLogsApi();
+  }
+);
+
+export const getRolesThunk = createAsyncThunk(
+  "users/getRoles",
+  async () => {
+    return await userApis.getRolesApi();
+  }
+);
+
+export const addRoleThunk = createAsyncThunk(
+  "users/addRole",
+  async ({role_name, description, permission}:any) => {
+    return await userApis.addRoleApi(role_name, description, permission);
+  }
+);
+
+export const editRoleThunk = createAsyncThunk(
+  "users/editRole",
+  async ({role_name, description, permission, id}:any) => {
+    return await userApis.editRoleApi(role_name, description, permission, id);
+  }
+);
+
+export const deleteRoleThunk = createAsyncThunk(
+  "users/deleteRole",
+  async ({id}:any) => {
+    return await userApis.deleteRoleApi(id);
+  }
+);
+
+export const getUsersThunk = createAsyncThunk(
+  "users/getUsers",
+  async ({role, searchdata}:any) => {
+    return await userApis.getUsersApi(role, searchdata);
+  }
+);
+
+export const addUsersThunk = createAsyncThunk(
+  "users/addUsers",
+  async ({first_name, last_name, email, phone, role}:any) => {
+    return await userApis.addUsersApi(first_name, last_name, email, phone, role);
+  }
+);
+
+export const updateUsersThunk = createAsyncThunk(
+  "users/updateUsers",
+  async ({first_name, last_name, email, phone, role, id}:any) => {
+    return await userApis.updateUsersApi(first_name, last_name, email, phone, role, id);
+  }
+);
+
+export const deleteUsersThunk = createAsyncThunk(
+  "users/deleteUsers",
+  async ({id}:any) => {
+    return await userApis.deleteUsersApi(id);
+  }
+);
+
+export const getAgreementThunk = createAsyncThunk(
+  "users/getAgreement",
+  async () => {
+    return await userApis.getAgreementApi();
+  }
+);
+
+export const updateAgreementThunk = createAsyncThunk(
+  "users/updateAgreement",
+  async ({content}: any) => {
+    return await userApis.updateAgreementApi(content);
+  }
+);
+
+export const getPrivacyPolicyThunk = createAsyncThunk(
+  "users/getPrivacyPolicy",
+  async () => {
+    return await userApis.getPrivacyPolicyApi();
+  }
+);
+
+export const updatePrivacyPolicyThunk = createAsyncThunk(
+  "users/updatePrivacyPolicy",
+  async ({content}: any) => {
+    return await userApis.updatePrivacyPolicyApi(content);
+  }
+);
+
+export const getTermsAndConditionsThunk = createAsyncThunk(
+  "users/getTermsAndConditions",
+  async () => {
+    return await userApis.getTermsAndConditionsApi();
+  }
+);
+
+export const updateTermsAndConditionsThunk = createAsyncThunk(
+  "users/updateTermsAndConditions",
+  async ({content}: any) => {
+    return await userApis.updateTermsAndConditionsApi(content);
+  }
+);
+
+export const getAdminDetails = createAsyncThunk(
+  "users/getAdminDetails",
+  async ({userid}: any) => {
+    return await userApis.getAdminDetailsApi(userid);
   }
 );

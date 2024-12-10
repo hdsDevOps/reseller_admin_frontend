@@ -885,6 +885,178 @@ async function getEmailLogsApi(): Promise<any> {
   }
 };
 
+async function getRolesApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getRoles);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function addRoleApi(
+  role_name: string,
+  description: string,
+  permission: any
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addRole, {role_name, description, permission});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function editRoleApi(
+  role_name: string,
+  description: string,
+  permission: any,
+  id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.editRole, {role_name, description, permission, id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deleteRoleApi(
+  id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deleteRole, {id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getUsersApi(
+  role: string,
+  searchdata: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getUsers, {role, searchdata});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function addUsersApi(
+  first_name: string,
+  last_name: string,
+  email: string,
+  phone: string,
+  role: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.addUser, {first_name, last_name, email, phone, role});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updateUsersApi(
+  first_name: string,
+  last_name: string,
+  email: string,
+  phone: string,
+  role: string,
+  id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateUser, {first_name, last_name, email, phone, role, id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deleteUsersApi(
+  id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deleteUser, {id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getAgreementApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getAgreement);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updateAgreementApi(
+  content: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateAgreement, {content});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getPrivacyPolicyApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getPrivacyPolicy);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updatePrivacyPolicyApi(
+  content: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updatePrivacyPolicy, {content});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getTermsAndConditionsApi(): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getTermsAndConditions);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updateTermsAndConditionsApi(
+  content: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateTermsAndConditions, {content});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getAdminDetailsApi(
+  userid: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getAdminDetails, {userid});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -952,4 +1124,19 @@ export const userApis = {
   deletePlanAndPriceApi,
   getBillingHistoryApi,
   getEmailLogsApi,
+  getRolesApi,
+  addRoleApi,
+  editRoleApi,
+  deleteRoleApi,
+  getUsersApi,
+  addUsersApi,
+  updateUsersApi,
+  deleteUsersApi,
+  getAgreementApi,
+  updateAgreementApi,
+  getPrivacyPolicyApi,
+  updatePrivacyPolicyApi,
+  getTermsAndConditionsApi,
+  updateTermsAndConditionsApi,
+  getAdminDetailsApi,
 };

@@ -1,32 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/styles.css';
 import { RiCameraFill } from "react-icons/ri";
 import { X } from 'lucide-react';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
-
-const initialProfile = {
-  fname: "Lemmy",
-  lname: "Ugochukwu",
-  userType: "Admin",
-  image: "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/bg-image.jpeg?alt=media&token=4b755044-4c3d-471d-b717-70cd1a24d97a",
-  email: "philipbassey@mail.com",
-  phone: "1234567890",
-  address: "Lorem ipsum dolor sit",
-  state: "Lorem ipsum dolor sit",
-  country: "Lorem ipsum dolor sit",
-  password: "",
-};
+import { useAppSelector } from 'store/hooks';
 
 function ProfileSettings() {
+  const { userDetails } = useAppSelector((state) => state.auth);
+  console.log("userDetails...", userDetails);
+
   const [modalShow, setModalShow] = useState(false);
-  const [profile, setProfile] = useState(initialProfile);
-  const [cPassword, setCPassword] = useState(initialProfile.password);
+  const [profile, setProfile] = useState(userDetails);
+  const [cPassword, setCPassword] = useState("");
   const [showPassword,setShowPassword] = useState(false);
   const [showCPassword,setShowCPassword] = useState(false);
   const formList = [
-    { label: 'First Name', placeholder: 'Enter first name', name: 'fname', type: 'text',},
-    { label: 'Last Name', placeholder: 'Enter last name', name: 'lname', type: 'text',},
+    { label: 'First Name', placeholder: 'Enter first name', name: 'first_name', type: 'text',},
+    { label: 'Last Name', placeholder: 'Enter last name', name: 'last_name', type: 'text',},
     { label: 'Email', placeholder: 'Enter email', name: 'email', type: 'email',},
     { label: 'Phone Number', placeholder: 'Enter phone number', name: 'phone', type: 'number',},
     { label: 'Address', placeholder: 'Enter address', name: 'address', type: 'text',},
@@ -34,6 +25,10 @@ function ProfileSettings() {
     { label: 'Country', placeholder: 'Enter Country', name: 'country', type: 'text',},
   ];
 
+  useEffect(() => {
+    setProfile(userDetails);
+  }, [userDetails]);
+  
   const updateProfile = e => {
     setProfile({
       ...profile,
@@ -44,7 +39,7 @@ function ProfileSettings() {
   const submitProfile = e => {
     e.preventDefault();
     setModalShow(false);
-  }
+  };
   return (
     <div className='flex flex-col px-2 max-[400px]:px-0'>
       <h3
@@ -61,7 +56,7 @@ function ProfileSettings() {
             className='flex flex-col w-[93px]'
           >
             <img
-              src={profile.image}
+              src={userDetails?.image || ""}
               alt='Profile'
               className='border-[3px] border-white w-full h-[93px] rounded-full bg-custom-green'
             />
@@ -90,8 +85,8 @@ function ProfileSettings() {
             <div
               className='flex flex-col'
             >
-              <h6 className='h6-text'>{profile.fname} {profile.lname}</h6>
-              <p className='font-inter-14px-bold-cBlack7'>{profile.userType}</p>
+              <h6 className='h6-text'>{userDetails?.first_name} {userDetails?.last_name}</h6>
+              <p className='font-inter-14px-bold-cBlack7'>{userDetails?.role || "role"}</p>
             </div>
             <div
               className='transition-all my-auto flex justify-end'
@@ -123,7 +118,7 @@ function ProfileSettings() {
                         type={item.type}
                         name={item.name}
                         placeholder={item.placeholder}
-                        value={profile[item.name]}
+                        value={userDetails[item.name] || ""}
                         className='search-input-text'
                       />
                     </div>
@@ -140,7 +135,7 @@ function ProfileSettings() {
                         type={item.type}
                         name={item.name}
                         placeholder={item.placeholder}
-                        value={profile[item.name]}
+                        value={userDetails[item.name] || ""}
                         className='search-input-text'
                       />
                     </div>
@@ -157,7 +152,7 @@ function ProfileSettings() {
                         type={item.type}
                         name={item.name}
                         placeholder={item.placeholder}
-                        value={profile[item.name]}
+                        value={userDetails[item.name] || ""}
                         className='search-input-text'
                       />
                     </div>
@@ -190,7 +185,7 @@ function ProfileSettings() {
                 className='flex flex-col w-[93px]'
               >
                 <img
-                  src={profile.image}
+                  src={profile?.image}
                   alt='Profile'
                   className='border-[3px] border-white w-full h-[93px] rounded-full bg-custom-green'
                 />
@@ -211,8 +206,8 @@ function ProfileSettings() {
                 <div
                   className='flex flex-col'
                 >
-                  <h6 className='h6-text'>{profile.fname} {profile.lname}</h6>
-                  <p className='font-inter-14px-bold-cBlack7'>{profile.userType}</p>
+                  <h6 className='h6-text'>{profile?.first_name} {profile?.last_name}</h6>
+                  <p className='font-inter-14px-bold-cBlack7'>{profile?.role}</p>
                 </div>
               </div>
 
@@ -235,7 +230,7 @@ function ProfileSettings() {
                             type={item.type}
                             name={item.name}
                             placeholder={item.placeholder}
-                            defaultValue={profile[item.name]}
+                            defaultValue={profile[item.name] || ""}
                             className='search-input-text'
                             onChange={updateProfile}
                             required
@@ -254,7 +249,7 @@ function ProfileSettings() {
                             type={item.type}
                             name={item.name}
                             placeholder={item.placeholder}
-                            defaultValue={profile[item.name]}
+                            defaultValue={profile[item.name] || ""}
                             className='search-input-text'
                             onChange={updateProfile}
                             required
@@ -273,7 +268,7 @@ function ProfileSettings() {
                             type={item.type}
                             name={item.name}
                             placeholder={item.placeholder}
-                            defaultValue={profile[item.name]}
+                            defaultValue={profile[item.name] || ""}
                             className='search-input-text'
                             onChange={updateProfile}
                             required
@@ -290,7 +285,7 @@ function ProfileSettings() {
                   <label className='search-input-label'>Password</label>
                   <input
                     type={showPassword ? "text" : "password"}
-                    defaultValue={profile.password}
+                    defaultValue={profile?.password}
                     onChange={updateProfile}
                     className="search-input-text"
                     minLength={8}

@@ -102,4 +102,28 @@ export const endPoints = {
 
     //email log
     getEmailLogs: 'adminservices/notification/api/v1/emaillog',
+
+    //role management
+        //role
+        getRoles: 'adminservices/users/api/v1/listrole',
+        addRole: 'adminservices/users/api/v1/addrole',
+        editRole: 'adminservices/users/api/v1/editrole',
+        deleteRole: 'adminservices/users/api/v1/deleterole',
+
+        //users
+        getUsers: 'adminservices/users/api/v1/listusers',
+        addUser: 'adminservices/users/api/v1/addusers',
+        updateUser: 'adminservices/users/api/v1/editusers',
+        deleteUser: 'adminservices/users/api/v1/deleteusers',
+
+    // settings
+    getAgreement: 'adminservices/admin/api/v1/customer_agreement',
+    updateAgreement: 'adminservices/admin/api/v1/updateagreement',
+    getPrivacyPolicy: 'adminservices/admin/api/v1/privacy_policy',
+    updatePrivacyPolicy: 'adminservices/admin/api/v1/updatepolicy',
+    getTermsAndConditions: '/adminservices/admin/api/v1/getterms',
+    updateTermsAndConditions: 'adminservices/admin/api/v1/updateterms',
+    
+    //profile
+    getAdminDetails: 'adminservices/admin/api/v1/getdetails',
 }

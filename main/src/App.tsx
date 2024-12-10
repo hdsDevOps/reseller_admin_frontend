@@ -8,7 +8,7 @@ import MainApp from "./pages";
 import AuthApp from "auth/AuthApp";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import "auth/AuthCss";
-import { getUserAuthTokenFromLSThunk } from "store/user.thunk";
+import { getUserAuthTokenFromLSThunk, getUserIdFromLSThunk, getAdminDetails } from "store/user.thunk";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -17,12 +17,14 @@ const App: React.FC = () => {
   // const token = "usy6767jshs688ytmbqa88654sgsgs5sgs6sgs6q";
   // const token = "";
   // console.log(token, 'token');
+  const { userId } = useAppSelector((state) => state.auth);
   
 
   useEffect(() => {
     const getUserAuthToken = async () => {
       try {
         const getTokenFromLocalStorage = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+        const getUserIdFromLocalStorage = await dispatch(getUserIdFromLSThunk()).unwrap();
       } catch (error) {
         // console.error("Error fetching token:", error);
         navigate('/login');
@@ -31,6 +33,18 @@ const App: React.FC = () => {
 
     getUserAuthToken();
   }, [token, dispatch, navigate]);
+
+  useEffect(() => {
+    const fetchUserDetails = async() => {
+      try {
+        const getUserIdFromStorage = await dispatch(getAdminDetails({userid: userId})).unwrap();
+      } catch (error) {
+        //
+      }
+    };
+
+    fetchUserDetails();
+  }, [userId]);
 
   return (
     <Suspense fallback={<h2>Loading.....</h2>}>

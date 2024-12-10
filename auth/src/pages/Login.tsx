@@ -43,7 +43,7 @@ const Login: React.FC = () => {
         localStorage.setItem('email', email);
         localStorage.setItem('password', password);
       }
-      navigate("/otp?mode=signin");
+      navigate("/otp?mode=signin", {state: {adminId: result?.userId}});
     } catch (error) {
       // console.error("Login error:", error);
       toast.error("Please enter valid email or password!");

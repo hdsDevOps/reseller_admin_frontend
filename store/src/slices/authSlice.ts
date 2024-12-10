@@ -7,14 +7,17 @@ import {
     setUserAuthTokenToLSThunk,
     removeUserAuthTokenFromLSThunk,
     resendUserOtpThunk,
-    getCustomerListThunk
+    getUserIdFromLSThunk,
+    setUserIdToLSThunk,
+    removeUserIdFromLSThunk,
+    getAdminDetails,
 } from '../thunks/user.thunk';
 import { userLocalStorage } from '../localStorage/user.storage';
 
 export interface UserDetailsState {
   userAuthStatus: 'AUTHORIZED' | 'UN_AUTHORIZED' | 'PENDING' | 'UPGRADE';
   userDetails: any;
-  userId: number | null;
+  userId: string | null;
   token: string | null;
 }
 
@@ -34,6 +37,9 @@ const authSlice = createSlice({
     },
     setUserDetails: (state, action: PayloadAction<any>) => {
       state.userDetails = action.payload;
+    },
+    setUserIdDetails: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
     },
     setUserAuthStatus: (state, action: PayloadAction<'AUTHORIZED' | 'UN_AUTHORIZED' | 'PENDING' | 'UPGRADE'>) => {
       state.userAuthStatus = action.payload;
@@ -99,9 +105,8 @@ const authSlice = createSlice({
     });
 
     builder.addCase(setUserAuthTokenToLSThunk.fulfilled,
-      (state, action: PayloadAction<any>) => {
+      (state) => {
         state.userAuthStatus = 'AUTHORIZED';
-        console.log('called');
       },
     );
 
@@ -139,9 +144,74 @@ const authSlice = createSlice({
     builder.addCase(removeUserAuthTokenFromLSThunk.rejected, state => {
       state.userAuthStatus = 'UN_AUTHORIZED';
     });
+
+    // get id
+    builder.addCase(getUserIdFromLSThunk.pending, state => {
+      state.userAuthStatus = 'PENDING';
+    });
+
+    builder.addCase(getUserIdFromLSThunk.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.userAuthStatus = 'AUTHORIZED';
+        // console.log("action id", action.payload);
+        state.userId = action.payload;
+      },
+    );
+
+    builder.addCase(getUserIdFromLSThunk.rejected, state => {
+      state.userAuthStatus = 'UN_AUTHORIZED';
+    });
+
+    // set id
+    builder.addCase(setUserIdToLSThunk.pending, state => {
+      state.userAuthStatus = 'PENDING';
+    });
+
+    builder.addCase(setUserIdToLSThunk.fulfilled,
+      (state) => {
+        state.userAuthStatus = 'AUTHORIZED';
+        // console.log("called")
+      },
+    );
+
+    builder.addCase(setUserIdToLSThunk.rejected, state => {
+      state.userAuthStatus = 'UN_AUTHORIZED';
+    });
+
+    // remove id
+    builder.addCase(removeUserIdFromLSThunk.pending, state => {
+      state.userAuthStatus = 'PENDING';
+    });
+
+    builder.addCase(removeUserIdFromLSThunk.fulfilled,
+      (state) => {
+        state.userAuthStatus = 'AUTHORIZED';
+        state.userId = null;
+      },
+    );
+
+    builder.addCase(removeUserIdFromLSThunk.rejected, state => {
+      state.userAuthStatus = 'UN_AUTHORIZED';
+    });
+
+    //set user details
+    builder.addCase(getAdminDetails.pending, state => {
+      state.userAuthStatus = 'PENDING';
+    });
+
+    builder.addCase(getAdminDetails.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.userAuthStatus = 'AUTHORIZED';
+        state.userDetails = action.payload.data
+      },
+    );
+
+    builder.addCase(getAdminDetails.rejected, state => {
+      state.userAuthStatus = 'UN_AUTHORIZED';
+    });
   },
 });
 
-export const { setTokenDetails, setUserDetails, setUserAuthStatus, resetUserSlice } = authSlice.actions;
+export const { setTokenDetails, setUserDetails, setUserIdDetails, setUserAuthStatus, resetUserSlice } = authSlice.actions;
 
 export default authSlice.reducer;

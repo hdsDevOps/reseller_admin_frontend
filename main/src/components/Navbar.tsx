@@ -27,24 +27,22 @@ import {
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { CiCreditCard1 } from "react-icons/ci";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { setTokenDetails } from "store/authSlice";
 import { RiCashFill } from "react-icons/ri";
 import { RiLogoutCircleLine } from "react-icons/ri";
-import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, setUserIdToLSThunk } from 'store/user.thunk';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
-  const [image, setImage] = useState<string | ArrayBuffer | null>(
-    localStorage.getItem("profileImage") || null
-  );
   const [username] = useState("Robert Clive"); // Replace with actual username
   const [email] = useState("roberclive@domain.co.in"); // Replace with actual email
+  const userId = useAppSelector(state => state.auth.userId);
+  // console.log("userId....", userId);
   const [width, setWidth] = useState(window.innerWidth);
-  const dropdown="dropdown"
   const [ dropdowns, setDropdowns ] = useState({});
 
   const dropdownRef = useRef([]);

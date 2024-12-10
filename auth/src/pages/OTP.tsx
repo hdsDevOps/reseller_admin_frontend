@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSThunk, resendUserOtpThunk, forgetPasswordVerifyOtpThunk, forgetPasswordResendOtpThunk } from "store/user.thunk";
+import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSThunk, resendUserOtpThunk, forgetPasswordVerifyOtpThunk, forgetPasswordResendOtpThunk, setUserIdToLSThunk, getUserIdFromLSThunk } from "store/user.thunk";
 import { setTokenDetails } from "store/authSlice";
 import { MoveLeft } from 'lucide-react';
 import '../styles/styles.css';
@@ -21,7 +21,8 @@ const OTP: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const mode = queryParams.get("mode");
   const email = `${location.state != null ? location.state.email : ""}`;
-  const adminId = useAppSelector((state: any) => state.auth.userId);
+  const adminId = location.state.adminId;
+  // console.log("Admin Id...", adminId);
 
   const otp1Ref = useRef<HTMLInputElement>(null);
   const otp2Ref = useRef<HTMLInputElement>(null);
@@ -170,17 +171,17 @@ const OTP: React.FC = () => {
             ).unwrap()
             if(result.message == 'Login successful'){
               try {
-                const setToken = await dispatch(
-                  setUserAuthTokenToLSThunk(result?.token)
-                ).unwrap()
+                const setToken = await dispatch(setUserAuthTokenToLSThunk(result?.token)).unwrap();
+                //aXINQcCzh9z0WnNVXvt2
+                const setUserId = await dispatch(setUserIdToLSThunk(adminId)).unwrap();
+                // console.log({setToken, setUserId})
                 navigate('/dashboard', {state: {from: 'otp'}})
               } catch (error) {
                 console.log("Error on token")
               } finally {
                 try {
-                  const getToken = await dispatch(
-                    getUserAuthTokenFromLSThunk()
-                  ).unwrap()
+                  const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+                  const getUserId = await dispatch(getUserIdFromLSThunk()).unwrap();
                   navigate('/dashboard', {state: {from: 'otp'}})
                 } catch (error) {
                   console.log("Error on token")

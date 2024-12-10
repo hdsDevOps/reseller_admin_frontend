@@ -44,7 +44,7 @@ export async function postApiCall<T>(
     const fetchedData = await axiosInstance.post(endPoint, body);
     // console.log("fetchedData...", fetchedData);
     // console.log("endpoint", endPoint)
-    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success 111" || fetchedData.data?.status === "success" || fetchedData.data?.success === true) {
+    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success 111" || fetchedData.data?.status === "success" || fetchedData.data?.success === true || fetchedData?.status === 200) {
       return fetchedData?.data;
     } else if (
       fetchedData.data?.status === 401 ||

@@ -28,8 +28,19 @@ const CustomerManagement: React.FC = () => {
     subscritption_date: "",
     renewal_date: ""
   };
+  const intialFilter2= {
+    country: "",
+    state_name: "",
+    authentication: "",
+    license_usage: "",
+    subscritption_date: "",
+    renewal_date: ""
+  };
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(intialFilter);
+  console.log("filters...", filters);
+  
+  const [filters2, setFilters2] = useState(intialFilter2);
   
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
@@ -164,11 +175,23 @@ const CustomerManagement: React.FC = () => {
   }, []);
 
   const handleFilterChange = (e) => {
-    setFilters({
-      ...filters,
+    setFilters2({
+      ...filters2,
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleSetFilter = () => {
+    setFilters({
+      ...filters,
+      country: filters2.country,
+      state_name: filters2.state_name,
+      authentication: filters2.authentication,
+      license_usage: filters2.license_usage,
+      subscritption_date: filters2.subscritption_date,
+      renewal_date: filters2.renewal_date
+    })
+  }
 
   const handleAuthorizeChange = async(item) => {
     const customerItem = item;
@@ -470,8 +493,14 @@ const CustomerManagement: React.FC = () => {
               <input
                 className="serach-input"
                 name="search_data"
-                onChange={handleFilterChange}
+                onChange={e => {
+                  setFilters({
+                    ...filters,
+                    search_data: e.target.value,
+                  });
+                }}
                 placeholder="Name, Email"
+                value={filters.search_data}
               />
             </div>
           </div>
@@ -503,7 +532,7 @@ const CustomerManagement: React.FC = () => {
                     className="mt-[1px]"
                     onClick={() => {
                       setFilterShow(false);
-                      setFilters(intialFilter);
+                      setFilters2(intialFilter2)
                     }}
                   >
                     <img src="https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6" alt="close" className="w-[25px] h-[25px]" />
@@ -516,7 +545,7 @@ const CustomerManagement: React.FC = () => {
                     className="btn-light-green w-[90px] h-[38px]"
                     onClick={() => {
                       setFilters(intialFilter);
-                      setAuthorization("");
+                      setFilters2(intialFilter2)
                     }}
                   >
                     Reset
@@ -530,7 +559,7 @@ const CustomerManagement: React.FC = () => {
                         className="select-input"
                         name="country"
                         onChange={handleFilterChange}
-                        value={filters.country}
+                        value={filters2.country}
                       >
                         <option selected value="">
                           Select Country
@@ -547,7 +576,7 @@ const CustomerManagement: React.FC = () => {
                         className="select-input"
                         name="state_name"
                         onChange={handleFilterChange}
-                        value={filters.state_name}
+                        value={filters2.state_name}
                       >
                         <option selected value="">
                           Select Region
@@ -566,9 +595,7 @@ const CustomerManagement: React.FC = () => {
                       <select
                         className="select-input"
                         name="authentication"
-                        onChange={e => {
-                          setAuthorization(e.target.value)
-                        }}
+                        onChange={handleFilterChange}
                         value={authorization}
                       >
                         <option selected value="">
@@ -584,7 +611,7 @@ const CustomerManagement: React.FC = () => {
                         className="serach-input"
                         name="license_usage"
                         onChange={handleFilterChange}
-                        value={filters.license_usage}
+                        value={filters2.license_usage}
                         placeholder="Enter License Usage Value"
                       />
                     </div>
@@ -597,7 +624,7 @@ const CustomerManagement: React.FC = () => {
                         className="serach-input"
                         name="subscritption_date"
                         onChange={handleFilterChange}
-                        value={filters.subscritption_date}
+                        value={filters2.subscritption_date}
                         placeholder="Subscription Date"
                         onFocus={e => {
                           e.target.type='date'
@@ -613,7 +640,7 @@ const CustomerManagement: React.FC = () => {
                         className="serach-input"
                         name="renewal_date"
                         onChange={handleFilterChange}
-                        value={filters.renewal_date}
+                        value={filters2.renewal_date}
                         placeholder="Renewal Date"
                         onFocus={e => {
                           e.target.type='date'
@@ -633,7 +660,7 @@ const CustomerManagement: React.FC = () => {
                       className="btn-blue w-[90px] h-[38px] mr-4"
                       onClick={() => {
                         setFilterShow(false);
-                        setFilters(intialFilter);
+                        setFilters2(intialFilter2)
                       }}
                     >
                       Cancel
@@ -644,6 +671,7 @@ const CustomerManagement: React.FC = () => {
                       onClick={() => {
                         setFilterShow(false);
                         // getCustomerList();
+                        handleSetFilter();
                       }}
                     >
                       Filter

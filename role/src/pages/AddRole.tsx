@@ -1,69 +1,405 @@
 import { ChevronRight, MoveLeft } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { IoChevronForward } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import '../styles/styles.css';
+import { addRoleThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+const initialRole = {
+  role_name: "",
+  description: "",
+  permission: {
+    dashboard: false,
+    customer_management: {
+      overall: false,
+      add: false,
+      edit: false,
+      delete: false,
+      login: false,
+      authorization: false,
+      send_mail: false,
+      details: false,
+      reset_password: false,
+    },
+    voucher_management: {
+      overall: false,
+      customer_group: {
+        overall: false,
+        add: false,
+        view: false,
+        delete: false,
+      },
+      voucher_list: {
+        overall: false,
+        send_mail: false,
+        add: false,
+        delete: false,
+      },
+    },
+    notification_template: {
+      overall: false,
+      add: false,
+      preview: false,
+      update: false,
+      cancel: false,
+      send_mail: false,
+    },
+    subscription_master: {
+      overall: false,
+      add: false,
+      edit: false,
+      delete: false,
+    },
+    payment_method: {
+      overall: false,
+      action: false,
+    },
+    billing_history: {
+      overall: false,
+      download: false,
+    },
+    faqs: {
+      overall: false,
+      add: false,
+    },
+    email_log: {
+      overall: false,
+      view_details: false,
+    },
+    role_management: {
+      overall: false,
+      add: false,
+      edit: false,
+      delete: false,
+    },
+    cms: {
+      overall: false,
+      view_details: false,
+    },
+    settings: {
+      overall: false,
+      dashboard_widget: false,
+      about: false,
+      privacy_policy: false,
+      terms_and_conditions: false,
+      customer_agreement: false,
+    },
+  }
+}
 
 const AddRole = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const permissionGroups = [
     {
       label: "Customer management",
-      subPermissions: ["Add", "Edit","Delete", "Login", "Authorization", "Send mail", "Details", "Reset password",],
+      name: "customer_management",
+      subPermissions: [
+        {name: "add", label: "Add"},
+        {name: "edit", label: "Edit"},
+        {name: "delete", label: "Delete"},
+        {name: "login", label: "Login"},
+        {name: "authorization", label: "Authorization"},
+        {name: "send_mail", label: "Send mail"},
+        {name: "details", label: "Details"},
+        {name: "reset_password", label: "Reset password"}
+      ],
     }
   ];
   const permissionGroups2 = [
     {
       label: "Customer group",
-      subPermissions: ["Add", "View","Delete"],
+      name: "customer_group",
+      subPermissions: [
+        {name: 'add', label: 'Add'},
+        {name: 'view', label: 'View'},
+        {name: 'delete', label: 'Delete'},
+      ],
     },
     {
       label: "Voucher list",
-      subPermissions: ["Send mail","Add","Delete"],
+      name: "voucher_list",
+      subPermissions: [
+        {name: 'send_mail', label: 'Send mail'},
+        {name: 'add', label: 'Add'},
+        {name: 'delete', label: 'Delete'},
+      ],
     }
   ];
   const permissionGroups3 = [
     {
       label: "Notification Template",
-      subPermissions: ["Add", "Preview", "Update", "Cancel", "Send mail"],
+      name: "notification_template",
+      subPermissions: [
+        {name: 'add', label: 'Add'},
+        {name: 'preview', label: 'Preview'},
+        {name: 'update', label: 'Update'},
+        {name: 'cancel', label: 'Cancel'},
+        {name: 'send_mail', label: 'Send mail'},
+      ],
     },
     {
       label: "Subscription Master",
-      subPermissions: ["Add", "Edit", "Delete"],
+      name: "subscription_master",
+      subPermissions: [
+        {name: 'add', label: 'Add'},
+        {name: 'edit', label: 'Edit'},
+        {name: 'delete', label: 'Delete'},
+      ],
     },
     {
       label: "Payment Method",
-      subPermissions: ["Action"],
+      name: "payment_method",
+      subPermissions: [
+        {name: 'action', label: 'Action'},
+      ],
     },
     {
       label: "Billing History",
-      subPermissions: ["Download"],
+      name: "billing_history",
+      subPermissions: [
+        {name: 'download', label: 'Download'},
+      ],
     },
     {
       label: "FAQ's",
-      subPermissions: ["Add"],
+      name: "faqs",
+      subPermissions: [
+        {name: 'add', label: 'Add'},
+      ],
     },
     {
       label: "Email log",
-      subPermissions: ["View details"],
+      name: "email_log",
+      subPermissions: [
+        {name: 'view_details', label: 'View details'},
+      ],
     },
     {
       label: "Role management",
-      subPermissions: ["Add", "Edit", "Delete"],
+      name: "role_management",
+      subPermissions: [
+        {name: 'add', label: 'Add'},
+        {name: 'edit', label: 'Edit'},
+        {name: 'delete', label: 'Delete'},
+      ],
     },
     {
       label: "CMS",
-      subPermissions: ["View details"],
+      name: "cms",
+      subPermissions: [
+        {name: 'view_details', label: 'View details'},
+      ],
     },
     {
       label: "Settings",
-      subPermissions: ["Dashboard widget", "About", "Privacy policy", "Terms & conditions", "Customer agreement"],
+      name: "settings",
+      subPermissions: [
+        {name: 'dashboard_widget', label: 'Dashboard widget'},
+        {name: 'about', label: 'About'},
+        {name: 'privacy_policy', label: 'Privacy policy'},
+        {name: 'terms_and_conditions', label: 'Terms & conditions'},
+        {name: 'customer_agreement', label: 'Customer agreement'},
+      ],
     },
   ];
+
+  const [role, setRole] = useState(initialRole);
+  // console.log("role...", role);
+
+  useEffect(() => {
+    if(role.permission.customer_management.overall == false){
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          customer_management: initialRole.permission.customer_management,
+        }
+      })
+    }
+  }, [role.permission.customer_management]);
+
+  useEffect(() => {
+    if(role.permission.voucher_management.overall == false){
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          voucher_management: initialRole.permission.voucher_management
+        }
+      })
+    }
+  }, [role.permission.voucher_management]);
+
+  useEffect(() => {
+    if(role.permission.voucher_management.customer_group.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          voucher_management: {
+            ...role.permission.voucher_management,
+            customer_group: initialRole.permission.voucher_management.customer_group
+          }
+        }
+      })
+    }
+  }, [role.permission.voucher_management.customer_group]);
+
+  useEffect(() => {
+    if(role.permission.voucher_management.voucher_list.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          voucher_management: {
+            ...role.permission.voucher_management,
+            voucher_list: initialRole.permission.voucher_management.voucher_list
+          }
+        }
+      })
+    }
+  }, [role.permission.voucher_management.voucher_list]);
+
+  useEffect(() => {
+    if(role.permission.notification_template.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          notification_template: initialRole.permission.notification_template
+        }
+      })
+    }
+  }, [role.permission.notification_template]);
+
+  useEffect(() => {
+    if(role.permission.subscription_master.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          subscription_master: initialRole.permission.subscription_master
+        }
+      })
+    }
+  }, [role.permission.subscription_master]);
+
+  useEffect(() => {
+    if(role.permission.payment_method.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          payment_method: initialRole.permission.payment_method
+        }
+      })
+    }
+  }, [role.permission.payment_method]);
+
+  useEffect(() => {
+    if(role.permission.billing_history.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          billing_history: initialRole.permission.billing_history
+        }
+      })
+    }
+  }, [role.permission.billing_history]);
+
+  useEffect(() => {
+    if(role.permission.faqs.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          faqs: initialRole.permission.faqs
+        }
+      })
+    }
+  }, [role.permission.faqs]);
+
+  useEffect(() => {
+    if(role.permission.email_log.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          email_log: initialRole.permission.email_log
+        }
+      })
+    }
+  }, [role.permission.email_log]);
+
+  useEffect(() => {
+    if(role.permission.role_management.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          role_management: initialRole.permission.role_management
+        }
+      })
+    }
+  }, [role.permission.role_management]);
+
+  useEffect(() => {
+    if(role.permission.cms.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          cms: initialRole.permission.cms
+        }
+      })
+    }
+  }, [role.permission.cms]);
+
+  useEffect(() => {
+    if(role.permission.settings.overall == false) {
+      setRole({
+        ...role,
+        permission: {
+          ...role.permission,
+          settings: initialRole.permission.settings
+        }
+      })
+    }
+  }, [role.permission.settings]);
+
+  const submitRole = async(e) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(addRoleThunk(role)).unwrap();
+      // console.log("result...", result);
+      toast.success(result?.message);
+      setTimeout(() => {
+        navigate('/role');
+      }, 1000);
+    } catch (error) {
+      toast.error("Error adding role");
+      // console.log("error...",error);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  }
   
   return (
     <div className="grid- grid-cols-1 p-4 md:p-8">
+      <ToastContainer />
       <div
         className='flex flex-row'
       >
@@ -100,7 +436,7 @@ const AddRole = () => {
           className='page-indicator-2'
         >Add Role</p>
       </div>
-      <form className="grid grid-cols-1 mt-[25px]">
+      <form className="grid grid-cols-1 mt-[25px]" onSubmit={submitRole}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-20">
           <div className="flex flex-col">
             <label className="search-input-label">
@@ -110,6 +446,15 @@ const AddRole = () => {
               type="text"
               className="search-input-text"
               placeholder="Enter role name"
+              required
+              name="role_name"
+              onChange={e => {
+                setRole({
+                  ...role,
+                  [e.target.name]: e.target.value,
+                })
+              }}
+              value={role?.role_name}
             />
           </div>
           <div className="flex flex-col">
@@ -120,6 +465,15 @@ const AddRole = () => {
               type="text"
               className="search-input-text"
               placeholder="Enter description"
+              required
+              name="description"
+              onChange={e => {
+                setRole({
+                  ...role,
+                  [e.target.name]: e.target.value,
+                })
+              }}
+              value={role?.description}
             />
           </div>
         </div>
@@ -134,7 +488,15 @@ const AddRole = () => {
               <div
                 className="flex flex-row gap-1 border-b border-cWhite pb-3"
               >
-                <input type="checkbox" />
+                <input type="checkbox" name="dashboard" checked={role.permission.dashboard} onClick={() => {
+                  setRole({
+                    ...role,
+                    permission: {
+                      ...role.permission,
+                      dashboard: !role.permission.dashboard
+                    }
+                  })
+                }} />
                 <label>Dashboard</label>
               </div>
             </div>
@@ -148,7 +510,21 @@ const AddRole = () => {
                     <div
                       className="flex flex-row gap-1"
                     >
-                      <input type="checkbox" />
+                      <input type="checkbox" name={item?.name} checked={role.permission[item.name].overall} onClick={() => {
+                        const value = !role.permission[item.name].overall
+                        setRole({
+                          ...role,
+                          permission: {
+                            ...role.permission,
+                            [item.name]: {
+                              ...role.permission[item.name],
+                              overall: !role.permission[item.name].overall
+                            }
+                          }
+                        })
+                        console.log(value)
+                        
+                      }} />
                       <label>{item.label}</label>
                     </div>
                     <div
@@ -161,8 +537,19 @@ const AddRole = () => {
                               className="flex flex-row gap-1 "
                               key={i}
                             >
-                              <input type="checkbox" />
-                              <label>{e}</label>
+                              <input type="checkbox" disabled={role.permission[item.name].overall ? false : true} name={e.name} checked={role.permission[item.name][e.name]} onClick={() => {
+                                setRole({
+                                  ...role,
+                                  permission: {
+                                    ...role.permission,
+                                    [item.name]: {
+                                      ...role.permission[item.name],
+                                      [e.name]: !role.permission[item.name][e.name],
+                                    }
+                                  }
+                                })
+                              }} />
+                              <label>{e.label}</label>
                             </div>
                           )
                         })
@@ -178,7 +565,18 @@ const AddRole = () => {
               <div
                 className="flex flex-row gap-1"
               >
-                <input type="checkbox" />
+                <input type="checkbox" name="voucher_management" checked={role.permission.voucher_management.overall} onClick={() => {
+                  setRole({
+                    ...role,
+                    permission: {
+                      ...role.permission,
+                      voucher_management: {
+                        ...role.permission.voucher_management,
+                        overall: !role.permission.voucher_management.overall
+                      }
+                    }
+                  });
+                }} />
                 <label>Vouchers management</label>
               </div>
 
@@ -195,7 +593,21 @@ const AddRole = () => {
                         <div
                           className="flex flex-row gap-1"
                         >
-                          <input type="checkbox" />
+                          <input type="checkbox" checked={role.permission.voucher_management[item.name].overall} disabled={role.permission.voucher_management.overall ? false : true} onClick={() => {
+                            setRole({
+                              ...role,
+                              permission: {
+                                ...role.permission,
+                                voucher_management: {
+                                  ...role.permission.voucher_management,
+                                  [item.name]: {
+                                    ...role.permission.voucher_management[item.name],
+                                    overall: !role.permission.voucher_management[item.name].overall
+                                  }
+                                }
+                              }
+                            })
+                          }} />
                           <label>{item.label}</label>
                         </div>
                         <div
@@ -208,8 +620,22 @@ const AddRole = () => {
                                   className="flex flex-row gap-1 "
                                   key={i}
                                 >
-                                  <input type="checkbox" />
-                                  <label>{e}</label>
+                                  <input type="checkbox" name={e.name} disabled={role.permission.voucher_management[item.name].overall ? false : true} checked={role.permission.voucher_management[item.name][e.name]} onClick={() => {
+                                    setRole({
+                                      ...role,
+                                      permission: {
+                                        ...role.permission,
+                                        voucher_management: {
+                                          ...role.permission.voucher_management,
+                                          [item.name]: {
+                                            ...role.permission.voucher_management[item.name],
+                                            [e.name]: !role.permission.voucher_management[item.name][e.name],
+                                          }
+                                        }
+                                      }
+                                    })
+                                  }} />
+                                  <label>{e.label}</label>
                                 </div>
                               )
                             })
@@ -231,7 +657,18 @@ const AddRole = () => {
                     <div
                       className="flex flex-row gap-1"
                     >
-                      <input type="checkbox" />
+                      <input type="checkbox" name={item.name} checked={role.permission[item.name].overall} onClick={() => {
+                        setRole({
+                          ...role,
+                          permission: {
+                            ...role.permission,
+                            [item.name]: {
+                              ...role.permission[item.name],
+                              overall: !role.permission[item.name].overall
+                            }
+                          }
+                        })
+                      }} />
                       <label>{item.label}</label>
                     </div>
 
@@ -245,8 +682,19 @@ const AddRole = () => {
                               className="flex flex-row gap-1 "
                               key={i}
                             >
-                              <input type="checkbox" />
-                              <label>{e}</label>
+                              <input type="checkbox" checked={role.permission[item.name][e.name]} disabled={role.permission[item.name].overall ? false : true} onClick={() => {
+                                setRole({
+                                  ...role,
+                                  permission: {
+                                    ...role.permission,
+                                    [item.name]: {
+                                      ...role.permission[item.name],
+                                      [e.name]: !role.permission[item.name][e.name]
+                                    }
+                                  }
+                                })
+                              }} />
+                              <label>{e.label}</label>
                             </div>
                           )
                         })
@@ -268,6 +716,7 @@ const AddRole = () => {
             <button
               type="button"
               className="btn-red w-[130px]"
+              onClick={() => {setRole(initialRole)}}
             >
               Cancel
             </button>
