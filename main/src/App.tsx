@@ -8,7 +8,7 @@ import MainApp from "./pages";
 import AuthApp from "auth/AuthApp";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import "auth/AuthCss";
-import { getUserAuthTokenFromLSThunk, getUserIdFromLSThunk, getAdminDetails } from "store/user.thunk";
+import { getUserAuthTokenFromLSThunk, getUserIdFromLSThunk, getAdminDetailsThunk, getDefaultCurrencyThunk } from "store/user.thunk";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +18,8 @@ const App: React.FC = () => {
   // const token = "";
   // console.log(token, 'token');
   const { userId } = useAppSelector((state) => state.auth);
+  const { defaultCurrency } = useAppSelector((state) => state.auth);
+  
   
 
   useEffect(() => {
@@ -37,13 +39,25 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchUserDetails = async() => {
       try {
-        const getUserIdFromStorage = await dispatch(getAdminDetails({userid: userId})).unwrap();
+        const getUserIdFromStorage = await dispatch(getAdminDetailsThunk({userid: userId})).unwrap();
       } catch (error) {
         //
       }
     };
 
     fetchUserDetails();
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchUserDefaultCurrency = async() => {
+      try {
+        await dispatch(getDefaultCurrencyThunk({userid: userId})).unwrap();
+      } catch (error) {
+        //
+      }
+    };
+
+    fetchUserDefaultCurrency();
   }, [userId]);
 
   return (

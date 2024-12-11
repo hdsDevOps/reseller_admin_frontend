@@ -1057,6 +1057,29 @@ async function getAdminDetailsApi(
   }
 };
 
+async function getDefaultCurrencyApi(
+  userid: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getDefaultCurrency, {userid});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updateDefaultCurrencyApi(
+  userid: string,
+  defaultCurrency: string,
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateDefaultCurrency, {userid, defaultCurrency});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -1139,4 +1162,6 @@ export const userApis = {
   getTermsAndConditionsApi,
   updateTermsAndConditionsApi,
   getAdminDetailsApi,
+  getDefaultCurrencyApi,
+  updateDefaultCurrencyApi,
 };

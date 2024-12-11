@@ -5,7 +5,7 @@ import Flag from 'react-world-flags'; // Flag component
 import { addVoucherThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAppDispatch } from 'store/hooks';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 interface Props {
   htmlContent: string;
@@ -25,7 +25,9 @@ const AddVoucher: React.FC = () =>  {
     template_details: "",
     currency: ""
   });
-  console.log(voucher);
+  // console.log("voucher...", voucher);
+  const { defaultCurrency } = useAppSelector((state) => state.auth);
+  // console.log("defaultCurrency....", defaultCurrency);
 
   const [endDateEnable, setEndDateEnable] = useState(true);
   useEffect(() => {
@@ -91,6 +93,11 @@ const AddVoucher: React.FC = () =>  {
     label: string;
     value: string;
   } | { code: "US", label: "United States", value: '$', currency_code: "USD" }>({ code: "US", label: "United States", value: '$', currency_code: "USD" });
+
+  useEffect(() => {
+    const result = currencyOptions.filter((item) => item.currency_code === defaultCurrency);
+    setSelectedOption(result[0]);
+  }, [defaultCurrency]);
 
   useEffect(() => {
     setVoucher({
@@ -331,6 +338,7 @@ const AddVoucher: React.FC = () =>  {
             <button
               type='button'
               className='btn-green-2 h-[46px] w-fit'
+              button-name="voucher-template-preview"
               onClick={() => {setIsModalOpen(true);}}
             >Preview</button>
           </div>
@@ -341,6 +349,7 @@ const AddVoucher: React.FC = () =>  {
           <button
             className='btn-green-2 h-[46px]'
             type='submit'
+            button-name="add-new-voucher"
           >Save</button>
           <button
             type='button'
@@ -367,6 +376,7 @@ const AddVoucher: React.FC = () =>  {
                       onClick={() => {
                         setIsModalOpen(false);
                       }}
+                      button-name="voucher-preview-close"
                     >+</button>
                   </div>
                 </div>

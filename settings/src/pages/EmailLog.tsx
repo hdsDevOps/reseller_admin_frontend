@@ -75,6 +75,7 @@ const EmailLog: React.FC = () => {
                 <td className="text-center">
                   <button 
                     className="view-details"
+                    cypress-name={`view-details-${index+1}`}
                     onClick={() => {
                       setIsModalOpen(true);
                       setModalData(log?.content);
@@ -117,6 +118,7 @@ const EmailLog: React.FC = () => {
                       setIsModalOpen(false);
                       setModalData("");
                     }}
+                    cypress-name="modal-close-btn"
                   >+</button>
                 </div>
               </div>

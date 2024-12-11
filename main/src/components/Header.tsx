@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { setUserDefaultCurrency } from 'store/authSlice';
 import { Bell, ShoppingCart } from "lucide-react";
 import { RiNotification4Fill } from "react-icons/ri";
 import { RiArrowDownSLine } from "react-icons/ri";
@@ -14,6 +16,8 @@ import {format} from 'date-fns';
 import { RiCloseCircleFill } from "react-icons/ri";
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Header() {
   const[showNotification,setShowNotfication] = useState(false);
@@ -30,21 +34,59 @@ export default function Header() {
     { image: '', header: 'Frankie sulliva commented on your post', text: 'This is a notification template. Here is it ', date: '20 Sep 2024 14:20:00'},
   ]);
   const [showCurrency, setShowCurrency] = useState(false);
+  const { userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);
+
+  // console.log("userDetails...", userDetails);
+  
+
   const flagList = [
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
-    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/australia-flag.png?alt=media&token=5a2db638-131e-49c7-be83-d0c84db8d440', name: 'AUS', logo: 'A$',},
-    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/us-flag.png?alt=media&token=c8bc35ae-de58-4a91-bf00-05a3fc9dd85a', name: 'US', logo: '$',},
-    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/nigeria-flag.png?alt=media&token=80438147-6c10-4b4b-8cf9-181c7c8ad4d2', name: 'NIG', logo: 'N₦',},
-    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/england-flag.png?alt=media&token=64f093ef-b2a9-4b35-b510-a5943039ae5c', name: 'ENG', logo: '£',},
-    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAN', logo: 'C$',},
-    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'IND', logo: '₹',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/australia-flag.png?alt=media&token=5a2db638-131e-49c7-be83-d0c84db8d440', name: 'AUD', logo: 'A$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/us-flag.png?alt=media&token=c8bc35ae-de58-4a91-bf00-05a3fc9dd85a', name: 'USD', logo: '$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/nigeria-flag.png?alt=media&token=80438147-6c10-4b4b-8cf9-181c7c8ad4d2', name: 'NGN', logo: 'N₦',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/england-flag.png?alt=media&token=64f093ef-b2a9-4b35-b510-a5943039ae5c', name: 'GBP', logo: '£',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAD', logo: 'C$',},
+    {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'INR', logo: '₹',},
   ];
-  const [currency, setCurrency] = useState('US');
+  const [currency, setCurrency] = useState(defaultCurrency);
+  // console.log("currency...", currency);
+  
+  const [newCurrency, setNewCurrency] = useState("");
   const [passwordModal, setPasswordModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [cPassword, setCPassword] = useState('');
+
+  useEffect(() => {
+    setCurrency(defaultCurrency);
+  }, [defaultCurrency]);
+
+  const updateDefaultCurrency = async(e) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(updateDefaultCurrencyThunk({userid: userId, defaultCurrency: newCurrency})).unwrap();
+      // console.log("result...", result);
+      setTimeout(() => {
+        toast.success(result?.message);
+      }, 1000);
+
+      const updateCurrency = await dispatch(setUserDefaultCurrency(newCurrency));
+      setShowCurrency(false);
+      setNewCurrency("");
+    } catch (error) {
+      toast.error("Error updating default currency");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  }
+  
 
   const getflag = (name) => {
     const flag = flagList
@@ -52,11 +94,6 @@ export default function Header() {
       .filter(item => item !== undefined);
     return flag[0];
   };
-
-  const currencySubmit = e => {
-    e.preventDefault();
-    setShowCurrency(false);
-  }
 
   const handleClickOutside2 = (event) => {
     if(notificationRef.current && !notificationRef.current.contains(event.target)){
@@ -73,6 +110,7 @@ export default function Header() {
   const handleClickOutside3 = (event) => {
     if(currencyRef.current && !currencyRef.current.contains(event.target)){
       setShowCurrency(false);
+      setNewCurrency("");
     }
   };
 
@@ -83,11 +121,9 @@ export default function Header() {
     };
   }, []);
 
-  const onLogoutHandler = () => {
-    // dispatch(resetUserSlice());
-    // localStorage.clear();
-    navigate("/login");
-  };
+  const getFirstAlphabet = (str: string) => {
+    return Array.from(str)[0].toUpperCase();
+  }
 
   const [ showProfile, setShowProfile ] = useState<boolean>(false);
   const elementRef = useRef<HTMLDivElement>(null);
@@ -125,6 +161,7 @@ export default function Header() {
       <header
         className="bg-white flex flex-row text-black px-2 items-center justify-between z-50 fixed top-0 left-0 right-0 w-full h-[94px] border border-b-[#E4E4E4]"
       >
+        {/* <ToastContainer /> */}
         <a
           className="flex items-center justify-center md:ml-[70px] sm:ml-[20px]"
         >
@@ -164,7 +201,7 @@ export default function Header() {
                 <a
                   className="font-montserrat sm:text-base text-[12px] font-semibold text-white"
                 >
-                  LU
+                  {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
                 </a>
               </div>
               <button
@@ -191,7 +228,7 @@ export default function Header() {
                       <a
                         className="font-montserrat sm:text-base text-[10px] font-semibold text-white"
                       >
-                        LU
+                        {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
                       </a>
                     </div>
                     <div
@@ -200,12 +237,12 @@ export default function Header() {
                       <p
                         className="text-poppins sm:text-[14px] text-[12px] text-normal text-custom-black2"
                       >
-                        Lemmy Ugochukwu
+                        {userDetails?.first_name} {userDetails?.last_name}
                       </p>
                       <p
                         className="text-inter sm:text-[12px] text-[10px] text-normal text-custom-gray2"
                       >
-                        philipbassey@mail.com
+                        {userDetails?.email}
                       </p>
                       <p
                         className="text-inter sm:text-[10px] text-[8px] text-normal text-custom-gray3"
@@ -410,6 +447,7 @@ export default function Header() {
                                     className='text-3xl'
                                     onClick={() => {
                                       setShowCurrency(false);
+                                      setNewCurrency("");
                                     }}
                                   >
                                     <RiCloseCircleFill className="text-custom-green" />
@@ -418,7 +456,7 @@ export default function Header() {
 
                                 <div className="w-full py-5">
                                   <select className="select-input" onChange={e => {
-                                    setCurrency(e.target.value)
+                                    setNewCurrency(e.target.value)
                                   }}>
                                     {
                                       flagList.map((flag, index) => {
@@ -430,7 +468,7 @@ export default function Header() {
                                   </select>
                                 </div>
 
-                                <button className="btn-green w-full max-w-[150px] mx-auto" onClick={currencySubmit}>Save</button>
+                                <button className="btn-green w-full max-w-[150px] mx-auto" onClick={e => {updateDefaultCurrency(e)}}>Save</button>
                               </div>
                             </div>
                           )

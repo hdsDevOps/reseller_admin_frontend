@@ -698,9 +698,23 @@ export const updateTermsAndConditionsThunk = createAsyncThunk(
   }
 );
 
-export const getAdminDetails = createAsyncThunk(
+export const getAdminDetailsThunk = createAsyncThunk(
   "users/getAdminDetails",
   async ({userid}: any) => {
     return await userApis.getAdminDetailsApi(userid);
+  }
+);
+
+export const getDefaultCurrencyThunk = createAsyncThunk(
+  "users/getDefaultCurrency",
+  async ({userid}: any) => {
+    return await userApis.getDefaultCurrencyApi(userid);
+  }
+);
+
+export const updateDefaultCurrencyThunk = createAsyncThunk(
+  "users/updateDefaultCurrency",
+  async ({userid, defaultCurrency}: any) => {
+    return await userApis.updateDefaultCurrencyApi(userid, defaultCurrency);
   }
 );

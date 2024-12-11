@@ -20,7 +20,7 @@ const Role = () => {
   const dispatch = useAppDispatch();
   const [filterUserList, setFilterUserList] = useState([]);
   const [roles, setRoles] = useState([]);
-  // console.log("roles...", roles);
+  console.log("roles...", roles);
   const [deleteRoleId, setDeleteRoleId] = useState("");
   // console.log(deleteRoleId);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -165,62 +165,107 @@ const Role = () => {
             </tr>
           </thead>
           <tbody>
-            {roles?.map((role, index) => (
-              <tr key={index} className="hover:bg-gray-100 mb-10">
-                <td className="min-w-[180px]">{role?.role_name}</td>
-                <td className="min-w-[180px] flex flex-wrap gap-1">
-                  {
-                    permissionsList.map((permission, idx) => {
-                      if(idx === 0){
-                        if(role.permission[permission.name]){
-                          return(
-                            <button
-                              key={idx}
-                              className="bg-[#12a83241] rounded-3xl text-xs text-left py-1 px-4 hover:bg-gray-300 transition inline-block max-w-max"
-                            >
-                              {permission.label}
-                            </button>
-                          )
-                        }
-                      } else {
-                        if(role.permission[permission.name].overall){
-                          return(
-                            <button
-                              key={idx}
-                              className="bg-[#12a83241] rounded-3xl text-xs text-left py-1 px-4 hover:bg-gray-300 transition inline-block max-w-max"
-                            >
-                              {permission.label}
-                            </button>
-                          )
-                        }
+            {roles?.map((role, index) => {
+              if(role?.role_name === "Super Admin"){
+                return(
+                  <tr key={index} className="hover:bg-gray-100 mb-10">
+                    <td className="min-w-[180px]">{role?.role_name}</td>
+                    <td className="min-w-[180px] flex flex-wrap gap-1">
+                      {
+                        permissionsList.map((permission, idx) => {
+                          if(idx === 0){
+                            if(role.permission[permission.name]){
+                              return(
+                                <button
+                                  key={idx}
+                                  className="bg-[#12a83241] rounded-3xl text-xs text-left py-1 px-4 hover:bg-gray-300 transition inline-block max-w-max"
+                                >
+                                  {permission.label}
+                                </button>
+                              )
+                            }
+                          } else {
+                            if(role.permission[permission.name].overall){
+                              return(
+                                <button
+                                  key={idx}
+                                  className="bg-[#12a83241] rounded-3xl text-xs text-left py-1 px-4 hover:bg-gray-300 transition inline-block max-w-max"
+                                >
+                                  {permission.label}
+                                </button>
+                              )
+                            }
+                          }
+                        })
                       }
-                    })
-                  }
-                </td>
-
-                <td className="min-w-[180px]">
-                  <div className="flex justify-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigate('/edit-role', {state: role});
-                      }}
-                    >
-                      <BiSolidEditAlt className="text-black text-xl" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setDeleteModal(true);
-                        setDeleteRoleId(role?.id);
-                      }}
-                    >
-                      <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    </td>
+    
+                    <td className="min-w-[180px]">
+                      <div className="flex justify-center gap-4">
+                        
+                      </div>
+                    </td>
+                  </tr>
+                )
+              } else {
+                return (
+                  <tr key={index} className="hover:bg-gray-100 mb-10">
+                    <td className="min-w-[180px]">{role?.role_name}</td>
+                    <td className="min-w-[180px] flex flex-wrap gap-1">
+                      {
+                        permissionsList.map((permission, idx) => {
+                          if(idx === 0){
+                            if(role.permission[permission.name]){
+                              return(
+                                <button
+                                  key={idx}
+                                  className="bg-[#12a83241] rounded-3xl text-xs text-left py-1 px-4 hover:bg-gray-300 transition inline-block max-w-max"
+                                >
+                                  {permission.label}
+                                </button>
+                              )
+                            }
+                          } else {
+                            if(role.permission[permission.name].overall){
+                              return(
+                                <button
+                                  key={idx}
+                                  className="bg-[#12a83241] rounded-3xl text-xs text-left py-1 px-4 hover:bg-gray-300 transition inline-block max-w-max"
+                                >
+                                  {permission.label}
+                                </button>
+                              )
+                            }
+                          }
+                        })
+                      }
+                    </td>
+    
+                    <td className="min-w-[180px]">
+                      <div className="flex justify-center gap-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigate('/edit-role', {state: role});
+                          }}
+                        >
+                          <BiSolidEditAlt className="text-black text-xl" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeleteModal(true);
+                            setDeleteRoleId(role?.id);
+                          }}
+                        >
+                          <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              }
+            })}
           </tbody>
         </table>
       </div>

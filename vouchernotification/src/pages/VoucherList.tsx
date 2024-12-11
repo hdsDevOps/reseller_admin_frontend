@@ -311,6 +311,8 @@ const VoucherList: React.FC = () => {
             <button
               onClick={() => navigate('/add-voucher')}
               className="btn-green w-[139px] items-center"
+              type="button"
+              button-name="voucher-list-add-new-btn"
             >
               <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
               Add new
@@ -415,10 +417,15 @@ const VoucherList: React.FC = () => {
               onChange={handleFilterChange}
               value={filters?.end_date}
             />
-            <button className="ml-1" onClick={() => {
-              setFilters(initialFilters);
-              setSelectedOption(initialSelectedOption);
-            }}>
+            <button
+              className="ml-1"
+              type="button"
+              onClick={() => {
+                setFilters(initialFilters);
+                setSelectedOption(initialSelectedOption);
+              }}
+              button-name="vouhcer-list-clear-filter"
+            >
               <FilterX
                 className="text-[20px] text-custom-green"
               />
@@ -451,7 +458,11 @@ const VoucherList: React.FC = () => {
                     <td className="">
                       <div className="flex items-center justify-center gap-3 my-1">
                         <div className="flex flex-row gap-1">
-                          <button className="text-black hover:text-orange-300" onClick={() => {navigate('/edit-voucher', {state: item})}}>
+                          <button
+                            className="text-black hover:text-orange-300"
+                            onClick={() => {navigate('/edit-voucher', {state: item})}}
+                            button-name="voucher-list-edit"
+                          >
                             <Pencil className=" w-5" />
                           </button>
                           <button className="text-black hover:text-red-600 text-md" onClick={() => {

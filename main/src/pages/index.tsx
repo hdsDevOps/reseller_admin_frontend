@@ -25,7 +25,7 @@ const MainApp: React.FC = () => (
       className="flex flex-row mt-[94px]"
     >
       <Navbar />
-      <div className="content-body sm:p-6 p-0 flex flex-col w-full min-h-screen">
+      <div className="content-body sm:p-6 p-0 flex flex-col w-full min-h-screen md:ml-0 sm:ml-16 ml-20">
         <Routes>
           {routes.map((route, index) => (
             <Route key={index} path={route.path} element={route.element} />

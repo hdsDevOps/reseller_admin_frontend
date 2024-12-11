@@ -319,6 +319,7 @@ const NotificationTemplate = () => {
                 setIsModalOpen(true);
               }}
               className="btn-green w-[139px] items-center"
+              button-name="add-new-template"
             >
               <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
               Add new
@@ -327,10 +328,14 @@ const NotificationTemplate = () => {
         </div>
 
         <div className="flex justify-end mt-[46px]">
-          <select className="notification-select w-[275px] max-[400px]:w-full" onChange={e => {
-            setTemplateContent(notificationTemplates[e.target.value]?.template_content);
-            setSelectedItem(notificationTemplates[e.target.value]);
-          }}>
+          <select
+            className="notification-select w-[275px] max-[400px]:w-full"
+            onChange={e => {
+              setTemplateContent(notificationTemplates[e.target.value]?.template_content);
+              setSelectedItem(notificationTemplates[e.target.value]);
+            }}
+            name="select-notification"
+          >
             <option selected value=''>Select a notification section </option>
             {
               notificationTemplates && notificationTemplates.map((item, index) => {
@@ -361,7 +366,11 @@ const NotificationTemplate = () => {
                 onClick={() => setShowNotification(!showNotification)}
               >
                 <label className="relative cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked={showNotification} />
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    defaultChecked={showNotification}
+                  />
                   <div
                     className="w-[40px] h-[20px] flex items-center bg-gray-300 rounded-full after:flex after:items-center after:justify-center peer peer-checked:after:translate-x-full after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-[#00D13B]">
                   </div>
@@ -448,15 +457,18 @@ const NotificationTemplate = () => {
                   className='btn-green max-w-fit'
                   type="button"
                   onClick={() => {setIsPreviewOpen(true)}}
+                  button-name="notificaiton-template-update-preview"
                 >Preview</button>
                 <button
                   className='btn-different max-w-fit'
                   type="button"
                   onClick={() => {updateNoficationTemplateContent()}}
+                  button-name="notificaiton-template-update-add"
                 >Update</button>
                 <button
                   className='btn-red-2 max-w-fit'
                   onClick={() => {setSelectedItem("")}}
+                  button-name="notificaiton-template-update-cancel"
                 >Cancel</button>
               </div>
             </div>
@@ -517,6 +529,7 @@ const NotificationTemplate = () => {
                     className='btn-green-2 h-[46px] ml-[30px]'
                     type="button"
                     onClick={() => {addNotificationTemplate()}}
+                    button-name="add-voucher-submit-btn"
                   >Save</button>
                 </div>
               </div>
@@ -542,6 +555,7 @@ const NotificationTemplate = () => {
                         onClick={() => {
                           setIsPreviewOpen(false);
                         }}
+                        button-name="notification-template-preview-close"
                       >+</button>
                     </div>
                   </div>

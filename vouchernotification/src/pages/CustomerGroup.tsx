@@ -189,9 +189,13 @@ const CustomerGroup: React.FC = () => {
               onChange={updateFilters}
               value={filters?.create_date}
             />
-            <button className="ml-1" onClick={() => {
-              setFilters(initialFilters);
-            }}>
+            <button
+              className="ml-1"
+              onClick={() => {
+                setFilters(initialFilters);
+              }}
+              button-name="clear-customer-group-filter"
+            >
               <FilterX
                 className="text-[20px] text-custom-green"
               />

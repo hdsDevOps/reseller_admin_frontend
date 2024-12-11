@@ -20,11 +20,12 @@ const Accordion: React.FC<AccordionProps> = ({ items }) => {
 
   return (
     <div className="w-full mx-auto mt-[22px]">
-      {items.map((item) => (
-        <div key={item.id} className="border border-custom-white my-4 rounded-[4px]">
+      {items.map((item, index) => (
+        <div key={index} className="border border-custom-white my-4 rounded-[4px]">
           <button
             className="w-full py-4 px-6 flex items-center justify-between bg-white hover:bg-gray-50 focus:outline-none"
             onClick={() => toggleSection(item.id)}
+            cypress-name={`cms-sction-${index+1}`}
           >
             <span className="font-inter-20px-500-cBlack4">{item.title}</span>
             {activeSection === item.id ? (

@@ -416,6 +416,7 @@ const CustomerManagement: React.FC = () => {
               onClick={() => {
                 navigate('/add-customer');
               }}
+              button-name="customers-add-new"
             >
               +&nbsp;&nbsp;Add new
             </button>
@@ -509,6 +510,7 @@ const CustomerManagement: React.FC = () => {
           >
             <button
               type="button"
+              button-name="customers-filter-btn"
               className="btn-green w-[80px] h-[38px] max-sm:float-right"
               onClick={() => {
                 setFilterShow(true);
@@ -530,6 +532,7 @@ const CustomerManagement: React.FC = () => {
                   <button
                     type="button"
                     className="mt-[1px]"
+                    button-name="customers-filter-close"
                     onClick={() => {
                       setFilterShow(false);
                       setFilters2(intialFilter2)
@@ -547,6 +550,7 @@ const CustomerManagement: React.FC = () => {
                       setFilters(intialFilter);
                       setFilters2(intialFilter2)
                     }}
+                    button-name="customers-filter-reset"
                   >
                     Reset
                   </button>
@@ -657,6 +661,7 @@ const CustomerManagement: React.FC = () => {
                   <div className="flex flex-row">
                     <button
                       type="button"
+                      button-name="customers-filter-cancel-btn"
                       className="btn-blue w-[90px] h-[38px] mr-4"
                       onClick={() => {
                         setFilterShow(false);
@@ -667,6 +672,7 @@ const CustomerManagement: React.FC = () => {
                     </button>
                     <button
                       type="button"
+                      button-name="customers-filter-search-btn"
                       className="btn-green w-[90px] h-[38px]"
                       onClick={() => {
                         setFilterShow(false);
@@ -723,6 +729,7 @@ const CustomerManagement: React.FC = () => {
                       >
                         <a
                           onClick={() => navigate('/customer-information', { state: item })}
+                          button-name="go-to-customer-information"
                           className="cursor-pointer"
                         >{item?.first_name} {item?.last_name}</a>
                       </td>
@@ -1028,50 +1035,49 @@ const CustomerManagement: React.FC = () => {
               }
             </tbody>
           </table>
+        </div>
+        <div className="flex flex-col mt-12 relative bottom-2 right-0">
+          <div className="flex justify-end mb-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              disabled={currentPage === 0}
+              className={`px-3 py-1 text-sm ${
+                currentPage === 0
+                  ? "bg-transparent text-gray-300"
+                  : "bg-transparent hover:bg-green-500 hover:text-white"
+              } rounded-l transition`}
+            >
+              Prev
+            </button>
 
-          <div className="flex flex-col mt-12 relative bottom-2 right-0">
-            <div className="flex justify-end mb-2">
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, index) => (
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-                disabled={currentPage === 0}
-                className={`px-3 py-1 text-sm ${
-                  currentPage === 0
-                    ? "bg-transparent text-gray-300"
-                    : "bg-transparent hover:bg-green-500 hover:text-white"
-                } rounded-l transition`}
+                key={index}
+                onClick={() => setCurrentPage(index)}
+                className={`px-3 py-1 text-sm mx-1 rounded ${
+                  currentPage === index
+                    ? "bg-green-500 text-white"
+                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                } transition`}
               >
-                Prev
+                {index + 1}
               </button>
+            ))}
 
-              {/* Page numbers */}
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentPage(index)}
-                  className={`px-3 py-1 text-sm mx-1 rounded ${
-                    currentPage === index
-                      ? "bg-green-500 text-white"
-                      : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-                  } transition`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-                }
-                disabled={currentPage === totalPages - 1}
-                className={`px-3 py-1 text-sm ${
-                  currentPage === totalPages - 1
-                    ? "bg-transparent text-gray-300"
-                    : "bg-transparent hover:bg-green-500 hover:text-white"
-                } rounded-r transition`}
-              >
-                Next
-              </button>
-            </div>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+              }
+              disabled={currentPage === totalPages - 1}
+              className={`px-3 py-1 text-sm ${
+                currentPage === totalPages - 1
+                  ? "bg-transparent text-gray-300"
+                  : "bg-transparent hover:bg-green-500 hover:text-white"
+              } rounded-r transition`}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

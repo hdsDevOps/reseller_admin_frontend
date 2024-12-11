@@ -350,6 +350,7 @@ const AddCustomer: React.FC = () => {
                                   <p
                                     key={idx}
                                     className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                    dropdown-name="country-dropdown"
                                     onClick={() => {
                                       setCustomer({
                                         ...customer,

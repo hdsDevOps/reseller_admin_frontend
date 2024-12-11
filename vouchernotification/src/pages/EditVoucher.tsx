@@ -369,6 +369,7 @@ const EditVoucher: React.FC = () =>  {
           <button
             className='btn-green-2 h-[46px]'
             type='submit'
+            button-name="edit-voucher-list"
           >Save</button>
           <button
             type='button'

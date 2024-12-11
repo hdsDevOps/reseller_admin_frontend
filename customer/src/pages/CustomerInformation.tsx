@@ -131,6 +131,7 @@ const CustomerInformation: React.FC = () => {
 
           <a
             className='a-reset-password max-[631px]:my-2 hover:underline'
+            button-name="customer-information-reset-password"
             onClick={() => {
               setResetPasswordShow(true);
             }}

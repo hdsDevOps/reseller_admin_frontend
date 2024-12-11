@@ -10,7 +10,8 @@ import {
     getUserIdFromLSThunk,
     setUserIdToLSThunk,
     removeUserIdFromLSThunk,
-    getAdminDetails,
+    getAdminDetailsThunk,
+    getDefaultCurrencyThunk,
 } from '../thunks/user.thunk';
 import { userLocalStorage } from '../localStorage/user.storage';
 
@@ -19,6 +20,7 @@ export interface UserDetailsState {
   userDetails: any;
   userId: string | null;
   token: string | null;
+  defaultCurrency: string | null;
 }
 
 const initialState: UserDetailsState = {
@@ -26,6 +28,7 @@ const initialState: UserDetailsState = {
   userDetails: {},
   userId: null,
   token: '',
+  defaultCurrency: ''
 };
 
 const authSlice = createSlice({
@@ -40,6 +43,9 @@ const authSlice = createSlice({
     },
     setUserIdDetails: (state, action: PayloadAction<string>) => {
       state.userId = action.payload;
+    },
+    setUserDefaultCurrency: (state, action: PayloadAction<string>) => {
+      state.defaultCurrency = action.payload;
     },
     setUserAuthStatus: (state, action: PayloadAction<'AUTHORIZED' | 'UN_AUTHORIZED' | 'PENDING' | 'UPGRADE'>) => {
       state.userAuthStatus = action.payload;
@@ -195,23 +201,41 @@ const authSlice = createSlice({
     });
 
     //set user details
-    builder.addCase(getAdminDetails.pending, state => {
+    builder.addCase(getAdminDetailsThunk.pending, state => {
       state.userAuthStatus = 'PENDING';
     });
 
-    builder.addCase(getAdminDetails.fulfilled,
+    builder.addCase(getAdminDetailsThunk.fulfilled,
       (state, action: PayloadAction<any>) => {
         state.userAuthStatus = 'AUTHORIZED';
-        state.userDetails = action.payload.data
+        state.userDetails = action.payload.data;
       },
     );
 
-    builder.addCase(getAdminDetails.rejected, state => {
+    builder.addCase(getAdminDetailsThunk.rejected, state => {
+      state.userAuthStatus = 'UN_AUTHORIZED';
+    });
+
+    
+
+    //set user default currency
+    builder.addCase(getDefaultCurrencyThunk.pending, state => {
+      state.userAuthStatus = 'PENDING';
+    });
+
+    builder.addCase(getDefaultCurrencyThunk.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.userAuthStatus = 'AUTHORIZED';
+        state.defaultCurrency = action.payload.data.defaultCurrency;
+      },
+    );
+
+    builder.addCase(getDefaultCurrencyThunk.rejected, state => {
       state.userAuthStatus = 'UN_AUTHORIZED';
     });
   },
 });
 
-export const { setTokenDetails, setUserDetails, setUserIdDetails, setUserAuthStatus, resetUserSlice } = authSlice.actions;
+export const { setTokenDetails, setUserDetails, setUserIdDetails, setUserDefaultCurrency, setUserAuthStatus, resetUserSlice } = authSlice.actions;
 
 export default authSlice.reducer;

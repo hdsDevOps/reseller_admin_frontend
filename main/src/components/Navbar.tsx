@@ -214,9 +214,15 @@ const Sidebar = () => {
     }
   }, [width]);
 
+  useEffect(() => {
+    if(width < 769){
+      setIsOpen(false);
+    }
+  }, [width, location.pathname]);
+
   return (
     <aside
-      className={`h-full sticky transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
+      className={`min-h-full md:sticky absolute transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
         isOpen ? "w-[307px]" : "max-w-20"
       } pt-[24px] drop-shadow-md`}
     >

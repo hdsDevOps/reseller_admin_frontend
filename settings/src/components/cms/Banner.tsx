@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { PencilIcon, TrashIcon, X } from "lucide-react";
 import { Editor } from "@tinymce/tinymce-react";
 import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -21,17 +21,19 @@ const initialBanner = {
   show_promotion_status: false,
 }
 
-const initialPrice = { code: "US", label: "United States", value: '$', currency_code: "USD", amount: ''};
+
 
 const Banner: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { defaultCurrency } = useAppSelector((state) => state.auth);
+  const initialPrice = { code: "US", label: "United States", value: '$', currency_code: "USD", amount: ''};
   const [isEditModalOpen,setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newBanner, setNewBanner] = useState(initialBanner);
   const [price,setPrice] = useState(initialPrice);
   const [editBanner, setEditBanner] = useState(false);
-  console.log(newBanner);
+  // console.log(newBanner);
   const [imageFile, setImage] = useState(null);
   const imageRef = useRef(null);
   
@@ -68,7 +70,7 @@ const Banner: React.FC = () => {
   ];
   
   const [banners, setBanners] = useState([]);
-  console.log(banners);
+  // console.log(banners);
 
   const fetchBannerList = async() => {
     try {
@@ -134,10 +136,10 @@ const Banner: React.FC = () => {
 
   const updatePrice = (name, price) => {
     const data = newBanner.currency_details;
-    const exists = data.some(item => item.name === name);
+    const exists = data.some(item => item.currency_code === name);
     if(exists){
       const newData = data.map(item => 
-        item.name === name ? { ...item, amount: price.amount} : item
+        item.currency_code === name ? { ...item, amount: price.amount} : item
       );
       setNewBanner({
         ...newBanner,
@@ -659,7 +661,6 @@ const Banner: React.FC = () => {
                                   className="col-span-1 h-full"
                                   onChange={e => {
                                     setPrice(currencyOptions[e.target.value]);
-                                    
                                   }}
                                 >
                                   {
@@ -674,7 +675,7 @@ const Banner: React.FC = () => {
                                   <button
                                     type="button"
                                     className="btn-cms-2 my-auto"
-                                    onClick={() => updatePrice(price.currency_code, price)}
+                                    onClick={() => {updatePrice(price.currency_code, price)}}
                                   >ADD</button>
                                 </div>
                               </div>

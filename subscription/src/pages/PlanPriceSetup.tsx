@@ -6,7 +6,7 @@ import { RiHeart2Fill, RiCheckboxCircleFill, RiVipCrownFill, RiFlashlightFill } 
 import '../styles/styles.css';
 import { useNavigate } from "react-router-dom";
 import { getPlansAndPricesThunk, deletePlanAndPriceThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -71,6 +71,8 @@ const PlanPriceSetup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   
+  const { defaultCurrency } = useAppSelector((state) => state.auth);
+  // console.log("defaultCurrency....", defaultCurrency);
 
   const flagList = [
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
@@ -83,6 +85,10 @@ const PlanPriceSetup = () => {
   ];
 
   const [currencyIndex, setCurrencyIndex] = useState('USD');
+
+  useEffect(() => {
+    setCurrencyIndex(defaultCurrency);
+  }, [defaultCurrency]);
   
   const [prices, setPrices] = useState(initialPrice);
   const getPrices = (name, data) => {
@@ -153,7 +159,11 @@ const PlanPriceSetup = () => {
   const renderGridView = () => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {plansAndPrices?.map((plan, index) => (
-        <div key={index} className="bg-gray-50 flex flex-col p-[15px] shadow-md rounded-xl">
+        <div
+          key={index}
+          className="bg-gray-50 flex flex-col p-[15px] shadow-md rounded-xl"
+          cypress-grid-name={`grid${index}`}
+        >
           <div className="flex flex-col">
             <div className="flex flex-row items-center gap-2">
               <img src={plan?.icon_image ? plan?.icon_image : ""} alt={plan?.plan_name} className="xl:w-[25px] lg:w-[20px] w-[25px]" />
@@ -228,7 +238,7 @@ const PlanPriceSetup = () => {
                         {price?.price}
                       </span>
                       <span className="border border-[#E4E4E4] font-inter font-normal text-xs text-[#0D121F] my-auto px-2 py-[2px] min-w-[54px]">
-                        <a className="pr-2">{
+                        <a className="pr-2 text-nowrap">{
                           formatPrice()?.map((data, k) => (
                             `${data}`
                           ))
@@ -272,13 +282,23 @@ const PlanPriceSetup = () => {
           </div>
 
           <div className="flex gap-4 mt-auto">
-            <button className="flex-1 py-2 px-4 bg-[#12A833] text-white rounded-md" onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}>
+            <button
+              className="flex-1 py-2 px-4 bg-[#12A833] text-white rounded-md"
+              onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}
+              type="button"
+              cypress-name="plan-and-price-edit"
+            >
               Edit
             </button>
-            <button className="flex-1 py-2 px-4 bg-[#E02424] text-white rounded-md" onClick={() => {
-              setDeleteId(plan?.id);
-              setIsModalOpen(true);
-            }}>
+            <button
+              className="flex-1 py-2 px-4 bg-[#E02424] text-white rounded-md"
+              onClick={() => {
+                setDeleteId(plan?.id);
+                setIsModalOpen(true);
+              }}
+              type="button"
+              cypress-name="plan-and-price-delete"
+            >
               Delete
             </button>
           </div>
@@ -478,8 +498,10 @@ const PlanPriceSetup = () => {
       <div className="flex min-sm:flex-row max-sm:flex-col justify-between min-sm:items-center mb-6 max-sm:gap-2">
         <h3 className="h3-text">Plan & Price setup</h3>
         <div className="flex gap-4 max-sm:justify-end">
-          <button className="btn-green w-[139px] flex flex-row items-center gap-2"
+          <button
+            className="btn-green w-[139px] flex flex-row items-center gap-2"
             onClick={() => {navigate('/add-plan-and-price-setup')}}
+            button-name="add-plan-and-price-btn"
           >
             <Plus size={20} />
             Add new
@@ -492,6 +514,7 @@ const PlanPriceSetup = () => {
                   : "bg-white text-[#737373]"
               }`}
               onClick={() => setViewMode("table")}
+              button-name="change-plan-and-price-view-mode-table"
             >
               <TableProperties className="rotate-180" size={20} />
             </button>
@@ -502,6 +525,7 @@ const PlanPriceSetup = () => {
                   : "bg-white text-[#737373]"
               }`}
               onClick={() => setViewMode("grid")}
+              button-name="change-plan-and-price-view-mode-grid"
             >
               <LayoutGrid size={20} />
             </button>
@@ -554,6 +578,7 @@ const PlanPriceSetup = () => {
                     <button
                       type="submit"
                       className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                      cypress-name="delete-plan-and-price"
                     >
                       Delete
                     </button>

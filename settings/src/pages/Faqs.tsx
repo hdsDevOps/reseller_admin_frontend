@@ -162,6 +162,7 @@ const Faqs: React.FC = () => {
               setFaq(initialFaq);
             }}
             className="btn-green w-[139px] items-center"
+            cypress-name="add-new-faq"
           >
             <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
             Add new
@@ -180,6 +181,8 @@ const Faqs: React.FC = () => {
               onClick={() => {
                 toggleShow(index+1)
               }}
+              cypress-name={`faq-number-${index+1}`}
+              type='button'
             >
               <span className="faq-header">{faq.question}</span>
               {
@@ -210,6 +213,7 @@ const Faqs: React.FC = () => {
                     setFaq(faq);
                     setEditFaq(true);
                   }}
+                  cypress-name={`edit-faq-number-${index+1}`}
                 ><Pencil className='text-custom-green' /></button>
                 <button
                   className='btn-faq'
@@ -218,6 +222,7 @@ const Faqs: React.FC = () => {
                     setDeleteModal(true);
                     setDeleteId(faq?.record_id);
                   }}
+                  cypress-name={`delete-faq-number-${index+1}`}
                 ><Trash className='text-custom-red' /></button>
               </div>
             </div>
@@ -281,6 +286,7 @@ const Faqs: React.FC = () => {
                     <button
                       type="submit"
                       className="btn-green w-[105px] h-[45px]"
+                      cypress-name="add-faq-submit"
                     >
                       Send
                     </button>
@@ -327,6 +333,7 @@ const Faqs: React.FC = () => {
                   type="button"
                   onClick={deleteFaqSubmit}
                   className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                  cypress-name="delete-faq-modal"
                 >
                   Delete
                 </button>

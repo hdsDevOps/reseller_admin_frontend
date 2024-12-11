@@ -27,12 +27,13 @@ function EditPlanPriceSetup() {
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'INR', logo: '₹',},
   ];
   const [subscription, setSubscription] = useState(location.state);
-  console.log(subscription);
+  // console.log(subscription);
   const [amountCount, setAMountCount] = useState(1);
   const [dragActive, setDragActive] = useState(false);
   const [iconImage, setIconImage] = useState(location.state?.icon_image || null);
   // console.log("image...", iconImage);
   const [localPrice, setLocalPrice] = useState(subscription?.amount_details);
+  // console.log("localPrice...", localPrice);
   const [featureTag, setFeatureTag] = useState('');
   
   useEffect(() => {
@@ -279,10 +280,10 @@ function EditPlanPriceSetup() {
                         name='price'
                         defaultValue={item?.price[0].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
-                        onBlur={() => {setSubscription({
-                          ...subscription,
-                          amount_details: localPrice
-                        })}}
+                        // onBlur={() => {setSubscription({
+                        //   ...subscription,
+                        //   amount_details: localPrice
+                        // })}}
                         required
                       />
                     </td>
@@ -293,10 +294,10 @@ function EditPlanPriceSetup() {
                         name='price'
                         defaultValue={item?.price[1].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
-                        onBlur={() => {setSubscription({
-                          ...subscription,
-                          amount_details: localPrice
-                        })}}
+                        // onBlur={() => {setSubscription({
+                        //   ...subscription,
+                        //   amount_details: localPrice
+                        // })}}
                         required
                       />
                     </td>
@@ -426,7 +427,7 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Base Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
                         defaultValue={item?.price[0].price || ''}
@@ -436,7 +437,7 @@ function EditPlanPriceSetup() {
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
                         defaultValue={item?.price[1].price || ''}
@@ -446,7 +447,7 @@ function EditPlanPriceSetup() {
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
                         defaultValue={item?.price[2].price || ''}
@@ -459,7 +460,7 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Final Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
                         defaultValue={item?.price[0].discount_price || ''}
@@ -469,7 +470,7 @@ function EditPlanPriceSetup() {
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
                         defaultValue={item?.price[1].discount_price || ''}
@@ -479,7 +480,7 @@ function EditPlanPriceSetup() {
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
                         defaultValue={item?.price[2].discount_price || ''}
@@ -517,6 +518,10 @@ function EditPlanPriceSetup() {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
+    setSubscription({
+      ...subscription,
+      amount_details: localPrice
+    });
     if(iconImage !== null && typeof iconImage !== "string") {
       try {
         const imageUpload = await dispatch(uploadImageThunk({image: iconImage})).unwrap();
@@ -696,7 +701,7 @@ function EditPlanPriceSetup() {
         >Amount</h5>
 
         {
-          subscription?.amount_details?.map((amount, index) => {
+          localPrice?.map((amount, index) => {
             return(
               <AmountBox
                 item={amount}
@@ -850,7 +855,11 @@ function EditPlanPriceSetup() {
       </div>
 
       <div className='flex flex-row min-sm:justify-start max-sm:justify-center gap-4'>
-        <button className='btn-green' type='submit'>Save</button>
+        <button
+          className='btn-green'
+          type='submit'
+          button-name="add-plan-and-price-btn"
+        >Save</button>
         <button
           className='btn-red'
           type='button'

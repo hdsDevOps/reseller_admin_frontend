@@ -20,6 +20,7 @@ const Promotion: React.FC = () => {
   const dispatch = useAppDispatch();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [editPromo, setEditPromo] = useState(false);
   const [newPromotion, setNewPromotion] = useState(initialPromotion);
   console.log({newPromotion})
@@ -220,13 +221,14 @@ const Promotion: React.FC = () => {
         <button
           className="btn-cms"
           onClick={() => {setIsEditModalOpen(true)}}
+          cypress-name="cypress-add-promotion"
         >
           ADD
         </button>
       </div>
       <div className="bg-custom-white-2 space-y-6">
-        {promotions.map((promo) => (
-          <div key={promo.promoCode} className="p-4 border">
+        {promotions.map((promo, index) => (
+          <div key={index} className="p-4 border">
             <div className="grid grid-cols-1 gap-2">
               <div className="grid sm:grid-cols-2 grid-cols-1 items-center space-x-4">
                 <div
@@ -286,20 +288,26 @@ const Promotion: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-end justify-end space-x-4">
-                <button className="px-2 text-black hover:text-orange-300 transition-all duration-300 ease-in-out"
+                <button
+                  className="px-2 text-black hover:text-orange-300 transition-all duration-300 ease-in-out"
                   onClick={() => {
                     setEditPromo(true);
                     setIsEditModalOpen(true);
                     setNewPromotion(promo);
                   }}
+                  type="button"
+                  cypress-name={`edit-promotion-${index+1}`}
                 >
                   <PencilIcon className="w-5 h-5" />
                 </button>
-                <button className="px-2 text-black hover:text-red-600 transition-all duration-300 ease-in-out"
+                <button
+                  className="px-2 text-black hover:text-red-600 transition-all duration-300 ease-in-out"
                   onClick={() => {
                     setIsDeleteModalOpen(true);
                     setNewPromotion(promo);
                   }}
+                  type="button"
+                  cypress-name={`delete-promotion-${index+1}`}
                 >
                   <TrashIcon className="w-5 h-5" />
                 </button>
@@ -315,6 +323,7 @@ const Promotion: React.FC = () => {
         onClose={() => {
           setIsEditModalOpen(false);
           setNewPromotion(initialPromotion);
+          setEditPromo(false);
         }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
@@ -337,6 +346,7 @@ const Promotion: React.FC = () => {
                     onClick={() => {
                       setIsEditModalOpen(false);
                       setNewPromotion(initialPromotion);
+                      setEditPromo(false);
                     }}
                   >+</button>
                 </div>
@@ -393,6 +403,10 @@ const Promotion: React.FC = () => {
                           <button
                             type="button"
                             className="btn-green min-w-[110px] max-w-[150px] items-start"
+                            onClick={() => {
+                              setIsPreviewModalOpen(true);
+                            }}
+                            cypress-name="cypress-promotion-preview-btn"
                           >Preview</button>
                         </div>
                       )
@@ -429,6 +443,7 @@ const Promotion: React.FC = () => {
                     type="submit"
                     // onClick={handleSubmit}
                     className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                    cypress-name="submit-promotion-add-btn"
                   >
                     Save
                   </button>
@@ -437,6 +452,7 @@ const Promotion: React.FC = () => {
                     onClick={() => {
                       setIsEditModalOpen(false);
                       setNewPromotion(initialPromotion);
+                      setEditPromo(false);
                     }}
                     className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
                   >
@@ -447,6 +463,43 @@ const Promotion: React.FC = () => {
             </DialogPanel>
           </div>
         </div>
+        <Dialog
+          open={isPreviewModalOpen}
+          as="div"
+          className="relative z-50 focus:outline-none"
+          onClose={() => {
+            setIsPreviewModalOpen(false);
+          }}
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-60 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <DialogPanel
+                transition
+                className="w-full max-w-2xl rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <DialogTitle
+                    as="h3"
+                    className="text-lg font-semibold text-gray-900"
+                  >Promotion Preview</DialogTitle>
+                  <div className='btn-close-bg'>
+                    <button
+                      type='button'
+                      className='text-3xl rotate-45 mt-[-8px] text-white'
+                      onClick={() => {
+                        setIsPreviewModalOpen(false);
+                      }}
+                      cypress-name="close-promotion-preview-btn"
+                    >+</button>
+                  </div>
+                </div>
+                
+                <div dangerouslySetInnerHTML={{ __html: newPromotion?.html_template }}>
+                </div>
+              </DialogPanel>
+            </div>
+          </div>
+        </Dialog>
       </Dialog>
 
       <Dialog
@@ -482,11 +535,12 @@ const Promotion: React.FC = () => {
 
               <div className="flex flex-row justify-center gap-3 pt-4">
                 <button
-                  type="submit"
+                  type="button"
                   onClick={() => {
                     deletePromotion(newPromotion?.id);
                   }}
                   className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                  cypress-name="delete-promotion-btn"
                 >
                   Delete
                 </button>

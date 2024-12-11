@@ -126,4 +126,7 @@ export const endPoints = {
     
     //profile
     getAdminDetails: 'adminservices/admin/api/v1/getdetails',
+
+    getDefaultCurrency: 'adminservices/admin/api/v1/getcurrency_default',
+    updateDefaultCurrency: 'adminservices/admin/api/v1/update_defaultgetcurrency',
 }

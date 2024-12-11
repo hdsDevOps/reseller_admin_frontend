@@ -32,6 +32,7 @@ const UserList = () => {
   const [users, setUsers] = useState([]);
   // console.log("users...", users);
   const [userFilter, setUserFilter] = useState(intialUserFilter);
+  const [searchData, setSearchData] = useState("");
   const [deleteUserId, setDeleteUserId] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -232,7 +233,14 @@ const UserList = () => {
     } finally {
       fetchUsers();
     }
-  }
+  };
+
+  const handleFilterSearch = () => {
+    setUserFilter({
+      ...userFilter,
+      searchdata: searchData,
+    });
+  };
 
   return (
     <div className="grid grid-cols-1">
@@ -275,8 +283,16 @@ const UserList = () => {
           >
             <select
               className="select-input-no-radius min-[985px]:w-[315px] max-[985px]:w-full h-10"
+              onChange={e => {
+                setUserFilter({
+                  ...userFilter,
+                  role: e.target.value,
+                });
+              }}
+              name="role"
+              value={userFilter?.role}
             >
-              <option defaultChecked hidden value=''>User Type</option>
+              <option defaultChecked value=''>Select User Type</option>
               {
                 roles?.map((role, idx) => (
                   <option key={idx}>{role?.role_name}</option>
@@ -287,16 +303,29 @@ const UserList = () => {
             <div
               className="flex min-[536px]:flex-row max-[536px]:flex-col max-[985px]:mt-2"
             >
-              <input type="text" placeholder="Name,Email,Phone" className="serach-input-no-radius min-[985px]:w-[315px] max-[985px]:w-full" />
+              <input
+                type="text"
+                placeholder="Name,Email,Phone"
+                className="serach-input-no-radius min-[985px]:w-[315px] max-[985px]:w-full"
+                onChange={e => {setSearchData(e.target.value)}}
+                value={searchData}
+              />
               <div
                 className="flex flex-row gap-3 min-[536px]:mt-0 max-[536px]:mt-2 max-[536px]:justify-between"
               >
                 <button
                   type="button"
                   className="btn-green-no-radius"
+                  onClick={() => {handleFilterSearch()}}
                 >Seacrh</button>
 
-                <button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserFilter(intialUserFilter);
+                    setSearchData("");
+                  }}
+                >
                   <LuFilterX
                     className="text-[20px] text-custom-green"
                   />
@@ -326,10 +355,10 @@ const UserList = () => {
                 return(
                   <tr key={index}>
                     <td
-                      className="flex flex-row m-2"
+                      className="flex flex-row m-2 justify-center"
                     >
                       <p
-                        className={`td-initial  text-center pt-3 rounded-full`}
+                        className={`td-initial text-center pt-3 rounded-full`}
                         // bg-[${roleColors[item?.role]}]
                       >{getInitials(user?.first_name)}{getInitials(user?.last_name)}</p>
                       <p className="td-css-text pt-2">{user?.first_name} {user?.last_name}</p>

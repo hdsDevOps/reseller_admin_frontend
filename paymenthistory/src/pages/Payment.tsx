@@ -68,9 +68,13 @@ const PaymentMethod: React.FC = () => {
                 <div
                   className="select-div"
                 >
-                  <select className={`${item.status == 'INACTIVE' ? 'payment-select-2' : 'payment-select'}`} onChange={(e) => {
-                    updateStatus(e.target.value, index)
-                  }}>
+                  <select
+                    className={`${item.status == 'INACTIVE' ? 'payment-select-2' : 'payment-select'}`}
+                    onChange={(e) => {
+                      updateStatus(e.target.value, index)
+                    }}
+                    cypress-name={`payment-status-${index}`}
+                  >
                     <option selected={item.status == 'ACTIVE' ? false : item.status == 'INACTIVE' ? false : true} hidden>Action</option>
                     <option selected={item.status == 'ACTIVE' ? true:  false} className="payment-option" value='ACTIVE'>Active</option>
                     <option selected={item.status == 'INACTIVE' ? true:  false} className="payment-option" value='INACTIVE'>Inactive</option>
