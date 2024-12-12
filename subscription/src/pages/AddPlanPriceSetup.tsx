@@ -693,6 +693,7 @@ function AddPlanPriceSetup() {
               onChange={e => {setIconImage(e.target.files[0])}}
               name="icon_image"
               required
+              accept='image/*'
             />
           </label>
           <p

@@ -21,11 +21,10 @@ const routes = [
 const MainApp: React.FC = () => (
   <div className="main-wrapper">
     <Header />
-    <div
-      className="flex flex-row mt-[94px]"
-    >
+    <div className="flex flex-row mt-[94px]">
       <Navbar />
-      <div className="content-body sm:p-6 p-0 flex flex-col w-full min-h-screen md:ml-0 sm:ml-16 ml-20">
+
+      <div className="content-body md:p-6 p-1 pb-6 flex flex-col min-h-screen relative w-full">
         <Routes>
           {routes.map((route, index) => (
             <Route key={index} path={route.path} element={route.element} />
@@ -37,11 +36,7 @@ const MainApp: React.FC = () => (
         <SettingsApp />
         <SubscriptionApp />
         <VoucherApp />
-        {/* <div
-          className="sticky bottom-0"
-        >
-          <Footer />
-        </div> */}
+        <Footer />
       </div>
     </div>
   </div>

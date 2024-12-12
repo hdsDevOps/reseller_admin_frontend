@@ -7,6 +7,7 @@ module.exports = {
         inter: ["Inter", "sans-serif"],
         montserrat: ["Montserrat", "sans-serif"],
         poppins: ["Poppins", "sans-serif"],
+        plusJakarta: ["Plus Jakarta Sans", "sans-serif"],
       },
       colors: {
         cGreen: '#12A833',

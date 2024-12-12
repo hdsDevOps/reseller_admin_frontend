@@ -126,7 +126,10 @@ export const endPoints = {
     
     //profile
     getAdminDetails: 'adminservices/admin/api/v1/getdetails',
-
+    updateAdminDetails: 'adminservices/admin/api/v1/updateProfile',
     getDefaultCurrency: 'adminservices/admin/api/v1/getcurrency_default',
     updateDefaultCurrency: 'adminservices/admin/api/v1/update_defaultgetcurrency',
+    getNotifications: 'adminservices/notification/api/v1/getnotifications',
+    getNotificationStatus: 'adminservices/admin/api/v1/getnotification_status',
+    updateNotificationStatus: 'adminservices/admin/api/v1/update_notification_status',
 }

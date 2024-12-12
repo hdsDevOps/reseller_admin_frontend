@@ -222,8 +222,8 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`min-h-full md:sticky absolute transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
-        isOpen ? "w-[307px]" : "max-w-20"
+      className={`sticky transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
+        isOpen ? "w-[307px]" : "max-w-[307px]"
       } pt-[24px] drop-shadow-md`}
     >
       <div
@@ -293,7 +293,7 @@ const Sidebar = () => {
                           toggleDropdown(index);
                         }
                         else{
-                          if(width <= 768){
+                          if(width < 769){
                             setIsOpen(false);
                             toggleDropdown(index);
                           }
@@ -355,7 +355,7 @@ const Sidebar = () => {
                                     <a
                                       className="flex flex-row"
                                       onClick={() => {
-                                        if(width <= 768){
+                                        if(width < 769){
                                           setIsOpen(false);
                                           toggleDropdown(index);
                                         }
@@ -480,7 +480,7 @@ const Sidebar = () => {
                                     <a
                                       className="flex flex-row"
                                       onClick={() => {
-                                        if(width <= 768){
+                                        if(width < 769){
                                           setIsOpen(false);
                                           toggleDropdown(index);
                                         }
@@ -512,7 +512,7 @@ const Sidebar = () => {
                             toggleDropdown(index);
                           }
                           else{
-                            if(width <= 768){
+                            if(width < 769){
                               setIsOpen(false);
                               toggleDropdown(index);
                             }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk, updateAdminDetailsThunk, getNotificationsThunk, getNotificationStatusThunk, updateNotificationStatusThunk } from 'store/user.thunk';
 import { setUserDefaultCurrency } from 'store/authSlice';
 import { Bell, ShoppingCart } from "lucide-react";
 import { RiNotification4Fill } from "react-icons/ri";
@@ -23,21 +23,82 @@ export default function Header() {
   const[showNotification,setShowNotfication] = useState(false);
   const notificationRef = useRef();
   const currencyRef = useRef();
+  const passwordRef = useRef();
 
   const openModal = () => setShowNotfication(true);
   const closeModal = () => setShowNotfication(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([
-    { image: '', header: 'Frankie sulliva commented on your post', text: 'This is a notification template. Here is it ', date: '20 Sep 2024 14:20:00'},
-    { image: '', header: 'Frankie sulliva commented on your post', text: 'This is a notification template. Here is it ', date: '20 Sep 2024 14:20:00'},
-    { image: '', header: 'Frankie sulliva commented on your post', text: 'This is a notification template. Here is it ', date: '20 Sep 2024 14:20:00'},
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationStatus, setNotificationStatus] = useState(true);
+  console.log(notificationStatus);
+  
   const [showCurrency, setShowCurrency] = useState(false);
   const { userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);
 
-  // console.log("userDetails...", userDetails);
-  
+  useEffect(() => {
+    const getNotifications = async() => {
+      try {
+        const result = await dispatch(getNotificationsThunk({user_role: userDetails?.role})).unwrap();
+        setNotifications(result);
+      } catch (error) {
+        setNotifications([]);
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      }
+    };
+
+    getNotifications();
+  }, [userDetails]);
+
+  useEffect(() => {
+    const getNotificationStatus = async() => {
+      try {
+        const result = await dispatch(getNotificationStatusThunk({userid: userId})).unwrap();
+        console.log("result...", result?.data?.status);
+        if(result?.data === null) {
+          setNotificationStatus(true);
+        } else {
+          setNotificationStatus(result?.data?.status);
+        }
+      } catch (error) {
+        setNotificationStatus(true);
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      }
+    }
+
+    getNotificationStatus();
+  }, [userId]);
+
+  const updateNotificationStatus = async(e) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(updateNotificationStatusThunk({userid: userId, status: !notificationStatus})).unwrap();
+      setNotificationStatus(!notificationStatus);
+    } catch (error) {
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  }
 
   const flagList = [
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
@@ -121,27 +182,27 @@ export default function Header() {
     };
   }, []);
 
+  const handleClickOutside4 = (event) => {
+    if(passwordRef.current && !passwordRef.current.contains(event.target)){
+      setPasswordModal(false);
+      setPassword("");
+      setCPassword("");
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside4);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside4);
+    };
+  }, []);
+
   const getFirstAlphabet = (str: string) => {
     return Array.from(str)[0].toUpperCase();
   }
 
   const [ showProfile, setShowProfile ] = useState<boolean>(false);
   const elementRef = useRef<HTMLDivElement>(null);
-  
-  const notificationDate1 = (date) => {
-    const weekDay = format(date, 'EEEE');
-    const hour = format(date, 'hh');
-    const minutes = format(date, 'mm');
-    const meridian = format(date, 'a');
-    return `${weekDay} ${hour}:${minutes}${meridian}`;
-  }
-
-  const notificationDate2 = (date) => {
-    const month = format(date, 'MMM');
-    const day = format(date, 'd');
-    const year = format(date, 'yyyy');
-    return `${month} ${day}, ${year}`;
-  }
 
   useEffect(() => {
     const handleClickOutside = (event: React.MouseEvent) => {
@@ -156,338 +217,373 @@ export default function Header() {
     };
   }, []);
 
+  const changePassword = async(e) => {
+    e.preventDefault();
+    try {
+      if(password === cPassword) {
+        const result = await dispatch(updateAdminDetailsThunk({
+          userid: userId,
+          password: password
+        })).unwrap();
+        if(result?.message === "Profile updated successfully") {
+          toast.success("Password updated successfully");
+          setPassword("");
+          setCPassword("");
+          setPasswordModal(false);
+        }
+      } else{
+        toast.warning("Password and confirm password do no match");
+      }
+    } catch (error) {
+      toast.error("Error upading password");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    } finally {
+      
+    }
+  }
+
   return (
-    <div>
-      <header
-        className="bg-white flex flex-row text-black px-2 items-center justify-between z-50 fixed top-0 left-0 right-0 w-full h-[94px] border border-b-[#E4E4E4]"
+    <header
+      className="bg-white flex flex-row text-black px-2 items-center justify-between z-50 fixed top-0 left-0 right-0 w-full h-[94px] border border-b-[#E4E4E4]"
+    >
+      {/* <ToastContainer /> */}
+      <a
+        className="flex items-center justify-center md:ml-[70px] sm:ml-[20px]"
       >
-        {/* <ToastContainer /> */}
-        <a
-          className="flex items-center justify-center md:ml-[70px] sm:ml-[20px]"
+        <img 
+          src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"} 
+          alt="logo" 
+          className="w-[51px] "
+        />
+      </a>
+
+      <div
+        className={`flex flex-row ${
+          !showProfile ? "mr-0" : "mr-[60px]"
+        } sm:mr-[60px]`}
+      >
+        <div
+          className="bg-[#DCEBDF] sm:p-[5px] p-[7px] sm:w-[40px] w-[25px] sm:h-[40px] h-[25px] rounded-[8px] mr-[10px] sm:mt-0 mt-[8px] cursor-pointer"
+          onClick={openModal}
         >
-          <img 
-            src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"} 
-            alt="logo" 
-            className="w-[51px] "
-          />
-        </a>
+          <Bell className="sm:w-[16px] w-[12px] sm:h-[18px] h-[12px] text-black" />
+          <a
+            className="float-right flex sm:mt-[-28px] mt-[-25px] sm:mr-[-5px] mr-[-7px] pl-[3.5px] text-[#FFFFFF] text-[9px] w-[12px] h-[12px] bg-[#070000] rounded-full"
+          >
+            1
+          </a>
+        </div>
 
         <div
-          className={`flex flex-row ${
-            !showProfile ? "mr-0" : "mr-[60px]"
-          } sm:mr-[60px]`}
+          className="flex flex-row"
         >
-          <div
-            className="bg-[#DCEBDF] sm:p-[5px] p-[7px] sm:w-[40px] w-[25px] sm:h-[40px] h-[25px] rounded-[8px] mr-[10px] sm:mt-0 mt-[8px] cursor-pointer"
-            onClick={openModal}
-          >
-            <Bell className="sm:w-[16px] w-[12px] sm:h-[18px] h-[12px] text-black" />
-            <a
-              className="float-right flex sm:mt-[-28px] mt-[-25px] sm:mr-[-5px] mr-[-7px] pl-[3.5px] text-[#FFFFFF] text-[9px] w-[12px] h-[12px] bg-[#070000] rounded-full"
-            >
-              1
-            </a>
-          </div>
-
           <div
             className="flex flex-row"
           >
             <div
-              className="flex flex-row"
+              className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-0 mt-[8px] sm:mr-[10px] mr-0"
             >
-              <div
-                className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-0 mt-[8px] sm:mr-[10px] mr-0"
+              <a
+                className="font-montserrat sm:text-base text-[12px] font-semibold text-white"
               >
-                <a
-                  className="font-montserrat sm:text-base text-[12px] font-semibold text-white"
-                >
-                  {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
-                </a>
-              </div>
-              <button
-                type="button"
-                className="sm:mr-[10px] mr-[5px] sm:mt-0 mt-[7px]"
-              >
-                <ChevronDown
-                  className="sm:w-[22px] w-[15px] sm:h-[22px] h-[15px] text-[#000000]"
-                  onClick={() => setShowProfile(true)}
-                />
-              </button>
+                {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
+              </a>
+            </div>
+            <button
+              type="button"
+              className="sm:mr-[10px] mr-[5px] sm:mt-0 mt-[7px]"
+            >
+              <ChevronDown
+                className="sm:w-[22px] w-[15px] sm:h-[22px] h-[15px] text-[#000000]"
+                onClick={() => setShowProfile(true)}
+              />
+            </button>
 
-              {
-                showProfile && <div 
-                  className="fixed flex flex-col bg-white sm:w-[220px] w-[200px] ml-[-5px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px]"
-                  ref={elementRef}
+            {
+              showProfile && <div 
+                className="fixed flex flex-col bg-white sm:w-[220px] w-[200px] ml-[-5px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px]"
+                ref={elementRef}
+              >
+                <div
+                  className="flex flex-row"
                 >
                   <div
-                    className="flex flex-row"
+                    className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0"
                   >
-                    <div
-                      className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0"
+                    <a
+                      className="font-montserrat sm:text-base text-[10px] font-semibold text-white"
                     >
-                      <a
-                        className="font-montserrat sm:text-base text-[10px] font-semibold text-white"
-                      >
-                        {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
-                      </a>
-                    </div>
-                    <div
-                      className="flex flex-col w-[123px] sm:ml-[5px] ml-[10px]"
-                    >
-                      <p
-                        className="text-poppins sm:text-[14px] text-[12px] text-normal text-custom-black2"
-                      >
-                        {userDetails?.first_name} {userDetails?.last_name}
-                      </p>
-                      <p
-                        className="text-inter sm:text-[12px] text-[10px] text-normal text-custom-gray2"
-                      >
-                        {userDetails?.email}
-                      </p>
-                      <p
-                        className="text-inter sm:text-[10px] text-[8px] text-normal text-custom-gray3"
-                      >
-                        (Super admin)
-                      </p>
-                    </div>
+                      {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
+                    </a>
                   </div>
-
                   <div
-                    className="border-t-[0.4px] border-custom-gray4 sm:w-[210px] w-[190px] my-[5px]"
-                  ></div>
-                  <div
-                    className="pl-[10px]"
+                    className="flex flex-col w-[123px] sm:ml-[5px] ml-[10px]"
                   >
-                    <ul>
-                      <li>
-                        <div
-                          className="flex flex-row cursor-pointer py-[5px]"
-                        >
-                          <RiSettings4Line
-                            className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
-                          />
-                          <a
-                            className="sm:text-[15px] text-[12px] pl-[5px]"
-                            onClick={() => {navigate('/profile-settings')}}
-                          >Profile setting</a>
-                        </div>
-                      </li>
-                      <li
-                        className="flex-row-between"
+                    <p
+                      className="text-poppins sm:text-[14px] text-[12px] text-normal text-custom-black2"
+                    >
+                      {userDetails?.first_name} {userDetails?.last_name}
+                    </p>
+                    <p
+                      className="text-inter sm:text-[12px] text-[10px] text-normal text-custom-gray2"
+                    >
+                      {userDetails?.email}
+                    </p>
+                    <p
+                      className="text-inter sm:text-[10px] text-[8px] text-normal text-custom-gray3"
+                    >
+                      (Super admin)
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="border-t-[0.4px] border-custom-gray4 sm:w-[210px] w-[190px] my-[5px]"
+                ></div>
+                <div
+                  className="pl-[10px]"
+                >
+                  <ul>
+                    <li>
+                      <div
+                        className="flex flex-row cursor-pointer py-[5px]"
                       >
-                        <div
-                          className="flex flex-row cursor-pointer py-[5px]"
-                        >
-                          {/* <RiSettings4Line
-                            className="mt-[4px]"
-                          /> */}
-                          <Bell
-                            className="sm:w-[15px] w-[12px] sm:h-[15px] h-[12px] sm:mt-[5px] mt-[4px]"
-                          />
-                          <a
-                            className="sm:text-[15px] text-[12px] pl-[5px]"
-                          >Notification setting</a>
-                        </div>
-                        <div
-                          className="mt-[7.5px] transition-transform duration-1000 ease-in-out"
-                          onClick={() => setShowNotfication(!showNotification)}
-                        >
-                          {/* {notificationToggle()} */}
-                          <label className="relative cursor-pointer">
-                            <input type="checkbox" className="sr-only peer" />
-                            <div
-                              className="sm:w-[45px] w-[30px] sm:h-[20px] h-[13px] flex items-center bg-gray-300 rounded-full sm:text-[7px] text-[6px] peer-checked:text-[#00D13B] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer after:content-['OFF'] peer-checked:after:content-['ON'] sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[10px] after:absolute sm:after:left-[2px] after:left-[0px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full sm:after:h-4 after:h-3 sm:after:w-5 after:w-5 after:transition-all peer-checked:bg-[#00D13B]">
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div
-                          className="flex flex-row cursor-pointer py-[5px]"
-                          onClick={e => {setPasswordModal(true)}}
-                        >
-                          <RiLock2Line
-                            className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
-                          />
-                          <a
-                            className="sm:text-[15px] text-[12px] pl-[5px]"
-                          >Change password</a>
-                        </div>
-                        {
-                          passwordModal && (
-                            <div
-                              className="fixed-full-screen"
+                        <RiSettings4Line
+                          className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
+                        />
+                        <a
+                          className="sm:text-[15px] text-[12px] pl-[5px]"
+                          onClick={() => {navigate('/profile-settings')}}
+                        >Profile setting</a>
+                      </div>
+                    </li>
+                    <li
+                      className="flex-row-between"
+                    >
+                      <div
+                        className="flex flex-row cursor-pointer py-[5px]"
+                      >
+                        {/* <RiSettings4Line
+                          className="mt-[4px]"
+                        /> */}
+                        <Bell
+                          className="sm:w-[15px] w-[12px] sm:h-[15px] h-[12px] sm:mt-[5px] mt-[4px]"
+                        />
+                        <a
+                          className="sm:text-[15px] text-[12px] pl-[5px]"
+                        >Notification setting</a>
+                      </div>
+                      <div
+                        className="mt-[7.5px] transition-transform duration-1000 ease-in-out"
+                        onClick={() => setShowNotfication(!showNotification)}
+                      >
+                        {/* {notificationToggle()} */}
+                        <label className="relative cursor-pointer">
+                          <input type="checkbox" className="sr-only peer" checked={notificationStatus} onClick={e => {updateNotificationStatus(e)}} />
+                          <div
+                            className="sm:w-[45px] w-[30px] sm:h-[20px] h-[13px] flex items-center bg-gray-300 rounded-full sm:text-[7px] text-[6px] peer-checked:text-[#00D13B] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer after:content-['OFF'] peer-checked:after:content-['ON'] sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[10px] after:absolute sm:after:left-[2px] after:left-[0px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full sm:after:h-4 after:h-3 sm:after:w-5 after:w-5 after:transition-all peer-checked:bg-[#00D13B]">
+                          </div>
+                        </label>
+                      </div>
+                    </li>
+                    <li>
+                      <div
+                        className="flex flex-row cursor-pointer py-[5px]"
+                        onClick={e => {setPasswordModal(true)}}
+                      >
+                        <RiLock2Line
+                          className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
+                        />
+                        <a
+                          className="sm:text-[15px] text-[12px] pl-[5px]"
+                        >Change password</a>
+                      </div>
+                      {
+                        passwordModal && (
+                          <div
+                            className="fixed-full-screen"
+                          >
+                            <form
+                              className="fixed-popup w-full max-w-[526px] h-[250px] flex flex-col p-7"
+                              ref={passwordRef}
+                              onSubmit={changePassword}
                             >
                               <div
-                                className="fixed-popup w-full max-w-[526px] h-[400px] flex flex-col p-7"
-                                ref={currencyRef}
+                                className='flex-row-between'
                               >
-                                <div
-                                  className='flex-row-between'
+                                <h4
+                                  className='text-2xl font-medium'
+                                >Change password</h4>
+                                <button
+                                  type='button'
+                                  className='text-3xl'
+                                  onClick={() => {
+                                    setPasswordModal(false);
+                                  }}
                                 >
-                                  <h4
-                                    className='text-2xl font-medium'
-                                  >Change password</h4>
+                                  <RiCloseCircleFill className="text-custom-green" />
+                                </button>
+                              </div>
+
+                              <div className="w-full py-5 flex min-sm:flex-row max-sm:flex-col gap-2">
+                                <div
+                                  className='flex flex-col my-1 w-full'
+                                >
+                                  <label className='search-input-label'>Password</label>
+                                  <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={e => {setPassword(e.target.value)}}
+                                    className="search-input-text"
+                                    minLength={8}
+                                    placeholder="Enter password"
+                                    required
+                                  />
                                   <button
-                                    type='button'
-                                    className='text-3xl'
-                                    onClick={() => {
-                                      setPasswordModal(false);
-                                    }}
+                                    type="button"
+                                    onClick={() => { setShowPassword(!showPassword) }}
+                                    className="relative float-right mt-[-35px] mr-[15px] ml-auto"
                                   >
-                                    <RiCloseCircleFill className="text-custom-green" />
+                                    {showPassword ? (
+                                      <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
+                                    ) : (
+                                      <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
+                                    )}
                                   </button>
                                 </div>
 
-                                <div className="w-full py-5 flex min-sm:flex-row max-sm:flex-col gap-2">
-                                  <div
-                                    className='flex flex-col my-1 w-full'
+                                <div
+                                  className='flex flex-col w-full my-1'
+                                >
+                                  <label className='search-input-label'>Confirm Password</label>
+                                  <input
+                                    type={showCPassword ? "text" : "password"}
+                                    name='cPassword'
+                                    placeholder='Enter password'
+                                    value={cPassword}
+                                    onChange={e => {setCPassword(e.target.value)}}
+                                    minLength={8}
+                                    required
+                                    className='search-input-text'
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => { setShowCPassword(!showCPassword) }}
+                                    className="relative float-right mt-[-35px] mr-[15px] ml-auto"
                                   >
-                                    <label className='search-input-label'>Password</label>
-                                    <input
-                                      type={showPassword ? "text" : "password"}
-                                      defaultValue={password}
-                                      onChange={e => {setPassword(e.target.value)}}
-                                      className="search-input-text"
-                                      minLength={8}
-                                      placeholder="Enter password"
-                                      required
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={() => { setShowPassword(!showPassword) }}
-                                      className="relative float-right mt-[-35px] mr-[15px] ml-auto"
-                                    >
-                                      {showPassword ? (
-                                        <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
-                                      ) : (
-                                        <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
-                                      )}
-                                    </button>
-                                  </div>
-
-                                  <div
-                                    className='flex flex-col w-full my-1'
-                                  >
-                                    <label className='search-input-label'>Confirm Password</label>
-                                    <input
-                                      type={showCPassword ? "text" : "password"}
-                                      name='cPassword'
-                                      placeholder='Enter password'
-                                      defaultValue={cPassword}
-                                      onChange={e => {setCPassword(e.target.value)}}
-                                      minLength={8}
-                                      required
-                                      className='search-input-text'
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={() => { setShowCPassword(!showCPassword) }}
-                                      className="relative float-right mt-[-35px] mr-[15px] ml-auto"
-                                    >
-                                      {showCPassword ? (
-                                        <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
-                                      ) : (
-                                        <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
-                                      )}
-                                    </button>
-                                  </div>
+                                    {showCPassword ? (
+                                      <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
+                                    ) : (
+                                      <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
+                                    )}
+                                  </button>
                                 </div>
+                              </div>
 
-                                <div className="flex flex-row justify-center gap-2">
-                                  <button className="btn-green w-full max-w-[150px] mx-auto">Save</button>
-                                  <button className="text-base font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px] bg-red-600 w-full max-w-[150px] mx-auto" onClick={e => {
+                              <div className="flex flex-row justify-center gap-2">
+                                <button className="btn-green w-full max-w-[150px] mx-auto" type="submit">Save</button>
+                                <button
+                                  className="text-base font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px] bg-red-600 w-full max-w-[150px] mx-auto"
+                                  type="button"
+                                  onClick={e => {
                                     setPassword('');
                                     setCPassword('');
                                     setPasswordModal(false);
-                                  }}>Cancel</button>
-                                </div>
+                                  }}
+                                >Cancel</button>
                               </div>
-                            </div>
-                          )
-                        }
-                      </li>
-                      <li>
-                        <div
-                          className="flex flex-row cursor-pointer py-[5px]"
-                          onClick={() => setShowCurrency(true)}
-                        >
-                          {/* <RiSettings4Line
-                            className="mt-[4px]"
-                          /> */}
-                          <img 
-                            src={`${
-                              getflag(currency)
-                              ?.flag
-                            }`}
-                            alt={currency}
-                            className="h-[12px] mt-[6px] ml-[1px]"
-                          />
-                          <a
-                            className="sm:text-[15px] text-[12px] pl-[5px]"
-                          >Default currency</a>
-                        </div>
-                        {
-                          showCurrency && (
+                            </form>
+                          </div>
+                        )
+                      }
+                    </li>
+                    <li>
+                      <div
+                        className="flex flex-row cursor-pointer py-[5px]"
+                        onClick={() => setShowCurrency(true)}
+                      >
+                        {/* <RiSettings4Line
+                          className="mt-[4px]"
+                        /> */}
+                        <img 
+                          src={`${
+                            getflag(currency)
+                            ?.flag
+                          }`}
+                          alt={currency}
+                          className="h-[12px] mt-[6px] ml-[1px]"
+                        />
+                        <a
+                          className="sm:text-[15px] text-[12px] pl-[5px]"
+                        >Default currency</a>
+                      </div>
+                      {
+                        showCurrency && (
+                          <div
+                            className="fixed-full-screen"
+                          >
                             <div
-                              className="fixed-full-screen"
+                              className="fixed-popup w-full max-w-[526px] h-[200px] flex flex-col p-7"
+                              ref={currencyRef}
                             >
                               <div
-                                className="fixed-popup w-full max-w-[526px] h-[200px] flex flex-col p-7"
-                                ref={currencyRef}
+                                className='flex-row-between'
                               >
-                                <div
-                                  className='flex-row-between'
+                                <h4
+                                  className='text-2xl font-medium'
+                                >Select currency</h4>
+                                <button
+                                  type='button'
+                                  className='text-3xl'
+                                  onClick={() => {
+                                    setShowCurrency(false);
+                                    setNewCurrency("");
+                                  }}
                                 >
-                                  <h4
-                                    className='text-2xl font-medium'
-                                  >Select currency</h4>
-                                  <button
-                                    type='button'
-                                    className='text-3xl'
-                                    onClick={() => {
-                                      setShowCurrency(false);
-                                      setNewCurrency("");
-                                    }}
-                                  >
-                                    <RiCloseCircleFill className="text-custom-green" />
-                                  </button>
-                                </div>
-
-                                <div className="w-full py-5">
-                                  <select className="select-input" onChange={e => {
-                                    setNewCurrency(e.target.value)
-                                  }}>
-                                    {
-                                      flagList.map((flag, index) => {
-                                        return(
-                                          <option selected={flag.name == currency ? true : false} value={flag.name} key={index}>{flag.name} - {flag.logo}</option>
-                                        )
-                                      })
-                                    }
-                                  </select>
-                                </div>
-
-                                <button className="btn-green w-full max-w-[150px] mx-auto" onClick={e => {updateDefaultCurrency(e)}}>Save</button>
+                                  <RiCloseCircleFill className="text-custom-green" />
+                                </button>
                               </div>
-                            </div>
-                          )
-                        }
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              }
-            </div>
 
-            <a
-              className="font-inter font-normal sm:mt-[1px] mt-[9px] sm:text-[16px] text-[14px]"
-            >
-              Super admin
-            </a>
+                              <div className="w-full py-5">
+                                <select className="select-input" onChange={e => {
+                                  setNewCurrency(e.target.value)
+                                }}>
+                                  {
+                                    flagList.map((flag, index) => {
+                                      return(
+                                        <option selected={flag.name == currency ? true : false} value={flag.name} key={index}>{flag.name} - {flag.logo}</option>
+                                      )
+                                    })
+                                  }
+                                </select>
+                              </div>
+
+                              <button className="btn-green w-full max-w-[150px] mx-auto" onClick={e => {updateDefaultCurrency(e)}}>Save</button>
+                            </div>
+                          </div>
+                        )
+                      }
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            }
           </div>
+
+          <a
+            className="font-inter font-normal sm:mt-[1px] mt-[9px] sm:text-[16px] text-[14px]"
+          >
+            Super admin
+          </a>
         </div>
-      </header>
+      </div>
       {
         showNotification && (
           <div className="fixed-full-screen">
@@ -500,9 +596,9 @@ export default function Header() {
               >
                 <h6
                   className="font-inter font-bold text-xl text-black"
-                >Notfications</h6>
+                >Notifications</h6>
                 <label className="relative cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
+                  <input type="checkbox" className="sr-only peer" checked={notificationStatus} onClick={e => {updateNotificationStatus(e)}} />
                   <div
                     className="w-[45px] h-[20px] flex items-center bg-gray-300 rounded-full text-[7px] peer-checked:text-[#00D13B] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer after:content-['OFF'] peer-checked:after:content-['ON'] peer-checked:after:translate-x-full after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-5 after:transition-all peer-checked:bg-[#00D13B]">
                   </div>
@@ -515,36 +611,9 @@ export default function Header() {
                   notifications && notifications.map((notification, index) => {
                     return(
                       <div
-                        className="py-[15px] flex flex-row"
                         key={index}
-                      >
-                        <div
-                          className="w-[43.2px] h-[38.2px] bg-[#D9D9D9] rounded-full flex justify-center"
-                        >
-                          {
-                            notification.image == '' ?
-                            <RiUser3Fill
-                              className="text-[21.1px] text-white m-auto"
-                            /> :
-                            <img
-                              src=''
-                              alt="logo"
-                              className="w-[21.1px]"
-                            />
-                          }
-                        </div>
-
-                        <div
-                          className="px-4 flex flex-col w-full"
-                        >
-                          <h6 className="font-inter font-semibold text-[15px] text-black">{notification?.header}</h6>
-                          <p className="my-[6px] px-[11px] py-[2px] font-inter font-normal text-[13px] text-black border border-gray-200 rounded-[10px]">{notification?.text}</p>
-                          <div className="flex flex-row justify-between w-full font-inter font-semibold text-[10px] text-black">
-                            <p className="">{notificationDate1(notification?.date)}</p>
-                            <p>{notificationDate2(notification?.date)}</p>
-                          </div>
-                        </div>
-                      </div>
+                        dangerouslySetInnerHTML={{__html: notification?.data}}
+                      ></div>
                     )
                   })
                 }
@@ -553,6 +622,6 @@ export default function Header() {
           </div>
         )
       }
-    </div>
+    </header>
   );
 }

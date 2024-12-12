@@ -705,6 +705,13 @@ export const getAdminDetailsThunk = createAsyncThunk(
   }
 );
 
+export const updateAdminDetailsThunk = createAsyncThunk(
+  "users/updateAdminDetails",
+  async ({userid, first_name, last_name, email, phone, password, profile_pic, street_name, city, state_name, country}: any) => {
+    return await userApis.updateAdminDetailsApi(userid, first_name, last_name, email, phone, password, profile_pic, street_name, city, state_name, country);
+  }
+);
+
 export const getDefaultCurrencyThunk = createAsyncThunk(
   "users/getDefaultCurrency",
   async ({userid}: any) => {
@@ -716,5 +723,26 @@ export const updateDefaultCurrencyThunk = createAsyncThunk(
   "users/updateDefaultCurrency",
   async ({userid, defaultCurrency}: any) => {
     return await userApis.updateDefaultCurrencyApi(userid, defaultCurrency);
+  }
+);
+
+export const getNotificationsThunk = createAsyncThunk(
+  "users/getNotifications",
+  async ({user_role}: any) => {
+    return await userApis.getNotificationsApi(user_role);
+  }
+);
+
+export const getNotificationStatusThunk = createAsyncThunk(
+  "users/getNotificationStatus",
+  async ({userid}: any) => {
+    return await userApis.getNotificationStatusApi(userid);
+  }
+);
+
+export const updateNotificationStatusThunk = createAsyncThunk(
+  "users/updateNotificationStatus",
+  async ({userid, status}: any) => {
+    return await userApis.updateNotificationStatusApi(userid, status);
   }
 );

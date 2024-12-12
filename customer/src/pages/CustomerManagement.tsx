@@ -38,7 +38,7 @@ const CustomerManagement: React.FC = () => {
   };
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(intialFilter);
-  console.log("filters...", filters);
+  // console.log("filters...", filters);
   
   const [filters2, setFilters2] = useState(intialFilter2);
   

@@ -1,17 +1,11 @@
 import React from "react";
 import { useAppSelector } from "store/hooks";
 export default function Footer() {
-  const token = useAppSelector((state) => state.auth.token);
   return (
     <footer
-      className=""
+      className="text-center bg-[#E3EFE5] border w-full font-inter font-normal text-[10px] text-[#848484] absolute left-0 right-0 bottom-0 z-[-1]"
     >
-      <div className="text-center">
-        © 2024 Copyright:{token}
-        <a className="text-dark" href="#">
-          hordanso
-        </a>
-      </div>
+      <a>© 2024 HORDANSO WORKSPACE. All rights reserved</a>
     </footer>
   );
 }

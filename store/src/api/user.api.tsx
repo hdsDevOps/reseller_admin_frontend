@@ -1057,6 +1057,27 @@ async function getAdminDetailsApi(
   }
 };
 
+async function updateAdminDetailsApi(
+  userid: string,
+  first_name: string,
+  last_name: string,
+  email: string,
+  phone: string,
+  password: string,
+  profile_pic: string,
+  street_name: string,
+  city: string,
+  state_name: string,
+  country: string,
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateAdminDetails, {userid, first_name, last_name, email, phone, password, profile_pic, street_name, city, state_name, country});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function getDefaultCurrencyApi(
   userid: string
 ): Promise<any> {
@@ -1074,6 +1095,40 @@ async function updateDefaultCurrencyApi(
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.updateDefaultCurrency, {userid, defaultCurrency});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getNotificationsApi(
+  user_role: string,
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getNotifications, {user_role});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getNotificationStatusApi(
+  userid: string,
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getNotificationStatus, {userid});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function updateNotificationStatusApi(
+  userid: string,
+  status: Boolean
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.updateNotificationStatus, {userid, status});
     return result;
   } catch (error: any) {
     throw error;
@@ -1162,6 +1217,10 @@ export const userApis = {
   getTermsAndConditionsApi,
   updateTermsAndConditionsApi,
   getAdminDetailsApi,
+  updateAdminDetailsApi,
   getDefaultCurrencyApi,
   updateDefaultCurrencyApi,
+  getNotificationsApi,
+  getNotificationStatusApi,
+  updateNotificationStatusApi,
 };

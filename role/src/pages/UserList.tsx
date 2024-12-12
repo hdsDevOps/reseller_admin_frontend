@@ -360,7 +360,7 @@ const UserList = () => {
                       <p
                         className={`td-initial text-center pt-3 rounded-full`}
                         // bg-[${roleColors[item?.role]}]
-                      >{getInitials(user?.first_name)}{getInitials(user?.last_name)}</p>
+                      >{user?.first_name?.charAt(0).toUpperCase()}{user?.last_name?.charAt(0).toUpperCase()}</p>
                       <p className="td-css-text pt-2">{user?.first_name} {user?.last_name}</p>
                     </td>
                     <td className="td-css-text m-2">{user?.email}</td>
