@@ -38,7 +38,7 @@ const Login: React.FC = () => {
             <p className="text-gray-600">
               New to Hordanso?{" "}
               <Link to="/register" className="text-blue-500 hover:text-blue-700">
-                Register Now
+                Register Now 1111
               </Link>
             </p>
           </div>
