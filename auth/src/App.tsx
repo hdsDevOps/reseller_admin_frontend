@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import ReduxProvider from "store/ReduxProvider";
 import AuthApp from "./pages";
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import "./auth.css";
 
 const App: React.FC = () => {

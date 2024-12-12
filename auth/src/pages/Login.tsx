@@ -1,131 +1,346 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "store/hooks";
+import { HiOutlineEye } from "react-icons/hi";
+import { RiEyeCloseLine } from "react-icons/ri";
 import { makeUserLoginThunk } from "store/user.thunk";
+import '../styles/styles.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("biswajit@yopmail.com");
-  const [password, setPassword] = useState("Admin@1234");
-  const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState(localStorage.getItem('email') || "");
+  const [password, setPassword] = useState(localStorage.getItem('password') || "");
+  const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+
+  useEffect(() => {
+    if(localStorage.getItem('email') && localStorage.getItem('password')){
+      setRememberMe(true);
+    }
+    else {
+      setRememberMe(false);
+    }
+  }, [])
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    // navigate("/otp?mode=signin");
 
     try {
       const result = await dispatch(
         makeUserLoginThunk({
           email: email,
-          password: password,
-          login_user_type: 0,
+          password: password
         })
       ).unwrap();
       console.log("result....", result);
-      navigate("/dashboard");
+      if(rememberMe){
+        localStorage.setItem('email', email);
+        localStorage.setItem('password', password);
+      }
+      navigate("/otp?mode=signin", {state: {adminId: result?.userId}});
     } catch (error) {
-      console.error("Login error:", error);
+      // console.error("Login error:", error);
+      toast.error("Please enter valid email or password!");
     }
   };
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleOpen = () => {
+    setShow(true);
+  };
+
+  const handleClose = () => {
+    setShow(false);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-5 bg-gray-100">
-      <div className="w-full max-w-md">
-        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div className="mb-6 text-center">
-            <h3 className="text-2xl font-bold mb-2">Sign in your account</h3>
-            <p className="text-gray-600">
-              New to Hordanso?{" "}
-              <Link to="/register" className="text-blue-500 hover:text-blue-700">
-                Register Now
-              </Link>
-            </p>
+    <div className="w-full flex flex-col justify-center items-center h-full xsm-max:px-1 font-inter">
+      <ToastContainer />
+      <div className="w-full max-w-[32rem] bg-gray-50 p-12 rounded-3xl xsm-max:px-4">
+        <div className="w-full">
+          <div className="text-center">
+            <div className="flex items-center justify-center">
+              <img
+                src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
+                alt="logo"
+                className="w-[108px]"
+              />
+            </div>
+            <h3 className="h3-text pt-4">
+              Log in your account
+            </h3>
+            
           </div>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email"
-                type="text"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                data-testid="email"
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                Password
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                id="password"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                data-testid="password"
-              />
-            </div>
-            <div className="flex items-center justify-between mb-6">
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit"
-                data-testid="log-in"
-              >
-                Log in
-              </button>
-              <Link
-                to="/forgotpassword"
-                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-                data-testid="forgot-password"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-            <div className="text-center">
-              <p className="text-gray-600 text-xs">
-                By signing in, you agree to our{" "}
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="text-blue-500 hover:text-blue-800"
-                  data-testid="terms-conditions"
+          <div className="mt-6">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col"
+            >
+              <div className="max-w-[456px]">
+                <label
+                  className="login-label"
+                  htmlFor="formBasicEmail"
                 >
-                  Terms and conditions
+                  Email
+                </label>
+                <div
+                  className="my-[6px] w-full"
+                >
+                  <input
+                    type="email"
+                    id="formBasicEmail"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="login-input"
+                    data-testid="email"
+                    required
+                    name="email"
+                  />
+                </div>
+              </div>
+              <div className="max-w-[456px] mt-4">
+                <label className="login-label">
+                  Password
+                </label>
+                <div className="my-[6px]">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={handlePasswordChange}
+                    className="login-input"
+                    minLength={8}
+                    placeholder="Enter password"
+                    required
+                    name="password"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="relative float-right mt-[-35px] mr-[15px]"
+                  >
+                    {showPassword ? (
+                      <HiOutlineEye className="h-[25px] w-[25px]" aria-hidden="true" />
+                    ) : (
+                      <RiEyeCloseLine className="h-[25px] w-[25px]" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="mt-[25px] flex justify-between">
+                <div className="flex-row-between w-fit-content gap-2 pt-1.5">
+                  <input
+                    type="checkbox"
+                    className="border border-[#545454] h-4 w-4 accent-[#12A833]"
+                    checked={rememberMe}
+                    onChange={() => {setRememberMe(!rememberMe)}}
+                  />
+
+                  <label
+                    className="text-xs text-gray-900"
+                  >
+                    Remember me
+                  </label>
+                </div>
+
+                <div className="">
+                  <Link
+                    to="/forgotpassword"
+                    className="text-xs font-normal text-custom-green hover:underline"
+                    data-testid="forgot-password"
+                  >
+                    Forgot Password
+                  </Link>
+                </div>
+              </div>
+              <div className="max-w-[456px] mt-[25px]">
+                <button
+                  type="submit"
+                  data-testid="log-in"
+                  className="w-full btn-green h-11"
+                >
+                  Log in
                 </button>
-              </p>
+              </div>
+              <div className="text-center mt-8">
+                <p className="text-sm font-medium text-gray-900">
+                  By signing in, you agree to our{" "}
+                  <button
+                    type="button"
+                    onClick={handleOpen}
+                    className="text-green-600"
+                    data-testid="terms-conditions"
+                  >
+                    Terms and conditions
+                  </button>
+                </p>
+              </div>
+            </form>
+          </div>
+          {show && (
+            <div className="fixed-full-screen">
+              <div className="fixed-popup max-w-xl w-full p-2">
+                <div className="flex justify-between items-center pb-3">
+                  <h1 className="h1-text">Terms of Services</h1>
+                  <button onClick={handleClose} className="text-black">
+                    <img
+                      src={'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6'}
+                      alt="close"
+                      className="w-[40px] h-[40px]"
+                    />
+                  </button>
+                </div>
+                <p
+                  className="h-[500px] overflow-scroll overflow-x-hidden font-inter text-[14px] pr-1"
+                >
+                &nbsp;1. Introduction
+                These Terms and Conditions ("Terms") govern your use of the design services provided by [Your Company Name] ("Company," "we," "us," or "our"). By using our design services, you agree to be bound by these Terms. If you do not agree with any part of these Terms, you must not use our design services.
+
+                <br /><br />
+
+                &nbsp;2. Intellectual Property Rights
+
+                <br />
+
+                2.1. Ownership: All design work, including but not limited to graphics, logos, illustrations, and layouts created by [Your Company Name] remains the intellectual property of [Your Company Name] until full payment is received.
+
+                <br /><br />
+
+                2.2. Usage Rights: Upon full payment, you are granted a non-exclusive, non-transferable license to use the design work for the intended purpose as agreed upon. This license does not grant you ownership of the design work, only the right to use it.
+
+                <br /><br />
+
+                2.3. Third-Party Elements: Any third-party elements, such as stock images or fonts, included in the design work may have separate licenses. It is your responsibility to comply with the terms of these licenses.
+
+                <br /><br />
+
+                &nbsp;3. Payment and Fees
+
+                <br />
+
+                3.1. Payment Terms: Payment terms will be outlined in the invoice provided. Full payment is required upon completion of the design work unless otherwise agreed upon in writing.
+
+                <br /><br />
+
+                3.2. Late Payments: Late payments may incur additional fees as specified in the invoice or agreed upon separately.
+
+                <br /><br />
+
+                &nbsp;4. Revisions and Modifications
+
+                <br />
+
+                4.1. Revisions: We offer a reasonable number of revisions to the design work as part of our service. The scope of revisions will be defined in the project agreement.
+
+                <br /><br />
+
+                4.2. Additional Revisions: Any additional revisions beyond the agreed-upon scope may incur extra charges.
+
+                <br /><br />
+
+                &nbsp;5. Use of Designs
+
+                <br /><br />
+
+                5.1. Permitted Use: The design work may be used for the specific purpose for which it was created and as described in the project agreement.
+
+                <br /><br />
+
+                5.2. Prohibited Use: You may not resell, redistribute, or use the design work for any other purpose without prior written consent from [Your Company Name].
+
+                <br /><br />
+                
+                &nbsp;6. Confidentiality
+
+                <br />
+
+                6.1. Confidential Information: Any confidential information shared during the course of the project will be kept confidential and will not be disclosed to any third parties without your consent.
+
+                <br /><br />
+                
+                &nbsp;7. Liability
+
+                <br />
+
+                7.1. No Warranty: The design work is provided "as is" without any warranty of any kind, either express or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose.
+                
+                <br /><br />
+
+                7.2. Limitation of Liability: In no event shall [Your Company Name] be liable for any indirect, incidental, special, or consequential damages arising out of or in connection with the use or inability to use the design work.
+
+                <br /><br />
+                
+                &nbsp;8. Termination
+                
+                <br />
+
+                8.1. Termination by Client: You may terminate the project at any time by providing written notice. In such cases, you will be billed for any completed work and any expenses incurred up to the date of termination.
+
+                <br /><br />
+                
+                8.2. Termination by Company: We reserve the right to terminate the project if you breach any of these Terms. In such cases, no refund will be provided.
+
+                <br /><br />
+                
+                &nbsp;9. Governing Law
+
+                <br />
+
+                These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction].
+
+                <br /><br />
+                
+                &nbsp;10. Changes to Terms
+
+                <br />
+
+                We reserve the right to update these Terms from time to time. Any changes will be posted on our website, and it is your responsibility to review these Terms periodically.
+
+                <br /><br />
+                
+                &nbsp;11. Contact Information
+
+                <br />
+
+                If you have any questions about these Terms, please contact us at [Your Contact Information].
+                </p>
+              </div>
             </div>
-          </form>
+          )}
         </div>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Terms of Services</h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Woohoo, you are reading this text in a modal!
-                </p>
-              </div>
-              <div className="items-center px-4 py-3">
-                <button
-                  id="ok-btn"
-                  className="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  onClick={() => setShowModal(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="mt-12 mb-10 text-center">
+        <p className="text-[#848484] text-xs font-normal mt-8">© 2024 HORDANSO WORKSPACE. All rights reserved</p>
+      </div>
+
+      {/* <div className="mt-6 mb-10 text-center">
+        <p className="mb-3">Or</p>© 2024 HORDANSO WORKSPACE. All rights reserved
+        <button
+          type="button"
+          className="flex items-center justify-center w-full px-4 py-[.7rem] border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google logo"
+            className="h-5 w-5 mr-2"
+          />
+          <span className="text-gray-900 text-sm">Sign in with Google</span>
+        </button>
+      </div> */}
     </div>
   );
 };
