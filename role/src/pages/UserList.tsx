@@ -306,7 +306,7 @@ const UserList = () => {
               <input
                 type="text"
                 placeholder="Name,Email,Phone"
-                className="serach-input-no-radius min-[985px]:w-[315px] max-[985px]:w-full"
+                className="serach-input-no-radius min-[985px]:w-[315px] max-[985px]:w-full min-w-[200px]"
                 onChange={e => {setSearchData(e.target.value)}}
                 value={searchData}
               />

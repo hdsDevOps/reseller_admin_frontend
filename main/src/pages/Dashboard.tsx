@@ -415,8 +415,8 @@ const Dashboard: React.FC = () => {
               <div
                 className="flex flex-col justify-end text-end p-5 gap-2"
               >
-                <p className="font-inter font-bold text-base tracking-[1px] text-[#2A2B2D]">TEXT_SUB (100%)</p>
-                <p className="font-inter font-normal text-base text-[#727A8B]">Why are my stats inaccurate?</p>
+                {/* <p className="font-inter font-bold text-base tracking-[1px] text-[#2A2B2D]">TEXT_SUB (100%)</p>
+                <p className="font-inter font-normal text-base text-[#727A8B]">Why are my stats inaccurate?</p> */}
               </div>
             </div>
           </div>

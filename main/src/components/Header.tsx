@@ -31,7 +31,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [notificationStatus, setNotificationStatus] = useState(true);
-  console.log(notificationStatus);
+  // console.log(notificationStatus);
   
   const [showCurrency, setShowCurrency] = useState(false);
   const { userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);

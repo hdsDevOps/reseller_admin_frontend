@@ -9,6 +9,7 @@ import '../styles/styles.css';
 import { getBillingHistoryThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { FilterX } from 'lucide-react';
+const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
 
 const initialFilter = {
   start_date: "",
@@ -71,6 +72,7 @@ const BillingHistory: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1">
+      <BillingInvoice />
       <div className="flex-row-between-responsive">
         <h3 className="h3-text">
         Billing History

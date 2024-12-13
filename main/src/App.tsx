@@ -25,8 +25,8 @@ const App: React.FC = () => {
   useEffect(() => {
     const getUserAuthToken = async () => {
       try {
-        const getTokenFromLocalStorage = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
-        const getUserIdFromLocalStorage = await dispatch(getUserIdFromLSThunk()).unwrap();
+        await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+        await dispatch(getUserIdFromLSThunk()).unwrap();
       } catch (error) {
         // console.error("Error fetching token:", error);
         navigate('/login');
@@ -39,25 +39,15 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchUserDetails = async() => {
       try {
-        const getUserIdFromStorage = await dispatch(getAdminDetailsThunk({userid: userId})).unwrap();
+        const getUserIdFromLocalStorage = await dispatch(getUserIdFromLSThunk()).unwrap();
+        await dispatch(getAdminDetailsThunk({userid: getUserIdFromLocalStorage})).unwrap();
+        await dispatch(getDefaultCurrencyThunk({userid: getUserIdFromLocalStorage})).unwrap();
       } catch (error) {
         //
       }
     };
 
     fetchUserDetails();
-  }, [userId]);
-
-  useEffect(() => {
-    const fetchUserDefaultCurrency = async() => {
-      try {
-        await dispatch(getDefaultCurrencyThunk({userid: userId})).unwrap();
-      } catch (error) {
-        //
-      }
-    };
-
-    fetchUserDefaultCurrency();
   }, [userId]);
 
   return (
