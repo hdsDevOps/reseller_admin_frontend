@@ -220,27 +220,43 @@ function EditCustomer() {
     };
   }, []);
 
+  const validateForm = () => {
+    // Check for spaces only in any field
+    for (const key in customer) {
+      if (customer[key].trim() === '') {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  };
+
   const submit = async(e) => {
     e.preventDefault();
-    try {
-      const result = await dispatch(
-        editCustomerThunk(customer)
-      ).unwrap();
-      toast.success(result?.message);
-    } catch (error) {
-      toast.error("Error");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(validateForm()) {
+      try {
+        const result = await dispatch(
+          editCustomerThunk(customer)
+        ).unwrap();
+        toast.success(result?.message);
+      } catch (error) {
+        toast.error("Error");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+      } finally {
+        setTimeout(() => {
+          navigate(-1);
+        }, 1000);
       }
-    } finally {
-      setTimeout(() => {
-        navigate(-1);
-      }, 1000);
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   };
   

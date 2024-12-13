@@ -124,26 +124,42 @@ const AddVoucher: React.FC = () =>  {
     };
   }, []);
 
+  const validateForm = () => {
+    // Check for spaces only in any field
+    for (const key in voucher) {
+      if (voucher[key].trim() === '') {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  };
+
   const addVoucher = async(e) => {
     e.preventDefault();
-    try {
-      const result = await dispatch(
-        addVoucherThunk(voucher)
-      ).unwrap()
-      toast.success(result?.message);
-      setTimeout(() => {
-        navigate(-1);
-      }, 1000);
-    } catch (error) {
-      toast.error("Error adding voucher");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(validateForm()) {
+      try {
+        const result = await dispatch(
+          addVoucherThunk(voucher)
+        ).unwrap()
+        toast.success(result?.message);
+        setTimeout(() => {
+          navigate(-1);
+        }, 1000);
+      } catch (error) {
+        toast.error("Error adding voucher");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
       }
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   };
   

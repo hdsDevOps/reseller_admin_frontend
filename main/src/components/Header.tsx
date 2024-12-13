@@ -258,9 +258,9 @@ export default function Header() {
         className="flex items-center justify-center md:ml-[70px] sm:ml-[20px]"
       >
         <img 
-          src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"} 
+          src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo-2.png?alt=media&token=9315e750-1f5d-4032-ba46-1aeafa340a75"} 
           alt="logo" 
-          className="w-[51px] "
+          className="h-[45px] "
         />
       </a>
 

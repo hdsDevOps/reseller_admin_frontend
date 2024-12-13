@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import { IoIosArrowDown } from "react-icons/io";
 import { FaDownload } from "react-icons/fa6";
 // import { IoCalendarClearOutline } from "react-icons/io5";
@@ -9,6 +9,8 @@ import '../styles/styles.css';
 import { getBillingHistoryThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { FilterX } from 'lucide-react';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
 
 const initialFilter = {
@@ -26,13 +28,16 @@ const BillingHistory: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [domainList, setDomainList] = useState([]);
+  const pdfRef = useRef();
+  // console.log("pdfRef...", pdfRef.current);
+  const [pdfDownload, setPdfDownload] = useState('hidden');
 
   const [filter, setFilter] = useState(initialFilter);
-  console.log("filter...", filter);
+  // console.log("filter...", filter);
   
 
   const [billingHistory, setBillingHistory] = useState([]);
-  console.log(billingHistory);
+  // console.log(billingHistory);
   
 
   const fetchBillingHistory = async() => {
@@ -70,9 +75,33 @@ const BillingHistory: React.FC = () => {
   const currentItems = billingHistory.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(billingHistory.length / itemsPerPage);
 
+  const downloadInvoice = async() => {
+    await setPdfDownload("fixed z-[9999] left-[-9999px]");
+    const element = pdfRef.current;
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,  // Allow CORS requests for images
+      allowTaint: true, 
+    });
+    const imgData = canvas.toDataURL('image/png');
+
+    if (imgData.startsWith('data:image/png;base64,')) {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pdfWidth = 210;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+      pdf.save('invoice.pdf');
+    } else {
+      console.error("Image data is invalid or empty", imgData);
+    }
+
+    setPdfDownload('hidden');
+  }
+
   return (
     <div className="grid grid-cols-1">
-      <BillingInvoice />
       <div className="flex-row-between-responsive">
         <h3 className="h3-text">
         Billing History
@@ -187,97 +216,107 @@ const BillingHistory: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems?.map((detail, index) => (
-              <tr key={index} className="text-xs text-[#434D64]">
-                <td className="td-css-3 text-custom-green">
-                  {detail?.transaction_id}
-                </td>
-                <td className="td-css-3 text-custom-black-5">
-                  {`${detail?.first_name} ${detail?.last_name}`}
-                </td>
-                <td className="td-css-3 text-custom-black-5 flex items-center flex-col">
-                  <a>{detail?.date_invoice || ' '}</a>
-                  <small className="text-custom-green">12309864</small>
-                </td>
-                <td className="td-css-3 text-custom-black-5">
-                  {detail?.productType || ' '}
-                </td>
-                <td className="td-css-3 text-custom-black-5">
-                  {detail?.description || ' '}
-                </td>
-                <td className="td-css-3 text-custom-black-5">{detail?.domain || ' '}</td>
-                <td className="td-css-full-opactiy text-custom-black-5 min-w-[150px]">
-                  <span className="flex items-center justify-center">
-                    <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
-                    <span className="font-inter-bold-xs-60percent-black">
-                      {detail?.paymentMethod || ' '}
+            {
+              currentItems?.length>0 ? currentItems?.map((detail, index) => (
+                <tr key={index} className="text-xs text-[#434D64]">
+                  <td className="td-css-3 text-custom-green">
+                    {detail?.transaction_id}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">
+                    {`${detail?.first_name} ${detail?.last_name}`}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5 flex items-center flex-col">
+                    <a>{detail?.date_invoice || ' '}</a>
+                    <small className="text-custom-green">12309864</small>
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">
+                    {detail?.productType || ' '}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">
+                    {detail?.description || ' '}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">{detail?.domain || ' '}</td>
+                  <td className="td-css-full-opactiy text-custom-black-5 min-w-[150px]">
+                    <span className="flex items-center justify-center">
+                      <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
+                      <span className="font-inter-bold-xs-60percent-black">
+                        {detail?.paymentMethod || ' '}
+                      </span>
                     </span>
-                  </span>
-                </td>
-                <td className="td-css-full-opactiy text-custom-black-5">
-                  <button className="btn-green-4">
-                    {detail?.status || ' '}
-                  </button>
-                </td>
-                <td className="td-css-4 text-custom-green">
-                  {detail?.amount || ' '}
-                </td>
-                <td className="cursor-pointer w-full items-center text-center">
-                  <button
-                    type="button"
-                    className="my-auto text-lg text-custom-green"
-                  >
-                    <FaDownload />
-                  </button>
-                </td>
+                  </td>
+                  <td className="td-css-full-opactiy text-custom-black-5">
+                    <button className="btn-green-4">
+                      {detail?.status || ' '}
+                    </button>
+                  </td>
+                  <td className="td-css-4 text-custom-green">
+                    {detail?.amount || ' '}
+                  </td>
+                  <td className="cursor-pointer w-full items-center text-center">
+                    <button
+                      type="button"
+                      className="my-auto text-lg text-custom-green"
+                      onClick={() => {downloadInvoice()}}
+                    >
+                      <FaDownload />
+                    </button>
+
+                    <div className={pdfDownload}>
+                      <BillingInvoice pdfRef={pdfRef} />
+                    </div>
+                  </td>
+                </tr>
+              )) :
+              <tr>
+                <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
               </tr>
-            ))}
+            }
           </tbody>
         </table>
+      </div>
 
-        <div className="flex flex-col mt-12 relative bottom-2 right-0">
-          <div className="flex justify-end mb-2">
+      <div className="flex flex-col mt-12 relative bottom-2 right-0">
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 text-sm ${
+              currentPage === 0
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-l transition`}
+          >
+            Prev
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, index) => (
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-              disabled={currentPage === 0}
-              className={`px-3 py-1 text-sm ${
-                currentPage === 0
-                  ? "bg-transparent text-gray-300"
-                  : "bg-transparent hover:bg-green-500 hover:text-white"
-              } rounded-l transition`}
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`px-3 py-1 text-sm mx-1 rounded ${
+                currentPage === index
+                  ? "bg-green-500 text-white"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } transition`}
             >
-              Prev
+              {index + 1}
             </button>
+          ))}
 
-            {/* Page numbers */}
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index)}
-                className={`px-3 py-1 text-sm mx-1 rounded ${
-                  currentPage === index
-                    ? "bg-green-500 text-white"
-                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-                } transition`}
-              >
-                {index + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-              }
-              disabled={currentPage === totalPages - 1}
-              className={`px-3 py-1 text-sm ${
-                currentPage === totalPages - 1
-                  ? "bg-transparent text-gray-300"
-                  : "bg-transparent hover:bg-green-500 hover:text-white"
-              } rounded-r transition`}
-            >
-              Next
-            </button>
-          </div>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+            }
+            disabled={currentPage === totalPages - 1}
+            className={`px-3 py-1 text-sm ${
+              currentPage === totalPages - 1
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-r transition`}
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>

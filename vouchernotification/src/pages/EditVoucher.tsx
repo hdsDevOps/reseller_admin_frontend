@@ -134,33 +134,49 @@ const EditVoucher: React.FC = () =>  {
     };
   }, []);
 
+  const validateForm = () => {
+    // Check for spaces only in any field
+    for (const key in voucher) {
+      if (voucher[key].trim() === '') {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  };
+
   const addVoucher = async(e) => {
     e.preventDefault();
-    try {
-      const result = await dispatch(editVoucherThunk({
-        voucher_code: voucher?.voucher_code,
-        start_date: finalDate(voucher?.start_date),
-        end_date: finalDate(voucher?.end_date),
-        discount_rate: voucher?.discount_rate,
-        template_details: voucher?.template_details,
-        currency: voucher?.currency,
-        record_id: voucher?.id
-      })).unwrap()
-      toast.success(result?.message);
-      setTimeout(() => {
-        navigate(-1);
-      }, 1000);
-    } catch (error) {
-      toast.error("Error editing voucher");
-      console.log("error...", error)
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(validateForm()) {
+      try {
+        const result = await dispatch(editVoucherThunk({
+          voucher_code: voucher?.voucher_code,
+          start_date: finalDate(voucher?.start_date),
+          end_date: finalDate(voucher?.end_date),
+          discount_rate: voucher?.discount_rate,
+          template_details: voucher?.template_details,
+          currency: voucher?.currency,
+          record_id: voucher?.id
+        })).unwrap()
+        toast.success(result?.message);
+        setTimeout(() => {
+          navigate(-1);
+        }, 1000);
+      } catch (error) {
+        toast.error("Error editing voucher");
+        console.log("error...", error)
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
       }
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   };
   

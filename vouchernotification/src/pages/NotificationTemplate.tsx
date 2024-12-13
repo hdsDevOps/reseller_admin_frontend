@@ -237,19 +237,23 @@ const NotificationTemplate = () => {
   }, []);
 
   const addNotificationTemplate = async() => {
-    try {
-      const result = await dispatch(
-        addNotificationTemplateThunk(templateHeading)
-      ).unwrap();
-      // console.log(result);
-      setIsModalOpen(false);
-      getNotificationTemplate();
-      setTimeout(() => {
-        toast.success(result?.message);
-      }, 1000);
-    } catch (error) {
-      // console.log(error);
-      toast.error("Error adding customer group");
+    if(templateHeading?.template_heading.trim() === '') {
+      toast.warning("Spaces cannot be empty");
+    } else {
+      try {
+        const result = await dispatch(
+          addNotificationTemplateThunk(templateHeading)
+        ).unwrap();
+        // console.log(result);
+        setIsModalOpen(false);
+        getNotificationTemplate();
+        setTimeout(() => {
+          toast.success(result?.message);
+        }, 1000);
+      } catch (error) {
+        // console.log(error);
+        toast.error("Error adding customer group");
+      }
     }
   };
 

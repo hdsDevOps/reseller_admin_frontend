@@ -63,29 +63,34 @@ const EmailLog: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {emailLogs.map((log, index) => (
-              <tr 
-                key={index}
-                className=""
-              >
-                <td className="td-css-3">{log?.email}</td>
-                <td className="td-css-3">{log?.subject}</td>
-                <td className="td-css-3">{dateToIsoString(log?.created_at)}</td>
-                <td className="td-css-3">{log?.no_receipt}</td>
-                <td className="text-center">
-                  <button 
-                    className="view-details"
-                    cypress-name={`view-details-${index+1}`}
-                    onClick={() => {
-                      setIsModalOpen(true);
-                      setModalData(log?.content);
-                    }}
-                  >
-                    View Details
-                  </button>
-                </td>
+            {
+              emailLogs?.length>0 ? emailLogs.map((log, index) => (
+                <tr 
+                  key={index}
+                  className=""
+                >
+                  <td className="td-css-3">{log?.email}</td>
+                  <td className="td-css-3">{log?.subject}</td>
+                  <td className="td-css-3">{dateToIsoString(log?.created_at)}</td>
+                  <td className="td-css-3">{log?.no_receipt}</td>
+                  <td className="text-center">
+                    <button 
+                      className="view-details"
+                      cypress-name={`view-details-${index+1}`}
+                      onClick={() => {
+                        setIsModalOpen(true);
+                        setModalData(log?.content);
+                      }}
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              )) :
+              <tr>
+                <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
               </tr>
-            ))}
+            }
           </tbody>
         </table>
       </div>

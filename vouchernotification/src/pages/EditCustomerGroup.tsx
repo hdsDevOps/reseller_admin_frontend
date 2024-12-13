@@ -112,8 +112,21 @@ const EditCustomerGroup: React.FC = () =>  {
     return isoDate;
   };
 
+  const validateForm = () => {
+    // Check for spaces only in any field
+    for (const key in customerGroup) {
+      if (customerGroup[key].trim() === '') {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  };
+
   const submit = async(e) => {
     e.preventDefault();
+   if(validateForm()) {
     try {
       const result = await dispatch(
         editCustomerGroupThunk({
@@ -135,6 +148,9 @@ const EditCustomerGroup: React.FC = () =>  {
     } catch (error) {
       toast.error("Error adding customer group");
     }
+   } else {
+    toast.warning("Spaces cannot be empty");
+   }
   }
   return (
     <div>

@@ -108,7 +108,7 @@ const PlanPriceSetup = () => {
     }
   };
 
-  const [plansAndPrices, setPlansAndPrices] = useState<PlansAndPirces>([]);
+  const [plansAndPrices, setPlansAndPrices] = useState([]);
   console.log(plansAndPrices);
 
   useEffect(() => {
@@ -158,152 +158,155 @@ const PlanPriceSetup = () => {
 
   const renderGridView = () => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {plansAndPrices?.map((plan, index) => (
-        <div
-          key={index}
-          className="bg-gray-50 flex flex-col p-[15px] shadow-md rounded-xl"
-          cypress-grid-name={`grid${index}`}
-        >
-          <div className="flex flex-col">
-            <div className="flex flex-row items-center gap-2">
-              <img src={plan?.icon_image ? plan?.icon_image : ""} alt={plan?.plan_name} className="xl:w-[25px] lg:w-[20px] w-[25px]" />
-              <h4 className="font-inter font-medium xl:text-2xl lg:text-base text-2xl text-cBlue3 text-nowrap uppercase">{plan?.plan_name}</h4>
+      {
+        plansAndPrices?.length>0 ? plansAndPrices?.map((plan, index) => (
+          <div
+            key={index}
+            className="bg-gray-50 flex flex-col p-[15px] shadow-md rounded-xl"
+            cypress-grid-name={`grid${index}`}
+          >
+            <div className="flex flex-col">
+              <div className="flex flex-row items-center gap-2">
+                <img src={plan?.icon_image ? plan?.icon_image : ""} alt={plan?.plan_name} className="xl:w-[25px] lg:w-[20px] w-[25px]" />
+                <h4 className="font-inter font-medium xl:text-2xl lg:text-base text-2xl text-cBlue3 text-nowrap uppercase">{plan?.plan_name}</h4>
+              </div>
+              <div className="flex justify-end">
+                <p className="flex justify-end items-end text-right text-[10px] text-[#596780] font-inter font-normal">per user/month</p>
+              </div>
             </div>
-            <div className="flex justify-end">
-              <p className="flex justify-end items-end text-right text-[10px] text-[#596780] font-inter font-normal">per user/month</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 mt-3 align-top">
-            <div className="flex flex-row items-start justify-between mb-[10px] gap-x-2">
-              <h5 className="font-inter font-medium text-xl leading-6">Amount</h5>
-              <div
-                className="flex flex-row px-2 py-[3px] bg-[#EBEBEB] rounded-sm gap-1"
-              >
-                <img
-                  src={`${
-                    getFlag()
-                      .filter(item => item !== undefined)
-                      .map((item, m) => {
-                        if(item != undefined){
-                          return item;
-                        }
-                    })
-                  }`}
-                  alt={currencyIndex}
-                  className="w-auto h-[15px] my-auto"
-                />
-                <select
-                  className="bg-transparent font-inter font-normal text-[8px] tracking[-1.1%] text-[#312E3c] focus:outline-none"
-                  onChange={e => {setCurrencyIndex(e.target.value)}}
+            <div className="grid grid-cols-1 mt-3 align-top">
+              <div className="flex flex-row items-start justify-between mb-[10px] gap-x-2">
+                <h5 className="font-inter font-medium text-xl leading-6">Amount</h5>
+                <div
+                  className="flex flex-row px-2 py-[3px] bg-[#EBEBEB] rounded-sm gap-1"
                 >
-                  {
-                    flagList.map((flag, i) => {
-                      return(
-                        <option
-                          key={i}
-                          selected={flag.name == currencyIndex ? true : false}
-                          value={flag.name}
-                        >{flag.name}</option>
-                      )
-                    })
-                  }
-                </select>
-              </div>
-            </div>
-
-            <div className="space-y-4 grid grid-cols-1">
-              {
-                getPrices(currencyIndex, plan?.amount_details)?.map((price, i) =>(
-                  <div
-                    className="flex justify-between items-center gap-2 pr-2"
-                    key={i}
+                  <img
+                    src={`${
+                      getFlag()
+                        .filter(item => item !== undefined)
+                        .map((item, m) => {
+                          if(item != undefined){
+                            return item;
+                          }
+                      })
+                    }`}
+                    alt={currencyIndex}
+                    className="w-auto h-[15px] my-auto"
+                  />
+                  <select
+                    className="bg-transparent font-inter font-normal text-[8px] tracking[-1.1%] text-[#312E3c] focus:outline-none"
+                    onChange={e => {setCurrencyIndex(e.target.value)}}
                   >
-                    <div className="flex items-center gap-x-2">
-                      <span className="text-[#12A833]">
-                      <RiCheckboxCircleFill
-                        className="text-xl text-[#12A833]"
-                      />
-                      </span>
-                      <span
-                        className="font-inter font-normal text-base text-[#0D121F] my-auto"
-                      >{price?.type}</span>
-                    </div>
-                    <div className="flex gap-x-2">
-                      <span className="line-through font-inter font-medium text-[15px] text-center text-[#FF7272] my-auto">
-                        {
-                          formatPrice()?.map((data, k) => (
-                            `${data}`
-                          ))
-                        }
-                        {price?.price}
-                      </span>
-                      <span className="border border-[#E4E4E4] font-inter font-normal text-xs text-[#0D121F] my-auto px-2 py-[2px] min-w-[54px]">
-                        <a className="pr-2 text-nowrap">{
-                          formatPrice()?.map((data, k) => (
-                            `${data}`
-                          ))
-                        } {price?.discount_price}</a>
-                      </span>
-                    </div>
-                  </div>
-                ))
-              }
-            </div>
+                    {
+                      flagList.map((flag, i) => {
+                        return(
+                          <option
+                            key={i}
+                            selected={flag.name == currencyIndex ? true : false}
+                            value={flag.name}
+                          >{flag.name}</option>
+                        )
+                      })
+                    }
+                  </select>
+                </div>
+              </div>
 
-            <div className="flex justify-between items-center align-middle mt-3">
-              <div className="text-[#FF7272] text-[10px] font-inter font-normal mb-2">Trial period</div>
-              <div className="bg-[#D9D9D9] min-w-[79px] border border-[#E4E4E4] rounded-[4px] px-3 py-1 text-sm flex flex-row text-center items-center justify-center gap-1 my-auto">
-                <p
-                  className="font-inter font-normal text-xs text-black my-auto"
-                >{plan?.trial_period}</p>
-                <span
-                  className="font-inter font-normal text-[8px] text-black my-auto"
-                >days</span>
+              <div className="space-y-4 grid grid-cols-1">
+                {
+                  getPrices(currencyIndex, plan?.amount_details)?.map((price, i) =>(
+                    <div
+                      className="flex justify-between items-center gap-2 pr-2"
+                      key={i}
+                    >
+                      <div className="flex items-center gap-x-2">
+                        <span className="text-[#12A833]">
+                        <RiCheckboxCircleFill
+                          className="text-xl text-[#12A833]"
+                        />
+                        </span>
+                        <span
+                          className="font-inter font-normal text-base text-[#0D121F] my-auto"
+                        >{price?.type}</span>
+                      </div>
+                      <div className="flex gap-x-2">
+                        <span className="line-through font-inter font-medium text-[15px] text-center text-[#FF7272] my-auto">
+                          {
+                            formatPrice()?.map((data, k) => (
+                              `${data}`
+                            ))
+                          }
+                          {price?.price}
+                        </span>
+                        <span className="border border-[#E4E4E4] font-inter font-normal text-xs text-[#0D121F] my-auto px-2 py-[2px] min-w-[54px]">
+                          <a className="pr-2 text-nowrap">{
+                            formatPrice()?.map((data, k) => (
+                              `${data}`
+                            ))
+                          } {price?.discount_price}</a>
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+
+              <div className="flex justify-between items-center align-middle mt-3">
+                <div className="text-[#FF7272] text-[10px] font-inter font-normal mb-2">Trial period</div>
+                <div className="bg-[#D9D9D9] min-w-[79px] border border-[#E4E4E4] rounded-[4px] px-3 py-1 text-sm flex flex-row text-center items-center justify-center gap-1 my-auto">
+                  <p
+                    className="font-inter font-normal text-xs text-black my-auto"
+                  >{plan?.trial_period}</p>
+                  <span
+                    className="font-inter font-normal text-[8px] text-black my-auto"
+                  >days</span>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h5 className="font-inter font-medium text-xl text-[#0D121F] mb-4">Top Feature</h5>
+                <ul className="gap-5 grid grid-cols-1">
+                  {plan?.top_features?.map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <span className="text-[#12A833]">
+                        <RiCheckboxCircleFill
+                          className="text-xl"
+                        />
+                      </span>
+                      <p
+                        className="font-inter font-normal text-bsae text-[#0D121F]"
+                      >{feature}</p>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
-            <div className="mb-6">
-              <h5 className="font-inter font-medium text-xl text-[#0D121F] mb-4">Top Feature</h5>
-              <ul className="gap-5 grid grid-cols-1">
-                {plan?.top_features?.map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="text-[#12A833]">
-                      <RiCheckboxCircleFill
-                        className="text-xl"
-                      />
-                    </span>
-                    <p
-                      className="font-inter font-normal text-bsae text-[#0D121F]"
-                    >{feature}</p>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex gap-4 mt-auto">
+              <button
+                className="flex-1 py-2 px-4 bg-[#12A833] text-white rounded-md"
+                onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}
+                type="button"
+                cypress-name="plan-and-price-edit"
+              >
+                Edit
+              </button>
+              <button
+                className="flex-1 py-2 px-4 bg-[#E02424] text-white rounded-md"
+                onClick={() => {
+                  setDeleteId(plan?.id);
+                  setIsModalOpen(true);
+                }}
+                type="button"
+                cypress-name="plan-and-price-delete"
+              >
+                Delete
+              </button>
             </div>
           </div>
-
-          <div className="flex gap-4 mt-auto">
-            <button
-              className="flex-1 py-2 px-4 bg-[#12A833] text-white rounded-md"
-              onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}
-              type="button"
-              cypress-name="plan-and-price-edit"
-            >
-              Edit
-            </button>
-            <button
-              className="flex-1 py-2 px-4 bg-[#E02424] text-white rounded-md"
-              onClick={() => {
-                setDeleteId(plan?.id);
-                setIsModalOpen(true);
-              }}
-              type="button"
-              cypress-name="plan-and-price-delete"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
+        )) :
+        <div className="bg-gray-50 flex flex-col p-[15px] shadow-md rounded-xl">No data avaibale</div>
+      }
     </div>
   );
   
@@ -343,125 +346,130 @@ const PlanPriceSetup = () => {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 text-[0.65rem]">
-          {plansAndPrices?.map((plan, index) => (
-            <tr key={index}>
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-2 text-center font-inter font-bold text-[10px] text-black opacity-60 uppercase">
-                  {
-                    plan?.plan_name ? plan?.plan_name : " "
-                  }
-                </div>
-              </td>
-              {
-                getPrices(currencyIndex, plan?.amount_details).length > 0 ?
-                getPrices(currencyIndex, plan?.amount_details)?.map((price, i) => (
-                  <td
-                    className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
-                    key={i}
-                  >
+          {
+            plansAndPrices?.length>0 ? plansAndPrices?.map((plan, index) => (
+              <tr key={index}>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2 text-center font-inter font-bold text-[10px] text-black opacity-60 uppercase">
                     {
-                      formatPrice()?.map((data, k) => (
-                        `${data} ${price?.discount_price}`
+                      plan?.plan_name ? plan?.plan_name : " "
+                    }
+                  </div>
+                </td>
+                {
+                  getPrices(currencyIndex, plan?.amount_details).length > 0 ?
+                  getPrices(currencyIndex, plan?.amount_details)?.map((price, i) => (
+                    <td
+                      className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
+                      key={i}
+                    >
+                      {
+                        formatPrice()?.map((data, k) => (
+                          `${data} ${price?.discount_price}`
+                        ))
+                      }
+                    </td>
+                  )) :
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <td
+                      className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
+                      key={index}
+                    > </td>
+                  ))
+                }
+                {
+                  getPrices(currencyIndex, plan?.amount_details).length > 0 ?
+                  getPrices(currencyIndex, plan?.amount_details)?.map((price, i) => {
+                    if(price?.type === "Monthly"){
+                      return (
+                        <td
+                          className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
+                          key={i}
+                        >
+                          {
+                            formatPrice()?.map((data, k) => (
+                              `${data} ${price?.price}`
+                            ))
+                          }
+                        </td>
+                      )
+                    }
+                  }) :
+                  Array.from({ length: 1 }).map((_, index) => (
+                    <td
+                      className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
+                      key={index}
+                    > </td>
+                  ))
+                }
+                <td className="px-6 py-4 text-center flex flex-row gap-2 font-inter font-bold text-[10px] text-black">
+                  <div
+                    className="flex flex-row px-2 py-[3px] rounded-sm gap-1"
+                  >
+                    <img
+                      src={`${
+                        getFlag()
+                          .filter(item => item !== undefined)
+                          .map((item, m) => {
+                            if(item != undefined){
+                              return item;
+                            }
+                        })
+                      }`}
+                      alt={currencyIndex}
+                      className="w-auto h-[15px] my-auto"
+                    />
+                    <select
+                      className="bg-transparent font-inter font-bold text-[10px] tracking-[-1.1%] text-[#666666] focus:outline-none"
+                      onChange={e => {setCurrencyIndex(e.target.value)}}
+                    >
+                      {
+                        flagList.map((flag, i) => {
+                          return(
+                            <option
+                              key={i}
+                              selected={flag.name == currencyIndex ? true : false}
+                              value={flag.name}
+                            >{flag.name}</option>
+                          )
+                        })
+                      }
+                    </select>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-center items-center">
+                  <div className="flex flex-col gap-1 text-center items-center">
+                    {
+                      plan?.top_features?.slice(0, 2).map((feature, idx) => (
+                        <div key={idx} className="flex text-center items-center gap-1 text-[#12A833] font-inter font-normal text-[6px]">
+                          <p className="text-center">{feature}</p>
+                        </div>
                       ))
                     }
-                  </td>
-                )) :
-                Array.from({ length: 3 }).map((_, index) => (
-                  <td
-                    className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
-                    key={index}
-                  > </td>
-                ))
-              }
-              {
-                getPrices(currencyIndex, plan?.amount_details).length > 0 ?
-                getPrices(currencyIndex, plan?.amount_details)?.map((price, i) => {
-                  if(price?.type === "Monthly"){
-                    return (
-                      <td
-                        className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
-                        key={i}
-                      >
-                        {
-                          formatPrice()?.map((data, k) => (
-                            `${data} ${price?.price}`
-                          ))
-                        }
-                      </td>
-                    )
-                  }
-                }) :
-                Array.from({ length: 1 }).map((_, index) => (
-                  <td
-                    className="px-6 py-4 text-center font-inter font-bold text-[10px] text-black opacity-60"
-                    key={index}
-                  > </td>
-                ))
-              }
-              <td className="px-6 py-4 text-center flex flex-row gap-2 font-inter font-bold text-[10px] text-black">
-                <div
-                  className="flex flex-row px-2 py-[3px] rounded-sm gap-1"
-                >
-                  <img
-                    src={`${
-                      getFlag()
-                        .filter(item => item !== undefined)
-                        .map((item, m) => {
-                          if(item != undefined){
-                            return item;
-                          }
-                      })
-                    }`}
-                    alt={currencyIndex}
-                    className="w-auto h-[15px] my-auto"
-                  />
-                  <select
-                    className="bg-transparent font-inter font-bold text-[10px] tracking-[-1.1%] text-[#666666] focus:outline-none"
-                    onChange={e => {setCurrencyIndex(e.target.value)}}
-                  >
-                    {
-                      flagList.map((flag, i) => {
-                        return(
-                          <option
-                            key={i}
-                            selected={flag.name == currencyIndex ? true : false}
-                            value={flag.name}
-                          >{flag.name}</option>
-                        )
-                      })
-                    }
-                  </select>
-                </div>
-              </td>
-              <td className="px-6 py-4 text-center items-center">
-                <div className="flex flex-col gap-1 text-center items-center">
-                  {
-                    plan?.top_features?.slice(0, 2).map((feature, idx) => (
-                      <div key={idx} className="flex text-center items-center gap-1 text-[#12A833] font-inter font-normal text-[6px]">
-                        <p className="text-center">{feature}</p>
-                      </div>
-                    ))
-                  }
-                </div>
-              </td>
-              <td className="px-6 py-4 text-center">
-                <div className="flex gap-2">
-                  <button className="p-1 text-black hover:text-[#12A833] text-base"  onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}>
-                    <FaPen />
-                  </button>
-                  <button className="p-1 text-black hover:text-[#E02424] text-base" onClick={() => {
-                    setDeleteId(plan?.id);
-                    setIsModalOpen(true);
-                  }}>
-                    <FaTrash />
-                  </button>
-                  <button className="p-1 text-[#12A833] underline font-inter font-nomral text-[10px]">
-                    More
-                  </button>
-                </div>
-              </td>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <div className="flex gap-2">
+                    <button className="p-1 text-black hover:text-[#12A833] text-base"  onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}>
+                      <FaPen />
+                    </button>
+                    <button className="p-1 text-black hover:text-[#E02424] text-base" onClick={() => {
+                      setDeleteId(plan?.id);
+                      setIsModalOpen(true);
+                    }}>
+                      <FaTrash />
+                    </button>
+                    <button className="p-1 text-[#12A833] underline font-inter font-nomral text-[10px]">
+                      More
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )) :
+            <tr>
+              <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
             </tr>
-          ))}
+          }
         </tbody>
       </table>
     </div>

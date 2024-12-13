@@ -81,40 +81,60 @@ const Faqs: React.FC = () => {
     });
   };
 
+  const validateForm = () => {
+    // Check for spaces only in any field
+    for (const key in newFaq) {
+      if (newFaq[key].trim() === '') {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  };
+
   const addFaqSubmit = async() => {
-    try {
-      const addResult = await dispatch(addFaqThunk(newFaq)).unwrap();
-      setTimeout(() => {
-        toast.success(addResult?.message)
-      }, 1000);
-      setEditFaq(false);
-      setFaq(initialFaq);
-      setFaqModal(false);
-    } catch (error) {
-      toast.error("Error adding FAQ");
-    } finally {
-      fetchFaqs();
+    if(validateForm()) {
+      try {
+        const addResult = await dispatch(addFaqThunk(newFaq)).unwrap();
+        setTimeout(() => {
+          toast.success(addResult?.message)
+        }, 1000);
+        setEditFaq(false);
+        setFaq(initialFaq);
+        setFaqModal(false);
+      } catch (error) {
+        toast.error("Error adding FAQ");
+      } finally {
+        fetchFaqs();
+      }
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   };
 
   const editFaqSubmit = async() => {
-    try {
-      const editResult = await dispatch(updateFaqThunk({
-        record_id: newFaq?.record_id,
-        question: newFaq?.question,
-        answer: newFaq?.answer,
-        order: newFaq?.order
-      })).unwrap();
-      setTimeout(() => {
-        toast.success(editResult?.message)
-      }, 1000);
-      setEditFaq(false);
-      setFaq(initialFaq);
-      setFaqModal(false);
-    } catch (error) {
-      toast.error("Error editing faq");
-    } finally {
-      fetchFaqs();
+    if(validateForm()) {
+      try {
+        const editResult = await dispatch(updateFaqThunk({
+          record_id: newFaq?.record_id,
+          question: newFaq?.question,
+          answer: newFaq?.answer,
+          order: newFaq?.order
+        })).unwrap();
+        setTimeout(() => {
+          toast.success(editResult?.message)
+        }, 1000);
+        setEditFaq(false);
+        setFaq(initialFaq);
+        setFaqModal(false);
+      } catch (error) {
+        toast.error("Error editing faq");
+      } finally {
+        fetchFaqs();
+      }
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   };
 

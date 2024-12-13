@@ -478,26 +478,42 @@ const AddRole = () => {
     }
   }, [role.permission.settings]);
 
+  const validateForm = () => {
+    // Check for spaces only in any field
+    for (const key in role) {
+      if (role[key].trim() === '') {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  };
+
   const submitRole = async(e) => {
     e.preventDefault();
-    try {
-      const result = await dispatch(addRoleThunk(role)).unwrap();
-      // console.log("result...", result);
-      toast.success(result?.message);
-      setTimeout(() => {
-        navigate('/role');
-      }, 1000);
-    } catch (error) {
-      toast.error("Error adding role");
-      // console.log("error...",error);
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(validateForm()) {
+      try {
+        const result = await dispatch(addRoleThunk(role)).unwrap();
+        // console.log("result...", result);
+        toast.success(result?.message);
+        setTimeout(() => {
+          navigate('/role');
+        }, 1000);
+      } catch (error) {
+        toast.error("Error adding role");
+        // console.log("error...",error);
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
       }
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   }
   

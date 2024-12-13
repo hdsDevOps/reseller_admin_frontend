@@ -1,9 +1,14 @@
 import React from 'react';
 
-const BillingInvoice: React.FC = () => {
+const BillingInvoice: React.FC = ({pdfRef}) => {
+  const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899";
+  // const logo = "http://localhost:3000/images/logo.jpeg";
+  const visa = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa-logo-grey.png?alt=media&token=00881596-2fad-4385-82bb-a0269ae4b4fb";
+  // const visa = "http://localhost:3000/images/visa-logo-grey.png";
   return (
     <div
       className='w-[700px]'
+      ref={pdfRef}
     >
       <div
         className='bg-white px-1 w-full mx-auto'
@@ -30,8 +35,7 @@ const BillingInvoice: React.FC = () => {
               className='w-[60px] h-[60px] bg-white rounded-full border-4 border-white flex items-center justify-center shadow-lg'
             >
               <img
-                src='https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899'
-                alt='hordanso'
+                src={logo}
                 className='w-[51px] rounded-full object-cover'
               />
             </div>
@@ -41,7 +45,7 @@ const BillingInvoice: React.FC = () => {
         <div
           className='text-center py-1'
         >
-          <h3 className='font-inter text-[black] text-lg'>Receipt from Hordanso LLC-------</h3>
+          <h3 className='font-inter text-[black] text-lg'>Receipt from Hordanso LLC</h3>
           <p className='font-inter text-[#B3B7B8] text-sm'>Receipt #1567-5406</p>
         </div>
 
@@ -78,7 +82,7 @@ const BillingInvoice: React.FC = () => {
               className='flex gap-1'
             >
               <img
-                src='https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa-logo-grey.png?alt=media&token=00881596-2fad-4385-82bb-a0269ae4b4fb'
+                src={visa}
                 alt='visa'
                 className='h-5'
               />
@@ -133,11 +137,30 @@ const BillingInvoice: React.FC = () => {
         <h6
           className='my-8 text-[#7F8E96]'
         >
-          If you have any questions, contact us at
-          <span>stripe@hordanso.com</span>
-          or call us at
-          <span>+1 469-893-0678</span>
+          If you have any questions, contact us at&nbsp;
+          <span className='text-[#12A833] font-medium'>stripe@hordanso.com</span>
+          &nbsp;or call us at&nbsp;
+          <span className='text-[#12A833] font-medium'>+1 469-893-0678</span>.
         </h6>
+
+        <div
+          className='w-full h-px bg-[#9A9597] my-8 opacity-15'
+        ></div>
+
+        <p
+          className='my-8 text-[#7F8E96]'
+        >
+          Something wrong with the email?&nbsp;
+          <span className='text-[#12A833] font-medium'>View in your browser</span>.
+        </p>
+
+        <p
+          className='my-8 text-[#7F8E96]'
+        >
+          You are viewing this email because you made a purchase at Hordanso LLC, which partners with&nbsp;
+          <span className='text-[#12A833] font-medium'>Stripe</span>
+          &nbsp;to provide marketing and payment processing.
+        </p>
       </div>
     </div>
   );

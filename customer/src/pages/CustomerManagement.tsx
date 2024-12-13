@@ -15,11 +15,21 @@ const options: Intl.DateTimeFormatOptions = {
   year: "numeric",
 };
 
+interface Filter {
+  search_data: string,
+  country: string,
+  state_name: string,
+  authentication: string | Boolean,
+  license_usage: string | Number,
+  subscritption_date: string | Date,
+  renewal_date: string | Date
+}
+
 const CustomerManagement: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const filterRef = useRef();
-  const intialFilter= {
+  const intialFilter:Filter= {
     search_data: "",
     country: "",
     state_name: "",
@@ -38,14 +48,14 @@ const CustomerManagement: React.FC = () => {
   };
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(intialFilter);
-  // console.log("filters...", filters);
+  console.log("filters...", filters);
   
   const [filters2, setFilters2] = useState(intialFilter2);
   
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  // console.log(customerList);
+  console.log(customerList);
   const [checked, setChecked] = useState([]);
   // console.log("checked...", checked);
   
@@ -186,7 +196,7 @@ const CustomerManagement: React.FC = () => {
       ...filters,
       country: filters2.country,
       state_name: filters2.state_name,
-      authentication: filters2.authentication,
+      authentication: filters2.authentication == "true" ? true : filters2.authentication == "false" ? false: "",
       license_usage: filters2.license_usage,
       subscritption_date: filters2.subscritption_date,
       renewal_date: filters2.renewal_date
@@ -600,7 +610,7 @@ const CustomerManagement: React.FC = () => {
                         className="select-input"
                         name="authentication"
                         onChange={handleFilterChange}
-                        value={authorization}
+                        value={filters2.authentication}
                       >
                         <option selected value="">
                           Select Authorization
@@ -711,7 +721,8 @@ const CustomerManagement: React.FC = () => {
               className="h-fit"
             >
               {
-                currentItems && currentItems.map((item, index) => {
+                currentItems?.length>0 ?
+                currentItems?.map((item, index) => {
                   return (
                     <tr key={index} className="text-center">
                       <td>
@@ -1031,7 +1042,10 @@ const CustomerManagement: React.FC = () => {
                       </td>
                     </tr>
                   );
-                })
+                }) :
+                <tr>
+                  <td colSpan={13} className="font-inter font-normal text-base opacity-60 text-center">No data avaibale</td>
+                </tr>
               }
             </tbody>
           </table>

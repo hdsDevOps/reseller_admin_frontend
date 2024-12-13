@@ -132,4 +132,8 @@ export const endPoints = {
     getNotifications: 'adminservices/notification/api/v1/getnotifications',
     getNotificationStatus: 'adminservices/admin/api/v1/getnotification_status',
     updateNotificationStatus: 'adminservices/admin/api/v1/update_notification_status',
+
+    //dashboard
+    monthlyRevenueData: 'reportservices/users/api/v1/monthly_revenue_data',
+    yearlySpendingStatistics: 'reportservices/users/api/v1/yearly_spending_statistics',
 }

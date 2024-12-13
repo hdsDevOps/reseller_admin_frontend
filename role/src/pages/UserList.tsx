@@ -154,51 +154,71 @@ const UserList = () => {
     }
   }, [deleteModalOpen]);
 
-  const handleAddSubmit = async() => {
-    try {
-      const result = await dispatch(addUsersThunk(modalData)).unwrap();
-      setModalData(modalFormat);
-      setModalType("add");
-      setIsModalOpen(false);
-      setTimeout(() => {
-        toast.success(result?.message);
-      }, 1000);
-    } catch (error) {
-      toast.error("Error adding user");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
-        }
+  const validateForm = () => {
+    // Check for spaces only in any field
+    for (const key in modalData) {
+      if (modalData[key].trim() === '') {
+        return false;
+      } else {
+        return true;
       }
-    } finally {
-      fetchUsers();
+    }
+    return true;
+  };
+
+  const handleAddSubmit = async() => {
+    if(validateForm()) {
+      try {
+        const result = await dispatch(addUsersThunk(modalData)).unwrap();
+        setModalData(modalFormat);
+        setModalType("add");
+        setIsModalOpen(false);
+        setTimeout(() => {
+          toast.success(result?.message);
+        }, 1000);
+      } catch (error) {
+        toast.error("Error adding user");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      } finally {
+        fetchUsers();
+      }
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   };
 
   const handleEditSubmit = async() => {
-    try {
-      const result = await dispatch(updateUsersThunk(modalData)).unwrap();
-      setModalData(modalFormat);
-      setModalType("add");
-      setIsModalOpen(false);
-      setTimeout(() => {
-        toast.success(result?.message);
-      }, 1000);
-    } catch (error) {
-      toast.error("Error adding user");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(validateForm()) {
+      try {
+        const result = await dispatch(updateUsersThunk(modalData)).unwrap();
+        setModalData(modalFormat);
+        setModalType("add");
+        setIsModalOpen(false);
+        setTimeout(() => {
+          toast.success(result?.message);
+        }, 1000);
+      } catch (error) {
+        toast.error("Error adding user");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+      } finally {
+        fetchUsers();
       }
-    } finally {
-      fetchUsers();
+    } else {
+      toast.warning("Spaces cannot be empty");
     }
   }
 
@@ -351,7 +371,7 @@ const UserList = () => {
 
           <tbody>
             {
-              users && users.map((user, index) => {
+              users?.length> 0 ? users?.map((user, index) => {
                 return(
                   <tr key={index}>
                     <td
@@ -393,7 +413,10 @@ const UserList = () => {
                     </td>
                   </tr>
                 )
-              })
+              }) : 
+              <tr>
+                <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
+              </tr>
             }
             
           </tbody>

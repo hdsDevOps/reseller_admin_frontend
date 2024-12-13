@@ -217,7 +217,7 @@ const CustomerGroup: React.FC = () => {
           </thead>
           <tbody className="bg-white mt-3">
             {
-              currentItems && currentItems?.map((item, index) => {
+              currentItems?.length>0 ? currentItems?.map((item, index) => {
                 return(
                   <tr key={index} className="text-center">
                     <td className="td-css-2">{item?.group_name}</td>
@@ -256,7 +256,10 @@ const CustomerGroup: React.FC = () => {
                     </td>
                   </tr>
                 )
-              })
+              }) :
+              <tr>
+                <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
+              </tr>
             }
           </tbody>
         </table>

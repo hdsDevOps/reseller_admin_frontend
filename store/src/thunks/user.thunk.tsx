@@ -746,3 +746,17 @@ export const updateNotificationStatusThunk = createAsyncThunk(
     return await userApis.updateNotificationStatusApi(userid, status);
   }
 );
+
+export const monthlyRevenueDataThunk = createAsyncThunk(
+  "users/monthlyRevenueData",
+  async () => {
+    return await userApis.monthlyRevenueDataApi();
+  }
+);
+
+export const yearlySpendingStatisticsThunk = createAsyncThunk(
+  "users/yearlySpendingStatistics",
+  async () => {
+    return await userApis.yearlySpendingStatisticsApi();
+  }
+);

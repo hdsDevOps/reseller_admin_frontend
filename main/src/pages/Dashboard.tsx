@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { RiDownloadCloud2Line } from "react-icons/ri";
 import '../styles/styles.css';
 import { RiExchangeDollarFill } from "react-icons/ri";
@@ -9,20 +9,104 @@ import { Chart } from "react-google-charts";
 import { ChevronLeft, ChevronRight, Dot } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { monthlyRevenueDataThunk, yearlySpendingStatisticsThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+
+const initialMonthlyRevenueData = {
+  last_month_revenue: "0",
+  current_month_recurring_income: "0",
+  customers_who_use_stripe: "0",
+  new_customers_count_this_month: "0"
+};
+
+const current_date = new Date();
+
+const initialYearlySpendingStatistics = {
+  year: current_date.getFullYear(),
+  current_month_revenue: 0,
+  data: [
+    {
+        month: "Jan",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Feb",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Mar",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Apr",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "May",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Jun",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Jul",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Aug",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Sep",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Oct",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Nov",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    },
+    {
+        month: "Dec",
+        revenue_from_old_customers: 0,
+        revenue_from_new_customers: 0
+    }
+  ]
+};
 
 const Dashboard: React.FC = () => {
   const { userDetails } = useAppSelector((state) => state.auth);
   // console.log("userDetails...", userDetails);
   const pdfRef = useRef();
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [monthlyRevenueData, setMonthlyRevenueData] = useState(initialMonthlyRevenueData);
+  const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([]);
+  const [currentRevenueData, setCurrentRevenueData] = useState(initialYearlySpendingStatistics);
+  console.log("currentRevenueData...", currentRevenueData);
+
   const revenue = [
-    {name: 'Revenue Last Month', amount: '₹0.05k',},
-    {name: 'monthly Recurring Income', amount: '₹0.07k',},
-    {name: 'Customers in Stripe', amount: '14',},
-    {name: 'Customers this month', amount: '0',},
+    {label: 'Revenue Last Month', name: 'last_month_revenue',},
+    {label: 'monthly Recurring Income', name: 'current_month_recurring_income',},
+    {label: 'Customers in Stripe', name: 'customers_who_use_stripe',},
+    {label: 'Customers this month', name: 'new_customers_count_this_month',},
   ];
 
   const data1 = [
@@ -31,30 +115,47 @@ const Dashboard: React.FC = () => {
   ];
   const COLORS = ['#12A833', '#EEEEEE',];
 
-  const data = [
-    ["", ""],
-    ["Jan", 16],
-    ["Feb", 8],
-    ["Mar", 18],
-    ["Apr", 13],
-    ["May", 10],
-    ["Jun", 20],
-    ["Jul", 13],
-    ["Aug", 14],
-    ["Sep", 20],
-    ["Oct", 17],
-    ["Nov", 13],
-    ["Dec", 18],
-  ];
-  const options = {
-    // chart: {
-    //   title: "Company Performance",
-    //   subtitle: "Sales and Expenses over the Years",
-    // },
-    colors: ["#12A833", "#FFC700"],
-    bar: {groupWidth: "15%"},
-    chartArea: { width: '50%' },
-  };
+  useEffect(() => {
+    const getMonltyRevenueData = async() => {
+      try {
+        const result = await dispatch(monthlyRevenueDataThunk()).unwrap();
+        setMonthlyRevenueData(result?.result);
+      } catch (error) {
+        setMonthlyRevenueData(initialMonthlyRevenueData);
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      }
+    };
+
+    getMonltyRevenueData();
+  }, []);
+
+  useEffect(() => {
+    const getYearlySpendingStatistics = async() => {
+      try {
+        const result = await dispatch(yearlySpendingStatisticsThunk()).unwrap();
+        setYearlySpendingStatistics([result?.result]);
+      } catch (error) {
+        setYearlySpendingStatistics([]);
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      }
+    };
+    
+    getYearlySpendingStatistics();
+  }, []);
 
   useEffect(() => {
     if(location.state?.from == "otp"){
@@ -62,212 +163,15 @@ const Dashboard: React.FC = () => {
     }
   }, [location.state]);
 
-  // const customers = [
-  //   {name: 'A', start_date: '2024-02-10', end_date: '2024-12-31'},
-  //   {name: 'B', start_date: '2024-03-10', end_date: '2024-10-31'},
-  //   {name: 'C', start_date: '2024-04-10', end_date: '2024-05-31'},
-  //   {name: 'D', start_date: '2024-02-10', end_date: '2024-02-31'},
-  //   {name: 'E', start_date: '2024-03-10', end_date: '2024-12-31'},
-  //   {name: 'F', start_date: '2024-03-10', end_date: '2024-10-31'},
-  //   {name: 'G', start_date: '2024-04-10', end_date: '2024-11-31'},
-  //   {name: 'H', start_date: '2024-05-10', end_date: '2024-09-31'},
-  //   {name: 'I', start_date: '2024-01-10', end_date: '2024-01-31'},
-  //   {name: 'J', start_date: '2024-05-10', end_date: '2024-06-31'},
-  //   {name: 'K', start_date: '2024-04-10', end_date: '2024-11-31'},
-  //   {name: 'L', start_date: '2024-05-10', end_date: '2024-10-31'},
-  //   {name: 'M', start_date: '2024-04-10', end_date: '2024-09-31'},
-  //   {name: 'N', start_date: '2024-01-10', end_date: '2024-06-31'},
-  //   {name: 'O', start_date: '2024-08-10', end_date: '2024-09-31'},
-  //   {name: 'P', start_date: '2024-09-10', end_date: '2024-10-31'},
-  //   {name: 'Q', start_date: '2024-10-10', end_date: '2024-12-31'},
-  //   {name: 'R', start_date: '2024-12-10', end_date: '2024-12-31'},
-  //   {name: 'S', start_date: '2024-10-10', end_date: '2024-12-31'},
-  //   {name: 'T', start_date: '2024-09-10', end_date: '2024-09-31'},
-  //   {name: 'U', start_date: '2024-11-10', end_date: '2024-12-31'},
-  //   {name: 'V', start_date: '2024-07-10', end_date: '2024-12-31'},
-  //   {name: 'W', start_date: '2024-06-10', end_date: '2024-12-31'},
-  //   {name: 'X', start_date: '2024-11-10', end_date: '2024-12-31'},
-  //   {name: 'Y', start_date: '2024-12-10', end_date: '2024-12-31'},
-  //   {name: 'Z', start_date: '2024-01-10', end_date: '2024-02-31'},
-  // ];
-
-  // const getCustomersCount = (start_date:any, end_date:any) => {
-  //   const startDate = new Date(start_date); // Start of the range
-  //   const endDate = new Date(end_date);   // End of the range
-
-  //   const betweenRange = (date:any) => {
-  //     const testDate = new Date(date);
-  //     if (testDate >= startDate && testDate <= endDate) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   };
-
-  //   const beforeDate = (date1:any, date2:any) => {
-  //     const testDate1 = new Date(date1);
-  //     const testDate2 = new Date(date2);
-  //     if(testDate1 <= startDate && testDate2 >= startDate) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   }
-
-  //   const newCustomers = customers.filter((item) => betweenRange(item?.start_date));
-  //   const oldCustomers = customers.filter((item) => beforeDate(item?.start_date, item?.end_date));
-  //   return {
-  //     new_customers: newCustomers.length,
-  //     old_customers: oldCustomers.length
-  //   };
-  // };
-
-  const revenueData = [
-    {
-      year: 2024,
-      currentMonthRevenue: 70,
-      data: [
-        {
-          month: "Jan",
-          newCustomerRevenue: 17,
-          oldCustomerRevenue: 5,
-        },
-        {
-          month: "Feb",
-          newCustomerRevenue: 10,
-          oldCustomerRevenue: 7,
-        },
-        {
-          month: "Mar",
-          newCustomerRevenue: 20,
-          oldCustomerRevenue: 20,
-        },
-        {
-          month: "Apr",
-          newCustomerRevenue: 12,
-          oldCustomerRevenue: 10,
-        },
-        {
-          month: "May",
-          newCustomerRevenue: 10,
-          oldCustomerRevenue: 40,
-        },
-        {
-          month: "Jun",
-          newCustomerRevenue: 15,
-          oldCustomerRevenue: 50,
-        },
-        {
-          month: "Jul",
-          newCustomerRevenue: 12,
-          oldCustomerRevenue: 60,
-        },
-        {
-          month: "Aug",
-          newCustomerRevenue: 13,
-          oldCustomerRevenue: 70,
-        },
-        {
-          month: "Sep",
-          newCustomerRevenue: 18,
-          oldCustomerRevenue: 80,
-        },
-        {
-          month: "Oct",
-          newCustomerRevenue: 14,
-          oldCustomerRevenue: 10,
-        },
-        {
-          month: "Nov",
-          newCustomerRevenue: 10,
-          oldCustomerRevenue: 80,
-        },
-        {
-          month: "Dec",
-          newCustomerRevenue: 50,
-          oldCustomerRevenue: 20,
-        },
-      ],
-    },
-    {
-      year: 2023,
-      currentMonthRevenue: 20,
-      data: [
-        {
-          month: "Jan",
-          newCustomerRevenue: 10,
-          oldCustomerRevenue: 0,
-        },
-        {
-          month: "Feb",
-          newCustomerRevenue: 12,
-          oldCustomerRevenue: 0,
-        },
-        {
-          month: "Mar",
-          newCustomerRevenue: 20,
-          oldCustomerRevenue: 0,
-        },
-        {
-          month: "Apr",
-          newCustomerRevenue: 12,
-          oldCustomerRevenue: 0,
-        },
-        {
-          month: "May",
-          newCustomerRevenue: 10,
-          oldCustomerRevenue: 0,
-        },
-        {
-          month: "Jun",
-          newCustomerRevenue: 12,
-          oldCustomerRevenue: 2,
-        },
-        {
-          month: "Jul",
-          newCustomerRevenue: 12,
-          oldCustomerRevenue: 10,
-        },
-        {
-          month: "Aug",
-          newCustomerRevenue: 13,
-          oldCustomerRevenue: 4,
-        },
-        {
-          month: "Sep",
-          newCustomerRevenue: 18,
-          oldCustomerRevenue: 5,
-        },
-        {
-          month: "Oct",
-          newCustomerRevenue: 14,
-          oldCustomerRevenue: 50,
-        },
-        {
-          month: "Nov",
-          newCustomerRevenue: 10,
-          oldCustomerRevenue: 10,
-        },
-        {
-          month: "Dec",
-          newCustomerRevenue: 20,
-          oldCustomerRevenue: 20,
-        },
-      ],
-    },
-  ];
-
-  const currentRevenueData = revenueData[0];
-
   const maxMonth = currentRevenueData?.data.reduce((max, current) => {
-    const totalRevenue = current.newCustomerRevenue + current.oldCustomerRevenue;
-    if(totalRevenue > max.totalRevenue) {
-      return { month: current.month, totalRevenue};
+    const total_revenue = current.revenue_from_new_customers + current.revenue_from_old_customers;
+    if(total_revenue > max.total_revenue) {
+      return { month: current.month, total_revenue};
     }
     return max;
   },{
     month: null,
-    totalRevenue: 0
+    total_revenue: 0
   });  
 
   const roundToUpper5x = (num: any) => Math.ceil(num / 5) * 5;
@@ -279,16 +183,11 @@ const Dashboard: React.FC = () => {
     return Array.from({ length: 6 }, (_,i) => i*step).reverse();
   };
 
-  const makeHeight = (item, max) => {
-    const height = item?.newCustomerRevenue + item?.oldCustomerRevenue;
-    return (height/max)*100;
-  };
-
   const getHeight = (item) => {
-    const newRevenue = item?.newCustomerRevenue;
-    const oldRevenue = item?.oldCustomerRevenue;
+    const newRevenue = item?.revenue_from_new_customers;
+    const oldRevenue = item?.revenue_from_old_customers;
 
-    const max = roundToUpper5x(maxMonth?.totalRevenue);
+    const max = roundToUpper5x(maxMonth?.total_revenue);
 
     const yellowHeight = (newRevenue/max)*100;
     const greenHeight = (oldRevenue/max)*100;
@@ -308,7 +207,7 @@ const Dashboard: React.FC = () => {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
     pdf.save('revenue.pdf');
-  }
+  };
 
   return (
     <div
@@ -366,8 +265,8 @@ const Dashboard: React.FC = () => {
                   <div
                     className="flex flex-col"
                   >
-                    <p className="font-inter font-normal text-xs text-black opacity-50 text-nowrap">{rev.name}</p>
-                    <h4 className="font-inter font-medium text-2xl text-[#434D64]">{rev.amount}</h4>
+                    <p className="font-inter font-normal text-xs text-black opacity-50 text-nowrap">{rev.label}</p>
+                    <h4 className="font-inter font-medium text-2xl text-[#434D64]">{rev.name === "last_month_revenue" ? "$" : rev.name === "current_month_recurring_income" ? "$" : ""}{monthlyRevenueData[rev.name]}</h4>
                   </div>
                 </div>
               )
@@ -441,7 +340,7 @@ const Dashboard: React.FC = () => {
               <div className="relative w-full h-[260px] p-1 flex min-w-[500px] justify-between">
                 <div className="w-7 mt-[5px]">
                   {
-                    makeTheArray(maxMonth?.totalRevenue)?.map((number, index) => (
+                    makeTheArray(maxMonth?.total_revenue)?.map((number, index) => (
                       <div
                         key={index}
                         className="h-[40px]"
@@ -475,7 +374,7 @@ const Dashboard: React.FC = () => {
                     className="absolute top-4 left-0 w-full h-full pointer-events-none z-[-1]"
                   >
                     {
-                      makeTheArray(maxMonth?.totalRevenue)?.map((number, index) => (
+                      makeTheArray(maxMonth?.total_revenue)?.map((number, index) => (
                         <div
                           key={index}
                           className="h-[40px] px-9 w-full"
@@ -490,7 +389,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="w-7 mt-[5px]">
                   {
-                    makeTheArray(maxMonth?.totalRevenue)?.map((number, index) => (
+                    makeTheArray(maxMonth?.total_revenue)?.map((number, index) => (
                       <div
                         key={index}
                         className="h-[40px]"
@@ -500,7 +399,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className={`absolute w-full px-14 pb-[58px] pr-16 top-[18px] h-full`}>
-                  <div className={`border-b-4 border-[#905F00] h-[${100- ((currentRevenueData?.currentMonthRevenue/roundToUpper5x(maxMonth?.totalRevenue)) * 100)}%] `}></div>
+                  <div className={`border-b-4 border-[#905F00] h-[${100- ((currentRevenueData?.currentMonthRevenue/roundToUpper5x(maxMonth?.total_revenue)) * 100)}%] `}></div>
                 </div>
               </div>
             </div>

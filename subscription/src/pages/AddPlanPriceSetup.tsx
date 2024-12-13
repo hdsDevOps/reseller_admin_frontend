@@ -568,42 +568,46 @@ function AddPlanPriceSetup() {
       ...subscription,
       amount_details: localPrice
     })
-    if(iconImage !== null && typeof iconImage !== "string") {
-      try {
-        const imageUpload = await dispatch(uploadImageThunk({image: iconImage})).unwrap();
-        if(imageUpload?.message === "File uploaded successfully!") {
-          try {
-            const addPlan = await dispatch(addPlanAndPriceThunk({
-              icon_image: imageUpload?.url,
-              services: subscription?.services,
-              top_features: subscription?.top_features,
-              trial_period: subscription?.trial_period,
-              plan_name: subscription?.plan_name,
-              sticker_text: subscription?.sticker_text,
-              sticker_exists: subscription?.sticker_exists,
-              amount_details: subscription?.amount_details
-            })).unwrap();
-            setTimeout(() => {
-              toast.success(addPlan?.message)
-            }, 1000);
-          } catch (error) {
-            toast.error("Error adding plan.");
-            console.log(error)
-          } finally {
-            navigate(-1);
+    if(subscription?.plan_name.trim() === ""){
+      toast.warning("Plan name cannot be empty");
+    } else {
+      if(iconImage !== null && typeof iconImage !== "string") {
+        try {
+          const imageUpload = await dispatch(uploadImageThunk({image: iconImage})).unwrap();
+          if(imageUpload?.message === "File uploaded successfully!") {
+            try {
+              const addPlan = await dispatch(addPlanAndPriceThunk({
+                icon_image: imageUpload?.url,
+                services: subscription?.services,
+                top_features: subscription?.top_features,
+                trial_period: subscription?.trial_period,
+                plan_name: subscription?.plan_name,
+                sticker_text: subscription?.sticker_text,
+                sticker_exists: subscription?.sticker_exists,
+                amount_details: subscription?.amount_details
+              })).unwrap();
+              setTimeout(() => {
+                toast.success(addPlan?.message)
+              }, 1000);
+            } catch (error) {
+              toast.error("Error adding plan.");
+              console.log(error)
+            } finally {
+              navigate(-1);
+            }
           }
-        }
-      } catch (error) {
-        if(error?.message == "Request failed with status code 401") {
-          try {
-            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-            navigate('/login');
-          } catch (error) {
-            //
+        } catch (error) {
+          if(error?.message == "Request failed with status code 401") {
+            try {
+              const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+              navigate('/login');
+            } catch (error) {
+              //
+            }
           }
-        }
-        else{
-          toast.error("Please upload a valid image.");
+          else{
+            toast.error("Please upload a valid image.");
+          }
         }
       }
     }

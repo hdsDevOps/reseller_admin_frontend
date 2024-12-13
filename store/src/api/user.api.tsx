@@ -1135,6 +1135,24 @@ async function updateNotificationStatusApi(
   }
 };
 
+async function monthlyRevenueDataApi(): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.monthlyRevenueData, {});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function yearlySpendingStatisticsApi(): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.yearlySpendingStatistics, {});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -1223,4 +1241,6 @@ export const userApis = {
   getNotificationsApi,
   getNotificationStatusApi,
   updateNotificationStatusApi,
+  monthlyRevenueDataApi,
+  yearlySpendingStatisticsApi,
 };
