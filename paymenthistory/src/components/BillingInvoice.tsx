@@ -41,7 +41,7 @@ const BillingInvoice: React.FC = () => {
         <div
           className='text-center py-1'
         >
-          <h3 className='font-inter text-[black] text-lg'>Receipt from Hordanso LLC</h3>
+          <h3 className='font-inter text-[black] text-lg'>Receipt from Hordanso LLC-------</h3>
           <p className='font-inter text-[#B3B7B8] text-sm'>Receipt #1567-5406</p>
         </div>
 
