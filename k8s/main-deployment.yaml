@@ -16,5 +16,7 @@ spec:
       - name: frontendadmin-main-service
         image: hordansodevops/reseller_admin_frontend_main:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 4000
         imagePullPolicy: Always
+        
+

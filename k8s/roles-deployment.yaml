@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendadmin-role-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontendadmin-role-service
+  template:
+    metadata:
+      labels:
+        app: frontendadmin-role-service
+    spec:
+      containers:
+      - name: frontendadmin-role-service
+        image: hordansodevops/reseller_admin_frontend_role:latest
+        ports:
+        - containerPort: 4006
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 4006
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 4006
+          initialDelaySeconds: 5
+          periodSeconds: 3

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendadmin-paymenthistory-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontendadmin-paymenthistory-service
+  template:
+    metadata:
+      labels:
+        app: frontendadmin-paymenthistory-service
+    spec:
+      containers:
+      - name: frontendadmin-paymenthistory-service
+        image: hordansodevops/reseller_admin_frontend_paymenthistory:latest
+        ports:
+        - containerPort: 4005
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 4005
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 4005
+          initialDelaySeconds: 5
+          periodSeconds: 3

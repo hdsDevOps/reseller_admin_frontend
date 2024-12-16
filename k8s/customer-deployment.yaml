@@ -16,5 +16,5 @@ spec:
       - name: frontendadmin-customer-service
         image: hordansodevops/reseller_admin_frontend_customer:latest
         ports:
-        - containerPort: 3001
+        - containerPort: 4001
         imagePullPolicy: Always

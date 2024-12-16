@@ -16,5 +16,5 @@ spec:
       - name: frontendadmin-auth-service
         image: hordansodevops/reseller_admin_frontend_auth:latest
         ports:
-        - containerPort: 3002
+        - containerPort: 4002
         imagePullPolicy: Always

@@ -1,73 +1,107 @@
+import { MoveLeft } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form } from "react-bootstrap";
+import '../styles/styles.css'
+import { forgetPasswordOtpThunk } from "store/user.thunk";
+import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async(e: React.FormEvent) => {
     e.preventDefault();
     // Handle the login logic here
-  };
-
-  const onGoBackhandler = () => {
-    navigate('/login'); // Replace '/login' with your login route path
+    try {
+      const result = await dispatch(
+        forgetPasswordOtpThunk({
+          email: email
+        })
+      ).unwrap();
+      console.log("result....", result);
+      navigate("/otp", {state: { email: email }});
+    } catch (error) {
+      // console.error("Login error:", error);
+      toast.error("Please enter valid email or password!");
+    }
   };
 
   return (
-    <div className="sign-in">
-      <div className="forgot-pws-header mb-4">
-        {/* <Image
-          src={imageAssets.logo_small} // Replace with your image path
-          alt="hordanso"
-          className="forgot-pws-logo"
-        /> */}
-        <h3>Forgot password?</h3>
-        <p>
-          Enter the email address associated with your account and we’ll send
-          you a link to reset your password.
-        </p>
-      </div>
-      <div className="auth-container">
-        <Form onSubmit={handleLogin}>
-          <Form.Group controlId="formBasicEmail" className="mb-4">
-            <Form.Label className="auth-form-label mb-1">Email</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-control auth-form-control"
-              data-testid="email"
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <ToastContainer />
+      <div className="w-full max-w-[570px]">
+        <div className="px-[60px] xsm-max:px-4 bg-custom-white5 rounded-lg shadow-sm">
+          <div className={`mb-5 flex items-center justify-center`}>
+            <img
+              src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
+              alt="logo"
+              className={`w-[108px]`}
             />
-          </Form.Group>
-          <div className="auth-btn-container mt-3">
-            <Button
-              type="submit"
-              className="primary-btn black-background"
-              data-testid="next"
-            >
-              Next
-            </Button>
           </div>
+          <div>
+            <h3 className="h3-text">
+              Forgot password?
+            </h3>
+            <p className="mt-2 text-left text-base text-custom-black">
+              Enter the email address associated with your account and we’ll send
+              you an OTP to reset your password.
+            </p>
+          </div>
+          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+            <div className="">
+              <div className="space-y-1 w-full flex flex-col">
+                <label
+                  htmlFor="email-address"
+                  className="login-label mb-[15px]"
+                >
+                  Email
+                </label>
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="login-input"
+                  placeholder="Robertclive@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  data-testid="email"
+                />
+              </div>
+            </div>
 
-          <div className="text-center mt-4">
-            <Button
+            <div className="max-w-[451px] mt-[25px]">
+              <button
+                type="submit"
+                data-testid="log-in"
+                className="w-full h-11 btn-black"
+              >
+                Next
+              </button>
+            </div>
+          </form>
+
+          <div
+            className="text-center flex flex-row justify-center mt-8"
+          >
+            <button
               type="button"
-              onClick={onGoBackhandler}
-              data-testid="back-to-login"
-              className="auth-back-btn"
+              className="flex flex-row"
+              onClick={() => navigate('/login')}
             >
-              {/* <Image
-                src={imageAssets.back_arrow} // Replace with your image path
-                alt="back arrow"
-                className="auth-back-arrow"
-              /> */}
-              <span className="ps-1">Back to login</span>
-            </Button>
+              <MoveLeft
+                className="w-2 pt-[2px]"
+              />
+              <p
+                className="ml-2 font-inter font-semibold text-base"
+              >Back to log in</p>
+            </button>
           </div>
-        </Form>
+        </div>
       </div>
     </div>
   );

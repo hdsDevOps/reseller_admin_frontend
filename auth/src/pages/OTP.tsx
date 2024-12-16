@@ -5,12 +5,24 @@ import React, {
   ChangeEvent,
   KeyboardEvent,
 } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button, Form, Row, Col } from "react-bootstrap";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSThunk, resendUserOtpThunk, forgetPasswordVerifyOtpThunk, forgetPasswordResendOtpThunk, setUserIdToLSThunk, getUserIdFromLSThunk } from "store/user.thunk";
+import { setTokenDetails } from "store/authSlice";
+import { MoveLeft } from 'lucide-react';
+import '../styles/styles.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const OTP: React.FC = () => {
-
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const mode = queryParams.get("mode");
+  const email = `${location.state != null ? location.state.email : ""}`;
+  const adminId = location.state.adminId;
+  // console.log("Admin Id...", adminId);
 
   const otp1Ref = useRef<HTMLInputElement>(null);
   const otp2Ref = useRef<HTMLInputElement>(null);
@@ -25,6 +37,30 @@ const OTP: React.FC = () => {
   const [otp4, setOtp4] = useState<string>("");
   const [otp5, setOtp5] = useState<string>("");
   const [otp6, setOtp6] = useState<string>("");
+
+  const [ time, setTime ] = useState(0);
+  const [ seconds, setSeconds ] = useState(0);
+  const [ minutes, setMinutes ] = useState(0);
+
+  useEffect(() => {
+    toast.success("Otp has been sent to your email!");
+  }, [])
+  
+
+  useEffect(() => {
+    if(time>0){
+      setSeconds(time%60);
+      setMinutes((parseInt(time/60)).toFixed(0));
+      setTimeout(() => {
+        setTime(time-1);
+      }, 1000);
+    }
+    else{
+      setSeconds(0);
+      setMinutes(0);
+      setTime(0);
+    }
+  }, [time])
 
   useEffect(() => {
     otp1Ref.current?.focus();
@@ -117,177 +153,281 @@ const OTP: React.FC = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
+
     if (otp.length === 6) {
-      // Process the OTP login
-      // dispatch(makeUserLoginThunk({ email, otp }))
-      //   .then((response) => {
-      //     // Handle successful login
-      //     toast.success("Login successful!");
-      //     router.push("/dashboard"); // Replace with your desired route
-      //   })
-      //   .catch((error) => {
-      //     // Handle login error
-      //     if (error instanceof CustomError) {
-      //       toast.error(error.message);
-      //     } else {
-      //       toast.error("Login failed. Please try again.");
-      //     }
-      //   });
+      const isValidOtp = true;
+
+      if (isValidOtp) {
+        if (mode === "signin") {
+          try {
+            const result = await dispatch(
+              verifyUserOtpThunk({
+                admin_id: adminId,
+                otp: otp
+              })
+            ).unwrap()
+            if(result.message == 'Login successful'){
+              try {
+                const setToken = await dispatch(setUserAuthTokenToLSThunk(result?.token)).unwrap();
+                //aXINQcCzh9z0WnNVXvt2
+                const setUserId = await dispatch(setUserIdToLSThunk(adminId)).unwrap();
+                // console.log({setToken, setUserId})
+                navigate('/dashboard', {state: {from: 'otp'}})
+              } catch (error) {
+                console.log("Error on token")
+              } finally {
+                try {
+                  const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+                  const getUserId = await dispatch(getUserIdFromLSThunk()).unwrap();
+                  navigate('/dashboard', {state: {from: 'otp'}})
+                } catch (error) {
+                  console.log("Error on token")
+                }
+              }
+            }
+            else{
+              navigate('/login')
+            }
+          } catch (error) {
+            // console.log("Error on otp");
+            toast.error("Enter valid otp!");
+          }
+        } else {
+          try {
+            const result = await dispatch(
+              forgetPasswordVerifyOtpThunk({
+                email: email,
+                otp: otp
+              })
+            ).unwrap()
+            if(result.message == 'OTP verified successfully'){
+              navigate('/resetpassword', { state: { email: email, otp: otp } });
+            }
+            else{
+              toast.error("Enter valid otp!")
+            }
+          } catch (error) {
+            // console.log("Error on otp");
+            toast.error("Enter valid otp!");
+          }
+        }
+      } else {
+        // alert("Invalid OTP. Please try again.");
+        toast.error("Enter valid otp!");
+      }
     } else {
-      //toast.error("Please enter a valid 6-digit OTP.");
+      // alert("Please enter all 6 digits.");
+      toast.warning("Please enter all 6 digits.");
     }
   };
 
-  const onGoBackhandler = () => {
-    navigate('/login');
+  const handleEditmail = () => {
+    navigate("/forgotpassword");
   };
 
+  const resendOtp = async() => {
+    setTime(120);
+    if(mode == "signin"){
+      try {
+        const otpResend = await dispatch(
+          resendUserOtpThunk({
+            admin_id: adminId
+          })
+        ).unwrap()
+        toast.success("Otp has been resent to your email!");
+      } catch (error) {
+        console.log("Error sending otp")
+        toast.error("Otp resending is failed!");
+      }
+    }
+    else{
+      try {
+        const otpResend = await dispatch(
+          forgetPasswordResendOtpThunk({
+            email: email
+          })
+        ).unwrap();
+        console.log("result...", otpResend)
+        toast.success("Otp has been resent to your email!");
+      } catch (error) {
+        console.log("Error sending otp")
+        toast.error("Otp resending is failed!");
+      }
+    }
+  }
+
   return (
-    <div className="sign-in">
-      <div className="auth-header mb-4">
-        {/* <Image
-        src={imageAssets.logo_small} // Replace with your image path
-        alt="hordanso"
-        className="auth-logo"
-      /> */}
-        <h3>Sign in your account</h3>
-      </div>
-      <div className="auth-container">
-        <Form onSubmit={handleLogin}>
-          <Row>
-            <Form.Label className="auth-form-label mb-4">
-              OTP Verification
-            </Form.Label>
-            <Col sm={2} xl={2}>
-              <Form.Control
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <ToastContainer />
+      <div className="w-full max-w-[570px]">
+        <div className="p-8 xsm-max:px-4 bg-[#F9FAFB] rounded-lg shadow-sm">
+          <div
+            className={`mb-[20px] flex items-center justify-center`}
+          >
+            <img
+              src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
+              alt="logo"
+              className={`w-[108px]`}
+            />
+          </div>
+          <h3 className="text-center h3-text mb-4">
+            {mode === "signin" ? "Sign in your account" : "Verify your email"}
+          </h3>
+          <div
+            className="w-full flex items-start justify-center"
+          >
+            <p
+              className="text-center font-inter-16px-400 w-[430px]"
+            >
+              {
+                mode === "signin" ? "Enter the six digit code we sent to your email address to verify your Hordanso account:" : `Enter the six digit code we sent to your email address to verify your Hordanso account:`
+              }
+              <div className="inline-block ml-[5px]">
+                {/* <p dangerouslySetInnerHTML={{ __html: message }} /> */}
+                {mode !== "signin" && (
+                  <button
+                    type="button"
+                    onClick={() => handleEditmail()}
+                    className="font-medium text-green-600 hover:text-gray-500"
+                    data-testid="back-to-login"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+            </p>
+          </div>
+          <form onSubmit={handleLogin}
+            className="flex flex-col w-full text-center"
+          >
+            <div className="flex justify-between mt-12 w-[451px]">
+              <p className="text-md font-bold">OTP verification</p>
+              <span className="text-red-600">{
+                `0${minutes}:${
+                  seconds<10 ? "0"+seconds : seconds
+                }`
+              }</span>
+            </div>
+            <div className="grid grid-cols-6 gap-2 mt-4 w-[451px]">
+              <input
                 type="text"
                 maxLength={1}
                 ref={otp1Ref}
                 value={otp1}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 1)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 1)
-                }
+                onChange={(e) => handleInputChange(e, 1)}
+                onKeyDown={(e) => handleKeyDown(e, 1)}
                 className="otp-input"
-                data-testid="otp-one"
+                placeholder="0"
+                data-otp-index="0"
               />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
+              <input
                 type="text"
                 maxLength={1}
                 ref={otp2Ref}
                 value={otp2}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 2)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 2)
-                }
+                onChange={(e) => handleInputChange(e, 2)}
+                onKeyDown={(e) => handleKeyDown(e, 2)}
                 className="otp-input"
-                data-testid="otp-two"
+                placeholder="0"
+                data-otp-index="1"
               />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
+              <input
                 type="text"
                 maxLength={1}
                 ref={otp3Ref}
                 value={otp3}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 3)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 3)
-                }
+                onChange={(e) => handleInputChange(e, 3)}
+                onKeyDown={(e) => handleKeyDown(e, 3)}
                 className="otp-input"
-                data-testid="otp-three"
+                placeholder="0"
+                data-otp-index="2"
               />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
+              <input
                 type="text"
                 maxLength={1}
                 ref={otp4Ref}
                 value={otp4}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 4)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 4)
-                }
+                onChange={(e) => handleInputChange(e, 4)}
+                onKeyDown={(e) => handleKeyDown(e, 4)}
                 className="otp-input"
-                data-testid="otp-four"
+                placeholder="0"
+                data-otp-index="3"
               />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
+              <input
                 type="text"
                 maxLength={1}
                 ref={otp5Ref}
                 value={otp5}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 5)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 5)
-                }
+                onChange={(e) => handleInputChange(e, 5)}
+                onKeyDown={(e) => handleKeyDown(e, 5)}
                 className="otp-input"
-                data-testid="otp-five"
+                placeholder="0"
+                data-otp-index="4"
               />
-            </Col>
-            <Col sm={2} xl={2}>
-              <Form.Control
+              <input
                 type="text"
                 maxLength={1}
                 ref={otp6Ref}
                 value={otp6}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, 6)
-                }
-                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                  handleKeyDown(e, 6)
-                }
+                onChange={(e) => handleInputChange(e, 6)}
+                onKeyDown={(e) => handleKeyDown(e, 6)}
                 className="otp-input"
-                data-testid="otp-six"
+                placeholder="0"
+                data-otp-index="5"
               />
-            </Col>
-          </Row>
-          <div className="auth-btn-container mt-3">
-            <Button type="submit" className="primary-btn" data-testid="submit">
-              Submit
-            </Button>
-          </div>
-          <div className="text-center auth-otp-footer mt-4">
-            <p>
-              Didn't get an OTP ?{" "}
-              <Link data-testid="resend-otp" to="#">
-                Resend OTP
-              </Link>{" "}
-              <span>01:19</span>
-            </p>
-          </div>
-          <div className="text-center mt-4">
-            <Button
-              type="button"
-              onClick={() => onGoBackhandler()}
-              className="auth-back-btn"
-              data-testid="back-to-login"
+            </div>
+            <div className="max-w-[451px] mt-[25px]">
+              <button
+                type="submit"
+                data-testid="log-in"
+                className={`w-full ${
+                  mode === "signin" ? "btn-green" : "btn-black"
+                } h-11`}
+              >
+                Submit
+              </button>
+            </div>
+            <div className="text-center mt-8 xsm-max:text-sm">
+              <p>
+                Didn't get an OTP?{" "}
+                <button
+                  type="button"
+                  className={`${
+                    time>0 ? 'text-[#858585]' : 'text-red-600 underline'
+                  } ml-4`}
+                  onClick={() => {
+                    resendOtp()
+                  }}
+                  disabled={
+                    time>0 ? true : false
+                  }
+                >
+                  Resend OTP
+                </button>{" "}
+              </p>
+            </div>
+
+            <div
+              className="text-center flex flex-row justify-center mt-8"
             >
-              {/* <Image
-              src={imageAssets.back_arrow} // Replace with your image path
-              alt="back arrow"
-              className="auth-back-arrow"
-            /> */}
-              <span className="ps-1">Back to login</span>
-            </Button>
-          </div>
-        </Form>
+              <button
+                type="button"
+                className="flex flex-row"
+                onClick={() => navigate('/login')}
+              >
+                <MoveLeft
+                  className="w-2 pt-[2px]"
+                />
+                <p
+                  className="ml-2 font-inter font-semibold text-base"
+                >Back to log in</p>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

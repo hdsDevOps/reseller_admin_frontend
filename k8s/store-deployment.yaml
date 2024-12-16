@@ -16,5 +16,5 @@ spec:
       - name: frontendadmin-store-service
         image: hordansodevops/reseller_admin_frontend_store:latest
         ports:
-        - containerPort: 3030
+        - containerPort: 4030
         imagePullPolicy: Always
