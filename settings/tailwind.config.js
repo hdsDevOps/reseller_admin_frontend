@@ -1,6 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  darkMode: 'media', // or 'media' or 'class'
+  darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
       fontFamily: {
@@ -14,6 +14,7 @@ module.exports = {
         cGreen3: "#F3FAF7",
         cGreen4: "#ECFFF0",
         cGreen5: '#67C100',
+        cGreen6: '#045014',
         cBlue: "#0084FF",
         cBlue2: "#0066FF",
         cBlue3: "#0D121F",
@@ -21,6 +22,8 @@ module.exports = {
         cBlue5: "#2B41FF",
         cBlue6: '#F7FAFF',
         cBlue7: '#23B7E5',
+        cBlue8: '#231FE2',
+        cBlue9: '#045FCA',
         cWhite: "#E4E4E4",
         cWhite2: "#F9F9F9",
         cWhite3: "#F4F4F4",
@@ -33,11 +36,16 @@ module.exports = {
         cGray3: "#ACACAC33",
         cGray4: "#BABABA",
         cGray5: "#A8A8A8",
+        cGray6: "#D9D9D9",
+        cGray7: "#6B7280",
         cBlack: "#151515",
         cBlack2: "#00163B",
         cBlack3: "#312E3C",
         cBlack4: "#1E1E1E",
-        cBlack5: '#434D64',
+        cBlack5: "#0D121F",
+        cBlack6: "#14213D",
+        cBlack7: "#434D64",
+        cPurple: '#8112A8',
       },
     },
   },
