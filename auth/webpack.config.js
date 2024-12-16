@@ -10,7 +10,6 @@ module.exports = (_, argv) => ({
 	resolve: {
 		extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
 	},
-   
 	devServer: {
 		port: 4002,
 		historyApiFallback: true,
