@@ -8,6 +8,7 @@ import { RiInformation2Line } from "react-icons/ri";
 import '../styles/styles.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { MoveLeft } from "lucide-react";
 
 const ResetPassword: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -143,6 +144,22 @@ const ResetPassword: React.FC = () => {
                   className="w-full btn-black"
                 >
                   Confirm Password
+                </button>
+              </div>
+              <div
+                className="text-center flex flex-row justify-center mt-8"
+              >
+                <button
+                  type="button"
+                  className="flex flex-row"
+                  onClick={() => navigate('/login')}
+                >
+                  <MoveLeft
+                    className="w-2 pt-[2px]"
+                  />
+                  <p
+                    className="ml-2 font-inter font-semibold text-base"
+                  >Back to log in</p>
                 </button>
               </div>
             </form>

@@ -5,8 +5,7 @@ import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { makeUserLoginThunk } from "store/user.thunk";
 import '../styles/styles.css';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-hot-toast";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -68,7 +67,6 @@ const Login: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center h-full xsm-max:px-1 font-inter">
-      <ToastContainer />
       <div className="w-full max-w-[32rem] bg-gray-50 p-12 rounded-3xl xsm-max:px-4">
         <div className="w-full">
           <div className="text-center">
