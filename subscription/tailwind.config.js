@@ -1,6 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  darkMode: 'media', // or 'media' or 'class'
+  darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
       fontFamily: {
@@ -39,6 +39,7 @@ module.exports = {
         cGray5: "#A8A8A8",
         cGray6: "#D9D9D9",
         cGray7: "#6B7280",
+        cGray8: '#737373',
         cBlack: "#151515",
         cBlack2: "#00163B",
         cBlack3: "#312E3C",
