@@ -1,41 +1,41 @@
 export interface User {
-  fname: string;
-  lname: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
-  userType: string;
+  role: string;
 }
 
 
 const UserListData: User[] = [
 
   {
-      fname: 'Robert',
-      lname: 'Clive',
+      first_name: 'Robert',
+      last_name: 'Clive',
       email: 'robertClive@hordanso.com',
-      phone: '(123) 465 - 7890',
-      userType: 'Admin',
+      phone: '+0 123 456 7890',
+      role: 'Admin',
     },
   {
-      fname: 'Robert',
-      lname: 'Blive',
+      first_name: 'Robert',
+      last_name: 'Blive',
       email: 'robertClive@hordanso.com',
-      phone: '(123) 674 - 7890',
-      userType: 'Sub-admin',
+      phone: '+0 123 456 7890',
+      role: 'Super Admin',
     },
   {
-      fname: 'Robert',
-      lname: 'Slive',
+      first_name: 'Robert',
+      last_name: 'Slive',
       email: 'robertClive@hordanso.com',
-      phone: '(123) 465 - 7890',
-      userType: 'Account',
+      phone: '+0 123 456 7890',
+      role: 'Super Admin',
     },
   {
-      fname: 'Robert',
-      lname: 'Qlive',
+      first_name: 'Robert',
+      last_name: 'Qlive',
       email: 'robertClive@hordanso.com',
-      phone: '(123) 465 - 7890',
-      userType: 'Admin',
+      phone: '+0 123 456 7890',
+      role: 'Admin',
     },
     // Add more user data here as needed
   ];
