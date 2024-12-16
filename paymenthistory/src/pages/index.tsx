@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
+import BillingInvoice from "../components/BillingInvoice";
 
 
 const Payment = React.lazy(() => import("./Payment"));
@@ -12,6 +13,7 @@ const PaymentApp: React.FC = () => {
       <Routes>
         <Route path="/payment-method" element={<Payment />} />
         <Route path="/billing-history" element={<BillingHistory />} />
+        <Route path="/invoice" element={<BillingInvoice />} />
       </Routes>
     </Suspense>
   );

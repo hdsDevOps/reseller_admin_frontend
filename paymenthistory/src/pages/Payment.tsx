@@ -1,21 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
+import { getPaymentMethodsListThunk, updatePaymentMethodStatusThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk'
+import { useAppDispatch } from "store/hooks";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PaymentMethod: React.FC = () => {
-  const [paymentMethods, setPaymentMethods] = useState([
-    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/stripe.png?alt=media&token=23bd6672-665c-4dfb-9d75-155abd49dc58', status: 'Inactive' },
-    { image: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/paystack.png?alt=media&token=8faf3870-4256-4810-9844-5fd3c147d7a3', status: 'Active' },
-  ]);
+  const dispatch = useAppDispatch();
+  const [paymentMethods, setPaymentMethods] = useState([]);
   console.log(paymentMethods);
   
+  const getPaymentMethodsList = async() => {
+    try {
+      const result = await dispatch(getPaymentMethodsListThunk()).unwrap();
+      setPaymentMethods(result.data);
+    } catch (error) {
+      setPaymentMethods([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
 
-  const updateStatus = (value, index) => {
-    const data = paymentMethods;
-    data[index].status = value;
-    // console.log(value);
-    // console.log(data);
-    setPaymentMethods(data);
+  useEffect(() => {
+    getPaymentMethodsList()
+  }, []);
+
+  const updateStatus = async(value, index) => {
+    if(value === paymentMethods[index].status){
+      //
+    }
+    else{
+      try {
+        const statusResult = await dispatch(updatePaymentMethodStatusThunk({
+          record_id: paymentMethods[index].id,
+          status: value,
+        })).unwrap();
+        setTimeout(() => {
+          toast.success(statusResult.message);
+        }, 1000);
+      } catch (error) {
+        toast.error(`Error updating ${paymentMethods[index].method_name} status`);
+      } finally {
+        getPaymentMethodsList();
+      }
+    }
   };
 
   return (
@@ -33,16 +68,20 @@ const PaymentMethod: React.FC = () => {
                 <div
                   className="select-div"
                 >
-                  <select className={`${item.status == 'Inactive' ? 'payment-select-2' : 'payment-select'}`} onChange={(e) => {
-                    updateStatus(e.target.value, index)
-                  }}>
-                    <option selected={item.status == 'Active' ? false : item.status == 'Inactive' ? false : true} hidden>Action</option>
-                    <option selected={item.status == 'Active' ? true:  false} className="payment-option" value='Active'>Active</option>
-                    <option selected={item.status == 'Inactive' ? true:  false} className="payment-option" value='Inactive'>Inactive</option>
+                  <select
+                    className={`${item.status == 'INACTIVE' ? 'payment-select-2' : 'payment-select'}`}
+                    onChange={(e) => {
+                      updateStatus(e.target.value, index)
+                    }}
+                    cypress-name={`payment-status-${index}`}
+                  >
+                    <option selected={item.status == 'ACTIVE' ? false : item.status == 'INACTIVE' ? false : true} hidden>Action</option>
+                    <option selected={item.status == 'ACTIVE' ? true:  false} className="payment-option" value='ACTIVE'>Active</option>
+                    <option selected={item.status == 'INACTIVE' ? true:  false} className="payment-option" value='INACTIVE'>Inactive</option>
                   </select>
                 </div>
 
-                <img src={item.image} alt='image' className="w-[150px] h-[71px] object-cover mx-auto mt-4" />
+                <img src={item.method_image} alt='image' className="w-[150px] h-[71px] object-cover mx-auto mt-4" />
               </div>
             )
           })

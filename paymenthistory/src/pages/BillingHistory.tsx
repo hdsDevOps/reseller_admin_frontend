@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import { IoIosArrowDown } from "react-icons/io";
 import { FaDownload } from "react-icons/fa6";
 // import { IoCalendarClearOutline } from "react-icons/io5";
@@ -6,78 +6,99 @@ import { FaDownload } from "react-icons/fa6";
 // import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
+import { getBillingHistoryThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { useAppDispatch } from "store/hooks";
+import { FilterX } from 'lucide-react';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
 
-interface BillingDetail {
-  TransactID: string;
-  customerName: string;
-  description: string;
-  date_invoice: string;
-  domain: string;
-  productType: string;
-  amount: string;
-  status: string;
-  paymentMethod: string | null;
+const initialFilter = {
+  start_date: "",
+  end_date: "",
+  domain_id: "",
+  search_data: ""
 }
 
 const BillingHistory: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [domainList, setDomainList] = useState([]);
+  const pdfRef = useRef();
+  // console.log("pdfRef...", pdfRef.current);
+  const [pdfDownload, setPdfDownload] = useState('hidden');
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+  const [filter, setFilter] = useState(initialFilter);
+  // console.log("filter...", filter);
+  
+
+  const [billingHistory, setBillingHistory] = useState([]);
+  // console.log(billingHistory);
+  
+
+  const fetchBillingHistory = async() => {
+    try {
+      const result = await dispatch(getBillingHistoryThunk(filter)).unwrap();
+      setBillingHistory(result?.data);
+    } catch (error) {
+      setBillingHistory([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
   };
 
-  const BillingDetails: BillingDetail[] = [
-    {
-      TransactID: "12309864nc32",
-      customerName: "Demo purpose",
-      date_invoice: "Jan 30 2024",
-      description: "Purchase Google <br /> Workspace Starter plan",
-      domain: "examplepetstore.com",
-      productType: "Google workspace",
-      amount: "₹3.00",
-      status: "Paid",
-      paymentMethod: "...2354",
-    },
-    {
-      TransactID: "12309864nc32",
-      customerName: "Demo 1",
-      date_invoice: "Jan 30 2024",
-      description: "Purchase Google Domain",
-      domain: "example-pet-store.com",
-      productType: "Google domain",
-      amount: "₹648.00",
-      status: "Paid",
-      paymentMethod: "...2354",
-    },
-    {
-      TransactID: "12309864nc32",
-      customerName: "Demo 1",
-      date_invoice: "Jan 30 2024",
-      description: "Purchase domains",
-      domain: "myownpersonaldomain.com, schemaphic.com",
-      productType: "Google workspace + domain",
-      amount: "₹648.00",
-      status: "Paid",
-      paymentMethod: "...2354",
-    },
-  ];
+  useEffect(() => {
+    fetchBillingHistory();
+  }, []);
 
-  // Filter logic for the search
-  const filteredBillingDetails = BillingDetails.filter((detail) => {
-    const isWithinDateRange =
-      (!startDate || new Date(detail.date_invoice) >= startDate) &&
-      (!endDate || new Date(detail.date_invoice) <= endDate);
-    const matchesSearchTerm =
-      detail.TransactID.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      detail.customerName.toLowerCase().includes(searchTerm.toLowerCase());
+  const handleChangeFilter = (e) => {
+    setFilter({
+      ...filter,
+      [e.target.name]: e.target.value,
+    });
+  };
+  
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 20;
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = billingHistory.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(billingHistory.length / itemsPerPage);
 
-    return isWithinDateRange && matchesSearchTerm;
-  });
+  const downloadInvoice = async() => {
+    await setPdfDownload("fixed z-[9999] left-[-9999px]");
+    const element = pdfRef.current;
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,  // Allow CORS requests for images
+      allowTaint: true, 
+    });
+    const imgData = canvas.toDataURL('image/png');
+
+    if (imgData.startsWith('data:image/png;base64,')) {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pdfWidth = 210;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+      pdf.save('invoice.pdf');
+    } else {
+      console.error("Image data is invalid or empty", imgData);
+    }
+
+    setPdfDownload('hidden');
+  }
 
   return (
     <div className="grid grid-cols-1">
@@ -93,7 +114,7 @@ const BillingHistory: React.FC = () => {
             <input
               type="text"
               className="serach-input-2 placeholder-black"
-              name="startDate"
+              name="start_date"
               placeholder="Start Date"
               onFocus={e => {
                 e.target.type='date'
@@ -101,13 +122,14 @@ const BillingHistory: React.FC = () => {
               onBlur={e => {
                 e.target.type='text'
               }}
+              onChange={handleChangeFilter}
             />
           </div>
           <div className="px-4 mb-5 sm:mb-0">
             <input
               type="text"
               className="serach-input-2 placeholder-black"
-              name="endDate"
+              name="end_date"
               placeholder="End Date"
               onFocus={e => {
                 e.target.type='date'
@@ -115,6 +137,7 @@ const BillingHistory: React.FC = () => {
               onBlur={e => {
                 e.target.type='text'
               }}
+              onChange={handleChangeFilter}
             />
           </div>
           <div className="px-4 mb-5 sm:mb-0">
@@ -122,7 +145,7 @@ const BillingHistory: React.FC = () => {
               list="brow"
               placeholder="Auto search domain list"
               className="serach-input-2"
-              name="domain"
+              name="domain_id"
             />
             <div
               className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b ${
@@ -147,15 +170,22 @@ const BillingHistory: React.FC = () => {
             <input
               type="text"
               className="serach-input-3"
-              name="groupName"
+              name="search_data"
               placeholder="Transaction ID, customer name"
+              onChange={handleChangeFilter}
             />
             <button
               type="button"
               className="btn-green-no-radius"
             >Search</button>
+
+            <button className="ml-1">
+              <FilterX
+                className="text-[20px] text-custom-green"
+              />
+            </button>
           </div>
-        </div>
+          </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -186,57 +216,108 @@ const BillingHistory: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredBillingDetails.map((detail, index) => (
-              <tr key={index} className="text-xs text-[#434D64]">
-                <td className="td-css-3 text-custom-green">
-                  {detail.TransactID}
-                </td>
-                <td className="td-css-3 text-custom-black-5">
-                  {detail.customerName}
-                </td>
-                <td className="td-css-3 text-custom-black-5 flex items-center flex-col">
-                  {detail.date_invoice}
-                  <small className="text-custom-green">12309864</small>
-                </td>
-                <td className="td-css-3 text-custom-black-5">
-                  {detail.productType}
-                </td>
-                <td className="td-css-3 text-custom-black-5">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: detail.description.replace(/<br\s*\/?>/gi, "<br />"),
-                    }}
-                  />
-                </td>
-                <td className="td-css-3 text-custom-black-5">{detail.domain}</td>
-                <td className="td-css-full-opactiy text-custom-black-5 min-w-[150px]">
-                  <span className="flex items-center justify-center">
-                    <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
-                    <span className="font-inter-bold-xs-60percent-black">
-                      {detail.paymentMethod}
+            {
+              currentItems?.length>0 ? currentItems?.map((detail, index) => (
+                <tr key={index} className="text-xs text-[#434D64]">
+                  <td className="td-css-3 text-custom-green">
+                    {detail?.transaction_id}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">
+                    {`${detail?.first_name} ${detail?.last_name}`}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5 flex items-center flex-col">
+                    <a>{detail?.date_invoice || ' '}</a>
+                    <small className="text-custom-green">12309864</small>
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">
+                    {detail?.productType || ' '}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">
+                    {detail?.description || ' '}
+                  </td>
+                  <td className="td-css-3 text-custom-black-5">{detail?.domain || ' '}</td>
+                  <td className="td-css-full-opactiy text-custom-black-5 min-w-[150px]">
+                    <span className="flex items-center justify-center">
+                      <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
+                      <span className="font-inter-bold-xs-60percent-black">
+                        {detail?.paymentMethod || ' '}
+                      </span>
                     </span>
-                  </span>
-                </td>
-                <td className="td-css-full-opactiy text-custom-black-5">
-                  <button className="btn-green-4">
-                    {detail.status}
-                  </button>
-                </td>
-                <td className="td-css-4 text-custom-green">
-                  {detail.amount}
-                </td>
-                <td className="cursor-pointer w-full items-center text-center">
-                  <button
-                    type="button"
-                    className="my-auto text-lg text-custom-green"
-                  >
-                    <FaDownload />
-                  </button>
-                </td>
+                  </td>
+                  <td className="td-css-full-opactiy text-custom-black-5">
+                    <button className="btn-green-4">
+                      {detail?.status || ' '}
+                    </button>
+                  </td>
+                  <td className="td-css-4 text-custom-green">
+                    {detail?.amount || ' '}
+                  </td>
+                  <td className="cursor-pointer w-full items-center text-center">
+                    <button
+                      type="button"
+                      className="my-auto text-lg text-custom-green"
+                      onClick={() => {downloadInvoice()}}
+                    >
+                      <FaDownload />
+                    </button>
+
+                    <div className={pdfDownload}>
+                      <BillingInvoice pdfRef={pdfRef} />
+                    </div>
+                  </td>
+                </tr>
+              )) :
+              <tr>
+                <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
               </tr>
-            ))}
+            }
           </tbody>
         </table>
+      </div>
+
+      <div className="flex flex-col mt-12 relative bottom-2 right-0">
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 text-sm ${
+              currentPage === 0
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-l transition`}
+          >
+            Prev
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`px-3 py-1 text-sm mx-1 rounded ${
+                currentPage === index
+                  ? "bg-green-500 text-white"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } transition`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+            }
+            disabled={currentPage === totalPages - 1}
+            className={`px-3 py-1 text-sm ${
+              currentPage === totalPages - 1
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-r transition`}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
