@@ -15,7 +15,7 @@ module.exports = (_, argv) => ({
 		historyApiFallback: true,
 		allowedHosts: ["all"],
 	},
-   
+      
 	module: {
 		rules: [
 			{
