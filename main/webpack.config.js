@@ -65,8 +65,8 @@ module.exports = (_, argv) => ({
       name: "main",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js`,
-        auth: `auth@https://auth.admin.gworkspace.withhordanso.com/remoteEntry.js`,
+        store: 'store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js',
+        auth: 'auth@https://auth.admin.gworkspace.withhordanso.com/remoteEntry.js',
       },
       exposes: {},
       shared: {
