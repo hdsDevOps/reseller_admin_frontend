@@ -19,6 +19,7 @@ module.exports = (_, argv) => ({
   devServer: {
     port: 4000,
     historyApiFallback: true,
+    allowedHosts: ["all"],
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
       const port = devServer.server.address().port
