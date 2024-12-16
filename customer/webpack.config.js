@@ -6,11 +6,11 @@ module.exports = (_, argv) => ({
 	output: {
 		publicPath: "auto",
 	},
-            
+               
 	resolve: {
 		extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
 	},
-
+   
 	devServer: {
 		port: 4001,
 		historyApiFallback: true,
