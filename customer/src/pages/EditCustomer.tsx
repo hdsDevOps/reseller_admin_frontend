@@ -1,41 +1,34 @@
 import { ChevronDown, ChevronRight, ChevronUp, MoveLeft } from 'lucide-react';
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import '../styles/styles.css'
+import React, { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom';
+import '../styles/styles.css';
 import Flag from 'react-world-flags'; // Flag component
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { editCustomerThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from 'store/hooks';
-import { addCustomerThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import {
   CitySelect,
   CountrySelect,
   StateSelect,
+  LanguageSelect,
+  RegionSelect,
+  PhonecodeSelect
 } from "react-country-state-city";
 import "react-country-state-city/dist/react-country-state-city.css";
-import './countryList-2.css';
+import './countryList.css';
 import { CountryList } from '../components/CountryList';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Country, State, City }  from 'country-state-city';
 import axios from 'axios';
 
-const AddCustomer: React.FC = () => {
+function EditCustomer() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [customer, setCustomer] = useState({
-    first_name: '',
-    last_name: '',
-    address: '',
-    state_name: '',
-    city: '',
-    country: '',
-    zipcode: '',
-    phone_no: '',
-    email: '',
-    authentication: false
-  });
-  console.log("customer...", customer);
-  
+  const location = useLocation();
   const flagRef = useRef(null);
+  const dispatch = useAppDispatch();
+  
+  const [customer, setCustomer] = useState(location.state);
+  console.log(customer);
   const [phoneNumber,setPhoneNumber] = useState();
   const [phoneCode,setPhoneCode] = useState('+1');
   const [countryName, setCountryName] = useState("");
@@ -48,7 +41,7 @@ const AddCustomer: React.FC = () => {
   // console.log("states...", states);
   // console.log("cities...", cities);
   // console.log({countryName, stateName, cityName})
-  
+
   useEffect(() => {
     setCustomer({
       ...customer,
@@ -193,6 +186,27 @@ const AddCustomer: React.FC = () => {
     }
   }, [customer?.country])
 
+  useEffect(() => {
+    const phoneNo = customer?.phone_no;
+    if(phoneNo){
+      for(const { dial_code } of CountryList){
+        if(phoneNo.startsWith(dial_code)){
+          const nationalNumber = phoneNo.slice(dial_code.length);
+          console.log(nationalNumber, '96')
+          setPhoneNumber(parseInt(nationalNumber));
+          setPhoneCode(dial_code);
+          return;
+        }
+      }
+    }
+  }, []);
+
+  const handleOptionClick = (option: { name: string; dial_code: string; code: string; }) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+    setPhoneCode(option?.dial_code)
+  };
+
   const handleOutsideClick = (event: MouseEvent) => {
     if (flagRef.current && !flagRef.current.contains(event.target)) {
       setIsOpen(false);
@@ -223,14 +237,11 @@ const AddCustomer: React.FC = () => {
     if(validateForm()) {
       try {
         const result = await dispatch(
-          addCustomerThunk(customer)
+          editCustomerThunk(customer)
         ).unwrap();
         toast.success(result?.message);
-        setTimeout(() => {
-          navigate(-1);
-        }, 1000);
       } catch (error) {
-        toast.error("Error adding customer");
+        toast.error("Error");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -239,11 +250,16 @@ const AddCustomer: React.FC = () => {
             //
           }
         }
+      } finally {
+        setTimeout(() => {
+          navigate(-1);
+        }, 1000);
       }
     } else {
-      toast.error("Spaces cannot be empty");
+      toast.warning("Spaces cannot be empty");
     }
   };
+  
   return (
     <div
       className='flex flex-col px-2'
@@ -264,7 +280,7 @@ const AddCustomer: React.FC = () => {
         </a>
         <h3
           className='h3-text ml-[10px]'
-        >Add Customer</h3>
+        >Customer Information</h3>
       </div>
 
       <div
@@ -278,7 +294,7 @@ const AddCustomer: React.FC = () => {
         />
         <p
           className='page-indicator-2'
-        >Add Customer</p>
+        >Edit Customer</p>
       </div>
 
       <div
@@ -290,7 +306,7 @@ const AddCustomer: React.FC = () => {
           >
             <div
             // grid-cols-2 max-[546px]:grid-cols-1
-              className='grid grid-cols-2 max-[666px]:grid-cols-1 font-inter'
+              className='grid grid-cols-2 max-[666px]:grid-cols-1 font-inter '
             >
               {
                 formList?.map((item, index) => {
@@ -325,7 +341,8 @@ const AddCustomer: React.FC = () => {
                             onChange={e => {
                               setPhoneNumber(parseInt(e.target.value))
                             }}
-                            placeholder={item?.placeholder}
+                            placeHolder={item?.placeholder}
+                            defaultValue={phoneNumber}
                           />
                         </div>
                       </div>
@@ -366,7 +383,6 @@ const AddCustomer: React.FC = () => {
                                   <p
                                     key={idx}
                                     className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
-                                    dropdown-name="country-dropdown"
                                     onClick={() => {
                                       setCustomer({
                                         ...customer,
@@ -494,11 +510,12 @@ const AddCustomer: React.FC = () => {
                         >{item.label}</label>
                         <input
                           type={item.type}
+                          placeholder={item.label}
                           name={item.name}
                           required
-                          className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                          className='search-input-text'
                           onChange={updateCustomer}
-                          placeholder={item?.placeholder}
+                          defaultValue={customer[item.name]}
                         />
                       </div>
                     )
@@ -521,10 +538,19 @@ const AddCustomer: React.FC = () => {
                     className="sr-only peer"
                     checked={customer?.authentication}
                     onClick={() => {
-                      setCustomer({
-                        ...customer,
-                        authentication: !customer.authentication
-                      })
+                      if(customer?.authentication == undefined){
+                        setCustomer({
+                          ...customer,
+                          authentication: true
+                        });
+                      }
+                      else{
+                        setCustomer({
+                          ...customer,
+                          authentication: !customer.authentication
+                        });
+                      }
+                      console.log(customer?.authentication);
                     }}
                   />
                   <div
@@ -545,16 +571,16 @@ const AddCustomer: React.FC = () => {
                 className='btn-red h-[46px] ml-[30px]'
                 onClick={() => {
                   setCustomer({
-                    first_name: '',
-                    last_name: '',
-                    address: '',
-                    state_name: '',
+                    fname: '',
+                    lname: '',
+                    street: '',
+                    state: '',
                     city: '',
                     country: '',
-                    zipcode: '',
-                    phone_no: '',
+                    zipCode: '',
+                    phone: '',
                     email: '',
-                    authentication: false
+                    makeAuthorization: false
                   });
                 }}
               >Cancel</button>
@@ -566,4 +592,4 @@ const AddCustomer: React.FC = () => {
   )
 }
 
-export default AddCustomer
+export default EditCustomer
