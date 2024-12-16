@@ -11,7 +11,7 @@ import CustomError from "../customClass/CustomError.class";
 export async function getApiCall(endPoint: string): Promise<any | CustomError> {
   try {
     const fetchedData = await axiosInstance.get(endPoint);
-    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201) {
+    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success" || fetchedData?.status === 200) {
       return fetchedData?.data;
     } else if (
       fetchedData.data?.status === 401 ||
@@ -42,7 +42,9 @@ export async function postApiCall<T>(
 ): Promise<any | CustomError> {
   try {
     const fetchedData = await axiosInstance.post(endPoint, body);
-    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201) {
+    // console.log("fetchedData...", fetchedData);
+    // console.log("endpoint", endPoint)
+    if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success 111" || fetchedData.data?.status === "success" || fetchedData.data?.success === true || fetchedData?.status === 200) {
       return fetchedData?.data;
     } else if (
       fetchedData.data?.status === 401 ||
@@ -139,5 +141,77 @@ export async function deleteApiCall(
       throw error;
     }
     throw new CustomError(apiError.API_CALL_FAILED, error?.message);
+  }
+}
+
+export async function uploadImageApiCall(
+  endPoint: string,
+  imageFile: any
+): Promise<any | CustomError> {
+  try {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+    const fetchedData = await axiosInstance.post(endPoint, formData, {
+      headers:{
+        "Content-Type": "multipart/form-data",
+      }
+    });
+    if (fetchedData?.status === 200 || fetchedData?.status === 201) {
+      return fetchedData?.data;
+    } else if (
+      fetchedData?.status === 401 ||
+      fetchedData?.status === 400 ||
+      fetchedData?.status === 410
+    ) {
+      throw new CustomError(
+        apiError.TOKEN_EXPIRED,
+        fetchedData.data?.message || fetchedData.data?.msg
+      );
+    } else {
+      throw new CustomError(
+        apiError.DATA_NOT_FOUND,
+        fetchedData.data?.message || fetchedData.data?.msg
+      );
+    }
+  } catch (error) {
+    if (error instanceof CustomError) {
+      throw error;
+    }
+    throw new CustomError(apiError.API_CALL_FAILED, error?.message);
+  }
+}
+
+async function addServiceOrderImageApi(
+  id: number,
+  caption: string,
+  date: string,
+  fileInfo: any,
+): Promise<any> {
+  try {
+    const formData = new FormData();
+    formData.append('service_order_id', id);
+    formData.append('caption', caption);
+    formData.append('datetime', date);
+    fileInfo.map((element: any, i: number) => {
+      const newFile = {
+        uri: element.path,
+        name: element.fileName || 'unnamed.jpg',
+        type: element.mime || 'image/jpeg',
+      };
+      formData.append('files', newFile);
+    });
+    const result = await axiosInstance.post(
+      endPoints.addServiceOrderImage,
+      formData,
+      {
+        headers: {
+          'content-type': 'multipart/form-data',
+        },
+        // transformRequest: (data: unknown) => data,
+      },
+    );
+    return result.data;
+  } catch (error: any) {
+    throw error;
   }
 }
