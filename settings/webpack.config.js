@@ -69,7 +69,7 @@ module.exports = (_, argv) => ({
         store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
-        "./PaymentApp": "./src/pages/index.tsx",
+        "./SettingsApp": "./src/pages/index.tsx",
       },
       shared: {
         ...deps,
