@@ -4,7 +4,7 @@ services:
     build: ./main
     container_name: microfrontendadmin_container_main
     ports:
-      - 3000:3000
+      - 4000:4000
     networks:
       - dev_network
 
@@ -12,7 +12,7 @@ services:
     build: ./customer
     container_name: microfrontendadmin_container_customer
     ports:
-      - 3001:3001
+      - 4001:4001
     networks:
       - dev_network
 
@@ -20,7 +20,39 @@ services:
     build: ./auth
     container_name: microfrontendadmin_container_auth
     ports:
-      - 3002:3002
+      - 4002:4002
+    networks:
+      - dev_network
+
+  paymenthistory:
+    build: ./paymenthistory
+    container_name: microfrontendadmin_container_paymenthistory
+    ports:
+      - 4005:4005
+    networks:
+      - dev_network
+
+  role:
+    build: ./role
+    container_name: microfrontendadmin_container_role
+    ports:
+      - 4006:4006
+    networks:
+      - dev_network
+
+  settings:
+    build: ./settings
+    container_name: microfrontendadmin_container_settings
+    ports:
+      - 4007:4007
+    networks:
+      - dev_network
+
+  subscription:
+    build: ./subscription
+    container_name: microfrontendadmin_container_subscription
+    ports:
+      - 4004:4004
     networks:
       - dev_network
 
@@ -28,7 +60,7 @@ services:
     build: ./store
     container_name: microfrontendadmin_container_store
     ports:
-      - 3030:3030
+      - 4030:4030
     networks:
       - dev_network
 

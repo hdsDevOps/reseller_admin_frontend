@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendadmin-settings-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontendadmin-settings-service
+  template:
+    metadata:
+      labels:
+        app: frontendadmin-settings-service
+    spec:
+      containers:
+      - name: frontendadmin-settings-service
+        image: hordansodevops/reseller_admin_frontend_settings:latest
+        ports:
+        - containerPort: 4007
+        imagePullPolicy: Always

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontendadmin-auth-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontendadmin-auth-service
@@ -16,23 +16,5 @@ spec:
       - name: frontendadmin-auth-service
         image: hordansodevops/reseller_admin_frontend_auth:latest
         ports:
-        - containerPort: 3002
-        resources:
-          limits:
-            cpu: "1"
-            memory: "512Mi"
-          requests:
-            cpu: "0.5"
-            memory: "256Mi"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3002
-          initialDelaySeconds: 5
-          periodSeconds: 3
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3002
-          initialDelaySeconds: 5
-          periodSeconds: 3
+        - containerPort: 4002
+        imagePullPolicy: Always

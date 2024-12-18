@@ -6,10 +6,10 @@ const Dotenv = require('dotenv-webpack');
 const deps = require("./package.json").dependencies;
 
 const printCompilationMessage = require('./compilation.config.js');
-
+     
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "http://localhost:3007/",
+    publicPath: "auto",
   },
 
   resolve: {
@@ -17,8 +17,9 @@ module.exports = (_, argv) => ({
   },
 
   devServer: {
-    port: 3007,
+    port: 4007,
     historyApiFallback: true,
+    allowedHosts: ["all"],
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
       const port = devServer.server.address().port
@@ -59,13 +60,13 @@ module.exports = (_, argv) => ({
       },
     ],
   },
-
+   
   plugins: [
     new ModuleFederationPlugin({
       name: "settings",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
         "./SettingsApp": "./src/pages/index.tsx",
