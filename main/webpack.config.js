@@ -45,7 +45,7 @@ module.exports = (_, argv) => ({
       name: "main",
       filename: "remoteEntry.js",
       remotes: {
-        store: "https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        store: "http://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
 				auth: "https://authtest.admin.gworkspace.withhordanso.com/remoteEntry.js",
 				customer: "https://customer.admin.gworkspace.withhordanso.com/remoteEntry.js",
 				paymenthistory: "https://paymenthistory.admin.gworkspace.withhordanso.com/remoteEntry.js",
