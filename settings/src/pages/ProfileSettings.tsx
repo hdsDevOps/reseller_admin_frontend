@@ -10,6 +10,9 @@ import { setUserDetails } from 'store/authSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
+import ReactCrop, { centerCrop, Crop, makeAspectCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 function ProfileSettings() {
   const dispatch = useAppDispatch();
@@ -23,7 +26,21 @@ function ProfileSettings() {
   const [cPassword, setCPassword] = useState("");
   const [showPassword,setShowPassword] = useState(false);
   const [showCPassword,setShowCPassword] = useState(false);
+  const [imageModal, setImageModal] = useState(false);
+  const [image, setImage] = useState(null);
+  console.log("image...", image);
   
+  const [crop, setCrop] = useState<Crop>({
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    unit: '%',
+  });
+  const [zoom, setZoom] = useState(1);
+  const imgRef = useRef(null);
+  console.log("imgRef", imgRef);
+
   const formList = [
     { label: 'First Name', placeholder: 'Enter first name', name: 'first_name', type: 'text',},
     { label: 'Last Name', placeholder: 'Enter last name', name: 'last_name', type: 'text',},
@@ -38,6 +55,34 @@ function ProfileSettings() {
   useEffect(() => {
     setProfile(userDetails);
   }, [userDetails]);
+
+  const showImage = () => {
+    const file = image;
+    if(file){
+      if(file instanceof File){
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (imgRef.current) {
+            imgRef.current.src = reader.result;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      else if(typeof file === 'string'){
+        if (imgRef.current) {
+          imgRef.current.src = file;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    showImage();
+  }, [image]);
+
+  const handleZoomChange = (e) => {
+    setZoom(Number(e.target.value)); // Update zoom state
+  };
   
   const updateProfile = e => {
     setProfile({
@@ -114,29 +159,63 @@ function ProfileSettings() {
 
   const imageUpload = async(e) => {
     e.preventDefault();
-    try {
-      const result = await dispatch(uploadImageThunk({image: e.target.files[0]})).unwrap();
-        toast.success("Profile image updated successfully");
-        setProfile({
-          ...profile,
-          profile_pic: result?.url,
-        });
-        const updateProfile = await dispatch(updateAdminDetailsThunk({
-          userid: userId,
-          profile_pic: result?.url
-        })).unwrap();
-    } catch (error) {
-      toast.error("Error uploading profile image");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(image === null) {
+      toast.warning("Please upload an image first!");
+    } else {
+      try {
+        const imageFile = imgRef.current;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const scale = zoom;
+        const naturalWidth = imageFile.naturalWidth;
+        const naturalHeight = imageFile.naturalHeight;
+        const width = naturalWidth * scale;
+        const height = naturalHeight * scale;
+        
+        canvas.width = 300;
+        canvas.height = 300;
+
+        const offsetX = (300 - width) / 2;
+        const offsetY = (300 - height) / 2;
+
+        ctx?.clearRect(0, 0, 300, 300);
+        ctx.drawImage(imageFile, offsetX, offsetY, width, height);
+        
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            return;
+          } else {
+            const file = new File([blob], "resized-image.png", {type: 'image/png'});
+            const result = await dispatch(uploadImageThunk({image: file})).unwrap();
+            toast.success("Profile image updated successfully");
+            setProfile({
+              ...profile,
+              profile_pic: result?.url,
+            });
+            const updateProfile = await dispatch(updateAdminDetailsThunk({
+              userid: userId,
+              profile_pic: result?.url
+            })).unwrap();
+          }
+        })
+      } catch (error) {
+        toast.error("Error uploading profile image");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+      } finally {
+        dispatch(setUserDetails(profile));
+        setImageModal(false);
+        setImage(null);
+        setZoom(1);
       }
-    } finally {
-      dispatch(setUserDetails(profile));
     }
   };
 
@@ -159,16 +238,16 @@ function ProfileSettings() {
             <img
               src={profile?.profile_pic}
               alt='Profile'
-              className='border-[3px] border-white w-full h-[93px] rounded-full bg-custom-green'
+              className={`border-[3px] ${profile?.profile_pic ? "border-custom-green" : "border-white"} w-full h-full min-h-[93px] rounded-full bg-custom-green object-cover`}
             />
             <label
-              htmlFor="file-upload"
               className="float-right ml-auto mt-[-20px] w-[29px] h-[29px] border border-custom-gray-2 rounded-full items-center bg-white cursor-pointer"
+              onClick={() => {setImageModal(true)}}
             >
               <RiCameraFill
                 className='mx-auto my-auto mt-[5px] w-[20px] text-custom-green'
               />
-              <input id="file-upload" type="file" className="hidden" name='image' onChange={e => {imageUpload(e)}} accept='image/*' />
+              {/* <input id="file-upload" type="file" className="hidden" name='image' onChange={e => {imageUpload(e)}} accept='image/*' /> */}
             </label>
           </div>
 
@@ -407,6 +486,111 @@ function ProfileSettings() {
           </div>
         )
       }
+
+      <Dialog
+        open={imageModal}
+        as="div"
+        className="relative z-10 focus:outline-none"
+        onClose={() => {
+          setImageModal(false);
+          setImage(null);
+          setZoom(1);
+        }}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen mt-16">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <DialogPanel
+              transition
+              className="w-full max-w-[1053px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <DialogTitle
+                  as="h3"
+                  className="text-lg font-semibold text-gray-900"
+                >Edit about us</DialogTitle>
+                <div className='btn-close-bg'>
+                  <button
+                    type='button'
+                    className='text-3xl rotate-45 mt-[-8px] text-white'
+                    onClick={() => {
+                      setImageModal(false);
+                      setImage(null);
+                      setZoom(1);
+                    }}
+                  >+</button>
+                </div>
+              </div>
+              <form
+                className="grid grid-cols-1 max-h-[400px]"
+                onSubmit={imageUpload}
+              >
+                <div className="flex flex-col justify-center items-center">
+                  <div className="relative items-center w-[300px] [300px] border">
+                    <ReactCrop
+                      // crop={crop}
+                      onChange={(newCrop) => { setCrop(newCrop) }}
+                      className='w-[300px] h-[300px] relative rounded-full'
+                    >
+                      <img
+                        ref={imgRef}
+                        src={image === null ? profile?.profile_pic : image}
+                        alt='profile picture'
+                        className={`transform scale-[${zoom}] duration-200 ease-in-out w-[300px] h-[300px]`}
+                      />
+                      <div className='absolute [mask-image:radial-gradient(circle,rgba(0,0,0,0)_60%,rgba(255,255,255,0.5)_100%)]'></div>
+                    </ReactCrop>
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="file-upload"
+                    className="float-right ml-auto mt-[-20px] w-[29px] h-[29px] border border-custom-gray-2 rounded-full items-center bg-white cursor-pointer"
+                  >
+                    <RiCameraFill
+                      className='mx-auto my-auto mt-[5px] w-[20px] text-custom-green'
+                    />
+                    <input id="file-upload" type="file" className="hidden" name='image' onChange={e => {setImage(e.target.files[0])}} accept='image/*' />
+                  </label>
+                </div>
+                <div className="flex flex-row justify-center gap-3 pt-4">
+                <label htmlFor="zoom" className="font-medium">
+                  Zoom: {Math.round(zoom * 100)}%
+                </label>
+                <input
+                  type="range"
+                  id="zoom"
+                  min="0.5"
+                  max="3"
+                  step="0.1"
+                  value={zoom}
+                  onChange={handleZoomChange}
+                  className="w-64"
+                />
+                </div>
+                <div className="flex flex-row justify-center gap-3 pt-4">
+                  <button
+                    type="submit"
+                    className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageModal(false);
+                      setImage(null);
+                      setZoom(1);
+                    }}
+                    className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   )
 };

@@ -98,9 +98,45 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [monthlyRevenueData, setMonthlyRevenueData] = useState(initialMonthlyRevenueData);
-  const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([]);
-  const [currentRevenueData, setCurrentRevenueData] = useState(initialYearlySpendingStatistics);
-  console.log("currentRevenueData...", currentRevenueData);
+  const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([initialYearlySpendingStatistics]);
+  // console.log("yearlySpendingStatistics...", yearlySpendingStatistics);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  console.log("Current index...", currentIndex);
+  const [currentRevenueData, setCurrentRevenueData] = useState(yearlySpendingStatistics[currentIndex]);
+  // console.log("currentRevenueData...", currentRevenueData);
+  useEffect(() => {
+    setCurrentRevenueData(yearlySpendingStatistics[currentIndex]);
+  }, [yearlySpendingStatistics, currentIndex]);
+
+  const changeIndex = (buttonType: string) => {
+    const length = yearlySpendingStatistics.length;
+    if(currentIndex === 0 && length === 1) {
+      setCurrentIndex(0);
+    } else if(length > 1) {
+      if(currentIndex === 0) {
+        console.log("no next");
+        if(buttonType === "prev") {
+          setCurrentIndex(currentIndex + 1);
+        } else {
+          //
+        }
+      } else if(currentIndex > 0 && length - currentIndex > 1) {
+        console.log("next + prev");
+        if(buttonType === "prev") {
+          setCurrentIndex(currentIndex + 1);
+        } else {
+          setCurrentIndex(currentIndex - 1);
+        }
+      } else if(currentIndex > 0 && length - currentIndex <= 1) {
+        console.log("no prev");
+        if(buttonType === "prev") {
+          //
+        } else {
+          setCurrentIndex(currentIndex - 1);
+        }
+      }
+    }
+  };
 
   const revenue = [
     {label: 'Revenue Last Month', name: 'last_month_revenue',},
@@ -142,7 +178,7 @@ const Dashboard: React.FC = () => {
         const result = await dispatch(yearlySpendingStatisticsThunk()).unwrap();
         setYearlySpendingStatistics([result?.result]);
       } catch (error) {
-        setYearlySpendingStatistics([]);
+        setYearlySpendingStatistics([initialYearlySpendingStatistics]);
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -329,9 +365,15 @@ const Dashboard: React.FC = () => {
             >
               <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">Spending Statistics</p>
               <div className="flex flex-row justify-between w-[110px]">
-                <button><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
-                <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">2024</p>
-                <button><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
+                <button
+                  type="button"
+                  onClick={() => {changeIndex('prev')}}
+                ><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
+                <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">{currentRevenueData?.year}</p>
+                <button
+                  type="button"
+                  onClick={() => {changeIndex('next')}}
+                ><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
               </div>
             </div>
             <div
