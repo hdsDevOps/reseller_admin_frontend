@@ -6,7 +6,6 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback={<h2>Loading.....</h2>}>
-      {token ? <MainApp /> : <AuthApp />}
     </Suspense>
   );
 };
