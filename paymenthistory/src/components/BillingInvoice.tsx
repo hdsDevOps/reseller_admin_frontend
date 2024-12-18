@@ -1,10 +1,20 @@
+import { format } from 'date-fns';
 import React from 'react';
 
-const BillingInvoice: React.FC = ({pdfRef}) => {
+const BillingInvoice: React.FC = ({pdfRef, data}) => {
   const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899";
   // const logo = "http://localhost:3000/images/logo.jpeg";
   const visa = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa-logo-grey.png?alt=media&token=00881596-2fad-4385-82bb-a0269ae4b4fb";
   // const visa = "http://localhost:3000/images/visa-logo-grey.png";
+
+  const formatDate = (seconds, nanoseconds) => {
+    const miliseconds = parseInt(seconds) * 1000 + parseInt(nanoseconds) / 1e6;
+
+    const date = new Date(miliseconds);
+
+    const formattedDate = format(date, "MMM dd, yyyy, h:mm:ss a");
+    return formattedDate;
+  };
   return (
     <div
       className='w-[700px]'
@@ -60,7 +70,7 @@ const BillingInvoice: React.FC = ({pdfRef}) => {
             >AMOUNT PAID</h6>
             <p
               className='text-sm'
-            >$ 18.19</p>
+            >$ {data?.amount}</p>
           </div>
           <div
             className='flex flex-col text-start'
@@ -70,7 +80,7 @@ const BillingInvoice: React.FC = ({pdfRef}) => {
             >DATE PAID</h6>
             <p
               className='text-sm'
-            >Apr 15, 2024, 5:45:37 AM</p>
+            >{formatDate(data?.created_at?._seconds,data?.created_at?._nanoseconds)}</p>
           </div>
           <div
             className='flex flex-col text-start'
@@ -81,14 +91,15 @@ const BillingInvoice: React.FC = ({pdfRef}) => {
             <div
               className='flex gap-1'
             >
-              <img
+              {/* <img
                 src={visa}
                 alt='visa'
                 className='h-5'
               />
               <p
                 className='text-sm'
-              > - 5953</p>
+              > - 5953</p> */}
+              <p className='text-sm capitalize'>{data?.payment_method}</p>
             </div>
           </div>
         </div>
@@ -109,7 +120,7 @@ const BillingInvoice: React.FC = ({pdfRef}) => {
           >Automated Recharge: Messaging credits worth 18.19 USD added for The Jaiye Room. These credits will be used for SMS, Calls, Emails, phone numbers, etc. Please refer to Company Billing Page (https://app.hordanso.com/V2/location/Muygwiofec8362y9uncevb94309wcun98x2t4efwgrdswqdf/settings/company-billing/billing) for more details.</p>
           <p
             className='text-[#9A9597]'
-          >$18.19</p>
+          >${data?.amount}</p>
         </div>
 
         <div
@@ -123,7 +134,7 @@ const BillingInvoice: React.FC = ({pdfRef}) => {
           >Amount charged</p>
           <p
             className='text-[#4F5860] font-medium'
-          >$18.19</p>
+          >${data?.amount}</p>
         </div>
       </div>
 

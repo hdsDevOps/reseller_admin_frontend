@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk, updateAdminDetailsThunk, getNotificationsThunk, getNotificationStatusThunk, updateNotificationStatusThunk } from 'store/user.thunk';
+import { updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk, updateAdminDetailsThunk, getNotificationsThunk, getNotificationStatusThunk, updateNotificationStatusThunk, readNotificationsThunk } from 'store/user.thunk';
 import { setUserDefaultCurrency } from 'store/authSlice';
 import { Bell, ShoppingCart } from "lucide-react";
 import { RiNotification4Fill } from "react-icons/ri";
@@ -30,6 +30,8 @@ export default function Header() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
+  // console.log("notofications...", notifications);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [notificationStatus, setNotificationStatus] = useState(true);
   // console.log(notificationStatus);
   
@@ -37,31 +39,54 @@ export default function Header() {
   const { userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    const getNotifications = async() => {
-      try {
-        const result = await dispatch(getNotificationsThunk({user_role: userDetails?.role})).unwrap();
-        setNotifications(result);
-      } catch (error) {
-        setNotifications([]);
-        if(error?.message == "Request failed with status code 401") {
-          try {
-            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-            navigate('/login');
-          } catch (error) {
-            //
-          }
+    let count = 0;
+    notifications.map(item => item.read_status === 0 ? count++ : count);
+    setUnreadNotifications(count);
+  }, [notifications]);
+
+  const getNotifications = async() => {
+    try {
+      const result = await dispatch(getNotificationsThunk({user_role: userDetails?.role})).unwrap();
+      setNotifications(result);
+    } catch (error) {
+      setNotifications([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
         }
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     getNotifications();
   }, [userDetails]);
+
+  const readUnreadNotification = async(id) => {
+    try {
+      const result = await dispatch(readNotificationsThunk({record_id: id}));
+    } catch (error) {
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    } finally {
+      getNotifications();
+    }
+  }
 
   useEffect(() => {
     const getNotificationStatus = async() => {
       try {
         const result = await dispatch(getNotificationStatusThunk({userid: userId})).unwrap();
-        console.log("result...", result?.data?.status);
+        // console.log("result...", result?.data?.status);
         if(result?.data === null) {
           setNotificationStatus(true);
         } else {
@@ -274,11 +299,14 @@ export default function Header() {
           onClick={openModal}
         >
           <Bell className="sm:w-[16px] w-[12px] sm:h-[18px] h-[12px] text-black" />
-          <a
-            className="float-right flex sm:mt-[-28px] mt-[-25px] sm:mr-[-5px] mr-[-7px] pl-[3.5px] text-[#FFFFFF] text-[9px] w-[12px] h-[12px] bg-[#070000] rounded-full"
-          >
-            1
-          </a>
+          {
+            unreadNotifications > 0 ?
+            (
+              <a
+                className="float-right flex sm:mt-[-28px] mt-[-25px] sm:mr-[-5px] mr-[-7px] pl-[3.5px] text-[#FFFFFF] text-[9px] w-[12px] h-[12px] bg-[#070000] rounded-full"
+              >{unreadNotifications}</a>
+            ) : ""
+          }
         </div>
 
         <div
@@ -613,6 +641,8 @@ export default function Header() {
                       <div
                         key={index}
                         dangerouslySetInnerHTML={{__html: notification?.data}}
+                        className={`cursor-pointer ${notification?.read_status === 1 ? "opacity-50" : "opacity-100"}`}
+                        onClick={() => {readUnreadNotification(notification?.record_id)}}
                       ></div>
                     )
                   })

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Table from "../components/Table";
-import { ChevronRight } from 'lucide-react';
+import { ArrowRightLeft, ChevronRight } from 'lucide-react';
 import { LuFilterX } from "react-icons/lu";
 import { BiSolidEditAlt } from "react-icons/bi";
 import {
@@ -30,7 +30,7 @@ const UserList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add');
   const [users, setUsers] = useState([]);
-  // console.log("users...", users);
+  console.log("users...", users);
   const [userFilter, setUserFilter] = useState(intialUserFilter);
   const [searchData, setSearchData] = useState("");
   const [deleteUserId, setDeleteUserId] = useState("");
@@ -107,7 +107,12 @@ const UserList = () => {
     fetchRoles();
   }, []);
 
-  const tableHeaders = ['Name', 'Email', 'Phone', 'User Type', 'Actions',];
+  const tableHeaders = [
+    {name: "first_name", label: "Name"},
+    {name: "email", label: "Email"},
+    {name: "phone", label: "Phone"},
+    {name: "role", label: "User Type"},
+    {name: "action", label: "Actions"}];
   const roleColors = {
     Admin: "#B4D3DC",
     "Sub-admin": "#C5E0B2",
@@ -362,7 +367,15 @@ const UserList = () => {
               {
                 tableHeaders && tableHeaders.map((item, index) => {
                   return(
-                    <th key={index} className="th-css-full-opacity">{item}</th>
+                    <th key={index} className="th-css-full-opacity">
+                      <span>{item.label}</span>
+                      {
+                        item?.name === "action" ? "" :
+                        <span className="ml-1"><button type="button" onClick={() => {
+                          //
+                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                      }
+                    </th>
                   )
                 })
               }
@@ -387,29 +400,37 @@ const UserList = () => {
                     <td className="td-css-text m-2">{user?.phone}</td>
                     <td className="td-css-text m-2">{user?.role}</td>
                     <td className="td-css-text m-2">
-                      <div
-                        className="flex flex-row justify-center gap-4"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setModalType('edit');
-                            setModalData(user);
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          <BiSolidEditAlt className="text-black text-xl" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDeleteModalOpen(true);
-                            setDeleteUserId(user?.id);
-                          }}
-                        >
-                          <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
-                        </button>
-                      </div>
+                      {
+                        user?.role === 'Super Admin' ?
+                        (<div
+                          className="flex flex-row justify-center gap-4"
+                        ></div>) :
+                        (
+                          <div
+                            className="flex flex-row justify-center gap-4"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setModalType('edit');
+                                setModalData(user);
+                                setIsModalOpen(true);
+                              }}
+                            >
+                              <BiSolidEditAlt className="text-black text-xl" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeleteModalOpen(true);
+                                setDeleteUserId(user?.id);
+                              }}
+                            >
+                              <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
+                            </button>
+                          </div>
+                        )
+                      }
                     </td>
                   </tr>
                 )
@@ -464,9 +485,13 @@ const UserList = () => {
                             >
                               <option selected={modalType == 'add' ? true : false} value="" disabled>Select user type</option>
                               {
-                                roles?.map((role, idx) => (
-                                  <option key={idx} selected={modalType === "add" ? false : true}>{role?.role_name}</option>
-                                ))
+                                roles?.map((role, idx) => {
+                                  if(role.role_name !== "Super Admin") {
+                                    return (
+                                      <option key={idx} selected={modalType === "add" ? false : true}>{role?.role_name}</option>
+                                    )
+                                  }
+                                })
                               }
                             </select>
                           </div>

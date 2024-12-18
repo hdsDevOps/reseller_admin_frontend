@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
-import { ChevronRight, FilterX, Pencil } from 'lucide-react';
+import { ArrowRightLeft, ChevronRight, FilterX, Pencil } from 'lucide-react';
 import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css";
@@ -28,7 +28,7 @@ const CustomerGroup: React.FC = () => {
   const [voucherGroup, setVoucherGroup] = useState({});
   // console.log(voucherGroup);
   const [filters, setFilters] = useState(initialFilters);
-  console.log(filters);
+  // console.log(filters);
 
   const [sampleData, setSampleData] = useState([]);
   console.log(sampleData);
@@ -89,7 +89,12 @@ const CustomerGroup: React.FC = () => {
     getCustomerGroupListData();
   }, [filters]);
 
-  const tableHeads = ['Group Name', 'Number of Customers', 'Created Date', 'Actions',];
+  const tableHeads = [
+    {name: "group_name", label: "Group Name",},
+    {name: "no_customer", label: "Number of Customers",},
+    {name: "create_date", label: "Created Date",},
+    {name: "action", label: "Actions",},
+  ];
 
   const openModal = (group) => {
     setSelectedGroup(group);
@@ -210,7 +215,15 @@ const CustomerGroup: React.FC = () => {
             <tr>
               {
                 tableHeads.map((head, index) => (
-                  <th key={index} className="th-css-2">{head}</th>
+                  <th key={index} className="th-css-2">
+                    <span>{head.label}</span>
+                    {
+                      head?.name === "action" ? "" :
+                      <span className="ml-1"><button type="button" onClick={() => {
+                        //
+                      }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                    }
+                  </th>
                 ))
               }
             </tr>

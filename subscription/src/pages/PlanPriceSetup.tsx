@@ -64,6 +64,54 @@ const initialPrice = [
   {type: 'Yearly plan with monthly billing', price: 0, discountPrice: 0},
 ];
 
+const initialSubscription = {
+  icon_image: '',
+  services: {
+    gmail_business_email: false,
+    custom_email_for_business: false,
+    phising_protection: false,
+    add_free_email: false,
+    meet_video_conferencing: '',
+    meeting_lenght: '',
+    us_or_internation_phone_number: false,
+    digital_whiteboarding: false,
+    noise_cancellation: false,
+    meeting_recodings_save: false,
+    two_step_verification: false,
+    group_base_policy_control: false,
+    advanced_protection_program: false,
+    endpoint_management: '',
+    google_wokspace_migrate_tool: false,
+  },
+  top_features: [],
+  trial_period: 0,
+  plan_name: '',
+  sticker_text: '',
+  sticker_exists: false,
+  amount_details: [
+    {
+      currency_code: 'USD',
+      price: [
+        {
+          type: 'Monthly',
+          price: null,
+          discount_price: null,
+        },
+        {
+          type: 'Yearly',
+          price: null,
+          discount_price: null,
+        },
+        {
+          type: 'Yearly Subscription with monthly billing',
+          price: null,
+          discount_price: null,
+        },
+      ],
+    },
+  ],
+};
+
 const PlanPriceSetup = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -71,6 +119,8 @@ const PlanPriceSetup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [viewMore, setViewMore] = useState(initialSubscription);
+  console.log("viewMore...", viewMore);
   
   const { defaultCurrency } = useAppSelector((state) => state.auth);
   // console.log("defaultCurrency....", defaultCurrency);
@@ -310,6 +360,27 @@ const PlanPriceSetup = () => {
       }
     </div>
   );
+
+  const productivityList = [
+    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/gmail.png?alt=media&token=78d49456-c44c-4ff4-bb46-163e07e0a461', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Gmail</b> Business email</p>, type: 'checkbox', name: 'gmail_business_email', },
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Custom email for your business</p>, type: 'checkbox', name: 'custom_email_for_business',},
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Phishing and spam protection that blocks more than 99.9% of attacks</p>, type: 'checkbox', name: 'phising_protection',},
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Ad-free email experience</p>, type: 'checkbox', name: 'add_free_email',},
+    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/google-meet.png?alt=media&token=37fae9c9-b466-4311-a03b-6019c3e4e29a', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Meet</b> Video and voice conferencing</p>, type: 'text', name: 'meet_video_conferencing',},
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Meeting length (maximum)</p>, type: 'text', name: 'meeting_lenght',},
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>US or international dial-in phone numbers</p>, type: 'checkbox', name: 'us_or_internation_phone_number',},
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Digital whiteboarding</p>, type: 'checkbox', name: 'digital_whiteboarding',},
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Noise cancellation</p>, type: 'checkbox', name: 'noise_cancellation',},
+    {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Meeting recordings saved to Google Drive</p>, type: 'checkbox', name: 'meeting_recodings_save',},
+  ];
+
+  const securityManagementList = [
+    { html: <p>2-Step Verification</p>, type: 'checkbox', name: 'two_step_verification',},
+    { html: <p>Group-based policy controls</p>, type: 'checkbox', name: 'group_base_policy_control',},
+    { html: <p>Advanced Protection Program</p>, type: 'checkbox', name: 'advanced_protection_program',},
+    { html: <p>Endpoint management</p>, type: 'text', name: 'endpoint_management',},
+    { html: <p>Google Workspace Migrate tool</p>, type: 'checkbox', name: 'google_wokspace_migrate_tool',},
+  ];
   
   const renderTableView = () => (
     <div className="bg-white overflow-x-auto">
@@ -463,7 +534,10 @@ const PlanPriceSetup = () => {
                     <button
                       className="p-1 text-[#12A833] underline font-inter font-nomral text-[10px]"
                       type="button"
-                      onClick={() => { setIsMoreOpen(true) }}
+                      onClick={() => {
+                        setIsMoreOpen(true);
+                        setViewMore(plan);
+                      }}
                     >
                       More
                     </button>
@@ -620,11 +694,11 @@ const PlanPriceSetup = () => {
           setIsMoreOpen(false);
         }}
       >
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen mt-20">
           <div className="flex min-h-full items-center justify-center p-4">
             <DialogPanel
               transition
-              className="w-full max-w-[400px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+              className="w-full max-w-[800px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
             >
               <div className="flex justify-between items-center mb-6 text-center">
                 <DialogTitle
@@ -642,110 +716,79 @@ const PlanPriceSetup = () => {
                 </div>
               </div>
 
-              <table>
-                <tbody>
-                  <tr>
-                    <td className="w-[100px]">Trail Period</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">Sticker name</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td colSpan={3}>Productivity and collaboration</td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">Gmail Business email</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">Custom email for your business</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Phishing and spam protection that blocks more than 99.9% of attacks</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">Ad-free email experience</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">Meet Video and voice conferencing</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Meeting length (maximum)</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">US or international dial-in phone numbers</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Digital whiteboarding</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Noise cancellation</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Meeting recordings saved to Google Drive</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td colSpan={3}>Security and management</td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    2-Step Verification</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Group-based policy controls</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Advanced Protection Program</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">Endpoint management</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="w-[100px]">	
-                    Google Workspace Migrate tool</td>
-                    <td className="w-[20px]">:</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="overflow-x-auto overflow-y-auto max-h-[500px]">
+                <table className="min-w-full">
+                  <tbody>
+                    <tr className="font-inter font-normal text-base text-black">
+                      <td className="w-[400px] py-2">Trail Period</td>
+                      <td className="w-[20px] py-2">:</td>
+                      <td className="py-2 text-[#12A833]">{viewMore?.trial_period} days</td>
+                    </tr>
+                    <tr className="font-inter font-normal text-base text-black">
+                      <td className="w-[400px] py-2">Sticker name</td>
+                      <td className="w-[20px] py-2">:</td>
+                      <td className="py-2 text-[#12A833]">{viewMore?.sticker_text}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pt-4 font-inter font-medium text-xl text-[#0D121F]" colSpan={3}>Productivity and collaboration</td>
+                    </tr>
+                    {
+                      productivityList.map((productivity, index) => (
+                        <tr key={index} className="font-inter font-normal text-base text-black">
+                          <td className="w-[400px] py-2">{productivity?.html}</td>
+                          <td className="w-[20px] py-2">:</td>
+                          <td className="py-2">
+                            {
+                              productivity?.name === "meet_video_conferencing" ? 
+                              (
+                                <div className="text-[#12A833]">{viewMore?.services?.meet_video_conferencing}</div>
+                              ) :
+                              productivity?.name === "meeting_lenght" ? 
+                              (
+                                <div className="text-[#12A833]">{viewMore?.services?.meeting_lenght}</div>
+                              ) :
+                              (
+                                <input
+                                  type={productivity?.type}
+                                  className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${productivity?.type == 'checkbox' ? 'w-7' : 'w-[133px]'}  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                                  checked={viewMore?.services[productivity?.name]}
+                                />
+                              )
+                            }
+                          </td>
+                        </tr>
+                      ))
+                    }
+                    <tr className="font-inter font-normal text-base text-black">
+                      <td className="py-2 pt-4 font-inter font-medium text-xl text-[#0D121F]" colSpan={3}>Security and management</td>
+                    </tr>
+                    {
+                      securityManagementList.map((securityManagement, index) => (
+                        <tr key={index} className="font-inter font-normal text-base text-black">
+                          <td className="w-[400px] py-2">	
+                          {securityManagement?.html}</td>
+                          <td className="w-[20px] py-2">:</td>
+                          <td className="py-2">
+                            {
+                              securityManagement?.name === "endpoint_management" ?
+                              (
+                                <div className="text-[#12A833]">{viewMore?.services?.endpoint_management}</div>
+                              ) :
+                              (
+                                <input
+                                  type={securityManagement?.type}
+                                  className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${securityManagement?.type == 'checkbox' ? 'w-7' : 'w-[133px]'}  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                                  checked={viewMore?.services[securityManagement?.name]}
+                                />
+                              )
+                            }
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              </div>
             </DialogPanel>
           </div>
         </div>

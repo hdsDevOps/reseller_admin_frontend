@@ -733,6 +733,13 @@ export const getNotificationsThunk = createAsyncThunk(
   }
 );
 
+export const readNotificationsThunk = createAsyncThunk(
+  "users/readNotifications",
+  async ({record_id}: any) => {
+    return await userApis.readNotificationsApi(record_id);
+  }
+);
+
 export const getNotificationStatusThunk = createAsyncThunk(
   "users/getNotificationStatus",
   async ({userid}: any) => {

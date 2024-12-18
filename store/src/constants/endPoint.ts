@@ -130,6 +130,7 @@ export const endPoints = {
     getDefaultCurrency: 'adminservices/admin/api/v1/getcurrency_default',
     updateDefaultCurrency: 'adminservices/admin/api/v1/update_defaultgetcurrency',
     getNotifications: 'adminservices/notification/api/v1/getnotifications',
+    readNotifications: 'adminservices/notification/api/v1/readnotification',
     getNotificationStatus: 'adminservices/admin/api/v1/getnotification_status',
     updateNotificationStatus: 'adminservices/admin/api/v1/update_notification_status',
 

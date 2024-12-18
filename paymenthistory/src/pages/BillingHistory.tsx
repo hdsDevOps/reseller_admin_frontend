@@ -8,10 +8,11 @@ import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { getBillingHistoryThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
-import { FilterX } from 'lucide-react';
+import { ArrowRightLeft, FilterX } from 'lucide-react';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
+import { format } from 'date-fns';
 
 const initialFilter = {
   start_date: "",
@@ -37,8 +38,20 @@ const BillingHistory: React.FC = () => {
   
 
   const [billingHistory, setBillingHistory] = useState([]);
-  // console.log(billingHistory);
-  
+  console.log("billingHistory...", billingHistory);
+
+  const tableHeads = [
+    {name: "transaction_id", label: "Transaction ID"},
+    {name: "customer_name", label: "Customer Name"},
+    {name: "created_at", label: "Date / Invoice"},
+    {name: "production_type", label: "Production Type"},
+    {name: "description", label: "Description"},
+    {name: "domain", label: "Domain"},
+    {name: "payment_method", label: "Payment Method"},
+    {name: "payment_status", label: "Status"},
+    {name: "amount", label: "Amount"},
+    {name: "invoice", label: "Invoice"},
+  ];
 
   const fetchBillingHistory = async() => {
     try {
@@ -98,7 +111,16 @@ const BillingHistory: React.FC = () => {
     }
 
     setPdfDownload('hidden');
-  }
+  };
+
+  const formatDate = (seconds, nanoseconds) => {
+    const miliseconds = parseInt(seconds) * 1000 + parseInt(nanoseconds) / 1e6;
+
+    const date = new Date(miliseconds);
+
+    const formattedDate = format(date, "dd MMM yyyy");
+    return formattedDate;
+  };
 
   return (
     <div className="grid grid-cols-1">
@@ -147,24 +169,27 @@ const BillingHistory: React.FC = () => {
               className="serach-input-2"
               name="domain_id"
             />
-            <div
-              className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b ${
-                domainList.length == 0 ? "hidden" : ""
-              }`}
-            >
-              {domainList.map((item, index) => {
-                return (
-                  <a
-                    key={index}
-                    className={`font-inter-16px-400 pl-4 py-1 ${
-                      index != 0 && `border-t border-white`
-                    }`}
-                  >
-                    {item}
-                  </a>
-                );
-              })}
-            </div>
+            {
+              domainList.length > 0 ?
+              (
+                <div
+                  className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b`}
+                >
+                  {domainList.map((item, index) => {
+                    return (
+                      <a
+                        key={index}
+                        className={`font-inter-16px-400 pl-4 py-1 ${
+                          index != 0 && `border-t border-white`
+                        }`}
+                      >
+                        {item}
+                      </a>
+                    );
+                  })}
+                </div>
+              ) : null
+            }
           </div>
           <div className="px-4 mb-5 sm:mb-0 flex flex-row">
             <input
@@ -194,23 +219,18 @@ const BillingHistory: React.FC = () => {
             className="bg-custom-white"
           >
             <tr className="">
-              {[
-                "Transaction ID",
-                "Customer Name",
-                "Date / Invoice",
-                "Production Type",
-                "Description",
-                "Domain",
-                "Payment Method",
-                "Status",
-                "Amount",
-                "Invoice",
-              ].map((header) => (
+              {tableHeads.map((header, index) => (
                 <th
-                  key={header}
-                  className="th-css-2 min-w-full"
+                  key={index}
+                  className="th-css-2 text-nowrap px-2 h-[46px] min-w-full"
                 >
-                  {header}
+                  <span>{header.label}</span>
+                  {
+                    header?.name === "invoice" ? "" :
+                    <span className="ml-1"><button type="button" onClick={() => {
+                      //
+                    }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                  }
                 </th>
               ))}
             </tr>
@@ -223,14 +243,16 @@ const BillingHistory: React.FC = () => {
                     {detail?.transaction_id}
                   </td>
                   <td className="td-css-3 text-custom-black-5">
-                    {`${detail?.first_name} ${detail?.last_name}`}
+                    {/* {`${detail?.first_name} ${detail?.last_name}`} */}
+                    {detail?.customer_name}
                   </td>
                   <td className="td-css-3 text-custom-black-5 flex items-center flex-col">
-                    <a>{detail?.date_invoice || ' '}</a>
+                    {/* <a>{detail?.date_invoice || ' '}</a> */}
+                    <a>{formatDate(detail?.created_at?._seconds,detail?.created_at?._nanoseconds)}</a>
                     <small className="text-custom-green">12309864</small>
                   </td>
                   <td className="td-css-3 text-custom-black-5">
-                    {detail?.productType || ' '}
+                    {detail?.production_type || ' '}
                   </td>
                   <td className="td-css-3 text-custom-black-5">
                     {detail?.description || ' '}
@@ -238,19 +260,20 @@ const BillingHistory: React.FC = () => {
                   <td className="td-css-3 text-custom-black-5">{detail?.domain || ' '}</td>
                   <td className="td-css-full-opactiy text-custom-black-5 min-w-[150px]">
                     <span className="flex items-center justify-center">
-                      <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
+                      {/* <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
                       <span className="font-inter-bold-xs-60percent-black">
                         {detail?.paymentMethod || ' '}
-                      </span>
+                      </span> */}
+                      <span className="font-inter-bold-xs-60percent-black">{detail?.payment_method}</span>
                     </span>
                   </td>
                   <td className="td-css-full-opactiy text-custom-black-5">
-                    <button className="btn-green-4">
-                      {detail?.status || ' '}
+                    <button className="btn-green-4 uppercase">
+                      {detail?.payment_status || ' '}
                     </button>
                   </td>
                   <td className="td-css-4 text-custom-green">
-                    {detail?.amount || ' '}
+                    ${detail?.amount || ' '}
                   </td>
                   <td className="cursor-pointer w-full items-center text-center">
                     <button
@@ -262,7 +285,7 @@ const BillingHistory: React.FC = () => {
                     </button>
 
                     <div className={pdfDownload}>
-                      <BillingInvoice pdfRef={pdfRef} />
+                      <BillingInvoice pdfRef={pdfRef} data={detail} />
                     </div>
                   </td>
                 </tr>

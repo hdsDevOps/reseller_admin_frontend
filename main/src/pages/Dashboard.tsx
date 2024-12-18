@@ -101,11 +101,11 @@ const Dashboard: React.FC = () => {
   const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([initialYearlySpendingStatistics]);
   // console.log("yearlySpendingStatistics...", yearlySpendingStatistics);
   const [currentIndex, setCurrentIndex] = useState(0);
-  console.log("Current index...", currentIndex);
+  // console.log("Current index...", currentIndex);
   const [currentRevenueData, setCurrentRevenueData] = useState(yearlySpendingStatistics[currentIndex]);
   // console.log("currentRevenueData...", currentRevenueData);
   useEffect(() => {
-    setCurrentRevenueData(yearlySpendingStatistics[currentIndex]);
+    setCurrentRevenueData(yearlySpendingStatistics.length>0 ? yearlySpendingStatistics[currentIndex] : initialYearlySpendingStatistics);
   }, [yearlySpendingStatistics, currentIndex]);
 
   const changeIndex = (buttonType: string) => {
@@ -176,7 +176,7 @@ const Dashboard: React.FC = () => {
     const getYearlySpendingStatistics = async() => {
       try {
         const result = await dispatch(yearlySpendingStatisticsThunk()).unwrap();
-        setYearlySpendingStatistics([result?.result]);
+        setYearlySpendingStatistics(result?.result);
       } catch (error) {
         setYearlySpendingStatistics([initialYearlySpendingStatistics]);
         if(error?.message == "Request failed with status code 401") {
@@ -199,7 +199,7 @@ const Dashboard: React.FC = () => {
     }
   }, [location.state]);
 
-  const maxMonth = currentRevenueData?.data.reduce((max, current) => {
+  const maxMonth = currentRevenueData?.data?.reduce((max, current) => {
     const total_revenue = current.revenue_from_new_customers + current.revenue_from_old_customers;
     if(total_revenue > max.total_revenue) {
       return { month: current.month, total_revenue};

@@ -7,7 +7,7 @@ import {
 } from "react-icons/io5";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ArrowRightLeft, ChevronRight } from "lucide-react";
 import '../styles/styles.css';
 import { getRolesThunk, deleteRoleThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
@@ -159,8 +159,18 @@ const Role = () => {
         <table className="min-w-full bg-transparent border-separate border-spacing-y-6">
           <thead className="bg-custom-blue-6 h-12">
             <tr>
-              <th className="th-css-full-opacity-text-left">User Type</th>
-              <th className="th-css-full-opacity">Permissions</th>
+              <th className="th-css-full-opacity-text-left">
+                <span>User Type</span>
+                <span className="ml-1"><button type="button" onClick={() => {
+                  //
+                }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+              </th>
+              <th className="th-css-full-opacity">
+                <span>Permissions</span>
+                <span className="ml-1"><button type="button" onClick={() => {
+                  //
+                }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+              </th>
               <th className="th-css-full-opacity">Actions</th>
             </tr>
           </thead>

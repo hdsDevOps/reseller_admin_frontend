@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
-import { Ellipsis } from "lucide-react";
+import { ArrowRightLeft, Ellipsis } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -55,7 +55,7 @@ const CustomerManagement: React.FC = () => {
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  console.log(customerList);
+  // console.log(customerList);
   const [checked, setChecked] = useState([]);
   // console.log("checked...", checked);
   
@@ -79,8 +79,10 @@ const CustomerManagement: React.FC = () => {
   const itemsPerPage = 20;
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = customerList.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = customerList?.slice(indexOfFirstItem, indexOfLastItem);
+  // console.log("currentItems...", currentItems);
   const totalPages = Math.ceil(customerList.length / itemsPerPage);
+  
   
   useEffect(() => {
     if(authorization == "true"){
@@ -248,19 +250,19 @@ const CustomerManagement: React.FC = () => {
   };
 
   const tableHeads = [
-    '',
-    "Customer ID",
-    "Name",
-    "Product",
-    "Domain",
-    "Subscription Plan",
-    "License Usage",
-    "Create Date",
-    "Payment Cycle",
-    "Renewed Date",
-    "Make Authorization",
-    "Status",
-    "Action",
+    {name: "checkbox", label: ""},
+    {name: "customer_id", label: "Customer ID",},
+    {name: "first_name", label: "Name",},
+    {name: "", label: "Product",},
+    {name: "", label: "Domain",},
+    {name: "", label: "Subscription Plan",},
+    {name: "", label: "License Usage",},
+    {name: "created_at", label: "Create Date",},
+    {name: "", label: "Payment Cycle",},
+    {name: "", label: "Renewed Date",},
+    {name: "authentication", label: "Make Authorization",},
+    {name: "account_status", label: "Status",},
+    {name: "action", label: "Action",},
   ];
 
   const toggleList = (customerId) => {
@@ -407,7 +409,7 @@ const CustomerManagement: React.FC = () => {
         }
       }
     }
-  }
+  };
 
   return (
     <div
@@ -710,7 +712,14 @@ const CustomerManagement: React.FC = () => {
                       key={index}
                       className="w-[95px] th-css"
                     >
-                      {item}
+                      <span>{item.label}</span>
+                      {
+                        item?.name === "checkbox" ? "" :
+                        item?.name === "action" ? "" :
+                        <span className="ml-1"><button type="button" onClick={() => {
+                          //
+                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                      }
                     </th>
                   );
                 })}

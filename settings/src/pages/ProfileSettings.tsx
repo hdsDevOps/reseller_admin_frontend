@@ -18,7 +18,7 @@ function ProfileSettings() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { userDetails, userId } = useAppSelector((state) => state.auth);
-  // console.log("userDetails...", userDetails);
+  console.log("userDetails...", userDetails);
   const modalRef = useRef();
 
   const [modalShow, setModalShow] = useState(false);
@@ -28,7 +28,7 @@ function ProfileSettings() {
   const [showCPassword,setShowCPassword] = useState(false);
   const [imageModal, setImageModal] = useState(false);
   const [image, setImage] = useState(null);
-  console.log("image...", image);
+  // console.log("image...", image);
   
   const [crop, setCrop] = useState<Crop>({
     x: 0,
@@ -39,7 +39,7 @@ function ProfileSettings() {
   });
   const [zoom, setZoom] = useState(1);
   const imgRef = useRef(null);
-  console.log("imgRef", imgRef);
+  // console.log("imgRef", imgRef);
 
   const formList = [
     { label: 'First Name', placeholder: 'Enter first name', name: 'first_name', type: 'text',},
@@ -160,7 +160,68 @@ function ProfileSettings() {
   const imageUpload = async(e) => {
     e.preventDefault();
     if(image === null) {
-      toast.warning("Please upload an image first!");
+      const defaultImageURL = userDetails?.profile_pic;
+      // const defaultImageURL = 'http://localhost:3000/images/logo.jpeg'
+
+      const response = await fetch(defaultImageURL);
+      const blob = await response.blob();
+      const imageFile = new Image();
+      imageFile.src = URL.createObjectURL(blob);
+      await new Promise((resolve) => {
+        imageFile.onload = resolve;
+      });
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const scale = zoom;
+        const naturalWidth = imageFile.naturalWidth;
+        const naturalHeight = imageFile.naturalHeight;
+        const width = naturalWidth * scale;
+        const height = naturalHeight * scale;
+        
+        canvas.width = 300;
+        canvas.height = 300;
+
+        const offsetX = (300 - width) / 2;
+        const offsetY = (300 - height) / 2;
+
+        ctx?.clearRect(0, 0, 300, 300);
+        ctx.drawImage(imageFile, offsetX, offsetY, width, height);
+        
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            return;
+          } else {
+            const file = new File([blob], "resized-image.png", {type: 'image/png'});
+            const result = await dispatch(uploadImageThunk({image: file})).unwrap();
+            toast.success("Profile image updated successfully");
+            setProfile({
+              ...profile,
+              profile_pic: result?.url,
+            });
+            const updateProfile = await dispatch(updateAdminDetailsThunk({
+              userid: userId,
+              profile_pic: result?.url
+            })).unwrap();
+          }
+        })
+      } catch (error) {
+        toast.error("Error uploading profile image");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      } finally {
+        dispatch(setUserDetails(profile));
+        setImageModal(false);
+        setImage(null);
+        setZoom(1);
+      }
     } else {
       try {
         const imageFile = imgRef.current;
@@ -529,15 +590,18 @@ function ProfileSettings() {
                     <ReactCrop
                       // crop={crop}
                       onChange={(newCrop) => { setCrop(newCrop) }}
-                      className='w-[300px] h-[300px] relative rounded-full'
+                      className='w-[300px] h-[300px] relative overflow-hidden'
                     >
                       <img
                         ref={imgRef}
                         src={image === null ? profile?.profile_pic : image}
                         alt='profile picture'
-                        className={`transform scale-[${zoom}] duration-200 ease-in-out w-[300px] h-[300px]`}
+                        className={`absolute top-0 left-0 transform scale-[${zoom}] duration-200 ease-in-out w-full h-full`}
                       />
-                      <div className='absolute [mask-image:radial-gradient(circle,rgba(0,0,0,0)_60%,rgba(255,255,255,0.5)_100%)]'></div>
+                      <div className='absolute inset-0 flex items-center justify-center'>
+                        <div className='w-full h-full rounded-full bg-transparent z-10' style={{boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.6)'}}></div>
+                        {/* <div className='absolute inset-0 bg-black opacity-50 mix-blend-darken pointer-events-none'></div> */}
+                      </div>
                     </ReactCrop>
                   </div>
                 </div>

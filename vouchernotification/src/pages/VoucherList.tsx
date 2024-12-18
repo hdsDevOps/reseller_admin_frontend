@@ -7,7 +7,7 @@ import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
-import { ChevronDown, ChevronRight, ChevronUp, FilterX, Pencil } from "lucide-react";
+import { ArrowRightLeft, ChevronDown, ChevronRight, ChevronUp, FilterX, Pencil } from "lucide-react";
 import Flag from 'react-world-flags'; // Flag component
 import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, getCustomerListThunk, sendVoucherEmailThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
@@ -134,9 +134,21 @@ const VoucherList: React.FC = () => {
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedRadio(e.target.value);
     setCustomerId("");
+    setCustomerGroupName("");
+    setCustomerSearch({
+      ...customerSearch,
+      search_data: "",
+    });
   };
 
-  const tableHeads = [ 'Voucher Code', 'Currency', 'Discount', 'Start Date', 'End Date', 'Actions'];
+  const tableHeads = [
+    {name: "voucher_code", label: "Voucher Code"},
+    {name: "currency", label: "Currency"},
+    {name: "discount_rate", label: "Discount"},
+    {name: "start_date", label: "Start Date"},
+    {name: "end_date", label: "End Dat"},
+    {name: "action", label: "Actions"},
+  ];
 
   const dateFormat = (date) => {
     const milliseconds = parseInt(date?._seconds) * 1000;
@@ -440,7 +452,15 @@ const VoucherList: React.FC = () => {
             <tr>
               {
                 tableHeads.map((head, index) => (
-                  <th key={index} className="th-css-2">{head}</th>
+                  <th key={index} className="th-css-2">
+                    <span>{head.label}</span>
+                    {
+                      head?.name === "action" ? "" :
+                      <span className="ml-1"><button type="button" onClick={() => {
+                        //
+                      }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                    }
+                  </th>
                 ))
               }
             </tr>

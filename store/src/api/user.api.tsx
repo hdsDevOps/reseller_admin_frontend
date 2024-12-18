@@ -1112,6 +1112,17 @@ async function getNotificationsApi(
   }
 };
 
+async function readNotificationsApi(
+  record_id: string,
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.readNotifications, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function getNotificationStatusApi(
   userid: string,
 ): Promise<any> {
@@ -1239,6 +1250,7 @@ export const userApis = {
   getDefaultCurrencyApi,
   updateDefaultCurrencyApi,
   getNotificationsApi,
+  readNotificationsApi,
   getNotificationStatusApi,
   updateNotificationStatusApi,
   monthlyRevenueDataApi,

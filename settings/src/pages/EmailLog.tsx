@@ -5,6 +5,7 @@ import { useAppDispatch } from 'store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { ArrowRightLeft } from 'lucide-react';
 
 const EmailLog: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +16,13 @@ const EmailLog: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState("");
 
-  const tableHeads = ['Email', 'Subject', 'Sent date', 'Number of Recipient', 'Action'];
+  const tableHeads = [
+    {name: "email", label: "Email"},
+    {name: "subject", label: "Subject"},
+    {name: "created_at", label: "Sent date"},
+    {name: "no_receipt", label: "Number of Recipient"},
+    {name: "action", label: "Action"},
+  ];
 
   const fetchEmailLogs = async() => {
     try {
@@ -56,7 +63,15 @@ const EmailLog: React.FC = () => {
               {
                 tableHeads && tableHeads.map((item, index) => {
                   return(
-                    <th key={index} className="th-css">{item}</th>
+                    <th key={index} className="th-css">
+                      <span>{item.label}</span>
+                      {
+                        item?.name === "action" ? "" :
+                        <span className="ml-1"><button type="button" onClick={() => {
+                          //
+                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                      }
+                    </th>
                   )
                 })
               }
