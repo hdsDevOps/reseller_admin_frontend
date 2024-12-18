@@ -6,19 +6,20 @@ const Dotenv = require('dotenv-webpack');
 const deps = require("./package.json").dependencies;
 
 const printCompilationMessage = require('./compilation.config.js');
-
+   
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "http://localhost:3004/",
+    publicPath: "auto",
   },
 
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
   },
-
+   
   devServer: {
-    port: 3004,
+    port: 4004,
     historyApiFallback: true,
+    allowedHosts: ["all"],
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
       const port = devServer.server.address().port
@@ -65,7 +66,7 @@ module.exports = (_, argv) => ({
       name: "subscription",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
         "./SubscriptionApp": "./src/pages/index.tsx",

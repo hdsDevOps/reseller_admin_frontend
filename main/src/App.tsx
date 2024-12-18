@@ -50,6 +50,9 @@ const App: React.FC = () => {
     fetchUserDetails();
   }, [userId, dispatch, navigate]);
 
+
+
+
   return (
     <Suspense fallback={<h2>Loading.....</h2>}>
       {token ? <MainApp /> : <AuthApp />}

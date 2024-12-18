@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendadmin-vouchernotification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontendadmin-vouchernotification-service
+  template:
+    metadata:
+      labels:
+        app: frontendadmin-vouchernotification-service
+    spec:
+      containers:
+      - name: frontendadmin-vouchernotification-service
+        image: hordansodevops/reseller_admin_frontend_vouchernotification:latest
+        ports:
+        - containerPort: 4003
+        imagePullPolicy: Always
