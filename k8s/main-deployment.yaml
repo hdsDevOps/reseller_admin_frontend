@@ -5,7 +5,10 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1  # Allows one pod to be unavailable during the update
+      maxSurge: 1 
   selector:
     matchLabels:
       app: frontendadmin-main-service
