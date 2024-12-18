@@ -70,6 +70,7 @@ const PlanPriceSetup = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   
   const { defaultCurrency } = useAppSelector((state) => state.auth);
   // console.log("defaultCurrency....", defaultCurrency);
@@ -459,7 +460,11 @@ const PlanPriceSetup = () => {
                     }}>
                       <FaTrash />
                     </button>
-                    <button className="p-1 text-[#12A833] underline font-inter font-nomral text-[10px]">
+                    <button
+                      className="p-1 text-[#12A833] underline font-inter font-nomral text-[10px]"
+                      type="button"
+                      onClick={() => { setIsMoreOpen(true) }}
+                    >
                       More
                     </button>
                   </div>
@@ -602,6 +607,145 @@ const PlanPriceSetup = () => {
                     </button>
                   </div>
                 </form>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
+
+      <Dialog
+        open={isMoreOpen}
+        as="div"
+        className="relative z-10 focus:outline-none"
+        onClose={() => {
+          setIsMoreOpen(false);
+        }}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <DialogPanel
+              transition
+              className="w-full max-w-[400px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+            >
+              <div className="flex justify-between items-center mb-6 text-center">
+                <DialogTitle
+                  as="h3"
+                  className="text-lg font-semibold text-gray-900"
+                >Details of the Plan</DialogTitle>
+                <div className='btn-close-bg'>
+                  <button
+                    type='button'
+                    className='text-3xl rotate-45 mt-[-8px] text-white'
+                    onClick={() => {
+                      setIsMoreOpen(false);
+                    }}
+                  >+</button>
+                </div>
+              </div>
+
+              <table>
+                <tbody>
+                  <tr>
+                    <td className="w-[100px]">Trail Period</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">Sticker name</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3}>Productivity and collaboration</td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">Gmail Business email</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">Custom email for your business</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Phishing and spam protection that blocks more than 99.9% of attacks</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">Ad-free email experience</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">Meet Video and voice conferencing</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Meeting length (maximum)</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">US or international dial-in phone numbers</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Digital whiteboarding</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Noise cancellation</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Meeting recordings saved to Google Drive</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3}>Security and management</td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    2-Step Verification</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Group-based policy controls</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Advanced Protection Program</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">Endpoint management</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td className="w-[100px]">	
+                    Google Workspace Migrate tool</td>
+                    <td className="w-[20px]">:</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
             </DialogPanel>
           </div>
         </div>

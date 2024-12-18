@@ -222,12 +222,12 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`sticky transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
+      className={`sticky transition-all duration-300 ease-in-out ${
         isOpen ? "w-[307px]" : "max-w-[307px]"
-      } pt-[24px] drop-shadow-md`}
+      } z-1 pr-4 bg-transparent`}
     >
       <div
-        className={`transition-all duration-300 ease-in-out text-black flex flex-col`}
+        className={`transition-all duration-300 ease-in-out text-black flex flex-col pt-[24px] bg-[#F4F4F4] shadow-md drop-shadow-md`}
         // 
       >
         {
