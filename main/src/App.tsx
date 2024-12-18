@@ -7,7 +7,7 @@ import UserAuth from "./hoc/UserAuth.hoc";
 import MainApp from "./pages";
 import AuthApp from "auth/AuthApp";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import "auth/AuthCss";
+//import "auth/AuthCss";
 import { getUserAuthTokenFromLSThunk, getUserIdFromLSThunk, getAdminDetailsThunk, getDefaultCurrencyThunk } from "store/user.thunk";
 
 const App: React.FC = () => {
@@ -60,7 +60,7 @@ const App: React.FC = () => {
 const rootElement = document.getElementById("app");
 if (!rootElement) throw new Error("Failed to find the root element");
 
-ReactDOM.render(
+/*ReactDOM.render(
   <React.StrictMode>
     <ReduxProvider>
       <BrowserRouter>
@@ -71,4 +71,4 @@ ReactDOM.render(
     </ReduxProvider>
   </React.StrictMode>,
   rootElement
-);
+);*/
