@@ -66,14 +66,7 @@ module.exports = (_, argv) => ({
       name: "main",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
-        auth: `auth@${process.env.AUTH_BASE_URL || 'http://localhost:3001'}/remoteEntry.js`,
-        customer: `customer@${process.env.CUSTOMER_BASE_URL || 'http://localhost:3002'}/remoteEntry.js`,
-        paymenthistory: `paymenthistory@${process.env.PAYMENT_BASE_URL || 'http://localhost:3005'}/remoteEntry.js`,
-        role: `role@${process.env.ROLE_BASE_URL || 'http://localhost:3006'}/remoteEntry.js`,
-        settings: `settings@${process.env.SETTINGS_BASE_URL || 'http://localhost:3007'}/remoteEntry.js`,
-        subscription: `subscription@${process.env.SUBSCRIPTION_BASE_URL || 'http://localhost:3004'}/remoteEntry.js`,
-        vouchernotification: `vouchernotification@${process.env.VOUCHER_BASE_URL || 'http://localhost:3003'}/remoteEntry.js`,
+        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:4030'}/remoteEntry.js`
       },
       exposes: {},
       shared: {
