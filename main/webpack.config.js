@@ -55,8 +55,8 @@ module.exports = (_, argv) => ({
 				vouchernotification: "http://vouchernotification.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
-        "./Navbar": "./src/components/Navbar.tsx",
-        "./Header": "./src/components/Header.tsx",
+       // "./Navbar": "./src/components/Navbar.tsx",
+       // "./Header": "./src/components/Header.tsx",
       },
       shared: {
         ...deps,
