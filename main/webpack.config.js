@@ -6,7 +6,7 @@ module.exports = (_, argv) => ({
   output: {
     publicPath: "auto",
   },
-   
+
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
   },
@@ -45,18 +45,18 @@ module.exports = (_, argv) => ({
       name: "main",
       filename: "remoteEntry.js",
       remotes: {
-        // store: "https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				// auth: "https://authtest.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				// customer: "https://customer.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				// paymenthistory: "https://paymenthistory.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				// role: "https://role.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				// settings: "https://settings.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				// subscription: "https://subscription.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				// vouchernotification: "https://vouchernotification.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        store: "https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				auth: "https://authtest.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				customer: "https://customer.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				paymenthistory: "https://paymenthistory.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				role: "https://role.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				settings: "https://settings.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				subscription: "https://subscription.admin.gworkspace.withhordanso.com/remoteEntry.js",
+				vouchernotification: "https://vouchernotification.admin.gworkspace.withhordanso.com/remoteEntry.js",
       },
       exposes: {
-        // "./Navbar": "./src/components/Navbar.tsx",
-        // "./Header": "./src/components/Header.tsx",
+        "./Navbar": "./src/components/Navbar.tsx",
+        "./Header": "./src/components/Header.tsx",
       },
       shared: {
         ...deps,
