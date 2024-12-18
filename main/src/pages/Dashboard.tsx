@@ -199,7 +199,7 @@ const Dashboard: React.FC = () => {
     }
   }, [location.state]);
 
-  const maxMonth = currentRevenueData?.data.reduce((max, current) => {
+  const maxMonth = currentRevenueData?.data?.reduce((max, current) => {
     const total_revenue = current.revenue_from_new_customers + current.revenue_from_old_customers;
     if(total_revenue > max.total_revenue) {
       return { month: current.month, total_revenue};
