@@ -66,7 +66,7 @@ module.exports = (_, argv) => ({
       name: "vouchernotification",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        store: `store@${process.env.STORE_BASE_URL || 'https://store.admin.gworkspace.withhordanso.com'}/remoteEntry.js`,
       },
       exposes: {
         "./VoucherApp": "./src/pages/index.tsx",
