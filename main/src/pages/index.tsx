@@ -35,7 +35,7 @@ const MainApp: React.FC = () => (
         <RoleApp />
        
         <SubscriptionApp />
-   
+        <VoucherApp />
         <Footer />
       </div>
     </div>
