@@ -32,10 +32,10 @@ const MainApp: React.FC = () => (
         </Routes>
         <CustomerApp />
         <PaymentApp />
-        
-      
+        <RoleApp />
+       
         <SubscriptionApp />
-        
+   
         <Footer />
       </div>
     </div>
