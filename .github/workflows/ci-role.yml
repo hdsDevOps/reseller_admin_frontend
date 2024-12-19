@@ -65,7 +65,7 @@
 #                   images: |
 #                       hordansodevops/reseller_admin_frontend_role:latest
 
-
+   
 
 name: CI for Role Service
 
