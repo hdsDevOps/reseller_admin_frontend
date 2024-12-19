@@ -50,7 +50,7 @@ module.exports = (_, argv) => ({
          domains: `domains@https://domain.customer.gworkspace.withhordanso.com/remoteEntry.js`,
          billinghistory: `billinghistory@https://billinghistory.customer.gworkspace.withhordanso.com/remoteEntry.js`,
          payments: `payments@https://payments.customer.gworkspace.withhordanso.com/remoteEntry.js`,
-         settings: `settings@https://settings.customer.gworkspace.withhordanso.com/remoteEntry.js`,
+         //settings: `settings@https://settings.customer.gworkspace.withhordanso.com/remoteEntry.js`,
          email: `email@https://email.customer.gworkspace.withhordanso.com/remoteEntry.js`,
 
         store: "store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
