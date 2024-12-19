@@ -65,11 +65,3 @@ jobs:
                   images: |
                       hordansodevops/reseller_admin_frontend_role:latest
 
-            # Uncomment if you have a separate ingress deployment
-            # - name: Deploy Ingress
-            #   uses: Azure/k8s-deploy@v3
-            #   with:
-            #     action: deploy
-            #     strategy: basic
-            #     manifests: |
-            #       k8s/ingress.yaml
