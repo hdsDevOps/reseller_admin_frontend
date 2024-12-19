@@ -6,7 +6,7 @@ module.exports = (_, argv) => ({
   output: {
     publicPath: "auto",
   },
-   
+    
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
   },
@@ -45,18 +45,17 @@ module.exports = (_, argv) => ({
       name: "main",
       filename: "remoteEntry.js",
       remotes: {
-        //store: "http://store.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				//auth: "http://authtest.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				customer: "http://customer.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				paymenthistory: "http://paymenthistory.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				role: "http://role.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				settings: "http://settings.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				subscription: "http://subscription.admin.gworkspace.withhordanso.com/remoteEntry.js",
-				vouchernotification: "http://vouchernotification.admin.gworkspace.withhordanso.com/remoteEntry.js",
+        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        auth: `auth@${process.env.AUTH_BASE_URL || 'http://localhost:3002'}/remoteEntry.js`,
+        domains: `domains@${process.env.DOMAINS_BASE_URL || 'http://localhost:3001'}/remoteEntry.js`,
+        billinghistory: `billinghistory@https://billinghistory.customer.gworkspace.withhordanso.com/remoteEntry.js`,
+        payments: `payments@${process.env.PAYMENTS_BASE_URL || 'http://localhost:3007'}/remoteEntry.js`,
+        settings: `settings@${process.env.SETTINGS_BASE_URL || 'http://localhost:3006'}/remoteEntry.js`,
+        email: `email@${process.env.EMAIL_BASE_URL || 'http://localhost:3003'}/remoteEntry.js`,
       },
       exposes: {
-       // "./Navbar": "./src/components/Navbar.tsx",
-       // "./Header": "./src/components/Header.tsx",
+        "./Navbar": "./src/components/Navbar.tsx",
+        "./Header": "./src/components/Header.tsx",
       },
       shared: {
         ...deps,
