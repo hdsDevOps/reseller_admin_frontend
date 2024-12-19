@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontendadmin-userauth-service
+  name: frontendadmin-auth-service
 spec:
   selector:
-    app: frontendadmin-userauth-service
+    app: frontendadmin-auth-service
   ports:
   - protocol: TCP
     port: 80
