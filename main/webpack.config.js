@@ -46,12 +46,12 @@ module.exports = (_, argv) => ({
       filename: "remoteEntry.js",
       remotes: {
         store: `store@https://store.customer.gworkspace.withhordanso.com/remoteEntry.js`,
-        auth: `auth@${process.env.AUTH_BASE_URL || 'http://localhost:3002'}/remoteEntry.js`,
-        domains: `domains@${process.env.DOMAINS_BASE_URL || 'http://localhost:3001'}/remoteEntry.js`,
+        auth: `auth@https://auth.customer.gworkspace.withhordanso.com/remoteEntry.js`,
+        domains: `domains@https://domain.customer.gworkspace.withhordanso.com/remoteEntry.js`,
         billinghistory: `billinghistory@https://billinghistory.customer.gworkspace.withhordanso.com/remoteEntry.js`,
-        payments: `payments@${process.env.PAYMENTS_BASE_URL || 'http://localhost:3007'}/remoteEntry.js`,
-        settings: `settings@${process.env.SETTINGS_BASE_URL || 'http://localhost:3006'}/remoteEntry.js`,
-        email: `email@${process.env.EMAIL_BASE_URL || 'http://localhost:3003'}/remoteEntry.js`,
+        payments: `payments@https://payments.customer.gworkspace.withhordanso.com/remoteEntry.js`,
+        settings: `settings@https://settings.customer.gworkspace.withhordanso.com/remoteEntry.js`,
+        email: `email@https://email.customer.gworkspace.withhordanso.com/remoteEntry.js`,
       },
       exposes: {
         "./Navbar": "./src/components/Navbar.tsx",
