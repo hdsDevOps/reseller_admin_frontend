@@ -45,7 +45,7 @@ module.exports = (_, argv) => ({
       name: "main",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@${process.env.STORE_BASE_URL || 'http://localhost:3030'}/remoteEntry.js`,
+        store: `store@https://store.customer.gworkspace.withhordanso.com/remoteEntry.js`,
         auth: `auth@${process.env.AUTH_BASE_URL || 'http://localhost:3002'}/remoteEntry.js`,
         domains: `domains@${process.env.DOMAINS_BASE_URL || 'http://localhost:3001'}/remoteEntry.js`,
         billinghistory: `billinghistory@https://billinghistory.customer.gworkspace.withhordanso.com/remoteEntry.js`,
