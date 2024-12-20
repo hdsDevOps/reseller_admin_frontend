@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import '../styles/styles.css'
 import { forgetPasswordOtpThunk } from "store/user.thunk";
 import { useAppDispatch } from "store/hooks";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ForgotPassword: React.FC = () => {
@@ -31,7 +31,6 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <ToastContainer />
       <div className="w-full max-w-[570px]">
         <div className="px-[60px] xsm-max:px-4 bg-custom-white5 rounded-lg shadow-sm">
           <div className={`mb-5 flex items-center justify-center`}>

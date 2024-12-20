@@ -199,14 +199,14 @@ const Faqs: React.FC = () => {
             <button
               className="w-full flex justify-between items-center py-4 text-left"
               onClick={() => {
-                toggleShow(index+1)
+                toggleShow(index)
               }}
               cypress-name={`faq-number-${index+1}`}
               type='button'
             >
               <span className="faq-header">{faq.question}</span>
               {
-                showList == faq?.order ? (
+                showList === index ? (
                   <ChevronUp className="w-5 h-5 text-black" />
                 ) : (
                   <ChevronDown className="w-5 h-5 text-black" />
@@ -216,7 +216,7 @@ const Faqs: React.FC = () => {
             
             <div
               className={`transition-all duration-500 ease-in-out overflow-hidden flex min-sm:flex-row max-sm:flex-col justify-between ${
-                showList == faq?.order ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                showList === index ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
               <div className="faq-details">
@@ -285,7 +285,15 @@ const Faqs: React.FC = () => {
                           key={i}
                         >
                           <label className='search-input-label'>{e.label}</label>
-                          <input placeholder={e.placeholder} type={e.type} className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' name={e.name} defaultValue={newFaq[e.name]} onChange={handleChangeFaq} />
+                          <input
+                            placeholder={e.placeholder}
+                            type={e.type}
+                            className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                            name={e.name}
+                            value={newFaq[e.name]}
+                            onChange={handleChangeFaq}
+                            required
+                          />
                         </div>
                       )
                     })

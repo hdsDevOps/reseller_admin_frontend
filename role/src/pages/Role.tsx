@@ -27,9 +27,9 @@ const Role = () => {
   
   const fetchRoles = async() => {
     try {
-      const result = await dispatch(getRolesThunk()).unwrap();
+      const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
       // console.log("result...", result.roles);
-      setRoles(result.roles);
+      setRoles(result?.roles);
     } catch (error) {
       setRoles([]);
       if(error?.message == "Request failed with status code 401") {

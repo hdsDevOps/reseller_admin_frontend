@@ -7,6 +7,7 @@ import { getResourcesThunk, updateResourcesThunk, removeUserAuthTokenFromLSThunk
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from "store/hooks";
+import { useNavigate } from "react-router-dom";
 
 const initialResources = {
   connect: {
@@ -28,6 +29,7 @@ const initialResources = {
 }
 
 const Resources: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const resourceItems = [
@@ -37,6 +39,7 @@ const Resources: React.FC = () => {
   const [resources, setResources] = useState(initialResources);
   // console.log(resources);
   const [newResources, setNewResources] = useState(resources);
+  console.log(newResources);
   
   const fetchResources = async() => {
     try {
@@ -81,24 +84,30 @@ const Resources: React.FC = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    try {
-      const updateResouce = await dispatch(updateResourcesThunk(newResources)).unwrap();
-      setTimeout(() => {
-        toast.success("Updated Recources data.");
-      }, 1000);
-    } catch (error) {
-      toast.error("Error updating the resources.");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(
+      newResources?.connect?.content_title === "" || newResources?.connect?.content_title.trim() === "" || newResources?.create?.content_title === "" || newResources?.create?.content_title.trim() === "" || newResources?.Access?.content_title === "" || newResources?.Access?.content_title.trim() === "" || newResources?.contact?.content_title === "" || newResources?.contact?.content_title.trim() === ""
+    ) {
+      toast.warning("Please fill all the fields");
+    } else {
+      try {
+        const updateResouce = await dispatch(updateResourcesThunk(newResources)).unwrap();
+        setTimeout(() => {
+          toast.success("Updated Recources data.");
+        }, 1000);
+      } catch (error) {
+        toast.error("Error updating the resources.");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+      } finally {
+        fetchResources();
+        setIsEditModalOpen(false);
       }
-    } finally {
-      fetchResources();
-      setIsEditModalOpen(false);
     }
   }
 
@@ -219,7 +228,7 @@ const Resources: React.FC = () => {
                           <input
                             className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base"
                             placeholder="Enter title here"
-                            defaultValue={value.content_title}
+                            value={value?.content_title}
                             onChange={(e) => updateResouces(key, "content_title", e.target.value)}
                           />
                         </div>
@@ -241,7 +250,7 @@ const Resources: React.FC = () => {
                                 toolbar:
                                   "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
                               }}
-                              value={value.description}
+                              value={value?.description}
                               onEditorChange={(content) => {handleEditorChange (key, content)}}
                             />
                           </div>

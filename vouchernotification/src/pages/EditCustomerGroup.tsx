@@ -11,6 +11,7 @@ import { useAppDispatch } from 'store/hooks';
 import { getSubscriptonPlansListThunk, editCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 const EditCustomerGroup: React.FC = () =>  {
   const navigate = useNavigate();
@@ -21,16 +22,37 @@ const EditCustomerGroup: React.FC = () =>  {
   
   const [customerGroup, setCustomerGroup] = useState(location.state);
   console.log(customerGroup);
-
-  const updateCustomerGroup = (e) => {
+  
+  const updateCustomerGroup = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setCustomerGroup({
       ...customerGroup,
       [e.target.name]: e.target.value
     });
   };
 
-  const [countryid, setCountryid] = useState(0);
-  const [stateid, setstateid] = useState(0);
+  const updateCustomerGroupCountry = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setCustomerGroup({
+      ...customerGroup,
+      country: e.target.value,
+      region: ""
+    });
+  };
+  
+  const updateCustomerGroupLicenseUsage = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if(value >= 0) {
+      setCustomerGroup({
+        ...customerGroup,
+        license_usage: value
+      });
+    } else {
+      setCustomerGroup({
+        ...customerGroup,
+        license_usage: 0
+      });
+    }
+  };
+
   const [endDateEnable, setEndDateEnable] = useState(true);
   useEffect(() => {
     if(customerGroup?.start_date != ""){
@@ -54,6 +76,69 @@ const EditCustomerGroup: React.FC = () =>  {
 
   const [countryList, setCountryList] = useState([]);
   const [regionList, setRegionList] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  // console.log({countries, states});
+  const [country, setCountry] = useState({});
+  const [state, setState] = useState({});
+  // console.log({country, state});
+  useEffect(() => {
+    var config = {
+      method: 'get',
+      url: 'https://api.countrystatecity.in/v1/countries',
+      headers: {
+        'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+      }
+    };
+    axios(config)
+      .then(res => {
+        setCountries(res.data);
+        // console.log(res.data);
+      })
+      .catch(err => {
+        setCountries([]);
+        console.log("error...", err);
+      })
+  }, []);
+  
+  useEffect(() => {
+    if(country?.iso2 !== undefined) {
+      var config = {
+        method: 'get',
+        url: `https://api.countrystatecity.in/v1/countries/${country?.iso2}/states`,
+        headers: {
+          'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+        }
+      };
+      axios(config)
+      .then(res => {
+        setStates(res.data);
+      })
+      .catch(err => {
+        setStates([]);
+        console.log("error...", err);
+      })
+    } else {
+      setStates([]);
+    }
+  }, [country]);
+
+  useEffect(() => {
+    setCountry(countries?.find(name => name?.name.toLowerCase() === customerGroup?.country.toLowerCase()) || {})
+  }, [countries, customerGroup?.country]);
+
+  useEffect(() => {
+    const findStates = async() => {
+      const data = [];
+      await regionList.forEach(element => {
+        states?.find(name => name?.name.toLowerCase() === element.toLowerCase() ? data.push(name) : null)
+      });
+      setAvailableStates(data);
+    };
+
+    findStates();
+  }, [regionList, states]);
 
   const getCountryList = async() => {
     try {
@@ -186,35 +271,15 @@ const EditCustomerGroup: React.FC = () =>  {
                       className='search-input-label'
                     >{item.label}</label>
                     <select
-                      className='search-select-text'
+                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.plan == "" ? 'text-[#00000038]' : 'text-black'}`}
                       name='plan'
                       onChange={updateCustomerGroup}
+                      value={customerGroup?.plan}
                     >
-                      <option value="" selected={customerGroup?.plan == "" ? true : false}>Select plan</option>
+                      <option selected value='' className=''>{item.placeholder}</option>
                       {
                         subscriptionPlans.length> 0 && subscriptionPlans?.map((subscription, idx) => (
-                          <option key={idx} value={subscription?.plan_name} selected={subscription?.plan_name == customerGroup?.plan ? true : false}>{subscription?.plan_name}</option>
-                        ))
-                      }
-                    </select>
-                  </div>
-                )
-              }
-              else if(item.name == 'country'){
-                return(
-                  <div className='flex flex-col px-2 mb-2' key={index}>
-                    <label
-                      className='search-input-label'
-                    >{item.label}</label>
-                    <select
-                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.country == "" ? 'text-[#00000038]' : 'text-black'}`}
-                      onChange={updateCustomerGroup}
-                      name='country'
-                    >
-                      <option selected={customerGroup?.country !== null || customerGroup?.country !== undefined || customerGroup?.country !== "" ? false : true}>Select Country</option>
-                      {
-                        countryList && countryList.map((country, number) => (
-                          <option key={number} value={country} className='text-black' selected={customerGroup?.country === country ? true : false}>{country}</option>
+                          <option key={idx} value={subscription?.plan_name} className='text-black'>{subscription?.plan_name}</option>
                         ))
                       }
                     </select>
@@ -222,8 +287,7 @@ const EditCustomerGroup: React.FC = () =>  {
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
                   </div>
                 )
-              }
-              else if(item.name == 'region'){
+              } else if(item.name === 'country'){
                 return(
                   <div className='flex flex-col px-2 mb-2' key={index}>
                     <label
@@ -231,21 +295,45 @@ const EditCustomerGroup: React.FC = () =>  {
                     >{item.label}</label>
                     <select
                       className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.country == "" ? 'text-[#00000038]' : 'text-black'}`}
-                      onChange={updateCustomerGroup}
+                      onChange={updateCustomerGroupCountry}
                       name='country'
+                      value={customerGroup?.country}
                     >
-                      <option selected={customerGroup?.region !== null || customerGroup?.region !== undefined || customerGroup?.region !== "" ? false : true}>Select Country</option>
+                      <option selected value="">Select Country</option>
                       {
-                        regionList && regionList.map((region, number) => (
-                          <option key={number} value={region} className='text-black' selected={customerGroup?.region === region ? true : false}>{region}</option>
+                        
+                        countryList && countryList.map((country, number) => (
+                          <option key={number} value={country} className='text-black'>{country}</option>
+                        ))
+                      }
+                    </select>
+
+                    <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
+                  </div>
+                )
+              } else if(item.name === 'region'){
+                return(
+                  <div className='flex flex-col px-2 mb-2' key={index}>
+                    <label
+                      className='search-input-label'
+                    >{item.label}</label>
+                    <select
+                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.region == "" ? 'text-[#00000038]' : 'text-black'}`}
+                      onChange={updateCustomerGroup}
+                      name='region'
+                      value={customerGroup?.region}
+                    >
+                      <option selected value="" className='text-[#00000038]'>{item.placeholder}</option>
+                      {
+                        availableStates && availableStates?.map((region, number) => (
+                          <option key={number} value={region?.name} className='text-black'>{region?.name}</option>
                         ))
                       }
                     </select>
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
                   </div>
                 )
-              }
-              else if(item.name == 'start_date'){
+              } else if(item.name === 'start_date'){
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -266,11 +354,11 @@ const EditCustomerGroup: React.FC = () =>  {
                       name={item.name}
                       className='search-input-text px-4'
                       onChange={updateCustomerGroup}
-                      defaultValue={customerGroup?.start_date}
+                      value={customerGroup?.start_date}
                     />
                   </div>
                 )
-              }else if(item.name == 'end_date'){
+              } else if(item.name === 'end_date'){
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -292,13 +380,32 @@ const EditCustomerGroup: React.FC = () =>  {
                       className='search-input-text px-4'
                       onChange={updateCustomerGroup}
                       disabled={endDateEnable}
-                      defaultValue={customerGroup?.end_date}
                       min={customerGroup?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(customerGroup?.start_date)) }
+                      required={customerGroup?.start_date !== "" ? true : false}
+                      value={customerGroup?.end_date}
                     />
                   </div>
                 )
-              }
-              else if(item.type == 'number'){
+              } else if(item.name === 'license_usage'){
+                return(
+                  <div
+                    className='flex flex-col px-2 mb-2'
+                    key={index}
+                  >
+                    <label
+                      className='search-input-label'
+                    >{item.label}</label>
+                    <input
+                      type='number'
+                      placeholder={item.placeholder}
+                      name={item.name}
+                      className='search-input-text px-4'
+                      onChange={updateCustomerGroupLicenseUsage}
+                      value={customerGroup?.license_usage}
+                    />
+                  </div>
+                )
+              } else if(item.name === 'no_customer'){
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -312,13 +419,12 @@ const EditCustomerGroup: React.FC = () =>  {
                       placeholder={item.placeholder}
                       name={item.name}
                       className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                      onChange={updateCustomerGroup}
-                      defaultValue={customerGroup[item?.name]}
+                      disabled
+                      value={customerGroup?.no_customer}
                     />
                   </div>
                 )
-              }
-              else{
+              } else{
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -334,7 +440,7 @@ const EditCustomerGroup: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateCustomerGroup}
-                      defaultValue={customerGroup[item?.name]}
+                      value={customerGroup[item.name]}
                     />
                   </div>
                 )

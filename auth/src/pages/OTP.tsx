@@ -11,7 +11,7 @@ import { verifyUserOtpThunk, setUserAuthTokenToLSThunk, getUserAuthTokenFromLSTh
 import { setTokenDetails } from "store/authSlice";
 import { MoveLeft } from 'lucide-react';
 import '../styles/styles.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const OTP: React.FC = () => {
@@ -38,7 +38,7 @@ const OTP: React.FC = () => {
   const [otp5, setOtp5] = useState<string>("");
   const [otp6, setOtp6] = useState<string>("");
 
-  const [ time, setTime ] = useState(0);
+  const [ time, setTime ] = useState(150);
   const [ seconds, setSeconds ] = useState(0);
   const [ minutes, setMinutes ] = useState(0);
 
@@ -261,7 +261,6 @@ const OTP: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <ToastContainer />
       <div className="w-full max-w-[570px]">
         <div className="p-8 xsm-max:px-4 bg-[#F9FAFB] rounded-lg shadow-sm">
           <div

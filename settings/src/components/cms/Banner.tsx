@@ -33,7 +33,7 @@ const Banner: React.FC = () => {
   const [newBanner, setNewBanner] = useState(initialBanner);
   const [price,setPrice] = useState(initialPrice);
   const [editBanner, setEditBanner] = useState(false);
-  // console.log(newBanner);
+  console.log(newBanner);
   const [imageFile, setImage] = useState(null);
   const imageRef = useRef(null);
   
@@ -174,123 +174,153 @@ const Banner: React.FC = () => {
     return result?.logo;
   };
 
+  const validateForm = () => {
+    if(newBanner?.title === "" || newBanner?.title.trim() === "") {
+      return false;
+    }
+    if(newBanner?.description === "" || newBanner?.description.trim() === "") {
+      return false;
+    }
+    if(newBanner?.video_url === "" || newBanner?.video_url.trim() === "") {
+      return false;
+    }
+    if(newBanner?.button_title === "" || newBanner?.button_title.trim() === "") {
+      return false;
+    }
+    if(newBanner?.button_url === "" || newBanner?.button_url.trim() === "") {
+      return false;
+    }
+    if(newBanner?.currency_details.length < 1) {
+      return false;
+    }
+    return true;
+  }
+
   const addBannerSubmit = async(e) => {
     e.preventDefault();
-    if(imageFile !== null && typeof imageFile !== "string"){
-      try {
-        const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
-        console.log("imageUpload", imageUpload);
-        if(imageUpload?.message === "File uploaded successfully!") {
-          try {
-            const result = await dispatch(addBannerThunk({
-              title: newBanner.title,
-              description: newBanner.description,
-              video_url: newBanner.video_url,
-              show_video_status: newBanner.show_video_status,
-              currency_details: newBanner.currency_details,
-              button_title: newBanner.button_title,
-              button_url: newBanner.button_url,
-              background_image: imageUpload.url,
-              show_promotion_status: newBanner.show_promotion_status,
-            })).unwrap()
-            console.log(result);
-            setTimeout(() => {
-              toast.success(result?.message);
-            }, 1000);
-          } catch (error) {
-            console.log(error);
-            toast.error("Error adding banner");
-          } finally {
-            fetchBannerList();
-            setIsEditModalOpen(false);
-            setNewBanner(initialBanner);
-            setImage(null);
+    if(validateForm() && newBanner?.currency_details.length > 0) {
+      if(imageFile !== null && typeof imageFile !== "string"){
+        try {
+          const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
+          // console.log("imageUpload", imageUpload);
+          if(imageUpload?.message === "File uploaded successfully!") {
+            try {
+              const result = await dispatch(addBannerThunk({
+                title: newBanner.title,
+                description: newBanner.description,
+                video_url: newBanner.video_url,
+                show_video_status: newBanner.show_video_status,
+                currency_details: newBanner.currency_details,
+                button_title: newBanner.button_title,
+                button_url: newBanner.button_url,
+                background_image: imageUpload.url,
+                show_promotion_status: newBanner.show_promotion_status,
+              })).unwrap()
+              console.log(result);
+              setTimeout(() => {
+                toast.success(result?.message);
+              }, 1000);
+            } catch (error) {
+              console.log(error);
+              toast.error("Error adding banner");
+            } finally {
+              fetchBannerList();
+              setIsEditModalOpen(false);
+              setNewBanner(initialBanner);
+              setImage(null);
+            }
           }
+          else{
+            toast.error("Error uploading the image.");
+          }
+        } catch (error) {
+          toast.error("Please upload a valid image.");
         }
-        else{
-          toast.error("Error uploading the image.");
-        }
-      } catch (error) {
-        toast.error("Please upload a valid image.");
       }
+      else{
+        toast.error("Enter a valid image");
+      }
+    } else {
+      toast.warning("Please fill all the places.");
     }
-    else{
-      toast.error("Enter a valid image");
-    }
-  }
+  };
 
   const editBannerSubmit = async(e) => {
     e.preventDefault();
-    if(imageFile !== null && typeof imageFile !== "string"){
-      try {
-        const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
-        console.log("imageUpload", imageUpload);
-        if(imageUpload?.message === "File uploaded successfully!") {
-          try {
-            const result = await dispatch(editBannerThunk({
-              record_id: newBanner?.id,
-              title: newBanner?.title,
-              description: newBanner?.description,
-              video_url: newBanner?.video_url,
-              button_title: newBanner?.button_title,
-              button_url: newBanner?.button_url,
-              background_image: imageUpload.url,
-              show_video_status: newBanner?.show_video_status,
-              show_promotion_status: newBanner?.show_promotion_status,
-              currency_details: newBanner?.currency_details,
-              active: newBanner?.active
-            })).unwrap()
-            console.log(result);
-            setIsEditModalOpen(false);
-            setImage(null);
-            setTimeout(() => {
-              toast.success(result?.message);
-            }, 1000);
-          } catch (error) {
-            // console.log(error);
-            toast.error("Error editing banner");
-          } finally {
-            fetchBannerList();
-            setEditBanner(false);
-            setNewBanner(initialBanner);
+    if(validateForm() && newBanner?.currency_details.length > 0) {
+      if(imageFile !== null && typeof imageFile !== "string"){
+        try {
+          const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
+          console.log("imageUpload", imageUpload);
+          if(imageUpload?.message === "File uploaded successfully!") {
+            try {
+              const result = await dispatch(editBannerThunk({
+                record_id: newBanner?.id,
+                title: newBanner?.title,
+                description: newBanner?.description,
+                video_url: newBanner?.video_url,
+                button_title: newBanner?.button_title,
+                button_url: newBanner?.button_url,
+                background_image: imageUpload.url,
+                show_video_status: newBanner?.show_video_status,
+                show_promotion_status: newBanner?.show_promotion_status,
+                currency_details: newBanner?.currency_details,
+                active: newBanner?.active
+              })).unwrap()
+              console.log(result);
+              setIsEditModalOpen(false);
+              setImage(null);
+              setTimeout(() => {
+                toast.success(result?.message);
+              }, 1000);
+            } catch (error) {
+              // console.log(error);
+              toast.error("Error editing banner");
+            } finally {
+              fetchBannerList();
+              setEditBanner(false);
+              setNewBanner(initialBanner);
+            }
           }
+          else{
+            toast.error("Error uploading the image.");
+          }
+        } catch (error) {
+          toast.error("Please upload a valid image.");
         }
-        else{
-          toast.error("Error uploading the image.");
+      }
+      else{
+        try {
+          const result = await dispatch(editBannerThunk({
+            record_id: newBanner?.id,
+            title: newBanner?.title,
+            description: newBanner?.description,
+            video_url: newBanner?.video_url,
+            button_title: newBanner?.button_title,
+            button_url: newBanner?.button_url,
+            background_image: newBanner?.background_image,
+            show_video_status: newBanner?.show_video_status,
+            show_promotion_status: newBanner?.show_promotion_status,
+            currency_details: newBanner?.currency_details,
+            active: newBanner?.active
+          })).unwrap()
+          console.log(result);
+          setIsEditModalOpen(false);
+          setImage(null);
+          setTimeout(() => {
+            toast.success(result?.message);
+          }, 1000);
+        } catch (error) {
+          // console.log(error);
+          toast.error("Error editing banner");
+        } finally {
+          fetchBannerList();
+          setEditBanner(false);
+          setNewBanner(initialBanner);
         }
-      } catch (error) {
-        toast.error("Please upload a valid image.");
       }
-    }
-    else{
-      try {
-        const result = await dispatch(editBannerThunk({
-          record_id: newBanner?.id,
-          title: newBanner?.title,
-          description: newBanner?.description,
-          video_url: newBanner?.video_url,
-          button_title: newBanner?.button_title,
-          button_url: newBanner?.button_url,
-          background_image: newBanner?.background_image,
-          show_video_status: newBanner?.show_video_status,
-          show_promotion_status: newBanner?.show_promotion_status,
-          currency_details: newBanner?.currency_details,
-          active: newBanner?.active
-        })).unwrap()
-        console.log(result);
-        setIsEditModalOpen(false);
-        setImage(null);
-        setTimeout(() => {
-          toast.success(result?.message);
-        }, 1000);
-      } catch (error) {
-        // console.log(error);
-        toast.error("Error editing banner");
-      } finally {
-        fetchBannerList();
-        setEditBanner(false);
-        setNewBanner(initialBanner);
-      }
+    } else {
+      toast.warning("Please fill all the details");
     }
   }
 

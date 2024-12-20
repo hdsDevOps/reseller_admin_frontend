@@ -358,9 +358,15 @@ const CustomerManagement: React.FC = () => {
   };
 
   const selectAllButton = () => {
-    const newSelectAllState = !selectAll;
-    setSelectAll(newSelectAllState);
-    setChecked(customerList);
+    if(selectAll) {
+      const newSelectAllState = !selectAll;
+      setSelectAll(newSelectAllState);
+      setChecked([]);
+    } else {
+      const newSelectAllState = !selectAll;
+      setSelectAll(newSelectAllState);
+      setChecked(customerList);
+    }
   };
 
   const toggleCheck = (newJson) => {

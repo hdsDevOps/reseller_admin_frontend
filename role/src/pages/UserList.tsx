@@ -30,7 +30,7 @@ const UserList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add');
   const [users, setUsers] = useState([]);
-  console.log("users...", users);
+  // console.log("users...", users);
   const [userFilter, setUserFilter] = useState(intialUserFilter);
   const [searchData, setSearchData] = useState("");
   const [deleteUserId, setDeleteUserId] = useState("");
@@ -54,7 +54,7 @@ const UserList = () => {
   const [modalData, setModalData] = useState(modalFormat);
   // console.log("modal data....", modalData);
 
-  const updateModalData = (e) => {
+  const updateModalData = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setModalData({
       ...modalData,
       [e.target.name]: e.target.value
@@ -67,6 +67,7 @@ const UserList = () => {
   const fetchUsers = async() => {
     try {
       const result = await dispatch(getUsersThunk(userFilter)).unwrap();
+      console.log("result...", result);
       setUsers(result.users);
     } catch (error) {
       setUsers([]);
@@ -87,9 +88,9 @@ const UserList = () => {
 
   const fetchRoles = async() => {
     try {
-      const result = await dispatch(getRolesThunk()).unwrap();
+      const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
       // console.log("result...", result.roles);
-      setRoles(result.roles);
+      setRoles(result?.roles);
     } catch (error) {
       setRoles([]);
       if(error?.message == "Request failed with status code 401") {
@@ -182,7 +183,6 @@ const UserList = () => {
           toast.success(result?.message);
         }, 1000);
       } catch (error) {
-        toast.error("Error adding user");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -190,6 +190,10 @@ const UserList = () => {
           } catch (error) {
             //
           }
+        } else if(error?.error === "Failed to add user.Error: The email address is already in use by another account.") {
+          toast.error("The email address is already in use by another account.")
+        } else {
+          toast.error("Error adding user");
         }
       } finally {
         fetchUsers();
@@ -320,7 +324,7 @@ const UserList = () => {
               <option defaultChecked value=''>Select User Type</option>
               {
                 roles?.map((role, idx) => (
-                  <option key={idx}>{role?.role_name}</option>
+                  <option key={idx} value={role?.role_name}>{role?.role_name}</option>
                 ))
               }
             </select>
@@ -370,7 +374,7 @@ const UserList = () => {
                     <th key={index} className="th-css-full-opacity">
                       <span>{item.label}</span>
                       {
-                        item?.name === "action" ? "" :
+                        item.name === "action" ? "" :
                         <span className="ml-1"><button type="button" onClick={() => {
                           //
                         }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
@@ -486,7 +490,7 @@ const UserList = () => {
                               <option selected={modalType == 'add' ? true : false} value="" disabled>Select user type</option>
                               {
                                 roles?.map((role, idx) => {
-                                  if(role.role_name !== "Super Admin") {
+                                  if(role?.role_name !== "Super Admin") {
                                     return (
                                       <option key={idx} selected={modalType === "add" ? false : true}>{role?.role_name}</option>
                                     )

@@ -885,9 +885,9 @@ async function getEmailLogsApi(): Promise<any> {
   }
 };
 
-async function getRolesApi(): Promise<any> {
+async function getRolesApi(user_type:string): Promise<any> {
   try {
-    const result = await getApiCall(endPoints.getRoles);
+    const result = await postApiCall(endPoints.getRoles, {user_type});
     return result;
   } catch (error: any) {
     throw error;

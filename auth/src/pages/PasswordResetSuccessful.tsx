@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const PasswordResetSuccessful: React.FC = () => {
@@ -13,7 +13,6 @@ const PasswordResetSuccessful: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center h-full xsm-max:px-1 font-inter pt-[50px]">
-      <ToastContainer />
       <div className="w-full max-w-[32rem] bg-gray-50 p-12 rounded-3xl xsm-max:px-4">
         <div className="w-full">
           <div className="text-center">

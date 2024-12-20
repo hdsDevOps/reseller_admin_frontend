@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
-import { Toaster } from "react-hot-toast";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Route, Routes } from "react-router-dom";
 
 
@@ -14,7 +15,7 @@ const AuthApp: React.FC = () => {
   return (
     <div className="min-h-screen bg-white w-full">
       <Suspense fallback={<div>Loading...</div>}>
-      <Toaster />
+      <ToastContainer />
  
         <main className="flex items-center justify-center max-w-full">
           <Routes>

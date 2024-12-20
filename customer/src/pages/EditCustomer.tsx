@@ -20,6 +20,8 @@ import './countryList.css';
 import { CountryList } from '../components/CountryList';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 function EditCustomer() {
   const navigate = useNavigate();
@@ -37,17 +39,20 @@ function EditCustomer() {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCitites] = useState([]);
+  const [country, setCountry] = useState({});
+  const [state, setState] = useState({});
+  const [city, setCity] = useState({});
   // console.log("countries...", countries);
   // console.log("states...", states);
   // console.log("cities...", cities);
   // console.log({countryName, stateName, cityName})
 
-  useEffect(() => {
-    setCustomer({
-      ...customer,
-      phone_no: `${phoneCode}${phoneNumber}`
-    })
-  }, [phoneNumber, phoneCode]);
+  // useEffect(() => {
+  //   setCustomer({
+  //     ...customer,
+  //     phone_no: `${phoneCode}${phoneNumber}`
+  //   })
+  // }, [phoneNumber, phoneCode]);
   
   const updateCustomer = e => {
     setCustomer({
@@ -56,91 +61,78 @@ function EditCustomer() {
     })
   };
 
+  const handlePhoneChange = (value: string) => {
+    setCustomer((prevData) => ({ ...prevData, phone_no: value }));
+  };
+
   useEffect(() => {
-    axios
-      .get("https://www.universal-tutorial.com/api/getaccesstoken", {headers: {
-        "Accept": "application/json",
-        "api-token": "AtAMX2sSL0P0xiNSJ5gEmgL9uNc9MH31bPRqvD4dlqQvl9KEfHiAjzJUYjrbDLdAS6Q",
-        "user-email": "hesham.reza@schemaphic.com"
-      }})
+    var config = {
+      method: 'get',
+      url: 'https://api.countrystatecity.in/v1/countries',
+      headers: {
+        'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+      }
+    };
+    axios(config)
       .then(res => {
-        axios
-          .get("https://www.universal-tutorial.com/api/countries/", { headers: {
-            "Authorization": `Bearer ${res.data.auth_token}`,
-            "Accept": "application/json"
-          }})
-          .then(response => {
-            setCountries(response.data);
-          })
-          .catch(error => {
-            setCountries([]);
-            console.log("error...", error);
-          })
+        setCountries(res.data);
+        // console.log(res.data);
       })
       .catch(err => {
-        console.log("err...", err);
+        setCountries([]);
+        console.log("error...", err);
       })
   }, []);
   
   useEffect(() => {
-    axios
-      .get("https://www.universal-tutorial.com/api/getaccesstoken", {headers: {
-        "Accept": "application/json",
-        "api-token": "AtAMX2sSL0P0xiNSJ5gEmgL9uNc9MH31bPRqvD4dlqQvl9KEfHiAjzJUYjrbDLdAS6Q",
-        "user-email": "hesham.reza@schemaphic.com"
-      }})
-      .then(res => {
-        if(customer?.country !== ""){
-          axios
-          .get(`https://www.universal-tutorial.com/api/states/${customer?.country}`, { headers: {
-            "Authorization": `Bearer ${res.data.auth_token}`,
-            "Accept": "application/json"
-          }})
-          .then(response => {
-            setStates(response.data);
-          })
-          .catch(error => {
-            setStates([]);
-            console.log("error...", error);
-          })
-        } else {
-          setStates([]);
+    if(country?.iso2 !== undefined) {
+      var config = {
+        method: 'get',
+        url: `https://api.countrystatecity.in/v1/countries/${country?.iso2}/states`,
+        headers: {
+          'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
         }
+      };
+      axios(config)
+      .then(res => {
+        setStates(res.data);
       })
       .catch(err => {
-        console.log("err...", err);
+        setStates([]);
+        console.log("error...", err);
       })
-  }, [customer]);
+    } else {
+      setStates([]);
+    }
+  }, [country]);
   
   useEffect(() => {
-    axios
-      .get("https://www.universal-tutorial.com/api/getaccesstoken", {headers: {
-        "Accept": "application/json",
-        "api-token": "AtAMX2sSL0P0xiNSJ5gEmgL9uNc9MH31bPRqvD4dlqQvl9KEfHiAjzJUYjrbDLdAS6Q",
-        "user-email": "hesham.reza@schemaphic.com"
-      }})
-      .then(res => {
-        if(customer?.state_name !== ""){
-          axios
-          .get(`https://www.universal-tutorial.com/api/cities/${customer?.state_name}`, { headers: {
-            "Authorization": `Bearer ${res.data.auth_token}`,
-            "Accept": "application/json"
-          }})
-          .then(response => {
-            setCitites(response.data);
-          })
-          .catch(error => {
-            setCitites([]);
-            console.log("error...", error);
-          })
-        } else {
-          setCitites([]);
+    if(country?.iso2 !== undefined && state?.iso2 !== undefined) {
+      var config = {
+        method: 'get',
+        url: `https://api.countrystatecity.in/v1/countries/${country?.iso2}/states/${state?.iso2}/cities`,
+        headers: {
+          'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
         }
+      };
+      axios(config)
+      .then(res => {
+        setCitites(res.data);
       })
       .catch(err => {
-        console.log("err...", err);
+        setCitites([]);
+        console.log("error...", err);
       })
-  }, [customer]);
+    } else {
+      setCitites([]);
+    }
+  }, [country, state]);
+
+  useEffect(() => {
+    if(location.state) {
+      const data = location.state
+    }
+  }, [location.state])
 
   const formList = [
     {label: 'First name', type: 'text', name: 'first_name', placeholder: 'Enter the first name',},
@@ -175,31 +167,31 @@ function EditCustomer() {
   } | { name: "United States", dial_code: '+1', code: "US" }>({ name: "United States", dial_code: '+1', code: "US" });
 
   useEffect(() => {
-    if(customer?.country != ''){
-      const data = CountryList.find(item => item.name === customer?.country);
-      setSelectedOption(data);
-      setPhoneCode(data?.dial_code);
+    if(country?.iso2 != undefined){
+      
+      setSelectedOption({ name: country?.name, dial_code: `+${country?.phonecode}`, code: country?.iso2 });
+      setPhoneCode(`+${country?.phonecode}`);
     }
     else{
       setSelectedOption({ name: "United States", dial_code: '+1', code: "US" });
       setPhoneCode('+1');
     }
-  }, [customer?.country])
+  }, [customer?.country]);
 
-  useEffect(() => {
-    const phoneNo = customer?.phone_no;
-    if(phoneNo){
-      for(const { dial_code } of CountryList){
-        if(phoneNo.startsWith(dial_code)){
-          const nationalNumber = phoneNo.slice(dial_code.length);
-          console.log(nationalNumber, '96')
-          setPhoneNumber(parseInt(nationalNumber));
-          setPhoneCode(dial_code);
-          return;
-        }
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   const phoneNo = customer?.phone_no;
+  //   if(phoneNo){
+  //     for(const { dial_code } of CountryList){
+  //       if(phoneNo.startsWith(dial_code)){
+  //         const nationalNumber = phoneNo.slice(dial_code.length);
+  //         console.log(nationalNumber, '96')
+  //         setPhoneNumber(parseInt(nationalNumber));
+  //         setPhoneCode(dial_code);
+  //         return;
+  //       }
+  //     }
+  //   }
+  // }, []);
 
   const handleOptionClick = (option: { name: string; dial_code: string; code: string; }) => {
     setSelectedOption(option);
@@ -319,36 +311,23 @@ function EditCustomer() {
                         <label
                           className='search-input-label'
                         >{item.label}</label>
-                        <div
-                          key={index}
-                          className="search-input-text flex flex-row"
-                        >
-                          <div
-                            className='w-[60px] flex flex-col'
-                          >
-                            <div className="relative w-[40px] h-full flex mx-auto items-center justify-between border-0 cursor-pointer"
-                              onClick={() => setIsOpen(!isOpen)}
-                            >
-                              <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
-                            </div>
-                          </div>
-                          <p
-                            className='w-fit my-auto mx-1'
-                          >{selectedOption?.dial_code}</p>
-                          <input
-                            type='number'
-                            className='w-full focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                            onChange={e => {
-                              setPhoneNumber(parseInt(e.target.value))
-                            }}
-                            placeHolder={item?.placeholder}
-                            defaultValue={phoneNumber}
-                          />
-                        </div>
+                        <PhoneInput
+                          country={selectedOption?.code?.toLowerCase()}
+                          onChange={handlePhoneChange}
+                          value={customer?.phone_no}
+                          placeholder='00000-00000'
+                          inputProps={{
+                            required: true,
+                            name: 'phone_no'
+                          }}
+                          containerClass='min-w-full border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] items-center'
+                          inputClass="react-tel-input outline-none !w-full bord !border-0 !h-full"
+                          dropdownClass="peer"
+                          buttonClass="!border-0 !h-full !w-[40px]"
+                        />
                       </div>
                     )
-                  }
-                  else if(item.name == 'country'){
+                  } else if(item.name == 'country'){
                     return(
                       <div
                         key={index}
@@ -365,34 +344,42 @@ function EditCustomer() {
                           onChange={e => {
                             setCustomer({
                               ...customer,
-                              country: e.target.value,
+                              country: '',
                               state_name: '',
                               city: ''
                             });
                             setCountryName(e.target.value);
                             setStateName("");
                             setCityName("");
+                            setCountry({});
+                            setState({});
+                            setCity({});
                           }}
-                          value={customer?.country}
+                          value={customer?.country || countryName}
+                          required
                         />
                         {
                           countryName?.length>2 && (
                             <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
                               {
-                                countries?.filter(name => name?.country_name.toLowerCase().includes(countryName.toLowerCase())).map((country, idx) => (
+                                countries?.filter(name => name?.name.toLowerCase().includes(countryName.toLowerCase())).map((country, idx) => (
                                   <p
                                     key={idx}
                                     className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                    dropdown-name="country-dropdown"
                                     onClick={() => {
                                       setCustomer({
                                         ...customer,
-                                        country: country?.country_name
+                                        country: country?.name
                                       });
                                       setCountryName("");
                                       setStateName("");
                                       setCityName("");
+                                      setCountry(country);
+                                      setState({});
+                                      setCity({});
                                     }}
-                                  >{country?.country_name}</p>
+                                  >{country?.name}</p>
                                 ))
                               }
                             </div>
@@ -400,8 +387,7 @@ function EditCustomer() {
                         }
                       </div>
                     )
-                  }
-                  else if(item.name == 'state_name'){
+                  } else if(item.name == 'state_name'){
                     return(
                       <div
                         key={index}
@@ -418,32 +404,37 @@ function EditCustomer() {
                           onChange={e => {
                             setCustomer({
                               ...customer,
-                              state_name: e.target.value,
+                              state_name: "",
                               city: ""
                             });
                             setStateName(e.target.value);
                             setCityName("");
+                            setState({});
+                            setCity({});
                           }}
-                          value={customer?.state_name}
+                          value={customer?.state_name || stateName}
+                          required={states?.length > 0 ? true : false}
                         />
                         {
                           stateName?.length>2 && (
                             <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
                               {
-                                states?.filter(name => name?.state_name.toLowerCase().includes(stateName.toLowerCase())).map((state, idx) => (
+                                states?.filter(name => name?.name.toLowerCase().includes(stateName.toLowerCase())).map((region, idx) => (
                                   <p
                                     key={idx}
                                     className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
                                     onClick={() => {
                                       setCustomer({
                                         ...customer,
-                                        state_name: state?.state_name,
+                                        state_name: region?.name,
                                         city: ""
                                       });
                                       setStateName("");
                                       setCityName("");
+                                      setState(region);
+                                      setCity({});
                                     }}
-                                  >{state?.state_name}</p>
+                                  >{region?.name}</p>
                                 ))
                               }
                             </div>
@@ -451,8 +442,7 @@ function EditCustomer() {
                         }
                       </div>
                     )
-                  }
-                  else if(item.name == 'city'){
+                  } else if(item.name == 'city'){
                     return(
                       <div
                         key={index}
@@ -469,28 +459,31 @@ function EditCustomer() {
                           onChange={e => {
                             setCustomer({
                               ...customer,
-                              city: e.target.value
+                              city: ''
                             });
                             setCityName(e.target.value);
+                            setCity({});
                           }}
-                          value={customer?.city}
+                          value={customer?.city || cityName}
+                          required={cities?.length > 0 ? true : false}
                         />
                         {
                           cityName?.length>2 && (
                             <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
                               {
-                                cities?.filter(name => name?.city_name.toLowerCase().includes(cityName.toLowerCase())).map((city, idx) => (
+                                cities?.filter(name => name?.name.toLowerCase().includes(cityName.toLowerCase())).map((city_name, idx) => (
                                   <p
                                     key={idx}
                                     className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
                                     onClick={() => {
                                       setCustomer({
                                         ...customer,
-                                        city: city?.city_name
+                                        city: city_name?.name
                                       });
                                       setCityName("");
+                                      setCity(city_name);
                                     }}
-                                  >{city?.city_name}</p>
+                                  >{city_name?.name}</p>
                                 ))
                               }
                             </div>
@@ -498,8 +491,7 @@ function EditCustomer() {
                         }
                       </div>
                     )
-                  }
-                  else{
+                  } else{
                     return(
                       <div
                         key={index}

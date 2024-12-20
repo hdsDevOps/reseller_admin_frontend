@@ -57,21 +57,25 @@ const ContactSection = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    setIsEditModalOpen(false);
-    try {
-      const updateContactUs = await dispatch(updateContactUsThunk({
-        content_description: newContactData.content_description,
-        phone_no: newContactData.phone_no,
-        email: newContactData.email,
-        address: newContactData.address
-      }));
-      setTimeout(() => {
-        toast.success(updateContactUs?.payload.message);
-      }, 1000);
-    } catch (error) {
-      toast.error("Error updating contact us");
-    } finally {
-      fetchContactUs();
+    if(newContactData?.content_description === "" || newContactData?.content_description.trim() === "" || newContactData?.phone_no === "" || newContactData?.phone_no.trim() === "" || newContactData?.email === "" || newContactData?.email.trim() === "" || newContactData?.address === "" || newContactData?.address.trim() === "") {
+      toast.warning("Please fill all the fields");
+    } else {
+      setIsEditModalOpen(false);
+      try {
+        const updateContactUs = await dispatch(updateContactUsThunk({
+          content_description: newContactData.content_description,
+          phone_no: newContactData.phone_no,
+          email: newContactData.email,
+          address: newContactData.address
+        }));
+        setTimeout(() => {
+          toast.success(updateContactUs?.payload.message);
+        }, 1000);
+      } catch (error) {
+        toast.error("Error updating contact us");
+      } finally {
+        fetchContactUs();
+      }
     }
   };
 

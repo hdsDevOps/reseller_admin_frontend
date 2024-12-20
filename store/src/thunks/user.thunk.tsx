@@ -602,8 +602,8 @@ export const getEmailLogsThunk = createAsyncThunk(
 
 export const getRolesThunk = createAsyncThunk(
   "users/getRoles",
-  async () => {
-    return await userApis.getRolesApi();
+  async ({user_type}:any) => {
+    return await userApis.getRolesApi(user_type);
   }
 );
 

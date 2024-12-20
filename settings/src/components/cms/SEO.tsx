@@ -163,57 +163,67 @@ const SEO = () => {
   const handleSave = async(e) => {
     e.preventDefault();
     // setIsModalOpen(false);
-    if(imageFile !== null && typeof imageFile !== "string"){
-      try {
-        const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
-        console.log("imageUpload", imageUpload);
-        if(imageUpload?.message === "File uploaded successfully!") {
-          try {
-            // console.log(imageUpload?.url)
-            const udpateSeo = await dispatch(updateSeoDataThunk({
-              title: editedSeo.title,
-              desc: editedSeo.desc,
-              alt_image: editedSeo.alt_image,
-              image_path: imageUpload.url,
-              keywords: editedSeo.keywords,
-              urllink: editedSeo.urllink
-            })).unwrap();
-            console.log("udpateSeo", udpateSeo);
-            setTimeout(() => {
-              toast.success(udpateSeo?.message)
-            }, 1000);
-          } catch (error) {
-            toast.error("Error updating SEO data");
-          } finally {
-            fetchSeoData();
+    if(
+      editedSeo?.title === "" || editedSeo?.title.trim() === "" ||
+      editedSeo?.alt_image === "" || editedSeo?.alt_image.trim() === "" ||
+      editedSeo?.urllink === "" || editedSeo?.urllink.trim() === "" ||
+      editedSeo?.desc.length < 1 ||
+      editedSeo?.keywords.length < 1
+    ) {
+      toast.warning("Please fill all the fields");
+    } else {
+      if(imageFile !== null && typeof imageFile !== "string"){
+        try {
+          const imageUpload = await dispatch(uploadImageThunk({image: imageFile})).unwrap();
+          console.log("imageUpload", imageUpload);
+          if(imageUpload?.message === "File uploaded successfully!") {
+            try {
+              // console.log(imageUpload?.url)
+              const udpateSeo = await dispatch(updateSeoDataThunk({
+                title: editedSeo.title,
+                desc: editedSeo.desc,
+                alt_image: editedSeo.alt_image,
+                image_path: imageUpload.url,
+                keywords: editedSeo.keywords,
+                urllink: editedSeo.urllink
+              })).unwrap();
+              console.log("udpateSeo", udpateSeo);
+              setTimeout(() => {
+                toast.success(udpateSeo?.message)
+              }, 1000);
+            } catch (error) {
+              toast.error("Error updating SEO data");
+            } finally {
+              fetchSeoData();
+            }
           }
+          else{
+            toast.error("Error uploading the image.");
+          }
+        } catch (error) {
+          toast.error("Please upload a valid image.");
         }
-        else{
-          toast.error("Error uploading the image.");
-        }
-      } catch (error) {
-        toast.error("Please upload a valid image.");
       }
-    }
-    else{
-      try {
-        // console.log(imageUpload?.url)
-        const udpateSeo = await dispatch(updateSeoDataThunk({
-          title: editedSeo.title,
-          desc: editedSeo.desc,
-          alt_image: editedSeo.alt_image,
-          image_path: editedSeo.image_path,
-          keywords: editedSeo.keywords,
-          urllink: editedSeo.urllink
-        })).unwrap();
-        console.log("udpateSeo", udpateSeo);
-        setTimeout(() => {
-          toast.success(udpateSeo?.message)
-        }, 1000);
-      } catch (error) {
-        toast.error("Error updating SEO data1");
-      } finally {
-        fetchSeoData();
+      else{
+        try {
+          // console.log(imageUpload?.url)
+          const udpateSeo = await dispatch(updateSeoDataThunk({
+            title: editedSeo.title,
+            desc: editedSeo.desc,
+            alt_image: editedSeo.alt_image,
+            image_path: editedSeo.image_path,
+            keywords: editedSeo.keywords,
+            urllink: editedSeo.urllink
+          })).unwrap();
+          console.log("udpateSeo", udpateSeo);
+          setTimeout(() => {
+            toast.success(udpateSeo?.message)
+          }, 1000);
+        } catch (error) {
+          toast.error("Error updating SEO data1");
+        } finally {
+          fetchSeoData();
+        }
       }
     }
   };

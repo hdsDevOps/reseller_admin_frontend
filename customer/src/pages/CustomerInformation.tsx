@@ -15,12 +15,12 @@ const CustomerInformation: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const [customer, setCustomer] = useState(location.state);
+  const [customer, setCustomer] = useState(location?.state);
   console.log(customer, 'customer information');
   
   const bottomData = [
     { icon: <Mail className='mx-auto' />, title: `Email : ${customer?.email}` },
-    { icon: <Phone className='mx-auto' />, title: `Phone : ${customer?.phone_no}` },
+    { icon: <Phone className='mx-auto' />, title: `Phone : +${customer?.phone_no}` },
     { icon: <UserRound className='mx-auto' />, title: `Domain: ${customer?.domain ? customer?.domain : 'N/A'}` },
   ]
 
@@ -119,7 +119,7 @@ const CustomerInformation: React.FC = () => {
           >Region : {customer?.state_name}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Domain : {customer?.domain ? customer?.domain : 'N/A'}</p>
+          >Domain : {customer?.domain || 'N/A'}</p>
         </div>
         <div
           className='flex flex-col justify-between text-right max-[631px]:items-center'
@@ -174,7 +174,11 @@ const CustomerInformation: React.FC = () => {
                     <label
                       className='search-input-label'
                     >New Password</label>
-                    <input type={showNewPassword ? 'text' : 'password'} placeholder='New Password' minLength={8} required
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      placeholder='New Password'
+                      minLength={8}
+                      required
                       className='search-input-text'
                       onChange={e => {
                         setNewPassword(e.target.value);
@@ -202,7 +206,11 @@ const CustomerInformation: React.FC = () => {
                     <label
                       className='search-input-label'
                     >Confirm Password</label>
-                    <input type={showConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' minLength={8} required
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder='Confirm Password'
+                      minLength={8}
+                      required
                       className='search-input-text'
                       onChange={e => {
                         setConfirmPassword(e.target.value);
