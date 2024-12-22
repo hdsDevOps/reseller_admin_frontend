@@ -34,7 +34,7 @@ const CustomerGroup: React.FC = () => {
   console.log(sampleData);
   
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 20;
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sampleData.slice(indexOfFirstItem, indexOfLastItem);
@@ -278,8 +278,23 @@ const CustomerGroup: React.FC = () => {
         </table>
       </div>
 
-      <div className="flex flex-col mt-12 relative bottom-2 right-0">
-        <div className="flex justify-end mb-2">
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
             disabled={currentPage === 0}

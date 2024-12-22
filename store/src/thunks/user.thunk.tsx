@@ -128,7 +128,8 @@ export const getCustomerListThunk = createAsyncThunk(
     authentication,
     license_usage,
     subscritption_date,
-    renewal_date
+    renewal_date,
+    domain
   }: any) => {
     return await userApis.customerListApi(
       search_data,
@@ -137,7 +138,8 @@ export const getCustomerListThunk = createAsyncThunk(
       authentication,
       license_usage,
       subscritption_date,
-      renewal_date
+      renewal_date,
+      domain
     );
   }
 );
@@ -331,6 +333,13 @@ export const deleteCustomerGroupThunk = createAsyncThunk(
   "users/deleteCustomerGroup",
   async ({record_id}: any) => {
     return await userApis.deleteCustomerGroupApi(record_id);
+  }
+);
+
+export const getCustomerCountThunk = createAsyncThunk(
+  "users/getCustomerCount",
+  async ({country, state_name, plan, start_date, end_date, license_usage}: any) => {
+    return await userApis.getCustomerCountApi(country, state_name, plan, start_date, end_date, license_usage);
   }
 );
 

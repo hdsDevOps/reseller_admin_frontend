@@ -118,7 +118,8 @@ async function customerListApi(
   authentication: boolean,
   license_usage: string,
   subscritption_date: string,
-  renewal_date: string
+  renewal_date: string,
+  domain: string,
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.customerList, {
@@ -128,7 +129,8 @@ async function customerListApi(
       authentication,
       license_usage,
       subscritption_date,
-      renewal_date
+      renewal_date,
+      domain
     });
     return result;
   } catch (error: any) {
@@ -415,6 +417,22 @@ async function deleteCustomerGroupApi(
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.deleteCustomerGroup, {record_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getCustomerCountApi(
+  country: string,
+  state_name: string,
+  plan: string,
+  start_date: string,
+  end_date: string,
+  license_usage: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getCustomerCount, {country, state_name, plan, start_date, end_date, license_usage});
     return result;
   } catch (error: any) {
     throw error;
@@ -770,7 +788,7 @@ async function getFaqsApi(): Promise<any> {
 async function addFaqsApi(
   question: string,
   answer: string,
-  order: string
+  order: number
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.addFaq, {question, answer, order});
@@ -783,7 +801,7 @@ async function addFaqsApi(
 async function updateFaqsApi(
   question: string,
   answer: string,
-  order: string,
+  order: number,
   record_id: string
 ): Promise<any> {
   try {
@@ -1193,6 +1211,7 @@ export const userApis = {
   editCustomerGroupApi,
   getCustomerGroupListApi,
   deleteCustomerGroupApi,
+  getCustomerCountApi,
   addNotificationTemplateApi,
   getNotificationTemplateApi,
   updateNoficationTemplateContentApi,

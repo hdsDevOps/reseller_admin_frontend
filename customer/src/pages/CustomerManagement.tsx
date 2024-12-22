@@ -22,7 +22,8 @@ interface Filter {
   authentication: string | Boolean,
   license_usage: string | Number,
   subscritption_date: string | Date,
-  renewal_date: string | Date
+  renewal_date: string | Date,
+  domain: string
 }
 
 const CustomerManagement: React.FC = () => {
@@ -36,7 +37,8 @@ const CustomerManagement: React.FC = () => {
     authentication: "",
     license_usage: "",
     subscritption_date: "",
-    renewal_date: ""
+    renewal_date: "",
+    domain: ""
   };
   const intialFilter2= {
     country: "",
@@ -44,7 +46,8 @@ const CustomerManagement: React.FC = () => {
     authentication: "",
     license_usage: "",
     subscritption_date: "",
-    renewal_date: ""
+    renewal_date: "",
+    domain: ""
   };
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(intialFilter);
@@ -68,6 +71,8 @@ const CustomerManagement: React.FC = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [commonModal, setCommonModal] = useState(false);
   const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [selectAllCount, setSelectAllCount] = useState<number>(0);
+  const [selectAllPage, setSelectAllPage] = useState<number>(0);
   const [authorization, setAuthorization] = useState("");
   const [countryList, setCountryList] = useState([]);
   const [regionList, setRegionList] = useState([]);
@@ -76,7 +81,7 @@ const CustomerManagement: React.FC = () => {
   const [notificationId, setNotificationId] = useState("");
   
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 20;
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = customerList?.slice(indexOfFirstItem, indexOfLastItem);
@@ -358,24 +363,36 @@ const CustomerManagement: React.FC = () => {
   };
 
   const selectAllButton = () => {
-    if(selectAll) {
-      const newSelectAllState = !selectAll;
-      setSelectAll(newSelectAllState);
-      setChecked([]);
+    const newSelectAllState = !selectAll;
+    setSelectAll(newSelectAllState);
+
+    if(newSelectAllState) {
+      setChecked(currentItems);
+      setSelectAllCount(currentItems.length);
     } else {
-      const newSelectAllState = !selectAll;
-      setSelectAll(newSelectAllState);
-      setChecked(customerList);
+      setChecked([]);
+      setSelectAllCount(0);
     }
   };
+  
+  // useEffect(() => {
+  //   if(selectAll) {
+  //     const selectedOnPage = currentItems.slice(0, selectAllCount);
+  //     setChecked(selectedOnPage);
+  //   } else {
+  //     setChecked([])
+  //   }
+  // }, [currentItems]);
 
-  const toggleCheck = (newJson) => {
+  const toggleCheck = (newJson:any) => {
     setChecked((prevChecked) => {
-      const index = prevChecked.findIndex((item) => item?.id === newJson?.id);
+      const isChecked = prevChecked.some((item) => item?.record_id === newJson?.record_id);
 
-      if (index !== -1) {
+      if (isChecked) {
         // If found, remove it
-        return prevChecked.filter((item) => item?.id !== newJson?.id);
+        return prevChecked.filter((item) => item?.record_id !== newJson?.record_id);
+      } else if(selectAll && prevChecked.length >= selectAllCount) {
+        return prevChecked;
       } else {
         // If not found, add it
         return [...prevChecked, newJson];
@@ -447,7 +464,7 @@ const CustomerManagement: React.FC = () => {
               type="checkbox"
               className={`w-3 h-3 border border-black mt-[12px] mr-[6px] accent-[#12A833]`}
               onClick={() => {selectAllButton()}}
-              checked={customerList.length !== checked.length ? false : customerList.length === 0 ? false : true}
+              checked={selectAll}
             />
             <p className="font-inter-bold text-[14px] opacity-60 text-custom-blue mt-[8px]">
               Select All
@@ -483,10 +500,15 @@ const CustomerManagement: React.FC = () => {
                 placeholder="Auto search domain list"
                 className="serach-input"
                 name="domain"
-                onChange={e => {setDomain(e.target.value)}}
-                value={domain}
+                // onChange={e => {setDomain(e.target.value)}}
+                // value={domain}
+                onChange={e => {setFilters({
+                  ...filters,
+                  domain: e.target.value
+                })}}
+                value={filters?.domain}
               />
-              {
+              {/* {
                 domainList.length !== 0 && (
                   <div
                     className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b`}
@@ -505,7 +527,7 @@ const CustomerManagement: React.FC = () => {
                     })}
                   </div>
                 )
-              }
+              } */}
               
             </div>
             <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
@@ -743,8 +765,8 @@ const CustomerManagement: React.FC = () => {
                       <td>
                         <input type="checkbox"
                           className="w-3 h-3 border border-black accent-[#12A833]"
-                          checked={checked?.some((check) => check?.id === item?.id)}
-                          onClick={() => {toggleCheck(item)}}
+                          checked={checked?.some((check) => check?.record_id === item?.record_id)}
+                          onChange={() => {toggleCheck(item)}}
                         />
                       </td>
                       <td
@@ -754,7 +776,7 @@ const CustomerManagement: React.FC = () => {
                         className="td-css text-[#1F86E5] underline"
                       >
                         <a
-                          onClick={() => navigate('/customer-information', { state: item })}
+                          onClick={() => navigate('/customer-information', { state: {item, filters} })}
                           button-name="go-to-customer-information"
                           className="cursor-pointer"
                         >{item?.first_name} {item?.last_name}</a>
@@ -1065,10 +1087,27 @@ const CustomerManagement: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex flex-col mt-12 relative bottom-2 right-0">
-          <div className="flex justify-end mb-2">
+        <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+          <div className="flex items-center gap-1">
+            <select
+              onChange={e => {
+                setItemsPerPage(parseInt(e.target.value));
+              }}
+              value={itemsPerPage}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={20} selected>20</option>
+              <option value={50}>50</option>
+            </select>
+            <label>items</label>
+          </div>
+          <div className="flex">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 0));
+              }}
               disabled={currentPage === 0}
               className={`px-3 py-1 text-sm ${
                 currentPage === 0
@@ -1083,7 +1122,9 @@ const CustomerManagement: React.FC = () => {
             {Array.from({ length: totalPages }, (_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentPage(index)}
+                onClick={() => {
+                  setCurrentPage(index);
+                }}
                 className={`px-3 py-1 text-sm mx-1 rounded ${
                   currentPage === index
                     ? "bg-green-500 text-white"
@@ -1095,9 +1136,9 @@ const CustomerManagement: React.FC = () => {
             ))}
 
             <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-              }
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+              }}
               disabled={currentPage === totalPages - 1}
               className={`px-3 py-1 text-sm ${
                 currentPage === totalPages - 1

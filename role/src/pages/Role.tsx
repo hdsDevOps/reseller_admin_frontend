@@ -15,6 +15,10 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const initialFilter = {
+  user_type: ''
+}
+
 const Role = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -24,10 +28,18 @@ const Role = () => {
   const [deleteRoleId, setDeleteRoleId] = useState("");
   // console.log(deleteRoleId);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [filter, setFilter] = useState(initialFilter);
+
+  const handleFilterChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setFilter({
+      ...filter,
+      [e.target.name]: e.target.value,
+    });
+  };
   
   const fetchRoles = async() => {
     try {
-      const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
+      const result = await dispatch(getRolesThunk(filter)).unwrap();
       // console.log("result...", result.roles);
       setRoles(result?.roles);
     } catch (error) {
@@ -45,7 +57,7 @@ const Role = () => {
 
   useEffect(() => {
     fetchRoles();
-  }, []);
+  }, [filter]);
 
   const permissionsList = [
     {name: "dashboard", label: "Dashboard"},
@@ -84,7 +96,16 @@ const Role = () => {
     } finally {
       fetchRoles();
     }
-  }
+  };
+  
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  
+  // Calculate displayed data based on current page
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = roles.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(roles.length / itemsPerPage);
 
   return (
     <div className="grid grid-cols-1 p-4">
@@ -122,9 +143,9 @@ const Role = () => {
               list="brow"
               placeholder="Auto search"
               className="serach-input-no-radius"
-              name="domain"
-              // onChange={handleFilterChange}
-              // value={filters.domain}
+              name="user_type"
+              onChange={handleFilterChange}
+              value={filter?.user_type}
             />
             <button>
               <LuFilterX
@@ -176,7 +197,7 @@ const Role = () => {
           </thead>
           <tbody>
             {
-              roles?.length>0 ? roles?.map((role, index) => {
+              currentItems?.length>0 ? currentItems?.map((role, index) => {
                 if(role?.role_name === "Super Admin"){
                   return(
                     <tr key={index} className="hover:bg-gray-100 mb-10">
@@ -283,6 +304,66 @@ const Role = () => {
             }
           </tbody>
         </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 text-sm ${
+              currentPage === 0
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-l transition`}
+          >
+            Prev
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`px-3 py-1 text-sm mx-1 rounded ${
+                currentPage === index
+                  ? "bg-green-500 text-white"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } transition`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+            }
+            disabled={currentPage === totalPages - 1}
+            className={`px-3 py-1 text-sm ${
+              currentPage === totalPages - 1
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-r transition`}
+          >
+            Next
+          </button>
+        </div>
       </div>
       
       {

@@ -155,7 +155,7 @@ const Dashboard: React.FC = () => {
     const getMonltyRevenueData = async() => {
       try {
         const result = await dispatch(monthlyRevenueDataThunk()).unwrap();
-        setMonthlyRevenueData(result?.result);
+        // setMonthlyRevenueData(result?.result);
       } catch (error) {
         setMonthlyRevenueData(initialMonthlyRevenueData);
         if(error?.message == "Request failed with status code 401") {
@@ -176,7 +176,7 @@ const Dashboard: React.FC = () => {
     const getYearlySpendingStatistics = async() => {
       try {
         const result = await dispatch(yearlySpendingStatisticsThunk()).unwrap();
-        setYearlySpendingStatistics(result?.result);
+        // setYearlySpendingStatistics(result?.result);
       } catch (error) {
         setYearlySpendingStatistics([initialYearlySpendingStatistics]);
         if(error?.message == "Request failed with status code 401") {

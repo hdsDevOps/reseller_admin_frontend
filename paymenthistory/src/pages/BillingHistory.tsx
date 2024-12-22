@@ -35,6 +35,7 @@ const BillingHistory: React.FC = () => {
 
   const [filter, setFilter] = useState(initialFilter);
   // console.log("filter...", filter);
+  const [searchData, setSearchData] = useState("");
   
 
   const [billingHistory, setBillingHistory] = useState([]);
@@ -72,7 +73,7 @@ const BillingHistory: React.FC = () => {
 
   useEffect(() => {
     fetchBillingHistory();
-  }, []);
+  }, [filter]);
 
   const handleChangeFilter = (e) => {
     setFilter({
@@ -82,7 +83,7 @@ const BillingHistory: React.FC = () => {
   };
   
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 20;
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = billingHistory.slice(indexOfFirstItem, indexOfLastItem);
@@ -145,6 +146,7 @@ const BillingHistory: React.FC = () => {
                 e.target.type='text'
               }}
               onChange={handleChangeFilter}
+              value={filter?.start_date}
             />
           </div>
           <div className="px-4 mb-5 sm:mb-0">
@@ -160,6 +162,7 @@ const BillingHistory: React.FC = () => {
                 e.target.type='text'
               }}
               onChange={handleChangeFilter}
+              value={filter?.end_date}
             />
           </div>
           <div className="px-4 mb-5 sm:mb-0">
@@ -168,28 +171,9 @@ const BillingHistory: React.FC = () => {
               placeholder="Auto search domain list"
               className="serach-input-2"
               name="domain_id"
+              onChange={handleChangeFilter}
+              value={filter?.domain_id}
             />
-            {
-              domainList.length > 0 ?
-              (
-                <div
-                  className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b`}
-                >
-                  {domainList.map((item, index) => {
-                    return (
-                      <a
-                        key={index}
-                        className={`font-inter-16px-400 pl-4 py-1 ${
-                          index != 0 && `border-t border-white`
-                        }`}
-                      >
-                        {item}
-                      </a>
-                    );
-                  })}
-                </div>
-              ) : null
-            }
           </div>
           <div className="px-4 mb-5 sm:mb-0 flex flex-row">
             <input
@@ -197,14 +181,28 @@ const BillingHistory: React.FC = () => {
               className="serach-input-3"
               name="search_data"
               placeholder="Transaction ID, customer name"
-              onChange={handleChangeFilter}
+              onChange={e => {setSearchData(e.target.value)}}
+              value={searchData}
             />
             <button
               type="button"
               className="btn-green-no-radius"
+              onClick={() => {
+                setFilter({
+                  ...filter,
+                  search_data: searchData
+                })
+              }}
             >Search</button>
 
-            <button className="ml-1">
+            <button
+              className="ml-1"
+              type="button"
+              onClick={() => {
+                setFilter(initialFilter);
+                setSearchData("");
+              }}
+            >
               <FilterX
                 className="text-[20px] text-custom-green"
               />
@@ -298,8 +296,23 @@ const BillingHistory: React.FC = () => {
         </table>
       </div>
 
-      <div className="flex flex-col mt-12 relative bottom-2 right-0">
-        <div className="flex justify-end mb-2">
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
             disabled={currentPage === 0}

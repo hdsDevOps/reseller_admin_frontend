@@ -12,7 +12,7 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 const initialFaq = {
   question: '',
   answer: '',
-  order: '',
+  order: 0,
 }
 
 const Faqs: React.FC = () => {
@@ -96,7 +96,11 @@ const Faqs: React.FC = () => {
   const addFaqSubmit = async() => {
     if(validateForm()) {
       try {
-        const addResult = await dispatch(addFaqThunk(newFaq)).unwrap();
+        const addResult = await dispatch(addFaqThunk({
+          question: newFaq?.question,
+          answer: newFaq?.answer,
+          order: parseInt(newFaq?.order)
+        })).unwrap();
         setTimeout(() => {
           toast.success(addResult?.message)
         }, 1000);
@@ -120,7 +124,7 @@ const Faqs: React.FC = () => {
           record_id: newFaq?.record_id,
           question: newFaq?.question,
           answer: newFaq?.answer,
-          order: newFaq?.order
+          order: parseInt(newFaq?.order)
         })).unwrap();
         setTimeout(() => {
           toast.success(editResult?.message)

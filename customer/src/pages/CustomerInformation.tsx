@@ -15,7 +15,7 @@ const CustomerInformation: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const [customer, setCustomer] = useState(location?.state);
+  const [customer, setCustomer] = useState(location?.state?.item);
   console.log(customer, 'customer information');
   
   const bottomData = [

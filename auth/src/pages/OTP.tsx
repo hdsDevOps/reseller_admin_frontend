@@ -38,7 +38,7 @@ const OTP: React.FC = () => {
   const [otp5, setOtp5] = useState<string>("");
   const [otp6, setOtp6] = useState<string>("");
 
-  const [ time, setTime ] = useState(150);
+  const [ time, setTime ] = useState(0);
   const [ seconds, setSeconds ] = useState(0);
   const [ minutes, setMinutes ] = useState(0);
 

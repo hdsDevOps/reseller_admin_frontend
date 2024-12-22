@@ -8,7 +8,7 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, editCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, editCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getCustomerCountThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -22,6 +22,7 @@ const EditCustomerGroup: React.FC = () =>  {
   
   const [customerGroup, setCustomerGroup] = useState(location.state);
   console.log(customerGroup);
+  const [customerCount, setCustomerCount] = useState<number>(parseInt(location.state.no_customer));
   
   const updateCustomerGroup = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setCustomerGroup({
@@ -190,6 +191,41 @@ const EditCustomerGroup: React.FC = () =>  {
   useEffect(() => {
     getSubscriptonPlansList();
   }, []);
+  
+  const getCustomerCount = async() => {
+    try {
+      const result = await dispatch(getCustomerCountThunk({
+        country: customerGroup?.country,
+        state_name: customerGroup?.region,
+        plan: customerGroup?.plan,
+        start_date: customerGroup?.start_date,
+        end_date: customerGroup?.end_date,
+        license_usage: customerGroup?.license_usage
+      })).unwrap();
+      setCustomerCount(parseInt(result?.customer_count));
+    } catch (error) {
+      setCustomerCount(0);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    getCustomerCount();
+  }, [customerGroup?.country, customerGroup?.region, customerGroup?.plan, customerGroup?.start_date, customerGroup?.end_date, customerGroup?.license_usage]);
+
+  useEffect(() => {
+    setCustomerGroup({
+      ...customerGroup,
+      no_customer: customerCount
+    })
+  }, [customerCount]);
 
   const dateToIsoString = (date) => {
     const newDate = new Date(date);
@@ -420,7 +456,7 @@ const EditCustomerGroup: React.FC = () =>  {
                       name={item.name}
                       className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                       disabled
-                      value={customerGroup?.no_customer}
+                      value={customerCount}
                     />
                   </div>
                 )
