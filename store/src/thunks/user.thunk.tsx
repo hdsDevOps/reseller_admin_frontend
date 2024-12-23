@@ -597,8 +597,8 @@ export const deletePlanAndPriceThunk = createAsyncThunk(
 
 export const getBillingHistoryThunk = createAsyncThunk(
   "users/getBillingHistory",
-  async ({start_date, end_date, domain_id, search_data}: any) => {
-    return await userApis.getBillingHistoryApi(start_date, end_date, domain_id, search_data);
+  async ({start_date, end_date, domain, search_data}: any) => {
+    return await userApis.getBillingHistoryApi(start_date, end_date, domain, search_data);
   }
 );
 

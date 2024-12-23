@@ -91,7 +91,8 @@ const initialYearlySpendingStatistics = {
 };
 
 const Dashboard: React.FC = () => {
-  const { userDetails } = useAppSelector((state) => state.auth);
+  const { userDetails, defaultCurrency } = useAppSelector((state) => state.auth);
+  // console.log("defaultCurrency", defaultCurrency);
   // console.log("userDetails...", userDetails);
   const pdfRef = useRef();
   const location = useLocation();
@@ -107,6 +108,25 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     setCurrentRevenueData(yearlySpendingStatistics.length>0 ? yearlySpendingStatistics[currentIndex] : initialYearlySpendingStatistics);
   }, [yearlySpendingStatistics, currentIndex]);
+
+  const currencyList = [
+    { name: 'EUR', logo: '€',},
+    { name: 'AUD', logo: 'A$',},
+    { name: 'USD', logo: '$',},
+    { name: 'NGN', logo: 'N₦',},
+    { name: 'GBP', logo: '£',},
+    { name: 'CAD', logo: 'C$',},
+    { name: 'INR', logo: '₹',},
+  ];
+
+  const currencyLogo = () => {
+    if(defaultCurrency !== '' || defaultCurrency !== null || defaultCurrency !== undefined) {
+      const data = currencyList.find(item => item?.name === defaultCurrency);
+      return data?.logo;
+    } else {
+      return "$";
+    }
+  };
 
   const changeIndex = (buttonType: string) => {
     const length = yearlySpendingStatistics.length;
@@ -155,7 +175,7 @@ const Dashboard: React.FC = () => {
     const getMonltyRevenueData = async() => {
       try {
         const result = await dispatch(monthlyRevenueDataThunk()).unwrap();
-        // setMonthlyRevenueData(result?.result);
+        setMonthlyRevenueData(result?.result);
       } catch (error) {
         setMonthlyRevenueData(initialMonthlyRevenueData);
         if(error?.message == "Request failed with status code 401") {
@@ -176,7 +196,7 @@ const Dashboard: React.FC = () => {
     const getYearlySpendingStatistics = async() => {
       try {
         const result = await dispatch(yearlySpendingStatisticsThunk()).unwrap();
-        // setYearlySpendingStatistics(result?.result);
+        setYearlySpendingStatistics(result?.result);
       } catch (error) {
         setYearlySpendingStatistics([initialYearlySpendingStatistics]);
         if(error?.message == "Request failed with status code 401") {
@@ -302,7 +322,7 @@ const Dashboard: React.FC = () => {
                     className="flex flex-col"
                   >
                     <p className="font-inter font-normal text-xs text-black opacity-50 text-nowrap">{rev.label}</p>
-                    <h4 className="font-inter font-medium text-2xl text-[#434D64]">{rev.name === "last_month_revenue" ? "$" : rev.name === "current_month_recurring_income" ? "$" : ""}{monthlyRevenueData[rev.name]}</h4>
+                    <h4 className="font-inter font-medium text-2xl text-[#434D64]">{rev.name === "last_month_revenue" ? currencyLogo() : rev.name === "current_month_recurring_income" ? currencyLogo() : ""}{monthlyRevenueData[rev.name]}</h4>
                   </div>
                 </div>
               )

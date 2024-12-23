@@ -883,11 +883,11 @@ async function deletePlanAndPriceApi(
 async function getBillingHistoryApi(
   start_date: string,
   end_date: string,
-  domain_id: string,
+  domain: string,
   search_data: string
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.getBillingHistory, {start_date, end_date, domain_id, search_data});
+    const result = await postApiCall(endPoints.getBillingHistory, {start_date, end_date, domain, search_data});
     return result;
   } catch (error: any) {
     throw error;

@@ -27,6 +27,9 @@ function EditCustomer() {
   const navigate = useNavigate();
   const location = useLocation();
   const flagRef = useRef(null);
+  const countryRef = useRef(null);
+  const stateRef = useRef(null);
+  const cityRef = useRef(null);
   const dispatch = useAppDispatch();
   
   const [customer, setCustomer] = useState(location.state);
@@ -45,7 +48,8 @@ function EditCustomer() {
   // console.log("countries...", countries);
   // console.log("states...", states);
   // console.log("cities...", cities);
-  // console.log({countryName, stateName, cityName})
+  // console.log({countryName, stateName, cityName});
+  console.log({country, state, city});
 
   // useEffect(() => {
   //   setCustomer({
@@ -53,6 +57,56 @@ function EditCustomer() {
   //     phone_no: `${phoneCode}${phoneNumber}`
   //   })
   // }, [phoneNumber, phoneCode]);
+  
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState<Boolean>(false);
+  const [stateDropdownOpen, setStateDropdownOpen] = useState<Boolean>(false);
+  const [cityDropdownOpen, setCityDropdownOpen] = useState<Boolean>(false);
+  // console.log("isDropdownOpen", isDropdownOpen);
+  
+  const handleClickOutsideCountry = (event: MouseEvent) => {
+    if(countryRef.current && !countryRef.current.contains(event.target as Node)) {
+      setCountryDropdownOpen(false);
+    }
+  };
+  const handleClickOutsideState = (event: MouseEvent) => {
+    if(stateRef.current && !stateRef.current.contains(event.target as Node)) {
+      setStateDropdownOpen(false);
+    }
+  };
+  const handleClickOutsideCity = (event: MouseEvent) => {
+    if(cityRef.current && !cityRef.current.contains(event.target as Node)) {
+      setCityDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutsideCountry);
+    document.addEventListener('mousedown', handleClickOutsideState);
+    document.addEventListener('mousedown', handleClickOutsideCity);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideCountry);
+      document.removeEventListener('mousedown', handleClickOutsideState);
+      document.removeEventListener('mousedown', handleClickOutsideCity);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(countries.length > 0 && countryName !== "") {
+      setCountryDropdownOpen(true);
+    }
+  }, [countries, countryName]);
+
+  useEffect(() => {
+    if(states.length > 0 && stateName !== "") {
+      setStateDropdownOpen(true);
+    }
+  }, [states, stateName]);
+
+  useEffect(() => {
+    if(cities.length > 0 && cityName !== "") {
+      setCityDropdownOpen(true);
+    }
+  }, [cities, cityName]);
   
   const updateCustomer = e => {
     setCustomer({
@@ -130,9 +184,27 @@ function EditCustomer() {
 
   useEffect(() => {
     if(location.state) {
-      const data = location.state
+      const data = location.state;
+      if(data?.country !== "" && countries.length > 0) {
+        const countryData = countries?.find(item => item?.name === data?.country);
+        setCountry(countryData);
+        if(data?.state_name !== "" && states.length > 0) {
+          const statesData = states?.find(item2 => item2?.name === data?.state_name);
+          setState(statesData)
+          if(data?.city !== "" && cities.length > 0) {
+            const cityData = cities?.find(item3 => item3?.name === data?.city);
+            setCity(cityData)
+          } else {
+            setCity({});
+          }
+        } else {
+          setState({});
+        }
+      } else {
+        setCountry({});
+      }
     }
-  }, [location.state])
+  }, [location.state, countries, states, cities]);
 
   const formList = [
     {label: 'First name', type: 'text', name: 'first_name', placeholder: 'Enter the first name',},
@@ -177,21 +249,6 @@ function EditCustomer() {
       setPhoneCode('+1');
     }
   }, [customer?.country]);
-
-  // useEffect(() => {
-  //   const phoneNo = customer?.phone_no;
-  //   if(phoneNo){
-  //     for(const { dial_code } of CountryList){
-  //       if(phoneNo.startsWith(dial_code)){
-  //         const nationalNumber = phoneNo.slice(dial_code.length);
-  //         console.log(nationalNumber, '96')
-  //         setPhoneNumber(parseInt(nationalNumber));
-  //         setPhoneCode(dial_code);
-  //         return;
-  //       }
-  //     }
-  //   }
-  // }, []);
 
   const handleOptionClick = (option: { name: string; dial_code: string; code: string; }) => {
     setSelectedOption(option);
@@ -332,6 +389,7 @@ function EditCustomer() {
                       <div
                         key={index}
                         className='flex flex-col px-2 mb-2 relative'
+                        ref={countryRef}
                       >
                         <label
                           className='search-input-label'
@@ -357,10 +415,11 @@ function EditCustomer() {
                           }}
                           value={customer?.country || countryName}
                           required
+                          onFocus={() => {setCountryDropdownOpen(true)}}
                         />
                         {
-                          countryName?.length>2 && (
-                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                          countryDropdownOpen && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2'>
                               {
                                 countries?.filter(name => name?.name.toLowerCase().includes(countryName.toLowerCase())).map((country, idx) => (
                                   <p
@@ -378,6 +437,7 @@ function EditCustomer() {
                                       setCountry(country);
                                       setState({});
                                       setCity({});
+                                      setCountryDropdownOpen(false);
                                     }}
                                   >{country?.name}</p>
                                 ))
@@ -392,6 +452,7 @@ function EditCustomer() {
                       <div
                         key={index}
                         className='flex flex-col px-2 mb-2 relative'
+                        ref={stateRef}
                       >
                         <label
                           className='search-input-label'
@@ -414,10 +475,11 @@ function EditCustomer() {
                           }}
                           value={customer?.state_name || stateName}
                           required={states?.length > 0 ? true : false}
+                          onFocus={() => {setStateDropdownOpen(true)}}
                         />
                         {
-                          stateName?.length>2 && (
-                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                          stateDropdownOpen && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2'>
                               {
                                 states?.filter(name => name?.name.toLowerCase().includes(stateName.toLowerCase())).map((region, idx) => (
                                   <p
@@ -433,6 +495,7 @@ function EditCustomer() {
                                       setCityName("");
                                       setState(region);
                                       setCity({});
+                                      setStateDropdownOpen(false);
                                     }}
                                   >{region?.name}</p>
                                 ))
@@ -446,7 +509,8 @@ function EditCustomer() {
                     return(
                       <div
                         key={index}
-                        className='flex flex-col px-2 mb-2'
+                        className='flex flex-col px-2 mb-2 relative'
+                        ref={cityRef}
                       >
                         <label
                           className='search-input-label'
@@ -466,10 +530,11 @@ function EditCustomer() {
                           }}
                           value={customer?.city || cityName}
                           required={cities?.length > 0 ? true : false}
+                          onFocus={() => {setCityDropdownOpen(true)}}
                         />
                         {
-                          cityName?.length>2 && (
-                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                          cityDropdownOpen && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2'>
                               {
                                 cities?.filter(name => name?.name.toLowerCase().includes(cityName.toLowerCase())).map((city_name, idx) => (
                                   <p
@@ -482,6 +547,7 @@ function EditCustomer() {
                                       });
                                       setCityName("");
                                       setCity(city_name);
+                                      setCityDropdownOpen(false);
                                     }}
                                   >{city_name?.name}</p>
                                 ))

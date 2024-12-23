@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
 import { ArrowRightLeft, Ellipsis } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getNotificationTemplateThunk, sendEmailToCustomerThunk } from 'store/user.thunk';
+import { setCustomerFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";
@@ -28,6 +29,7 @@ interface Filter {
 
 const CustomerManagement: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const filterRef = useRef();
   const intialFilter:Filter= {
@@ -49,11 +51,30 @@ const CustomerManagement: React.FC = () => {
     renewal_date: "",
     domain: ""
   };
+  const {customerFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  // console.log('customerFilters', customerFilters);
   const [filterShow, setFilterShow] = useState(false);
-  const [filters, setFilters] = useState(intialFilter);
-  console.log("filters...", filters);
+  const [filters, setFilters] = useState(customerFilters === null ? intialFilter : customerFilters);
+  // console.log("filters...", filters);
   
-  const [filters2, setFilters2] = useState(intialFilter2);
+  const [filters2, setFilters2] = useState(customerFilters === null ? intialFilter2 : {
+    country: customerFilters?.country || "",
+    state_name: customerFilters?.state_name || "",
+    authentication: customerFilters?.authentication || "",
+    license_usage: customerFilters?.license_usage || "",
+    subscritption_date: customerFilters?.subscritption_date || "",
+    renewal_date: customerFilters?.renewal_date || "",
+    domain: customerFilters?.domain || ""
+  });
+  // console.log("filters2...", filters2);
+
+  useEffect(() => {
+    const setCustomerFiltersSlice = async() => {
+      await dispatch(setCustomerFiltersStatus(filters)).unwrap();
+    }
+
+    setCustomerFiltersSlice();
+  }, [filters]);
   
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
@@ -74,20 +95,44 @@ const CustomerManagement: React.FC = () => {
   const [selectAllCount, setSelectAllCount] = useState<number>(0);
   const [selectAllPage, setSelectAllPage] = useState<number>(0);
   const [authorization, setAuthorization] = useState("");
-  const [countryList, setCountryList] = useState([]);
-  const [regionList, setRegionList] = useState([]);
   const [notificationTemplates, setNotificationTemplates] = useState([]);
   // console.log("notificationTemplates...", notificationTemplates);
   const [notificationId, setNotificationId] = useState("");
   
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(customerFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(customerFilters === null ? 20 : itemsPerPageNumber);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = customerList?.slice(indexOfFirstItem, indexOfLastItem);
   // console.log("currentItems...", currentItems);
   const totalPages = Math.ceil(customerList.length / itemsPerPage);
-  
+  // console.log({currentPage, totalPages, lenght: currentItems?.length});
+
+  useEffect(() => {
+    if(customerList?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, customerList]);
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
   
   useEffect(() => {
     if(authorization == "true"){
@@ -138,6 +183,88 @@ const CustomerManagement: React.FC = () => {
     getCustomerList();
   }, [filters]);
 
+  const [countryList, setCountryList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
+  // console.log({countryList, regionList})
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  // console.log({countries, states});
+  const [country, setCountry] = useState({});
+  const [state, setState] = useState({});
+  // console.log({country, state});
+  useEffect(() => {
+    var config = {
+      method: 'get',
+      url: 'https://api.countrystatecity.in/v1/countries',
+      headers: {
+        'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+      }
+    };
+    axios(config)
+      .then(res => {
+        setCountries(res.data);
+        // console.log(res.data);
+      })
+      .catch(err => {
+        setCountries([]);
+        console.log("error...", err);
+      })
+  }, []);
+
+  useEffect(() => {
+    if(filters2?.country !== "") {
+      const data = countries.find(country => country?.name === filters2?.country)
+      setCountry(data)
+    } else {
+      setCountry({})
+    }
+  }, [countries, filters2?.country]);
+  
+  useEffect(() => {
+    if(country?.iso2 !== undefined) {
+      var config = {
+        method: 'get',
+        url: `https://api.countrystatecity.in/v1/countries/${country?.iso2}/states`,
+        headers: {
+          'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+        }
+      };
+      axios(config)
+      .then(res => {
+        setStates(res.data);
+      })
+      .catch(err => {
+        setStates([]);
+        console.log("error...", err);
+      })
+    } else {
+      setStates([]);
+    }
+  }, [country]);
+
+  useEffect(() => {
+    const findAvailableStates = async() => {
+      if(states.length > 0 && regionList.length > 0) {
+        const data = [];
+        await regionList?.forEach(element => {
+          states.find(item => {
+            if(item?.name === element) {
+              data.push(item?.name)
+            } else {
+              return;
+            }
+          })
+        })
+        setAvailableStates(data)
+      } else {
+        setAvailableStates([]);
+      }
+    }
+
+    findAvailableStates();
+  }, [states, regionList])
+
   const getCountryList = async() => {
     try {
       const countries = await dispatch(
@@ -145,7 +272,7 @@ const CustomerManagement: React.FC = () => {
       ).unwrap();
       setCountryList(countries.countrylist);
     } catch (error) {
-      // console.log("Error on token");
+      console.log("Error on token")
     }
   }
   
@@ -195,6 +322,14 @@ const CustomerManagement: React.FC = () => {
     setFilters2({
       ...filters2,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFilterCountryChange = (e) => {
+    setFilters2({
+      ...filters2,
+      country: e.target.value,
+      state_name: ""
     });
   };
 
@@ -375,14 +510,13 @@ const CustomerManagement: React.FC = () => {
     }
   };
   
-  // useEffect(() => {
-  //   if(selectAll) {
-  //     const selectedOnPage = currentItems.slice(0, selectAllCount);
-  //     setChecked(selectedOnPage);
-  //   } else {
-  //     setChecked([])
-  //   }
-  // }, [currentItems]);
+  useEffect(() => {
+    if(selectAllCount === checked.length && checked.length > 0) {
+      setSelectAll(true);
+    } else {
+      setSelectAll(false);
+    }
+  }, [currentItems]);
 
   const toggleCheck = (newJson:any) => {
     setChecked((prevChecked) => {
@@ -391,8 +525,6 @@ const CustomerManagement: React.FC = () => {
       if (isChecked) {
         // If found, remove it
         return prevChecked.filter((item) => item?.record_id !== newJson?.record_id);
-      } else if(selectAll && prevChecked.length >= selectAllCount) {
-        return prevChecked;
       } else {
         // If not found, add it
         return [...prevChecked, newJson];
@@ -602,7 +734,7 @@ const CustomerManagement: React.FC = () => {
                       <select
                         className="select-input"
                         name="country"
-                        onChange={handleFilterChange}
+                        onChange={handleFilterCountryChange}
                         value={filters2.country}
                       >
                         <option selected value="">
@@ -626,7 +758,7 @@ const CustomerManagement: React.FC = () => {
                           Select Region
                         </option>
                         {
-                          regionList && regionList.map((region, number) => (
+                          availableStates && availableStates?.map((region, number) => (
                             <option key={number} value={region}>{region}</option>
                           ))
                         }

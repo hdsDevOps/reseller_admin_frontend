@@ -122,32 +122,78 @@ const FooterSection = () => {
     })
   };
 
+  // const validateForm = () => {
+  //   // Check for spaces only in any field
+  //   for (const key in customer) {
+  //     if (customer[key].trim() === '') {
+  //       return false;
+  //     } else {
+  //       if(customer?.phone_no?.length < 11) {
+  //         return false;
+  //       }
+  //       return true;
+  //     }
+  //   }
+  //   return true;
+  // };
+
+  const validateForm = () => {
+    if (footerData?.marketing_section_data?.some(element => 
+      !element?.name?.trim() || !element?.value?.trim()
+    )) {
+      return false;
+    }
+    if (footerData?.website_section_data?.some(element => 
+      !element?.name?.trim() || !element?.value?.trim()
+    )) {
+      return false;
+    }
+    if (!footerData?.contact_us_section_data?.name?.trim() || 
+      !footerData?.contact_us_section_data?.value?.trim()) {
+      return false;
+    }
+    if (!footerData?.newsletter_section_data?.name?.trim() || 
+      !footerData?.newsletter_section_data?.value?.trim()) {
+      return false;
+    }
+    if (footerData?.social_section_data?.some(element => 
+      !element?.name?.trim() || !element?.value?.trim()
+    )) {
+      return false;
+    }
+    return true;
+  };
+
   const updateFooterData = async(e) => {
     e.preventDefault();
-    try {
-      const updateFooter = await dispatch(updateFooterThunk({
-        marketing_section_data : footerData?.marketing_section_data,
-        website_section_data: footerData?.website_section_data,
-        contact_us_section_data: footerData?.contact_us_section_data,
-        newsletter_section_data: footerData?.newsletter_section_data,
-        social_section_data: footerData?.social_section_data,
-      })).unwrap();
-      setTimeout(() => {
-        toast.success(updateFooter?.message);
-      }, 1000);
-      setShowModal(false);
-    } catch (error) {
-      toast.error("Error updating footer");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(validateForm()) {
+      try {
+        const updateFooter = await dispatch(updateFooterThunk({
+          marketing_section_data : footerData?.marketing_section_data,
+          website_section_data: footerData?.website_section_data,
+          contact_us_section_data: footerData?.contact_us_section_data,
+          newsletter_section_data: footerData?.newsletter_section_data,
+          social_section_data: footerData?.social_section_data,
+        })).unwrap();
+        setTimeout(() => {
+          toast.success(updateFooter?.message);
+        }, 1000);
+        setShowModal(false);
+      } catch (error) {
+        toast.error("Error updating footer");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+      } finally {
+        fetchFooterData();
       }
-    } finally {
-      fetchFooterData();
+    } else {
+      toast.warning("Please fill all the fields")
     }
   }
 

@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 // import { IoIosArrowDown } from "react-icons/io";
-import { FaDownload } from "react-icons/fa6";
+import { FaChevronDown, FaDownload } from "react-icons/fa6";
 // import { IoCalendarClearOutline } from "react-icons/io5";
 // import DatePicker from "react-datepicker";
 // import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { getBillingHistoryThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from "store/hooks";
+import { setBillingHistoryFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ArrowRightLeft, FilterX } from 'lucide-react';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -17,13 +18,15 @@ import { format } from 'date-fns';
 const initialFilter = {
   start_date: "",
   end_date: "",
-  domain_id: "",
+  domain: "",
   search_data: ""
 }
 
 const BillingHistory: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const filterRef = useRef(null);
+  const { billingHistoryFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -33,13 +36,24 @@ const BillingHistory: React.FC = () => {
   // console.log("pdfRef...", pdfRef.current);
   const [pdfDownload, setPdfDownload] = useState('hidden');
 
-  const [filter, setFilter] = useState(initialFilter);
+  const [filter, setFilter] = useState(billingHistoryFilters === null ? initialFilter : billingHistoryFilters);
   // console.log("filter...", filter);
+
+  useEffect(() => {
+    const setBillingHistoryFiltersSlice = async() => {
+      await dispatch(setBillingHistoryFiltersStatus(filter));
+    }
+
+    setBillingHistoryFiltersSlice();
+  }, [filter]);
+
   const [searchData, setSearchData] = useState("");
   
 
   const [billingHistory, setBillingHistory] = useState([]);
   console.log("billingHistory...", billingHistory);
+  const [initialBillingHistory, setInitialBillingHistory] = useState([]);
+
 
   const tableHeads = [
     {name: "transaction_id", label: "Transaction ID"},
@@ -75,6 +89,27 @@ const BillingHistory: React.FC = () => {
     fetchBillingHistory();
   }, [filter]);
 
+  const fetchInitialBillingHistory = async() => {
+    try {
+      const result = await dispatch(getBillingHistoryThunk(initialFilter)).unwrap();
+      setInitialBillingHistory(result?.data);
+    } catch (error) {
+      setBillingHistory([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchInitialBillingHistory();
+  }, []);
+
   const handleChangeFilter = (e) => {
     setFilter({
       ...filter,
@@ -82,12 +117,39 @@ const BillingHistory: React.FC = () => {
     });
   };
   
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(billingHistoryFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(billingHistoryFilters === null ? 20 : itemsPerPageNumber);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = billingHistory.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(billingHistory.length / itemsPerPage);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    if(billingHistory?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, billingHistory]);
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
 
   const downloadInvoice = async() => {
     await setPdfDownload("fixed z-[9999] left-[-9999px]");
@@ -123,6 +185,34 @@ const BillingHistory: React.FC = () => {
     return formattedDate;
   };
 
+  const [search, setSearch] = useState("");
+  // console.log("search", search);
+  
+  const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
+  // console.log("isDropdownOpen", isDropdownOpen);
+  
+  const handleClickOutsideInput = (event: MouseEvent) => {
+    if(filterRef.current && !filterRef.current.contains(event.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutsideInput);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideInput);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(initialBillingHistory?.length === 0) {
+      setIsDropdownOpen(false);
+    }
+    if(search.length > 0) {
+      setIsDropdownOpen(true)
+    }
+  }, [initialBillingHistory, search])
+
   return (
     <div className="grid grid-cols-1">
       <div className="flex-row-between-responsive">
@@ -132,7 +222,7 @@ const BillingHistory: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 mt-14 sm:mb-[51px] mb-[31px]">
-        <div className="lg:col-start-2 grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 main-sm:w-[300px] max-sm:mx-auto">
+        <div className="lg:col-start-2 grid xl:grid-cols-4 min-[900px]:grid-cols-2 grid-cols-1 min-md:w-[300px] max-md:mx-auto">
           <div className="px-4 mb-5 sm:mb-0">
             <input
               type="text"
@@ -165,15 +255,46 @@ const BillingHistory: React.FC = () => {
               value={filter?.end_date}
             />
           </div>
-          <div className="px-4 mb-5 sm:mb-0">
+          <div
+            className='px-4 mb-5 sm:mb-0 relative'
+            ref={filterRef}
+          >
             <input
               list="brow"
-              placeholder="Auto search domain list"
+              placeholder="Auto search domain list relative"
               className="serach-input-2"
-              name="domain_id"
-              onChange={handleChangeFilter}
-              value={filter?.domain_id}
+              name="domain"
+              onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setSearch(e.target.value);}}
+              value={search || filter?.domain}
+              onFocus={() => {setIsDropdownOpen(true)}}
             />
+            <div className="absolute -mt-7 w-full z-10 pointer-events-none">
+              <FaChevronDown className="ml-auto mr-10" />
+            </div>
+            {
+              isDropdownOpen === true && initialBillingHistory?.filter(history => history?.domain.toLowerCase().includes(search.toLowerCase())).length > 0 && (
+                <div className='absolute flex flex-col py-1 2xl:w-[90%] min-[1450px]:w-[89%] min-[1350px]:w-[88%] xl:w-[87%] min-[900px]:w-[90%] md:w-[94%] min-[415px]:w-[90%] w-[88%] bg-custom-white rounded-b max-h-40 overflow-y-auto z-[9999] border'>
+                  {
+                    initialBillingHistory?.filter(history => history?.domain.toLowerCase().includes(search.toLowerCase())).map((item, index) => (
+                      <p
+                        key={index}
+                        className={`font-inter-16px-400 pl-4 py-1 ${
+                          index !== 0 ? "border-t border-white" : ""
+                        } cursor-pointer`}
+                        onClick={() => {
+                          setSearch("");
+                          setFilter({
+                            ...filter,
+                            domain: item?.domain
+                          });
+                          setIsDropdownOpen(false);
+                        }}
+                      >{item?.domain}</p>
+                    ))
+                  }
+                </div>
+              )
+            }
           </div>
           <div className="px-4 mb-5 sm:mb-0 flex flex-row">
             <input

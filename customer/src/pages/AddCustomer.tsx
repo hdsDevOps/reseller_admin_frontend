@@ -23,6 +23,9 @@ import "react-phone-input-2/lib/style.css";
 const AddCustomer: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const countryRef = useRef(null);
+  const stateRef = useRef(null);
+  const cityRef = useRef(null);
   const [customer, setCustomer] = useState({
     first_name: '',
     last_name: '',
@@ -54,6 +57,56 @@ const AddCustomer: React.FC = () => {
   // console.log("states...", states);
   // console.log("cities...", cities);
   // console.log({countryName, stateName, cityName});
+
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState<Boolean>(false);
+  const [stateDropdownOpen, setStateDropdownOpen] = useState<Boolean>(false);
+  const [cityDropdownOpen, setCityDropdownOpen] = useState<Boolean>(false);
+  // console.log("isDropdownOpen", isDropdownOpen);
+  
+  const handleClickOutsideCountry = (event: MouseEvent) => {
+    if(countryRef.current && !countryRef.current.contains(event.target as Node)) {
+      setCountryDropdownOpen(false);
+    }
+  };
+  const handleClickOutsideState = (event: MouseEvent) => {
+    if(stateRef.current && !stateRef.current.contains(event.target as Node)) {
+      setStateDropdownOpen(false);
+    }
+  };
+  const handleClickOutsideCity = (event: MouseEvent) => {
+    if(cityRef.current && !cityRef.current.contains(event.target as Node)) {
+      setCityDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutsideCountry);
+    document.addEventListener('mousedown', handleClickOutsideState);
+    document.addEventListener('mousedown', handleClickOutsideCity);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideCountry);
+      document.removeEventListener('mousedown', handleClickOutsideState);
+      document.removeEventListener('mousedown', handleClickOutsideCity);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(countries.length > 0 && countryName !== "") {
+      setCountryDropdownOpen(true);
+    }
+  }, [countries, countryName]);
+
+  useEffect(() => {
+    if(states.length > 0 && stateName !== "") {
+      setStateDropdownOpen(true);
+    }
+  }, [states, stateName]);
+
+  useEffect(() => {
+    if(cities.length > 0 && cityName !== "") {
+      setCityDropdownOpen(true);
+    }
+  }, [cities, cityName]);
   
   useEffect(() => {
     setCustomer({
@@ -293,33 +346,6 @@ const AddCustomer: React.FC = () => {
                         <label
                           className='search-input-label'
                         >{item.label}</label>
-                        {/* <div
-                          key={index}
-                          className="search-input-text flex flex-row"
-                        >
-                          <div
-                            className='w-[60px] flex flex-col'
-                          >
-                            <div className="relative w-[40px] h-full flex mx-auto items-center justify-between border-0 cursor-pointer"
-                              onClick={() => setIsOpen(!isOpen)}
-                            >
-                              <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
-                            </div>
-                          </div>
-                          <p
-                            className='w-fit my-auto mx-1'
-                          >{selectedOption?.dial_code}</p>
-                          <input
-                            type='number'
-                            className='w-full focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                            onChange={e => {
-                              setPhoneNumber(parseInt(e.target.value))
-                            }}
-                            placeholder={item?.placeholder}
-                            required
-                          />
-                          
-                        </div> */}
                         <PhoneInput
                           country={selectedOption?.code?.toLowerCase()}
                           onChange={handlePhoneChange}
@@ -342,6 +368,7 @@ const AddCustomer: React.FC = () => {
                       <div
                         key={index}
                         className='flex flex-col px-2 mb-2 relative'
+                        ref={countryRef}
                       >
                         <label
                           className='search-input-label'
@@ -367,10 +394,11 @@ const AddCustomer: React.FC = () => {
                           }}
                           value={customer?.country || countryName}
                           required
+                          onFocus={() => {setCountryDropdownOpen(true)}}
                         />
                         {
-                          countryName?.length>2 && (
-                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                          countryDropdownOpen && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[10] px-2 border border-[#8A8A8A1A] rounded-md'>
                               {
                                 countries?.filter(name => name?.name.toLowerCase().includes(countryName.toLowerCase())).map((country, idx) => (
                                   <p
@@ -388,6 +416,7 @@ const AddCustomer: React.FC = () => {
                                       setCountry(country);
                                       setState({});
                                       setCity({});
+                                      setCountryDropdownOpen(false);
                                     }}
                                   >{country?.name}</p>
                                 ))
@@ -403,6 +432,7 @@ const AddCustomer: React.FC = () => {
                       <div
                         key={index}
                         className='flex flex-col px-2 mb-2 relative'
+                        ref={stateRef}
                       >
                         <label
                           className='search-input-label'
@@ -425,10 +455,11 @@ const AddCustomer: React.FC = () => {
                           }}
                           value={customer?.state_name || stateName}
                           required={states?.length > 0 ? true : false}
+                          onFocus={() => {setStateDropdownOpen(true)}}
                         />
                         {
-                          stateName?.length>2 && (
-                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                          stateDropdownOpen && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2 border border-[#8A8A8A1A] rounded-md'>
                               {
                                 states?.filter(name => name?.name.toLowerCase().includes(stateName.toLowerCase())).map((region, idx) => (
                                   <p
@@ -444,6 +475,7 @@ const AddCustomer: React.FC = () => {
                                       setCityName("");
                                       setState(region);
                                       setCity({});
+                                      setStateDropdownOpen(false);
                                     }}
                                   >{region?.name}</p>
                                 ))
@@ -458,7 +490,8 @@ const AddCustomer: React.FC = () => {
                     return(
                       <div
                         key={index}
-                        className='flex flex-col px-2 mb-2'
+                        className='flex flex-col px-2 mb-2 relative'
+                        ref={cityRef}
                       >
                         <label
                           className='search-input-label'
@@ -478,10 +511,11 @@ const AddCustomer: React.FC = () => {
                           }}
                           value={customer?.city || cityName}
                           required={cities?.length > 0 ? true : false}
+                          onFocus={() => {setCityDropdownOpen(true)}}
                         />
                         {
-                          cityName?.length>2 && (
-                            <div className='w-full max-h-32 absolute mt-14 bg-white overflow-y-auto z-[100] px-2'>
+                          cityDropdownOpen && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2 border border-[#8A8A8A1A] rounded-md'>
                               {
                                 cities?.filter(name => name?.name.toLowerCase().includes(cityName.toLowerCase())).map((city_name, idx) => (
                                   <p
@@ -494,6 +528,7 @@ const AddCustomer: React.FC = () => {
                                       });
                                       setCityName("");
                                       setCity(city_name);
+                                      setCityDropdownOpen(false);
                                     }}
                                   >{city_name?.name}</p>
                                 ))

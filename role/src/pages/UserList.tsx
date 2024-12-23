@@ -11,8 +11,9 @@ import {
 } from "react-icons/io5";
 import UserListData, { User } from "../components/UserListData";
 import '../styles/styles.css';
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { getRolesThunk, getUsersThunk, addUsersThunk, updateUsersThunk, deleteUsersThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { setUserListFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,11 +28,21 @@ const UserList = () => {
   const modalRef = useRef();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { userListFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add');
   const [users, setUsers] = useState([]);
   // console.log("users...", users);
-  const [userFilter, setUserFilter] = useState(intialUserFilter);
+  const [userFilter, setUserFilter] = useState(userListFilters === null ? intialUserFilter : userListFilters);
+
+  useEffect(() => {
+    const setUserListFiltersSlice = async() => {
+      await dispatch(setUserListFiltersStatus(userFilter)).unwrap();
+    }
+
+    setUserListFiltersSlice();
+  }, [userFilter]);
+
   const [searchData, setSearchData] = useState("");
   const [deleteUserId, setDeleteUserId] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -271,14 +282,41 @@ const UserList = () => {
     });
   };
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(userListFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(userListFilters === null ? 20 : itemsPerPageNumber);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
   
   // Calculate displayed data based on current page
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  useEffect(() => {
+    if(users?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, users]);
 
   return (
     <div className="grid grid-cols-1">

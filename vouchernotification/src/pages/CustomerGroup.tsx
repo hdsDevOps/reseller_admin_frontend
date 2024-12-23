@@ -8,8 +8,9 @@ import Modal from "../components/Modal";
 import "../styles/styles.css";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { format } from "date-fns";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { getCustomerGroupListThunk, deleteCustomerGroupThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { setCustomerGroupFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -21,24 +22,60 @@ const initialFilters = {
 const CustomerGroup: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const {customerGroupFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState();
   const modalRef = useRef();
   const [deleteModal, setDeleteModal] = useState(false);
   const [voucherGroup, setVoucherGroup] = useState({});
   // console.log(voucherGroup);
-  const [filters, setFilters] = useState(initialFilters);
+  const [filters, setFilters] = useState(customerGroupFilters === null ? initialFilters : customerGroupFilters);
   // console.log(filters);
+
+  useEffect(() => {
+    const setCustomerGroupFiltersSlice = async() => {
+      await dispatch(setCustomerGroupFiltersStatus(filters)).unwrap();
+    }
+
+    setCustomerGroupFiltersSlice();
+  }, [filters]);
 
   const [sampleData, setSampleData] = useState([]);
   console.log(sampleData);
   
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(customerGroupFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(customerGroupFilters === null ? 20 : itemsPerPageNumber);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sampleData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(sampleData.length / itemsPerPage);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    if(sampleData?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, sampleData]);
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
 
   const dateFormat = (date) => {
     const newDate = new Date(date);

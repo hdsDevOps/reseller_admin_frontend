@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/styles.css';
 import { getEmailLogsThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from 'store/hooks';
+import { setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
@@ -11,6 +12,7 @@ const EmailLog: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const { currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [emailLogs, setEmailLogs] = useState([]);
   console.log("emailLogs...", emailLogs);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,13 +54,40 @@ const EmailLog: React.FC = () => {
     return formatted;
   };
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageNumber);
   // Calculate displayed data based on current page
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = emailLogs.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(emailLogs.length / itemsPerPage);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    if(emailLogs?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, emailLogs]);
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
 
   return (
     <div className="grid grid-cols-1">

@@ -21,7 +21,10 @@ const ResetPassword: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const email = location.state?.email;
   const otp = location.state?.otp;
-  console.log({email, otp});
+  // console.log({email, otp});
+  const [isHovered, setIsHovered] = useState<Boolean>(false);
+  // console.log(isHovered);
+  
 
   useEffect(() => {
     toast.success("Otp has been verified, please update your password!");
@@ -87,9 +90,34 @@ const ResetPassword: React.FC = () => {
                   <label className="login-label">
                     Password
                   </label>
-                  <RiInformation2Line
-                    className="w-[20px] h-[20px] text-[#12A833] mt-[3px] mr-[17px]"
-                  />
+                  <div className="relative ml-auto">
+                    <RiInformation2Line
+                      className="w-[20px] h-[20px] text-[#12A833] mt-[3px] mr-[17px]"
+                      onMouseEnter={() => {setIsHovered(true)}}
+                      onMouseLeave={() => {setIsHovered(false)}}
+                    />
+                    {
+                      isHovered && (
+                        <div
+                          className="absolute z-[9999] md:-ml-[120px] min-[380px]:-ml-[266px] -ml-[220px] w-full md:bottom-5 min-[380px]:-bottom-10 -bottom-12 md:-right-[5px] left-0"
+                        >
+                          <div className="relative min-[380px]:w-[244px] w-[200px] bg-[#12A833] bottom-5 font-inter font-medium text-xs text-white p-2 rounded-[10px]">Create a Strong Password to Keep Your Account Safe! But your password should be at least 8 characters long.</div>
+                          <div
+                            className="absolute bottom-0 ml-[126px] w-2 h-5 bg-[#12A833] md:block hidden"
+                            style={{
+                              clipPath: "polygon(50% 100%, 0% 0%, 100% 0%)",
+                            }}
+                          ></div>
+                          <div
+                            className="absolute min-[380px]:bottom-10 bottom-12 min-[380px]:ml-[250px] ml-[205px] w-2 h-5 bg-[#12A833] md:hidden block -rotate-90"
+                            style={{
+                              clipPath: "polygon(50% 100%, 0% 0%, 100% 0%)",
+                            }}
+                          ></div>
+                        </div>
+                      )
+                    }
+                  </div>
                 </div>
                 <div className="my-[6px]">
                   <input
