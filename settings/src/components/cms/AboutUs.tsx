@@ -97,9 +97,116 @@ const AboutUs: React.FC = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    if(imageFile3 !== null && typeof imageFile3 !== "string"){
-      const imageUpload3 = await handleImageUpload(imageFile3, 'heading image');
-      if(imageUpload3?.message == "File uploaded successfully!"){
+    if(aboutUs?.heading_section?.heading === "" || aboutUs?.heading_section?.heading.trim() === "" || aboutUs?.block1?.content_title === "" || aboutUs?.block1.content_title.trim() === "" || aboutUs?.block1?.description === "" || aboutUs?.block1?.description.trim() === "" || aboutUs?.block2?.content_title === "" || aboutUs?.block2.content_title.trim() === "" || aboutUs?.block2?.description === "" || aboutUs?.block2?.description.trim() === "") {
+      toast.warning("Please fill all the fields")
+    } else {
+      if(imageFile3 !== null && typeof imageFile3 !== "string"){
+        const imageUpload3 = await handleImageUpload(imageFile3, 'heading image');
+        if(imageUpload3?.message == "File uploaded successfully!"){
+          if(imageFile1 !== null && typeof imageFile1 !== "string"){
+            const imageUpload1 = await handleImageUpload(imageFile1, 'block1 image');
+            if(imageUpload1?.message == "File uploaded successfully!"){
+              if(imageFile2 !== null && typeof imageFile2 !== "string"){
+                const imageUpload2 = await handleImageUpload(imageFile2, 'block2 image');
+                if(imageUpload2?.message == "File uploaded successfully!"){
+                  try {
+                    const updateAboutUs = await dispatch(updateAboutUsThunk({
+                      heading_section: {
+                        heading: aboutUs.heading_section.heading,
+                        image: imageUpload3?.url
+                      },
+                      block1: {
+                        content_title: aboutUs.block1.content_title,
+                        description: aboutUs.block1.description,
+                        image: imageUpload1?.url
+                      },
+                      block2: {
+                        content_title: aboutUs.block2.content_title,
+                        description: aboutUs.block2.description,
+                        image: imageUpload2?.url
+                      }
+                    })).unwrap();
+                    console.log(updateAboutUs);
+                    setTimeout(() => {
+                      toast.success("Successfully updated about us");
+                    }, 1000);
+                  } catch (error) {
+                    toast.error("Error on updating About Us")
+                  } finally {
+                    fetchAboutUs();
+                  }
+                }
+                else{
+                  toast.error(imageUpload2?.message);
+                }
+              }
+              else{
+                try {
+                  const updateAboutUs = await dispatch(updateAboutUsThunk({
+                    heading_section: {
+                      heading: aboutUs.heading_section.heading,
+                      image: imageUpload3?.url
+                    },
+                    block1: {
+                      content_title: aboutUs.block1.content_title,
+                      description: aboutUs.block1.description,
+                      image: imageUpload1?.url
+                    },
+                    block2: {
+                      content_title: aboutUs.block2.content_title,
+                      description: aboutUs.block2.description,
+                      image: aboutUs.block2.image
+                    }
+                  })).unwrap();
+                  console.log(updateAboutUs);
+                  setTimeout(() => {
+                    toast.success("Successfully updated about us");
+                  }, 1000);
+                } catch (error) {
+                  toast.error("Error on updating About Us")
+                } finally {
+                  fetchAboutUs();
+                }
+              }
+            }
+            else{
+              toast.error(imageUpload1?.message);
+            }
+          }
+          else{
+            try {
+              const updateAboutUs = await dispatch(updateAboutUsThunk({
+                heading_section: {
+                  heading: aboutUs.heading_section.heading,
+                  image: imageUpload3?.url
+                },
+                block1: {
+                  content_title: aboutUs.block1.content_title,
+                  description: aboutUs.block1.description,
+                  image: aboutUs.block1.image
+                },
+                block2: {
+                  content_title: aboutUs.block2.content_title,
+                  description: aboutUs.block2.description,
+                  image: aboutUs.block2.image
+                }
+              })).unwrap();
+              console.log(updateAboutUs);
+              setTimeout(() => {
+                toast.success("Successfully updated about us");
+              }, 1000);
+            } catch (error) {
+              toast.error("Error on updating About Us")
+            } finally {
+              fetchAboutUs();
+            }
+          }
+        }
+        else{
+          toast.error(imageUpload3?.message);
+        }
+      }
+      else{
         if(imageFile1 !== null && typeof imageFile1 !== "string"){
           const imageUpload1 = await handleImageUpload(imageFile1, 'block1 image');
           if(imageUpload1?.message == "File uploaded successfully!"){
@@ -110,7 +217,7 @@ const AboutUs: React.FC = () => {
                   const updateAboutUs = await dispatch(updateAboutUsThunk({
                     heading_section: {
                       heading: aboutUs.heading_section.heading,
-                      image: imageUpload3?.url
+                      image: aboutUs.heading_section.image
                     },
                     block1: {
                       content_title: aboutUs.block1.content_title,
@@ -142,7 +249,7 @@ const AboutUs: React.FC = () => {
                 const updateAboutUs = await dispatch(updateAboutUsThunk({
                   heading_section: {
                     heading: aboutUs.heading_section.heading,
-                    image: imageUpload3?.url
+                    image: aboutUs.heading_section.image
                   },
                   block1: {
                     content_title: aboutUs.block1.content_title,
@@ -171,42 +278,6 @@ const AboutUs: React.FC = () => {
           }
         }
         else{
-          try {
-            const updateAboutUs = await dispatch(updateAboutUsThunk({
-              heading_section: {
-                heading: aboutUs.heading_section.heading,
-                image: imageUpload3?.url
-              },
-              block1: {
-                content_title: aboutUs.block1.content_title,
-                description: aboutUs.block1.description,
-                image: aboutUs.block1.image
-              },
-              block2: {
-                content_title: aboutUs.block2.content_title,
-                description: aboutUs.block2.description,
-                image: aboutUs.block2.image
-              }
-            })).unwrap();
-            console.log(updateAboutUs);
-            setTimeout(() => {
-              toast.success("Successfully updated about us");
-            }, 1000);
-          } catch (error) {
-            toast.error("Error on updating About Us")
-          } finally {
-            fetchAboutUs();
-          }
-        }
-      }
-      else{
-        toast.error(imageUpload3?.message);
-      }
-    }
-    else{
-      if(imageFile1 !== null && typeof imageFile1 !== "string"){
-        const imageUpload1 = await handleImageUpload(imageFile1, 'block1 image');
-        if(imageUpload1?.message == "File uploaded successfully!"){
           if(imageFile2 !== null && typeof imageFile2 !== "string"){
             const imageUpload2 = await handleImageUpload(imageFile2, 'block2 image');
             if(imageUpload2?.message == "File uploaded successfully!"){
@@ -219,7 +290,7 @@ const AboutUs: React.FC = () => {
                   block1: {
                     content_title: aboutUs.block1.content_title,
                     description: aboutUs.block1.description,
-                    image: imageUpload1?.url
+                    image: aboutUs.block1.image
                   },
                   block2: {
                     content_title: aboutUs.block2.content_title,
@@ -251,7 +322,7 @@ const AboutUs: React.FC = () => {
                 block1: {
                   content_title: aboutUs.block1.content_title,
                   description: aboutUs.block1.description,
-                  image: imageUpload1?.url
+                  image: aboutUs.block1.image
                 },
                 block2: {
                   content_title: aboutUs.block2.content_title,
@@ -268,73 +339,6 @@ const AboutUs: React.FC = () => {
             } finally {
               fetchAboutUs();
             }
-          }
-        }
-        else{
-          toast.error(imageUpload1?.message);
-        }
-      }
-      else{
-        if(imageFile2 !== null && typeof imageFile2 !== "string"){
-          const imageUpload2 = await handleImageUpload(imageFile2, 'block2 image');
-          if(imageUpload2?.message == "File uploaded successfully!"){
-            try {
-              const updateAboutUs = await dispatch(updateAboutUsThunk({
-                heading_section: {
-                  heading: aboutUs.heading_section.heading,
-                  image: aboutUs.heading_section.image
-                },
-                block1: {
-                  content_title: aboutUs.block1.content_title,
-                  description: aboutUs.block1.description,
-                  image: aboutUs.block1.image
-                },
-                block2: {
-                  content_title: aboutUs.block2.content_title,
-                  description: aboutUs.block2.description,
-                  image: imageUpload2?.url
-                }
-              })).unwrap();
-              console.log(updateAboutUs);
-              setTimeout(() => {
-                toast.success("Successfully updated about us");
-              }, 1000);
-            } catch (error) {
-              toast.error("Error on updating About Us")
-            } finally {
-              fetchAboutUs();
-            }
-          }
-          else{
-            toast.error(imageUpload2?.message);
-          }
-        }
-        else{
-          try {
-            const updateAboutUs = await dispatch(updateAboutUsThunk({
-              heading_section: {
-                heading: aboutUs.heading_section.heading,
-                image: aboutUs.heading_section.image
-              },
-              block1: {
-                content_title: aboutUs.block1.content_title,
-                description: aboutUs.block1.description,
-                image: aboutUs.block1.image
-              },
-              block2: {
-                content_title: aboutUs.block2.content_title,
-                description: aboutUs.block2.description,
-                image: aboutUs.block2.image
-              }
-            })).unwrap();
-            console.log(updateAboutUs);
-            setTimeout(() => {
-              toast.success("Successfully updated about us");
-            }, 1000);
-          } catch (error) {
-            toast.error("Error on updating About Us")
-          } finally {
-            fetchAboutUs();
           }
         }
       }

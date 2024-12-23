@@ -155,7 +155,7 @@
 }
 
 .th-css{
-  @apply opacity-60 text-black font-inter text-[12.8px] text-center font-normal;
+  @apply opacity-60 text-black font-inter text-[12.8px] text-center font-normal text-nowrap px-2;
 }
 
 .td-css{

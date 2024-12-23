@@ -7,10 +7,11 @@ import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css";
 import { MdOutlineCalendarToday } from "react-icons/md";
-import { ChevronDown, ChevronRight, ChevronUp, FilterX, Pencil } from "lucide-react";
+import { ArrowRightLeft, ChevronDown, ChevronRight, ChevronUp, FilterX, Pencil } from "lucide-react";
 import Flag from 'react-world-flags'; // Flag component
 import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, getCustomerListThunk, sendVoucherEmailThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from "store/hooks";
+import { setVoucherFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
@@ -26,10 +27,11 @@ const initialFilters = {
 const VoucherList: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const {voucherFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 20;
+  const [currentPage, setCurrentPage] = useState(voucherFilters === null ? 0: currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(voucherFilters === null ? 20 : itemsPerPageNumber);
   const modalRef = useRef();
   const flagRef = useRef(null);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -53,6 +55,24 @@ const VoucherList: React.FC = () => {
     renewal_date: ""
   });
   // console.log(customerSearch);
+
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage));
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage));
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
 
   const [dropwdownSearch, setDropdownSearch] = useState(false);
   useEffect(() => {
@@ -134,9 +154,21 @@ const VoucherList: React.FC = () => {
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedRadio(e.target.value);
     setCustomerId("");
+    setCustomerGroupName("");
+    setCustomerSearch({
+      ...customerSearch,
+      search_data: "",
+    });
   };
 
-  const tableHeads = [ 'Voucher Code', 'Currency', 'Discount', 'Start Date', 'End Date', 'Actions'];
+  const tableHeads = [
+    {name: "voucher_code", label: "Voucher Code"},
+    {name: "currency", label: "Currency"},
+    {name: "discount_rate", label: "Discount"},
+    {name: "start_date", label: "Start Date"},
+    {name: "end_date", label: "End Dat"},
+    {name: "action", label: "Actions"},
+  ];
 
   const dateFormat = (date) => {
     const milliseconds = parseInt(date?._seconds) * 1000;
@@ -149,7 +181,7 @@ const VoucherList: React.FC = () => {
   const [sampleData,setSampleData] = useState([]);
   // console.log(sampleData);
   
-  const [filters, setFilters] = useState(initialFilters);
+  const [filters, setFilters] = useState(voucherFilters === null ? initialFilters : voucherFilters);
   // console.log("filters....", filters);
 
   const handleFilterChange = e => {
@@ -158,6 +190,14 @@ const VoucherList: React.FC = () => {
       [e.target.name]: e.target.value,
     });
   };
+  
+  useEffect(() => {
+    const setVouhcerFiltersSlice = async() => {
+      await dispatch(setVoucherFiltersStatus(filters));
+    }
+
+    setVouhcerFiltersSlice();
+  }, [filters]);
   
   const getVoucherList = async() => {
     try {
@@ -207,6 +247,16 @@ const VoucherList: React.FC = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sampleData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(sampleData.length / itemsPerPage);
+
+  useEffect(() => {
+    if(sampleData?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, sampleData]);
   
   const [isOpen, setIsOpen] = useState(false);
 
@@ -241,6 +291,21 @@ const VoucherList: React.FC = () => {
       currency: option?.currency_code,
     });
   };
+
+  useEffect(() => {
+    if(voucherFilters === null) {
+      setSelectedOption(initialSelectedOption)
+    } else {
+      const currencyOption = voucherFilters?.currency;
+      if(currencyOption === "") {
+        setSelectedOption(initialSelectedOption);
+      } else {
+        const findOption = currencyOptions.find(item => item?.currency_code === currencyOption);
+        setSelectedOption(findOption);
+        // console.log(findOption);
+      }
+    }
+  }, []);
 
   const handleOutsideClick = (event: MouseEvent) => {
     if (flagRef.current && !flagRef.current.contains(event.target)) {
@@ -347,7 +412,7 @@ const VoucherList: React.FC = () => {
                 <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
               </div>
               <p
-                className="w-full ml-2"
+                className="w-full ml-2 text-nowrap overflow-hidden"
               >{selectedOption?.currency_code} - {selectedOption?.value}</p>
               {
                 isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
@@ -369,7 +434,7 @@ const VoucherList: React.FC = () => {
                       onClick={() => handleOptionClick(option)}
                     >
                       <Flag code={option?.code} style={{width: '30px'}} />
-                      <p className="ml-2">{option?.currency_code} - {option?.value}</p>
+                      <p className="ml-2">{option?.currency_code || "Select"} - {option?.value || "Option"}</p>
                     </div>
                   ))}
                 </div>
@@ -440,7 +505,15 @@ const VoucherList: React.FC = () => {
             <tr>
               {
                 tableHeads.map((head, index) => (
-                  <th key={index} className="th-css-2">{head}</th>
+                  <th key={index} className="th-css-2">
+                    <span>{head.label}</span>
+                    {
+                      head?.name === "action" ? "" :
+                      <span className="ml-1"><button type="button" onClick={() => {
+                        //
+                      }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                    }
+                  </th>
                 ))
               }
             </tr>
@@ -560,8 +633,23 @@ const VoucherList: React.FC = () => {
         )
       }
 
-      <div className="flex flex-col mt-12 relative bottom-2 right-0">
-        <div className="flex justify-end mb-2">
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
             disabled={currentPage === 0}

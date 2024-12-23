@@ -22,7 +22,7 @@ const HeaderSection = () => {
   // const [menus, setMenus] = React.useState(['Price & Plan', 'About Us', "FAQ's", 'Resources', 'AI', 'Contact Us',]);
   const [menus, setMenus] = useState(initialMenu);
   const [newMenu, setNewMenu] = useState(menus);
-  // console.log(newMenu);
+  console.log(newMenu);
 
   const fetchMenus = async() => {
     try {
@@ -54,23 +54,27 @@ const HeaderSection = () => {
 
   const handleSave = async(e) => {
     e.preventDefault();
-    setIsModalOpen(false);
-    try {
-      const updateMenus = await dispatch(updateMenuThunk({
-        menu1: newMenu.menu1,
-        menu2: newMenu.menu2,
-        menu3: newMenu.menu3,
-        menu4: newMenu.menu4,
-        menu5: newMenu.menu5,
-        menu6: newMenu.menu6
-      })).unwrap();
-      setTimeout(() => {
-        toast.success(updateMenus?.message);
-      }, 1000);
-    } catch (error) {
-      toast.error("Error updating menus");
-    } finally {
-      fetchMenus();
+    if(newMenu?.menu1 === "" || newMenu?.menu1.trim() === "" || newMenu?.menu2 === "" || newMenu?.menu2.trim() === "" || newMenu?.menu3 === "" || newMenu?.menu3.trim() === "" || newMenu?.menu4 === "" || newMenu?.menu4.trim() === "" || newMenu?.menu5 === "" || newMenu?.menu5.trim() === "" || newMenu?.menu6 === "" || newMenu?.menu6.trim() === "") {
+      toast.warning("Please fill all the fields");
+    } else {
+      setIsModalOpen(false);
+      try {
+        const updateMenus = await dispatch(updateMenuThunk({
+          menu1: newMenu.menu1,
+          menu2: newMenu.menu2,
+          menu3: newMenu.menu3,
+          menu4: newMenu.menu4,
+          menu5: newMenu.menu5,
+          menu6: newMenu.menu6
+        })).unwrap();
+        setTimeout(() => {
+          toast.success(updateMenus?.message);
+        }, 1000);
+      } catch (error) {
+        toast.error("Error updating menus");
+      } finally {
+        fetchMenus();
+      }
     }
   };
 

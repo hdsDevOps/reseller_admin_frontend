@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/styles.css';
 import { getEmailLogsThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from 'store/hooks';
+import { setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { ArrowRightLeft } from 'lucide-react';
 
 const EmailLog: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const { currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [emailLogs, setEmailLogs] = useState([]);
   console.log("emailLogs...", emailLogs);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState("");
 
-  const tableHeads = ['Email', 'Subject', 'Sent date', 'Number of Recipient', 'Action'];
+  const tableHeads = [
+    {name: "email", label: "Email"},
+    {name: "subject", label: "Subject"},
+    {name: "created_at", label: "Sent date"},
+    {name: "no_receipt", label: "Number of Recipient"},
+    {name: "action", label: "Action"},
+  ];
 
   const fetchEmailLogs = async() => {
     try {
@@ -45,6 +54,41 @@ const EmailLog: React.FC = () => {
     return formatted;
   };
 
+  const [currentPage, setCurrentPage] = useState(currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageNumber);
+  // Calculate displayed data based on current page
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = emailLogs.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(emailLogs.length / itemsPerPage);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    if(emailLogs?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, emailLogs]);
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
+
   return (
     <div className="grid grid-cols-1">
       <h3 className="my-[7px] h3-text">Email Log</h3>
@@ -56,7 +100,15 @@ const EmailLog: React.FC = () => {
               {
                 tableHeads && tableHeads.map((item, index) => {
                   return(
-                    <th key={index} className="th-css">{item}</th>
+                    <th key={index} className="th-css">
+                      <span>{item.label}</span>
+                      {
+                        item?.name === "action" ? "" :
+                        <span className="ml-1"><button type="button" onClick={() => {
+                          //
+                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                      }
+                    </th>
                   )
                 })
               }
@@ -64,7 +116,7 @@ const EmailLog: React.FC = () => {
           </thead>
           <tbody>
             {
-              emailLogs?.length>0 ? emailLogs.map((log, index) => (
+              currentItems?.length>0 ? currentItems.map((log, index) => (
                 <tr 
                   key={index}
                   className=""
@@ -93,6 +145,66 @@ const EmailLog: React.FC = () => {
             }
           </tbody>
         </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 text-sm ${
+              currentPage === 0
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-l transition`}
+          >
+            Prev
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`px-3 py-1 text-sm mx-1 rounded ${
+                currentPage === index
+                  ? "bg-green-500 text-white"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } transition`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+            }
+            disabled={currentPage === totalPages - 1}
+            className={`px-3 py-1 text-sm ${
+              currentPage === totalPages - 1
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-r transition`}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       <Dialog

@@ -38,7 +38,7 @@ const Promotion: React.FC = () => {
   ];
 
   const [promotions, setPromotions] = useState([]);
-  console.log(promotions);
+  // console.log(promotions);
 
   const fetchPromotionsList = async() => {
     try {
@@ -68,61 +68,91 @@ const Promotion: React.FC = () => {
     });
   };
 
+  const [endDateEnable, setEndDateEnable] = useState(true);
+  useEffect(() => {
+    if(newPromotion?.start_date != ""){
+      setEndDateEnable(false);
+    }
+    else{
+      setEndDateEnable(true);
+    }
+  }, [newPromotion?.start_date]);
+
   const addPromotion = async() => {
-    try {
-      const result = await dispatch(addPromotionThunk(newPromotion)).unwrap();
-      // console.log(result);
-      setTimeout(() => {
-        toast.success(result?.message);
-      }, 1000);
-    } catch (error) {
-      // console.log(error);
-      toast.error("Error on promotion adding");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(newPromotion?.html_template === "" || newPromotion?.html_template.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else if(newPromotion?.code === "" || newPromotion?.code.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else if(newPromotion?.start_date === "" || newPromotion?.start_date.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else if(newPromotion?.end_date === "" || newPromotion?.end_date.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else {
+      try {
+        const result = await dispatch(addPromotionThunk(newPromotion)).unwrap();
+        // console.log(result);
+        setTimeout(() => {
+          toast.success(result?.message);
+        }, 1000);
+      } catch (error) {
+        // console.log(error);
+        toast.error("Error on promotion adding");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+      } finally {
+        fetchPromotionsList();
+        setIsEditModalOpen(false);
+        setNewPromotion(initialPromotion);
       }
-    } finally {
-      fetchPromotionsList();
-      setIsEditModalOpen(false);
-      setNewPromotion(initialPromotion);
     }
   };
 
   const editPromotion = async() => {
-    try {
-      const result = await dispatch(editPromotionThunk({
-        record_id: newPromotion?.id,
-        code: newPromotion?.code,
-        start_date: newPromotion?.start_date,
-        end_date: newPromotion?.end_date,
-        html_template: newPromotion?.html_template,
-        status: newPromotion?.status
-      })).unwrap();
-      // console.log(result);
-      setTimeout(() => {
-        toast.success(result?.message);
-      }, 1000);
-    } catch (error) {
-      // console.log(error);
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+    if(newPromotion?.html_template === "" || newPromotion?.html_template.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else if(newPromotion?.code === "" || newPromotion?.code.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else if(newPromotion?.start_date === "" || newPromotion?.start_date.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else if(newPromotion?.end_date === "" || newPromotion?.end_date.trim() === "") {
+      toast.warning("Please fill all the inputs");
+    } else {
+      try {
+        const result = await dispatch(editPromotionThunk({
+          record_id: newPromotion?.id,
+          code: newPromotion?.code,
+          start_date: newPromotion?.start_date,
+          end_date: newPromotion?.end_date,
+          html_template: newPromotion?.html_template,
+          status: newPromotion?.status
+        })).unwrap();
+        // console.log(result);
+        setTimeout(() => {
+          toast.success(result?.message);
+        }, 1000);
+      } catch (error) {
+        // console.log(error);
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+        toast.error("Error on promotion editing");
+      } finally {
+        fetchPromotionsList();
+        setIsEditModalOpen(false);
+        setNewPromotion(initialPromotion);
+        setEditPromo(false);
       }
-      toast.error("Error on promotion editing");
-    } finally {
-      fetchPromotionsList();
-      setIsEditModalOpen(false);
-      setNewPromotion(initialPromotion);
-      setEditPromo(false);
     }
   };
 
@@ -168,8 +198,26 @@ const Promotion: React.FC = () => {
     const newDate = new Date(date);
     if(newDate != "Invalid Date"){
       return format(newDate, "dd MMM yyyy");
+    } else {
+      return null;
     }
   };
+
+  const dateFormat1 = (date) => {
+    // const milliseconds = parseInt(date?._seconds) * 1000;
+    // const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
+    // const totalMilliseconds = milliseconds+extraMilliseconds;
+    const newDate = new Date(date);
+    if(newDate != "Invalid Date") {
+      return format(newDate, "dd-MM-yyyy");
+    } else {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    console.log(dateFormat1(newPromotion?.start_date))
+  }, [newPromotion?.start_date])
 
   const dateFormat2 = (date) => {
     // const milliseconds = parseInt(date?._seconds) * 1000;

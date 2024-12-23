@@ -8,9 +8,10 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList-2.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, addCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, addCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getCustomerCountThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 const AddCustomerGroup: React.FC = () =>  {
   const navigate = useNavigate();
@@ -25,20 +26,42 @@ const AddCustomerGroup: React.FC = () =>  {
     plan: "",
     start_date: "",
     end_date: "", 
-    license_usage: "", 
-    no_customer: "",
+    license_usage: 0, 
+    no_customer: 0,
   });
   // console.log(customerGroup);
+  const [customerCount, setCustomerCount] = useState<number>(0);
 
-  const updateCustomerGroup = (e) => {
+  const updateCustomerGroup = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setCustomerGroup({
       ...customerGroup,
       [e.target.name]: e.target.value
     });
   };
 
-  const [countryid, setCountryid] = useState(0);
-  const [stateid, setstateid] = useState(0);
+  const updateCustomerGroupCountry = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setCustomerGroup({
+      ...customerGroup,
+      country: e.target.value,
+      region: ""
+    });
+  };
+  
+  const updateCustomerGroupLicenseUsage = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if(value >= 0) {
+      setCustomerGroup({
+        ...customerGroup,
+        license_usage: value
+      });
+    } else {
+      setCustomerGroup({
+        ...customerGroup,
+        license_usage: 0
+      });
+    }
+  };
+
   const [endDateEnable, setEndDateEnable] = useState(true);
   useEffect(() => {
     if(customerGroup?.start_date != ""){
@@ -62,6 +85,69 @@ const AddCustomerGroup: React.FC = () =>  {
 
   const [countryList, setCountryList] = useState([]);
   const [regionList, setRegionList] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  // console.log({countries, states});
+  const [country, setCountry] = useState({});
+  const [state, setState] = useState({});
+  // console.log({country, state});
+  useEffect(() => {
+    var config = {
+      method: 'get',
+      url: 'https://api.countrystatecity.in/v1/countries',
+      headers: {
+        'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+      }
+    };
+    axios(config)
+      .then(res => {
+        setCountries(res.data);
+        // console.log(res.data);
+      })
+      .catch(err => {
+        setCountries([]);
+        console.log("error...", err);
+      })
+  }, []);
+  
+  useEffect(() => {
+    if(country?.iso2 !== undefined) {
+      var config = {
+        method: 'get',
+        url: `https://api.countrystatecity.in/v1/countries/${country?.iso2}/states`,
+        headers: {
+          'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+        }
+      };
+      axios(config)
+      .then(res => {
+        setStates(res.data);
+      })
+      .catch(err => {
+        setStates([]);
+        console.log("error...", err);
+      })
+    } else {
+      setStates([]);
+    }
+  }, [country]);
+
+  useEffect(() => {
+    setCountry(countries?.find(name => name?.name.toLowerCase() === customerGroup?.country.toLowerCase()) || {})
+  }, [countries, customerGroup?.country]);
+
+  useEffect(() => {
+    const findStates = async() => {
+      const data = [];
+      await regionList.forEach(element => {
+        states?.find(name => name?.name.toLowerCase() === element.toLowerCase() ? data.push(name) : null)
+      });
+      setAvailableStates(data);
+    };
+
+    findStates();
+  }, [regionList, states]);
 
   const getCountryList = async() => {
     try {
@@ -114,6 +200,41 @@ const AddCustomerGroup: React.FC = () =>  {
     getSubscriptonPlansList();
   }, []);
 
+  const getCustomerCount = async() => {
+    try {
+      const result = await dispatch(getCustomerCountThunk({
+        country: customerGroup?.country,
+        state_name: customerGroup?.region,
+        plan: customerGroup?.plan,
+        start_date: customerGroup?.start_date,
+        end_date: customerGroup?.end_date,
+        license_usage: customerGroup?.license_usage
+      })).unwrap();
+      setCustomerCount(parseInt(result?.customer_count));
+    } catch (error) {
+      setCustomerCount(0);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    getCustomerCount();
+  }, [customerGroup?.country, customerGroup?.region, customerGroup?.plan, customerGroup?.start_date, customerGroup?.end_date, customerGroup?.license_usage]);
+
+  useEffect(() => {
+    setCustomerGroup({
+      ...customerGroup,
+      no_customer: customerCount
+    })
+  }, [customerCount]);
+
   const dateToIsoString = (date) => {
     const newDate = new Date(date);
     const isoDate = newDate.toISOString().split('T')[0];
@@ -126,6 +247,9 @@ const AddCustomerGroup: React.FC = () =>  {
       if (customerGroup[key].trim() === '') {
         return false;
       } else {
+        if(customerGroup?.country === "" && customerGroup?.region === "" && customerGroup?.plan === "" && customerGroup?.start_date === "" && customerGroup?.end_date === "" && customerGroup?.license_usage === 0) {
+          return false
+        }
         return true;
       }
     }
@@ -199,8 +323,7 @@ const AddCustomerGroup: React.FC = () =>  {
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
                   </div>
                 )
-              }
-              else if(item.name == 'country'){
+              } else if(item.name === 'country'){
                 return(
                   <div className='flex flex-col px-2 mb-2' key={index}>
                     <label
@@ -208,11 +331,12 @@ const AddCustomerGroup: React.FC = () =>  {
                     >{item.label}</label>
                     <select
                       className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.country == "" ? 'text-[#00000038]' : 'text-black'}`}
-                      onChange={updateCustomerGroup}
+                      onChange={updateCustomerGroupCountry}
                       name='country'
                     >
-                      <option selected>Select Country</option>
+                      <option selected value="">Select Country</option>
                       {
+                        
                         countryList && countryList.map((country, number) => (
                           <option key={number} value={country} className='text-black'>{country}</option>
                         ))
@@ -222,30 +346,29 @@ const AddCustomerGroup: React.FC = () =>  {
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
                   </div>
                 )
-              }
-              else if(item.name == 'region'){
+              } else if(item.name === 'region'){
                 return(
                   <div className='flex flex-col px-2 mb-2' key={index}>
                     <label
                       className='search-input-label'
                     >{item.label}</label>
                     <select
-                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.country == "" ? 'text-[#00000038]' : 'text-black'}`}
+                      className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.region == "" ? 'text-[#00000038]' : 'text-black'}`}
                       onChange={updateCustomerGroup}
-                      name='country'
+                      name='region'
+                      value={customerGroup?.region}
                     >
-                      <option selected>Select Country</option>
+                      <option selected value="" className='text-[#00000038]'>{item.placeholder}</option>
                       {
-                        regionList && regionList.map((region, number) => (
-                          <option key={number} value={region} className='text-black'>{region}</option>
+                        availableStates && availableStates?.map((region, number) => (
+                          <option key={number} value={region?.name} className='text-black'>{region?.name}</option>
                         ))
                       }
                     </select>
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
                   </div>
                 )
-              }
-              else if(item.name == 'start_date'){
+              } else if(item.name === 'start_date'){
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -269,7 +392,7 @@ const AddCustomerGroup: React.FC = () =>  {
                     />
                   </div>
                 )
-              }else if(item.name == 'end_date'){
+              } else if(item.name === 'end_date'){
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -292,11 +415,30 @@ const AddCustomerGroup: React.FC = () =>  {
                       onChange={updateCustomerGroup}
                       disabled={endDateEnable}
                       min={customerGroup?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(customerGroup?.start_date)) }
+                      required={customerGroup?.start_date !== "" ? true : false}
                     />
                   </div>
                 )
-              }
-              else if(item.type == 'number'){
+              } else if(item.name === 'license_usage'){
+                return(
+                  <div
+                    className='flex flex-col px-2 mb-2'
+                    key={index}
+                  >
+                    <label
+                      className='search-input-label'
+                    >{item.label}</label>
+                    <input
+                      type='number'
+                      placeholder={item.placeholder}
+                      name={item.name}
+                      className='search-input-text px-4'
+                      onChange={updateCustomerGroupLicenseUsage}
+                      value={customerGroup?.license_usage}
+                    />
+                  </div>
+                )
+              } else if(item.name === 'no_customer'){
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -310,12 +452,12 @@ const AddCustomerGroup: React.FC = () =>  {
                       placeholder={item.placeholder}
                       name={item.name}
                       className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                      onChange={updateCustomerGroup}
+                      disabled
+                      value={customerCount}
                     />
                   </div>
                 )
-              }
-              else{
+              } else{
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'

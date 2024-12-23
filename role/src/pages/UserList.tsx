@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Table from "../components/Table";
-import { ChevronRight } from 'lucide-react';
+import { ArrowRightLeft, ChevronRight } from 'lucide-react';
 import { LuFilterX } from "react-icons/lu";
 import { BiSolidEditAlt } from "react-icons/bi";
 import {
@@ -11,8 +11,9 @@ import {
 } from "react-icons/io5";
 import UserListData, { User } from "../components/UserListData";
 import '../styles/styles.css';
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { getRolesThunk, getUsersThunk, addUsersThunk, updateUsersThunk, deleteUsersThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { setUserListFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,11 +28,21 @@ const UserList = () => {
   const modalRef = useRef();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { userListFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add');
   const [users, setUsers] = useState([]);
   // console.log("users...", users);
-  const [userFilter, setUserFilter] = useState(intialUserFilter);
+  const [userFilter, setUserFilter] = useState(userListFilters === null ? intialUserFilter : userListFilters);
+
+  useEffect(() => {
+    const setUserListFiltersSlice = async() => {
+      await dispatch(setUserListFiltersStatus(userFilter)).unwrap();
+    }
+
+    setUserListFiltersSlice();
+  }, [userFilter]);
+
   const [searchData, setSearchData] = useState("");
   const [deleteUserId, setDeleteUserId] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -54,7 +65,7 @@ const UserList = () => {
   const [modalData, setModalData] = useState(modalFormat);
   // console.log("modal data....", modalData);
 
-  const updateModalData = (e) => {
+  const updateModalData = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setModalData({
       ...modalData,
       [e.target.name]: e.target.value
@@ -67,6 +78,7 @@ const UserList = () => {
   const fetchUsers = async() => {
     try {
       const result = await dispatch(getUsersThunk(userFilter)).unwrap();
+      console.log("result...", result);
       setUsers(result.users);
     } catch (error) {
       setUsers([]);
@@ -87,9 +99,9 @@ const UserList = () => {
 
   const fetchRoles = async() => {
     try {
-      const result = await dispatch(getRolesThunk()).unwrap();
+      const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
       // console.log("result...", result.roles);
-      setRoles(result.roles);
+      setRoles(result?.roles);
     } catch (error) {
       setRoles([]);
       if(error?.message == "Request failed with status code 401") {
@@ -107,7 +119,12 @@ const UserList = () => {
     fetchRoles();
   }, []);
 
-  const tableHeaders = ['Name', 'Email', 'Phone', 'User Type', 'Actions',];
+  const tableHeaders = [
+    {name: "first_name", label: "Name"},
+    {name: "email", label: "Email"},
+    {name: "phone", label: "Phone"},
+    {name: "role", label: "User Type"},
+    {name: "action", label: "Actions"}];
   const roleColors = {
     Admin: "#B4D3DC",
     "Sub-admin": "#C5E0B2",
@@ -177,7 +194,6 @@ const UserList = () => {
           toast.success(result?.message);
         }, 1000);
       } catch (error) {
-        toast.error("Error adding user");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -185,6 +201,10 @@ const UserList = () => {
           } catch (error) {
             //
           }
+        } else if(error?.error === "Failed to add user.Error: The email address is already in use by another account.") {
+          toast.error("The email address is already in use by another account.")
+        } else {
+          toast.error("Error adding user");
         }
       } finally {
         fetchUsers();
@@ -262,6 +282,42 @@ const UserList = () => {
     });
   };
 
+  const [currentPage, setCurrentPage] = useState(userListFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(userListFilters === null ? 20 : itemsPerPageNumber);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
+  
+  // Calculate displayed data based on current page
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  useEffect(() => {
+    if(users?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, users]);
+
   return (
     <div className="grid grid-cols-1">
       <ToastContainer />
@@ -315,7 +371,7 @@ const UserList = () => {
               <option defaultChecked value=''>Select User Type</option>
               {
                 roles?.map((role, idx) => (
-                  <option key={idx}>{role?.role_name}</option>
+                  <option key={idx} value={role?.role_name}>{role?.role_name}</option>
                 ))
               }
             </select>
@@ -362,7 +418,15 @@ const UserList = () => {
               {
                 tableHeaders && tableHeaders.map((item, index) => {
                   return(
-                    <th key={index} className="th-css-full-opacity">{item}</th>
+                    <th key={index} className="th-css-full-opacity">
+                      <span>{item.label}</span>
+                      {
+                        item.name === "action" ? "" :
+                        <span className="ml-1"><button type="button" onClick={() => {
+                          //
+                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                      }
+                    </th>
                   )
                 })
               }
@@ -371,7 +435,7 @@ const UserList = () => {
 
           <tbody>
             {
-              users?.length> 0 ? users?.map((user, index) => {
+              currentItems?.length> 0 ? currentItems?.map((user, index) => {
                 return(
                   <tr key={index}>
                     <td
@@ -387,29 +451,37 @@ const UserList = () => {
                     <td className="td-css-text m-2">{user?.phone}</td>
                     <td className="td-css-text m-2">{user?.role}</td>
                     <td className="td-css-text m-2">
-                      <div
-                        className="flex flex-row justify-center gap-4"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setModalType('edit');
-                            setModalData(user);
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          <BiSolidEditAlt className="text-black text-xl" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDeleteModalOpen(true);
-                            setDeleteUserId(user?.id);
-                          }}
-                        >
-                          <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
-                        </button>
-                      </div>
+                      {
+                        user?.role === 'Super Admin' ?
+                        (<div
+                          className="flex flex-row justify-center gap-4"
+                        ></div>) :
+                        (
+                          <div
+                            className="flex flex-row justify-center gap-4"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setModalType('edit');
+                                setModalData(user);
+                                setIsModalOpen(true);
+                              }}
+                            >
+                              <BiSolidEditAlt className="text-black text-xl" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeleteModalOpen(true);
+                                setDeleteUserId(user?.id);
+                              }}
+                            >
+                              <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
+                            </button>
+                          </div>
+                        )
+                      }
                     </td>
                   </tr>
                 )
@@ -421,6 +493,66 @@ const UserList = () => {
             
           </tbody>
         </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 text-sm ${
+              currentPage === 0
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-l transition`}
+          >
+            Prev
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`px-3 py-1 text-sm mx-1 rounded ${
+                currentPage === index
+                  ? "bg-green-500 text-white"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } transition`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+            }
+            disabled={currentPage === totalPages - 1}
+            className={`px-3 py-1 text-sm ${
+              currentPage === totalPages - 1
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-r transition`}
+          >
+            Next
+          </button>
+        </div>
       </div>
       {
         isModalOpen && (
@@ -464,9 +596,13 @@ const UserList = () => {
                             >
                               <option selected={modalType == 'add' ? true : false} value="" disabled>Select user type</option>
                               {
-                                roles?.map((role, idx) => (
-                                  <option key={idx} selected={modalType === "add" ? false : true}>{role?.role_name}</option>
-                                ))
+                                roles?.map((role, idx) => {
+                                  if(role?.role_name !== "Super Admin") {
+                                    return (
+                                      <option key={idx} selected={modalType === "add" ? false : true}>{role?.role_name}</option>
+                                    )
+                                  }
+                                })
                               }
                             </select>
                           </div>

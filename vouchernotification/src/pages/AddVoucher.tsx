@@ -229,6 +229,7 @@ const AddVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                       onChange={updateVoucher}
+                      value={voucher[item.name] || null}
                     />
                     <div
                       key={index}
@@ -289,6 +290,7 @@ const AddVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateVoucher}
+                      value={voucher?.start_date}
                     />
                   </div>
                 )
@@ -316,6 +318,7 @@ const AddVoucher: React.FC = () =>  {
                       onChange={updateVoucher}
                       disabled={endDateEnable}
                       min={voucher?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(voucher?.start_date)) }
+                      value={voucher?.end_date}
                     />
                   </div>
                 )
@@ -335,6 +338,7 @@ const AddVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateVoucher}
+                      value={voucher[item.name] || ""}
                     />
                   </div>
                 )
@@ -347,7 +351,7 @@ const AddVoucher: React.FC = () =>  {
             <label
               className='search-input-label'
             >Template</label>
-            <textarea className='textarea-template' placeholder='HTML/CSS script should be here to make the Promotion template' name='template_details' onChange={updateVoucher} />
+            <textarea className='textarea-template' placeholder='HTML/CSS script should be here to make the Promotion template' name='template_details' onChange={updateVoucher} required value={voucher?.template_details} />
           </div>
 
           <div className='flex flex-col max-sm:mx-auto px-2 mb-2 mt-5'>

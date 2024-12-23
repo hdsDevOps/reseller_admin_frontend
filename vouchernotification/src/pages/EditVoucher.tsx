@@ -246,7 +246,7 @@ const EditVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                       onChange={updateVoucher}
-                      defaultValue={voucher[item.name]}
+                      value={voucher[item.name] || null}
                     />
                     <div
                       key={index}
@@ -307,7 +307,7 @@ const EditVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateVoucher}
-                      defaultValue={dateToIsoString(voucher?.start_date)}
+                      value={dateToIsoString(voucher?.start_date)}
                     />
                   </div>
                 )
@@ -335,7 +335,7 @@ const EditVoucher: React.FC = () =>  {
                       onChange={updateVoucher}
                       disabled={endDateEnable}
                       min={dateToIsoString(voucher?.end_date)}
-                      defaultValue={dateToIsoString(voucher?.end_date)}
+                      value={dateToIsoString(voucher?.end_date)}
                     />
                   </div>
                 )
@@ -355,7 +355,7 @@ const EditVoucher: React.FC = () =>  {
                       required
                       className='search-input-text px-4'
                       onChange={updateVoucher}
-                      defaultValue={voucher[item.name]}
+                      value={voucher[item.name] || null}
                     />
                   </div>
                 )
@@ -368,7 +368,7 @@ const EditVoucher: React.FC = () =>  {
             <label
               className='search-input-label'
             >Template</label>
-            <textarea className='textarea-template' placeholder='HTML/CSS script should be here to make the Promotion template' name='template_details' onChange={updateVoucher} defaultValue={voucher?.template_details}/>
+            <textarea className='textarea-template' placeholder='HTML/CSS script should be here to make the Promotion template' name='template_details' onChange={updateVoucher} value={voucher?.template_details} required />
           </div>
 
           <div className='flex flex-col max-sm:mx-auto px-2 mb-2 mt-5'>

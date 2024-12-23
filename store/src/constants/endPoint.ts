@@ -20,6 +20,7 @@ export const endPoints = {
     getCountryList: 'adminservices/customer/api/v1/getcountry_list',
     getRegionList: 'adminservices/customer/api/v1/getregion_list',
     sendEmailToCustomer: 'adminservices/notification/api/v1/sendmailtocustomer',
+    getCustomerCount: 'adminservices/voucher/api/v1/getcustomer_number',
 
     // voucher notification endpoints
     voucherList: 'voucherservices/voucher/api/v1/voucherlist',
@@ -130,6 +131,7 @@ export const endPoints = {
     getDefaultCurrency: 'adminservices/admin/api/v1/getcurrency_default',
     updateDefaultCurrency: 'adminservices/admin/api/v1/update_defaultgetcurrency',
     getNotifications: 'adminservices/notification/api/v1/getnotifications',
+    readNotifications: 'adminservices/notification/api/v1/readnotification',
     getNotificationStatus: 'adminservices/admin/api/v1/getnotification_status',
     updateNotificationStatus: 'adminservices/admin/api/v1/update_notification_status',
 

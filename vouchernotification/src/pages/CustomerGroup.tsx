@@ -2,14 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
-import { ChevronRight, FilterX, Pencil } from 'lucide-react';
+import { ArrowRightLeft, ChevronRight, FilterX, Pencil } from 'lucide-react';
 import Table from "../components/Table";
 import Modal from "../components/Modal";
 import "../styles/styles.css";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { format } from "date-fns";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { getCustomerGroupListThunk, deleteCustomerGroupThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { setCustomerGroupFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -21,24 +22,60 @@ const initialFilters = {
 const CustomerGroup: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const {customerGroupFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState();
   const modalRef = useRef();
   const [deleteModal, setDeleteModal] = useState(false);
   const [voucherGroup, setVoucherGroup] = useState({});
   // console.log(voucherGroup);
-  const [filters, setFilters] = useState(initialFilters);
-  console.log(filters);
+  const [filters, setFilters] = useState(customerGroupFilters === null ? initialFilters : customerGroupFilters);
+  // console.log(filters);
+
+  useEffect(() => {
+    const setCustomerGroupFiltersSlice = async() => {
+      await dispatch(setCustomerGroupFiltersStatus(filters)).unwrap();
+    }
+
+    setCustomerGroupFiltersSlice();
+  }, [filters]);
 
   const [sampleData, setSampleData] = useState([]);
   console.log(sampleData);
   
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 20;
+  const [currentPage, setCurrentPage] = useState(customerGroupFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(customerGroupFilters === null ? 20 : itemsPerPageNumber);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sampleData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(sampleData.length / itemsPerPage);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    if(sampleData?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, sampleData]);
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
 
   const dateFormat = (date) => {
     const newDate = new Date(date);
@@ -89,7 +126,12 @@ const CustomerGroup: React.FC = () => {
     getCustomerGroupListData();
   }, [filters]);
 
-  const tableHeads = ['Group Name', 'Number of Customers', 'Created Date', 'Actions',];
+  const tableHeads = [
+    {name: "group_name", label: "Group Name",},
+    {name: "no_customer", label: "Number of Customers",},
+    {name: "create_date", label: "Created Date",},
+    {name: "action", label: "Actions",},
+  ];
 
   const openModal = (group) => {
     setSelectedGroup(group);
@@ -210,7 +252,15 @@ const CustomerGroup: React.FC = () => {
             <tr>
               {
                 tableHeads.map((head, index) => (
-                  <th key={index} className="th-css-2">{head}</th>
+                  <th key={index} className="th-css-2">
+                    <span>{head.label}</span>
+                    {
+                      head?.name === "action" ? "" :
+                      <span className="ml-1"><button type="button" onClick={() => {
+                        //
+                      }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                    }
+                  </th>
                 ))
               }
             </tr>
@@ -265,8 +315,23 @@ const CustomerGroup: React.FC = () => {
         </table>
       </div>
 
-      <div className="flex flex-col mt-12 relative bottom-2 right-0">
-        <div className="flex justify-end mb-2">
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
             disabled={currentPage === 0}

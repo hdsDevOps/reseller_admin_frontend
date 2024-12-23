@@ -4,7 +4,7 @@
   "scripts": {
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
-    "build:start": "cd dist && PORT=3003 npx serve",
+    "build:start": "cd dist && PORT=4003 npx serve",
     "start": "webpack serve --mode development",
     "start:live": "webpack serve --mode development --live-reload --hot",
     "cypress": "cypress open"
@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.454.0",
     "react": "^18.2.0",

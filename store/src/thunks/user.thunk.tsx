@@ -128,7 +128,8 @@ export const getCustomerListThunk = createAsyncThunk(
     authentication,
     license_usage,
     subscritption_date,
-    renewal_date
+    renewal_date,
+    domain
   }: any) => {
     return await userApis.customerListApi(
       search_data,
@@ -137,7 +138,8 @@ export const getCustomerListThunk = createAsyncThunk(
       authentication,
       license_usage,
       subscritption_date,
-      renewal_date
+      renewal_date,
+      domain
     );
   }
 );
@@ -331,6 +333,13 @@ export const deleteCustomerGroupThunk = createAsyncThunk(
   "users/deleteCustomerGroup",
   async ({record_id}: any) => {
     return await userApis.deleteCustomerGroupApi(record_id);
+  }
+);
+
+export const getCustomerCountThunk = createAsyncThunk(
+  "users/getCustomerCount",
+  async ({country, state_name, plan, start_date, end_date, license_usage}: any) => {
+    return await userApis.getCustomerCountApi(country, state_name, plan, start_date, end_date, license_usage);
   }
 );
 
@@ -588,8 +597,8 @@ export const deletePlanAndPriceThunk = createAsyncThunk(
 
 export const getBillingHistoryThunk = createAsyncThunk(
   "users/getBillingHistory",
-  async ({start_date, end_date, domain_id, search_data}: any) => {
-    return await userApis.getBillingHistoryApi(start_date, end_date, domain_id, search_data);
+  async ({start_date, end_date, domain, search_data}: any) => {
+    return await userApis.getBillingHistoryApi(start_date, end_date, domain, search_data);
   }
 );
 
@@ -602,8 +611,8 @@ export const getEmailLogsThunk = createAsyncThunk(
 
 export const getRolesThunk = createAsyncThunk(
   "users/getRoles",
-  async () => {
-    return await userApis.getRolesApi();
+  async ({user_type}:any) => {
+    return await userApis.getRolesApi(user_type);
   }
 );
 
@@ -730,6 +739,13 @@ export const getNotificationsThunk = createAsyncThunk(
   "users/getNotifications",
   async ({user_role}: any) => {
     return await userApis.getNotificationsApi(user_role);
+  }
+);
+
+export const readNotificationsThunk = createAsyncThunk(
+  "users/readNotifications",
+  async ({record_id}: any) => {
+    return await userApis.readNotificationsApi(record_id);
   }
 );
 

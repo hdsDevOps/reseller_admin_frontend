@@ -41,11 +41,11 @@ function EditPlanPriceSetup() {
   }, [subscription]);
   
   const productivityList = [
-    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/gmail.png?alt=media&token=78d49456-c44c-4ff4-bb46-163e07e0a461', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Gmail</b> Business email</p>, type: 'checkbox', name: 'gmail_business_email', },
+    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/gmail.png?alt=media&token=ce4bf445-8280-4c97-9743-e79168a27f11', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Gmail</b> Business email</p>, type: 'checkbox', name: 'gmail_business_email', },
     {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Custom email for your business</p>, type: 'checkbox', name: 'custom_email_for_business',},
     {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Phishing and spam protection that blocks more than 99.9% of attacks</p>, type: 'checkbox', name: 'phising_protection',},
     {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Ad-free email experience</p>, type: 'checkbox', name: 'add_free_email',},
-    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/google-meet.png?alt=media&token=37fae9c9-b466-4311-a03b-6019c3e4e29a', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Meet</b> Video and voice conferencing</p>, type: 'text', name: 'meet_video_conferencing',},
+    {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/google-meet.png?alt=media&token=4945f794-64ac-447b-9b60-cdb3ec04e1bb', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Meet</b> Video and voice conferencing</p>, type: 'text', name: 'meet_video_conferencing',},
     {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Meeting length (maximum)</p>, type: 'text', name: 'meeting_lenght',},
     {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>US or international dial-in phone numbers</p>, type: 'checkbox', name: 'us_or_internation_phone_number',},
     {logo: '', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'>Digital whiteboarding</p>, type: 'checkbox', name: 'digital_whiteboarding',},
@@ -223,7 +223,6 @@ function EditPlanPriceSetup() {
               <img
                 src={`${
                   getFlag(item?.currency_code)[0]
-                  })
                 }`}
                 alt={item?.currency_code}
                 className='w-auto h-[25px]'
@@ -235,7 +234,7 @@ function EditPlanPriceSetup() {
                 {
                   flagList.map((flag, n) => {
                     return(
-                      <option selected={ item?.currency_code === flag.name ? true : false } key={n}>{flag.name}</option>
+                      <option selected={ item?.currency_code === flag.name ? true : false }>{flag.name}</option>
                     )
                   })
                 }
@@ -275,35 +274,27 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Base Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
                         defaultValue={item?.price[0].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
-                        // onBlur={() => {setSubscription({
-                        //   ...subscription,
-                        //   amount_details: localPrice
-                        // })}}
                         required
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
                         defaultValue={item?.price[1].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
-                        // onBlur={() => {setSubscription({
-                        //   ...subscription,
-                        //   amount_details: localPrice
-                        // })}}
                         required
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
                         defaultValue={item?.price[2].price || ''}
@@ -316,7 +307,7 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Final Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
                         defaultValue={item?.price[0].discount_price || ''}
@@ -326,7 +317,7 @@ function EditPlanPriceSetup() {
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
                         defaultValue={item?.price[1].discount_price || ''}
@@ -336,7 +327,7 @@ function EditPlanPriceSetup() {
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] pl-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
                         defaultValue={item?.price[2].discount_price || ''}
@@ -802,7 +793,7 @@ function EditPlanPriceSetup() {
                   return(
                     <tr key={index} className='w-full'>
                       <td className='w-[100px] min-w-[100px] text-center items-center py-5'>{item.logo != '' ? 
-                        <img className={`mx-auto ${index == 0 ? 'min-w-7 max-w-7' : index == 4 ? 'min-w-14 max-w-14' : ''}`} src={item.logo} alt='logo' />
+                        <img className={`mx-auto min-w-7 max-w-7`} src={item.logo} alt='logo' />
                       : ''}</td>
                       <td className='w-[340px] min-w-[300px] text-left items-center py-5'>
                         {item.html}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LuFilterX } from "react-icons/lu";
 import {
   IoChevronDown,
@@ -7,29 +7,75 @@ import {
 } from "react-icons/io5";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ArrowRightLeft, ChevronRight } from "lucide-react";
 import '../styles/styles.css';
 import { getRolesThunk, deleteRoleThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from "store/hooks";
+import { setRolesFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaChevronDown } from "react-icons/fa6";
+
+const initialFilter = {
+  user_type: ''
+}
 
 const Role = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [filterUserList, setFilterUserList] = useState([]);
+  const filterRef = useRef(null);
+  const { rolesFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
   const [roles, setRoles] = useState([]);
-  console.log("roles...", roles);
+  // console.log("roles...", roles);
+  const [initialRoles, setIntialRoles] = useState([]);
+  // console.log("initialRoles...", initialRoles);
   const [deleteRoleId, setDeleteRoleId] = useState("");
   // console.log(deleteRoleId);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [filter, setFilter] = useState(rolesFilters === null ? initialFilter : rolesFilters);
+  // console.log("filters", filter);
+  useEffect(() => {
+    const setRolesFiltersSlice = async() => {
+      await dispatch(setRolesFiltersStatus(filter));
+    }
+
+    setRolesFiltersSlice();
+  }, [filter]);
+
+  const [search, setSearch] = useState("");
+  // console.log("search", search);
+  
+  const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
+  // console.log("isDropdownOpen", isDropdownOpen);
+  
+  const handleClickOutsideInput = (event: MouseEvent) => {
+    if(filterRef.current && !filterRef.current.contains(event.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutsideInput);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideInput);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(initialRoles?.length === 0) {
+      setIsDropdownOpen(false);
+    }
+    if(search.length > 0) {
+      setIsDropdownOpen(true)
+    }
+  }, [initialRoles, search])
   
   const fetchRoles = async() => {
     try {
-      const result = await dispatch(getRolesThunk()).unwrap();
+      const result = await dispatch(getRolesThunk(filter)).unwrap();
       // console.log("result...", result.roles);
-      setRoles(result.roles);
+      setRoles(result?.roles);
     } catch (error) {
       setRoles([]);
       if(error?.message == "Request failed with status code 401") {
@@ -45,6 +91,28 @@ const Role = () => {
 
   useEffect(() => {
     fetchRoles();
+  }, [filter]);
+
+  const fetchIntialRoles = async() => {
+    try {
+      const result = await dispatch(getRolesThunk(initialFilter)).unwrap();
+      // console.log("result...", result.roles);
+      setIntialRoles(result?.roles);
+    } catch (error) {
+      setIntialRoles([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchIntialRoles();
   }, []);
 
   const permissionsList = [
@@ -84,7 +152,43 @@ const Role = () => {
     } finally {
       fetchRoles();
     }
-  }
+  };
+  
+  const [currentPage, setCurrentPage] = useState(rolesFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(rolesFilters === null ? 20 : itemsPerPageNumber);
+  // console.log({currentPage, totalPages});
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
+  
+  // Calculate displayed data based on current page
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = roles.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(roles.length / itemsPerPage);
+  
+  useEffect(() => {
+    if(roles?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, roles]);
 
   return (
     <div className="grid grid-cols-1 p-4">
@@ -116,42 +220,57 @@ const Role = () => {
 
         <div className="sm:px-4 max-sm:px-0 sm:w-[350px] max-sm:w-full max-[835px]:mt-2">
           <div
-            className="flex flex-row gap-2"
+            className='flex flex-row gap-2 relative'
+            ref={filterRef}
           >
             <input
               list="brow"
               placeholder="Auto search"
               className="serach-input-no-radius"
-              name="domain"
-              // onChange={handleFilterChange}
-              // value={filters.domain}
+              name="user_type"
+              onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setSearch(e.target.value);}}
+              value={search || filter?.user_type}
+              onFocus={() => {setIsDropdownOpen(true)}}
             />
-            <button>
+            <div className="absolute mt-[11px] w-full pointer-events-none">
+              <FaChevronDown className="ml-auto mr-8" />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setFilter(initialFilter);
+              }}
+            >
               <LuFilterX
                 className="text-[20px] text-custom-green"
               />
             </button>
+            {
+              isDropdownOpen === true && initialRoles?.filter(role => role?.role_name.toLowerCase().includes(search.toLowerCase())).length > 0 && (
+                <div className='absolute flex flex-col py-1 sm:w-[290px] max-sm:w-[calc(100%-28px)] bg-custom-white rounded-b mt-10 max-h-40 overflow-y-auto z-[9999]'>
+                  {
+                    initialRoles?.filter(role => role?.role_name.toLowerCase().includes(search.toLowerCase())).map((item, index) => (
+                      <p
+                        key={index}
+                        className={`font-inter-16px-400 pl-4 py-1 ${
+                          index !== 0 ? "border-t border-white" : ""
+                        } cursor-pointer`}
+                        onClick={() => {
+                          setSearch("");
+                          setFilter({
+                            ...filter,
+                            user_type: item?.role_name
+                          });
+                          setIsDropdownOpen(false);
+                        }}
+                      >{item?.role_name}</p>
+                    ))
+                  }
+                </div>
+              )
+            }
           </div>
-          {
-            filterUserList?.length !== 0 && (
-              <div
-                className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b`}
-              >
-                {filterUserList?.map((item, index) => {
-                  return (
-                    <a
-                      key={index}
-                      className={`font-inter-16px-400 pl-4 py-1 ${
-                        index != 0 && `border-t border-white`
-                      }`}
-                    >
-                      {item?.fname} {item?.lname}
-                    </a>
-                  );
-                })}
-              </div>
-            )
-          }
         </div>
       </div>
 
@@ -159,14 +278,24 @@ const Role = () => {
         <table className="min-w-full bg-transparent border-separate border-spacing-y-6">
           <thead className="bg-custom-blue-6 h-12">
             <tr>
-              <th className="th-css-full-opacity-text-left">User Type</th>
-              <th className="th-css-full-opacity">Permissions</th>
+              <th className="th-css-full-opacity-text-left">
+                <span>User Type</span>
+                <span className="ml-1"><button type="button" onClick={() => {
+                  //
+                }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+              </th>
+              <th className="th-css-full-opacity">
+                <span>Permissions</span>
+                <span className="ml-1"><button type="button" onClick={() => {
+                  //
+                }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+              </th>
               <th className="th-css-full-opacity">Actions</th>
             </tr>
           </thead>
           <tbody>
             {
-              roles?.length>0 ? roles?.map((role, index) => {
+              currentItems?.length>0 ? currentItems?.map((role, index) => {
                 if(role?.role_name === "Super Admin"){
                   return(
                     <tr key={index} className="hover:bg-gray-100 mb-10">
@@ -273,6 +402,66 @@ const Role = () => {
             }
           </tbody>
         </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+        <div className="flex">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 text-sm ${
+              currentPage === 0
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-l transition`}
+          >
+            Prev
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index)}
+              className={`px-3 py-1 text-sm mx-1 rounded ${
+                currentPage === index
+                  ? "bg-green-500 text-white"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } transition`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+            }
+            disabled={currentPage === totalPages - 1}
+            className={`px-3 py-1 text-sm ${
+              currentPage === totalPages - 1
+                ? "bg-transparent text-gray-300"
+                : "bg-transparent hover:bg-green-500 hover:text-white"
+            } rounded-r transition`}
+          >
+            Next
+          </button>
+        </div>
       </div>
       
       {

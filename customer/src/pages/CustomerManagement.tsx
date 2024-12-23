@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
-import { Ellipsis } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowRightLeft, Ellipsis } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getNotificationTemplateThunk, sendEmailToCustomerThunk } from 'store/user.thunk';
+import { setCustomerFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";
@@ -22,11 +23,13 @@ interface Filter {
   authentication: string | Boolean,
   license_usage: string | Number,
   subscritption_date: string | Date,
-  renewal_date: string | Date
+  renewal_date: string | Date,
+  domain: string
 }
 
 const CustomerManagement: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const filterRef = useRef();
   const intialFilter:Filter= {
@@ -36,7 +39,8 @@ const CustomerManagement: React.FC = () => {
     authentication: "",
     license_usage: "",
     subscritption_date: "",
-    renewal_date: ""
+    renewal_date: "",
+    domain: ""
   };
   const intialFilter2= {
     country: "",
@@ -44,18 +48,38 @@ const CustomerManagement: React.FC = () => {
     authentication: "",
     license_usage: "",
     subscritption_date: "",
-    renewal_date: ""
+    renewal_date: "",
+    domain: ""
   };
+  const {customerFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  // console.log('customerFilters', customerFilters);
   const [filterShow, setFilterShow] = useState(false);
-  const [filters, setFilters] = useState(intialFilter);
-  console.log("filters...", filters);
+  const [filters, setFilters] = useState(customerFilters === null ? intialFilter : customerFilters);
+  // console.log("filters...", filters);
   
-  const [filters2, setFilters2] = useState(intialFilter2);
+  const [filters2, setFilters2] = useState(customerFilters === null ? intialFilter2 : {
+    country: customerFilters?.country || "",
+    state_name: customerFilters?.state_name || "",
+    authentication: customerFilters?.authentication || "",
+    license_usage: customerFilters?.license_usage || "",
+    subscritption_date: customerFilters?.subscritption_date || "",
+    renewal_date: customerFilters?.renewal_date || "",
+    domain: customerFilters?.domain || ""
+  });
+  // console.log("filters2...", filters2);
+
+  useEffect(() => {
+    const setCustomerFiltersSlice = async() => {
+      await dispatch(setCustomerFiltersStatus(filters)).unwrap();
+    }
+
+    setCustomerFiltersSlice();
+  }, [filters]);
   
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  console.log(customerList);
+  // console.log(customerList);
   const [checked, setChecked] = useState([]);
   // console.log("checked...", checked);
   
@@ -68,19 +92,47 @@ const CustomerManagement: React.FC = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [commonModal, setCommonModal] = useState(false);
   const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [selectAllCount, setSelectAllCount] = useState<number>(0);
+  const [selectAllPage, setSelectAllPage] = useState<number>(0);
   const [authorization, setAuthorization] = useState("");
-  const [countryList, setCountryList] = useState([]);
-  const [regionList, setRegionList] = useState([]);
   const [notificationTemplates, setNotificationTemplates] = useState([]);
   // console.log("notificationTemplates...", notificationTemplates);
   const [notificationId, setNotificationId] = useState("");
   
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 20;
+  const [currentPage, setCurrentPage] = useState(customerFilters === null ? 0 : currentPageNumber);
+  const [itemsPerPage, setItemsPerPage] = useState(customerFilters === null ? 20 : itemsPerPageNumber);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = customerList.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = customerList?.slice(indexOfFirstItem, indexOfLastItem);
+  // console.log("currentItems...", currentItems);
   const totalPages = Math.ceil(customerList.length / itemsPerPage);
+  // console.log({currentPage, totalPages, lenght: currentItems?.length});
+
+  useEffect(() => {
+    if(customerList?.length > 0 && totalPages < currentPage + 1) {
+      if(totalPages-1 < 0) {
+        setCurrentPage(0);
+      } else {
+        setCurrentPage(totalPages-1);
+      }
+    }
+  }, [totalPages, currentPage, customerList]);
+
+  useEffect(() => {
+    const setCurrentPageNumberSlice = async() => {
+      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+    }
+
+    setCurrentPageNumberSlice();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const setItemsPerPageSlice = async() => {
+      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+    }
+
+    setItemsPerPageSlice();
+  }, [itemsPerPage]);
   
   useEffect(() => {
     if(authorization == "true"){
@@ -131,6 +183,88 @@ const CustomerManagement: React.FC = () => {
     getCustomerList();
   }, [filters]);
 
+  const [countryList, setCountryList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
+  // console.log({countryList, regionList})
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  // console.log({countries, states});
+  const [country, setCountry] = useState({});
+  const [state, setState] = useState({});
+  // console.log({country, state});
+  useEffect(() => {
+    var config = {
+      method: 'get',
+      url: 'https://api.countrystatecity.in/v1/countries',
+      headers: {
+        'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+      }
+    };
+    axios(config)
+      .then(res => {
+        setCountries(res.data);
+        // console.log(res.data);
+      })
+      .catch(err => {
+        setCountries([]);
+        console.log("error...", err);
+      })
+  }, []);
+
+  useEffect(() => {
+    if(filters2?.country !== "") {
+      const data = countries.find(country => country?.name === filters2?.country)
+      setCountry(data)
+    } else {
+      setCountry({})
+    }
+  }, [countries, filters2?.country]);
+  
+  useEffect(() => {
+    if(country?.iso2 !== undefined) {
+      var config = {
+        method: 'get',
+        url: `https://api.countrystatecity.in/v1/countries/${country?.iso2}/states`,
+        headers: {
+          'X-CSCAPI-KEY': 'Nk5BN011UlE5QXZ6eXc1c05Id3VsSmVwMlhIWWNwYm41S1NRTmJHMA=='
+        }
+      };
+      axios(config)
+      .then(res => {
+        setStates(res.data);
+      })
+      .catch(err => {
+        setStates([]);
+        console.log("error...", err);
+      })
+    } else {
+      setStates([]);
+    }
+  }, [country]);
+
+  useEffect(() => {
+    const findAvailableStates = async() => {
+      if(states.length > 0 && regionList.length > 0) {
+        const data = [];
+        await regionList?.forEach(element => {
+          states.find(item => {
+            if(item?.name === element) {
+              data.push(item?.name)
+            } else {
+              return;
+            }
+          })
+        })
+        setAvailableStates(data)
+      } else {
+        setAvailableStates([]);
+      }
+    }
+
+    findAvailableStates();
+  }, [states, regionList])
+
   const getCountryList = async() => {
     try {
       const countries = await dispatch(
@@ -138,7 +272,7 @@ const CustomerManagement: React.FC = () => {
       ).unwrap();
       setCountryList(countries.countrylist);
     } catch (error) {
-      // console.log("Error on token");
+      console.log("Error on token")
     }
   }
   
@@ -188,6 +322,14 @@ const CustomerManagement: React.FC = () => {
     setFilters2({
       ...filters2,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFilterCountryChange = (e) => {
+    setFilters2({
+      ...filters2,
+      country: e.target.value,
+      state_name: ""
     });
   };
 
@@ -248,19 +390,19 @@ const CustomerManagement: React.FC = () => {
   };
 
   const tableHeads = [
-    '',
-    "Customer ID",
-    "Name",
-    "Product",
-    "Domain",
-    "Subscription Plan",
-    "License Usage",
-    "Create Date",
-    "Payment Cycle",
-    "Renewed Date",
-    "Make Authorization",
-    "Status",
-    "Action",
+    {name: "checkbox", label: ""},
+    {name: "customer_id", label: "Customer ID",},
+    {name: "first_name", label: "Name",},
+    {name: "", label: "Product",},
+    {name: "", label: "Domain",},
+    {name: "", label: "Subscription Plan",},
+    {name: "", label: "License Usage",},
+    {name: "created_at", label: "Create Date",},
+    {name: "", label: "Payment Cycle",},
+    {name: "", label: "Renewed Date",},
+    {name: "authentication", label: "Make Authorization",},
+    {name: "account_status", label: "Status",},
+    {name: "action", label: "Action",},
   ];
 
   const toggleList = (customerId) => {
@@ -358,16 +500,31 @@ const CustomerManagement: React.FC = () => {
   const selectAllButton = () => {
     const newSelectAllState = !selectAll;
     setSelectAll(newSelectAllState);
-    setChecked(customerList);
+
+    if(newSelectAllState) {
+      setChecked(currentItems);
+      setSelectAllCount(currentItems.length);
+    } else {
+      setChecked([]);
+      setSelectAllCount(0);
+    }
   };
+  
+  useEffect(() => {
+    if(selectAllCount === checked.length && checked.length > 0) {
+      setSelectAll(true);
+    } else {
+      setSelectAll(false);
+    }
+  }, [currentItems]);
 
-  const toggleCheck = (newJson) => {
+  const toggleCheck = (newJson:any) => {
     setChecked((prevChecked) => {
-      const index = prevChecked.findIndex((item) => item?.id === newJson?.id);
+      const isChecked = prevChecked.some((item) => item?.record_id === newJson?.record_id);
 
-      if (index !== -1) {
+      if (isChecked) {
         // If found, remove it
-        return prevChecked.filter((item) => item?.id !== newJson?.id);
+        return prevChecked.filter((item) => item?.record_id !== newJson?.record_id);
       } else {
         // If not found, add it
         return [...prevChecked, newJson];
@@ -407,7 +564,7 @@ const CustomerManagement: React.FC = () => {
         }
       }
     }
-  }
+  };
 
   return (
     <div
@@ -439,7 +596,7 @@ const CustomerManagement: React.FC = () => {
               type="checkbox"
               className={`w-3 h-3 border border-black mt-[12px] mr-[6px] accent-[#12A833]`}
               onClick={() => {selectAllButton()}}
-              checked={customerList.length !== checked.length ? false : customerList.length === 0 ? false : true}
+              checked={selectAll}
             />
             <p className="font-inter-bold text-[14px] opacity-60 text-custom-blue mt-[8px]">
               Select All
@@ -475,10 +632,15 @@ const CustomerManagement: React.FC = () => {
                 placeholder="Auto search domain list"
                 className="serach-input"
                 name="domain"
-                onChange={e => {setDomain(e.target.value)}}
-                value={domain}
+                // onChange={e => {setDomain(e.target.value)}}
+                // value={domain}
+                onChange={e => {setFilters({
+                  ...filters,
+                  domain: e.target.value
+                })}}
+                value={filters?.domain}
               />
-              {
+              {/* {
                 domainList.length !== 0 && (
                   <div
                     className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b`}
@@ -497,7 +659,7 @@ const CustomerManagement: React.FC = () => {
                     })}
                   </div>
                 )
-              }
+              } */}
               
             </div>
             <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
@@ -572,7 +734,7 @@ const CustomerManagement: React.FC = () => {
                       <select
                         className="select-input"
                         name="country"
-                        onChange={handleFilterChange}
+                        onChange={handleFilterCountryChange}
                         value={filters2.country}
                       >
                         <option selected value="">
@@ -596,7 +758,7 @@ const CustomerManagement: React.FC = () => {
                           Select Region
                         </option>
                         {
-                          regionList && regionList.map((region, number) => (
+                          availableStates && availableStates?.map((region, number) => (
                             <option key={number} value={region}>{region}</option>
                           ))
                         }
@@ -710,7 +872,14 @@ const CustomerManagement: React.FC = () => {
                       key={index}
                       className="w-[95px] th-css"
                     >
-                      {item}
+                      <span>{item.label}</span>
+                      {
+                        item?.name === "checkbox" ? "" :
+                        item?.name === "action" ? "" :
+                        <span className="ml-1"><button type="button" onClick={() => {
+                          //
+                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                      }
                     </th>
                   );
                 })}
@@ -728,8 +897,8 @@ const CustomerManagement: React.FC = () => {
                       <td>
                         <input type="checkbox"
                           className="w-3 h-3 border border-black accent-[#12A833]"
-                          checked={checked?.some((check) => check?.id === item?.id)}
-                          onClick={() => {toggleCheck(item)}}
+                          checked={checked?.some((check) => check?.record_id === item?.record_id)}
+                          onChange={() => {toggleCheck(item)}}
                         />
                       </td>
                       <td
@@ -739,7 +908,7 @@ const CustomerManagement: React.FC = () => {
                         className="td-css text-[#1F86E5] underline"
                       >
                         <a
-                          onClick={() => navigate('/customer-information', { state: item })}
+                          onClick={() => navigate('/customer-information', { state: {item, filters} })}
                           button-name="go-to-customer-information"
                           className="cursor-pointer"
                         >{item?.first_name} {item?.last_name}</a>
@@ -1050,10 +1219,27 @@ const CustomerManagement: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex flex-col mt-12 relative bottom-2 right-0">
-          <div className="flex justify-end mb-2">
+        <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
+          <div className="flex items-center gap-1">
+            <select
+              onChange={e => {
+                setItemsPerPage(parseInt(e.target.value));
+              }}
+              value={itemsPerPage}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={20} selected>20</option>
+              <option value={50}>50</option>
+            </select>
+            <label>items</label>
+          </div>
+          <div className="flex">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 0));
+              }}
               disabled={currentPage === 0}
               className={`px-3 py-1 text-sm ${
                 currentPage === 0
@@ -1068,7 +1254,9 @@ const CustomerManagement: React.FC = () => {
             {Array.from({ length: totalPages }, (_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentPage(index)}
+                onClick={() => {
+                  setCurrentPage(index);
+                }}
                 className={`px-3 py-1 text-sm mx-1 rounded ${
                   currentPage === index
                     ? "bg-green-500 text-white"
@@ -1080,9 +1268,9 @@ const CustomerManagement: React.FC = () => {
             ))}
 
             <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-              }
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+              }}
               disabled={currentPage === totalPages - 1}
               className={`px-3 py-1 text-sm ${
                 currentPage === totalPages - 1
