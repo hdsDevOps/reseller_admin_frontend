@@ -79,7 +79,7 @@ const CustomerManagement: React.FC = () => {
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  // console.log(customerList);
+  // console.log("customerList...", customerList);
   const [checked, setChecked] = useState([]);
   // console.log("checked...", checked);
   
