@@ -1,12 +1,12 @@
 describe('Forgot Password Flow', () => {
-  const baseUrl = 'http://localhost:3000'; // Update with your app's URL
+  const baseUrl = 'http://localhost:4000'; // Update with your app's URL
 
   it('Should complete the forgot password flow', () => {
     // Step 1: Visit the forgot password page
     cy.visit(`${baseUrl}/forgotpassword`);
 
     // Step 2: Enter email/username
-    cy.get('input[name="email"]').type('sumon99@gmail.com');
+    cy.get('input[name="email"]').type('mtreza59@gmail.com');
     cy.get('button[type="submit"]').click();
 
     cy.intercept('**', (req) => {
@@ -16,11 +16,11 @@ describe('Forgot Password Flow', () => {
     cy.wait('@getOtp').then((interception) => {
       const otp = interception.response.body.otp;
       console.log("otp", otp)
-      const otpString = otp.toString();
+      const otpString = otp?.toString();
 
       // Step 4: Enter OTP
       cy.contains('OTP verification').should('be.visible');
-      otpString.split('').forEach((digit, index) => {
+      otpString?.split('').forEach((digit, index) => {
         cy.get(`input[data-otp-index="${index}"`).type(digit);
       });
       cy.get('button[type="submit"]').click();

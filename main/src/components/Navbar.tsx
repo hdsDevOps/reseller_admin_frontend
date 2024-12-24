@@ -40,8 +40,9 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [username] = useState("Robert Clive"); // Replace with actual username
   const [email] = useState("roberclive@domain.co.in"); // Replace with actual email
-  const userId = useAppSelector(state => state.auth.userId);
+  const { userId, userDetails } = useAppSelector(state => state.auth);
   // console.log("userId....", userId);
+  // console.log("userDetails....", userDetails);
   const [width, setWidth] = useState(window.innerWidth);
   const [ dropdowns, setDropdowns ] = useState({});
 

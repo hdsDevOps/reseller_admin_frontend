@@ -91,16 +91,72 @@ const initialYearlySpendingStatistics = {
 };
 
 const Dashboard: React.FC = () => {
-  const { userDetails } = useAppSelector((state) => state.auth);
+  const { userDetails, defaultCurrency } = useAppSelector((state) => state.auth);
+  // console.log("defaultCurrency", defaultCurrency);
   // console.log("userDetails...", userDetails);
   const pdfRef = useRef();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [monthlyRevenueData, setMonthlyRevenueData] = useState(initialMonthlyRevenueData);
-  const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([]);
-  const [currentRevenueData, setCurrentRevenueData] = useState(initialYearlySpendingStatistics);
-  console.log("currentRevenueData...", currentRevenueData);
+  const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([initialYearlySpendingStatistics]);
+  // console.log("yearlySpendingStatistics...", yearlySpendingStatistics);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  // console.log("Current index...", currentIndex);
+  const [currentRevenueData, setCurrentRevenueData] = useState(yearlySpendingStatistics[currentIndex]);
+  // console.log("currentRevenueData...", currentRevenueData);
+  useEffect(() => {
+    setCurrentRevenueData(yearlySpendingStatistics.length>0 ? yearlySpendingStatistics[currentIndex] : initialYearlySpendingStatistics);
+  }, [yearlySpendingStatistics, currentIndex]);
+
+  const currencyList = [
+    { name: 'EUR', logo: '€',},
+    { name: 'AUD', logo: 'A$',},
+    { name: 'USD', logo: '$',},
+    { name: 'NGN', logo: 'N₦',},
+    { name: 'GBP', logo: '£',},
+    { name: 'CAD', logo: 'C$',},
+    { name: 'INR', logo: '₹',},
+  ];
+
+  const currencyLogo = () => {
+    if(defaultCurrency !== '' || defaultCurrency !== null || defaultCurrency !== undefined) {
+      const data = currencyList.find(item => item?.name === defaultCurrency);
+      return data?.logo;
+    } else {
+      return "$";
+    }
+  };
+
+  const changeIndex = (buttonType: string) => {
+    const length = yearlySpendingStatistics.length;
+    if(currentIndex === 0 && length === 1) {
+      setCurrentIndex(0);
+    } else if(length > 1) {
+      if(currentIndex === 0) {
+        console.log("no next");
+        if(buttonType === "prev") {
+          setCurrentIndex(currentIndex + 1);
+        } else {
+          //
+        }
+      } else if(currentIndex > 0 && length - currentIndex > 1) {
+        console.log("next + prev");
+        if(buttonType === "prev") {
+          setCurrentIndex(currentIndex + 1);
+        } else {
+          setCurrentIndex(currentIndex - 1);
+        }
+      } else if(currentIndex > 0 && length - currentIndex <= 1) {
+        console.log("no prev");
+        if(buttonType === "prev") {
+          //
+        } else {
+          setCurrentIndex(currentIndex - 1);
+        }
+      }
+    }
+  };
 
   const revenue = [
     {label: 'Revenue Last Month', name: 'last_month_revenue',},
@@ -140,7 +196,7 @@ const Dashboard: React.FC = () => {
     const getYearlySpendingStatistics = async() => {
       try {
         const result = await dispatch(yearlySpendingStatisticsThunk()).unwrap();
-        setYearlySpendingStatistics([result?.result]);
+        setYearlySpendingStatistics(result?.result);
       } catch (error) {
         setYearlySpendingStatistics([]);
         if(error?.message == "Request failed with status code 401") {
@@ -163,7 +219,7 @@ const Dashboard: React.FC = () => {
     }
   }, [location.state]);
 
-  const maxMonth = currentRevenueData?.data.reduce((max, current) => {
+  const maxMonth = currentRevenueData?.data?.reduce((max, current) => {
     const total_revenue = current.revenue_from_new_customers + current.revenue_from_old_customers;
     if(total_revenue > max.total_revenue) {
       return { month: current.month, total_revenue};
@@ -266,7 +322,7 @@ const Dashboard: React.FC = () => {
                     className="flex flex-col"
                   >
                     <p className="font-inter font-normal text-xs text-black opacity-50 text-nowrap">{rev.label}</p>
-                    <h4 className="font-inter font-medium text-2xl text-[#434D64]">{rev.name === "last_month_revenue" ? "$" : rev.name === "current_month_recurring_income" ? "$" : ""}{monthlyRevenueData[rev.name]}</h4>
+                    <h4 className="font-inter font-medium text-2xl text-[#434D64]">{rev.name === "last_month_revenue" ? currencyLogo() : rev.name === "current_month_recurring_income" ? currencyLogo() : ""}{monthlyRevenueData[rev.name]}</h4>
                   </div>
                 </div>
               )
