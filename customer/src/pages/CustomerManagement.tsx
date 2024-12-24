@@ -673,7 +673,7 @@ const CustomerManagement: React.FC = () => {
                   });
                 }}
                 placeholder="Name, Email"
-                value={filters.search_data}
+                value={filters?.search_data}
               />
             </div>
           </div>
