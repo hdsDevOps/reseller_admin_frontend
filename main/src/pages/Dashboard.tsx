@@ -198,7 +198,7 @@ const Dashboard: React.FC = () => {
         const result = await dispatch(yearlySpendingStatisticsThunk()).unwrap();
         setYearlySpendingStatistics(result?.result);
       } catch (error) {
-        setYearlySpendingStatistics([initialYearlySpendingStatistics]);
+        setYearlySpendingStatistics([]);
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -385,15 +385,9 @@ const Dashboard: React.FC = () => {
             >
               <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">Spending Statistics</p>
               <div className="flex flex-row justify-between w-[110px]">
-                <button
-                  type="button"
-                  onClick={() => {changeIndex('prev')}}
-                ><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
-                <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">{currentRevenueData?.year}</p>
-                <button
-                  type="button"
-                  onClick={() => {changeIndex('next')}}
-                ><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
+                <button><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
+                <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">2024</p>
+                <button><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
               </div>
             </div>
             <div
