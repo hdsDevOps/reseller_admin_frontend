@@ -673,7 +673,7 @@ const CustomerManagement: React.FC = () => {
                   });
                 }}
                 placeholder="Name, Email"
-                value={filters.search_data}
+                value={filters?.search_data}
               />
             </div>
           </div>
@@ -1220,7 +1220,7 @@ const CustomerManagement: React.FC = () => {
           </table>
         </div>
         <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
-          {/* <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <select
               onChange={e => {
                 setItemsPerPage(parseInt(e.target.value));
@@ -1234,8 +1234,7 @@ const CustomerManagement: React.FC = () => {
               <option value={50}>50</option>
             </select>
             <label>items</label>
-          </div> */}
-          <div>Hello</div>
+          </div>
           <div className="flex">
             <button
               onClick={() => {
