@@ -359,6 +359,7 @@ const AddCustomer: React.FC = () => {
                           inputClass="react-tel-input outline-none !w-full bord !border-0 !h-full"
                           dropdownClass="peer"
                           buttonClass="!border-0 !h-full !w-[40px]"
+                          cypress-name="phone_no_input"
                         />
                       </div>
                     )
@@ -395,6 +396,7 @@ const AddCustomer: React.FC = () => {
                           value={customer?.country || countryName}
                           required
                           onFocus={() => {setCountryDropdownOpen(true)}}
+                          cypress-name="country_input"
                         />
                         {
                           countryDropdownOpen && (
@@ -456,6 +458,7 @@ const AddCustomer: React.FC = () => {
                           value={customer?.state_name || stateName}
                           required={states?.length > 0 ? true : false}
                           onFocus={() => {setStateDropdownOpen(true)}}
+                          cypress-name="state_input"
                         />
                         {
                           stateDropdownOpen && (
@@ -477,6 +480,7 @@ const AddCustomer: React.FC = () => {
                                       setCity({});
                                       setStateDropdownOpen(false);
                                     }}
+                                    dropdown-name="state_dropdown"
                                   >{region?.name}</p>
                                 ))
                               }
@@ -512,6 +516,7 @@ const AddCustomer: React.FC = () => {
                           value={customer?.city || cityName}
                           required={cities?.length > 0 ? true : false}
                           onFocus={() => {setCityDropdownOpen(true)}}
+                          cypress-name="city_input"
                         />
                         {
                           cityDropdownOpen && (
@@ -530,6 +535,7 @@ const AddCustomer: React.FC = () => {
                                       setCity(city_name);
                                       setCityDropdownOpen(false);
                                     }}
+                                    dropdown-name="city-dropdown"
                                   >{city_name?.name}</p>
                                 ))
                               }
@@ -555,6 +561,7 @@ const AddCustomer: React.FC = () => {
                           className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                           onChange={updateCustomer}
                           placeholder={item?.placeholder}
+                          cypress-name={item.name+"_input"}
                         />
                       </div>
                     )
@@ -582,6 +589,7 @@ const AddCustomer: React.FC = () => {
                         authentication: !customer.authentication
                       })
                     }}
+                    cypress-name="authentication_input"
                   />
                   <div
                     className="w-[45px] h-[20px] flex items-center bg-gray-300 rounded-full text-[7px] peer-checked:text-[#00D13B] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer after:content-['OFF'] peer-checked:after:content-['ON'] peer-checked:after:translate-x-full after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-4 after:w-5 after:transition-all peer-checked:bg-[#00D13B]">
@@ -595,9 +603,11 @@ const AddCustomer: React.FC = () => {
             >
               <button
                 className='btn-green-2 h-[46px]'
+                type='submit'
               >Save</button>
               <button
                 type='button'
+                cypress-name="cancel_input"
                 className='btn-red h-[46px] ml-[30px]'
                 onClick={() => {
                   setCustomer({

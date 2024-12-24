@@ -863,7 +863,7 @@ const CustomerManagement: React.FC = () => {
         }
 
         <div className="w-full overflow-x-auto pb-[20px]">
-          <table className="min-w-[1100px] max-h-screen">
+          <table className="min-w-[1100px] w-full max-h-screen">
             <thead className="h-[53px] thead-css">
               <tr>
                 {tableHeads?.map((item, index) => {

@@ -7,7 +7,7 @@ describe('auth microservice test', () => {
 
     // Step 2: Enter valid username and password
     cy.get('input[name="email"]').type('mtreza59@gmail.com');
-    cy.get('input[name="password"]').type('1234567890');
+    cy.get('input[name="password"]').type('0987654321');
     cy.get('button[type="submit"]').click();
 
     // cy.on('window:before:load', (win) => {
@@ -25,7 +25,7 @@ describe('auth microservice test', () => {
 
     // Step 3: Redirect to OTP verification page
     cy.wait('@getOtp').then((interception) => {
-      const otp = interception.response.body.otp;
+      const otp = interception?.response?.body?.otp;
       console.log("otp", otp)
       const otpString = otp?.toString();
 
@@ -36,6 +36,7 @@ describe('auth microservice test', () => {
       otpString?.split('').forEach((digit, index) => {
         cy.get(`input[data-otp-index="${index}"`).type(digit);
       });
+      cy.wait(2000);
       cy.get('button[type="submit"]').click();
 
       // Step 5: Redirect to success page

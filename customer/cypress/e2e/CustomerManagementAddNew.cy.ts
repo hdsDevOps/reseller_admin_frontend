@@ -1,6 +1,6 @@
 describe('customer management add new test', () => {
-  const baseUrl = "http://localhost:3000";
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IkQ4UGhESWxaNU1oZ1VjalI3MGFZRWQ0QXNBazIiLCJpYXQiOjE3MzM4OTkwMTAsImV4cCI6MTczMzkwMjYxMH0.qKynRTrxM_ckEB9kIX2GJeA0XI4YeUv0Fi5BLBxXTH0";
+  const baseUrl = "http://localhost:4000";
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRUeGVVSWlTU2Rjb2lCOWtGd215WUowUVQyMTMiLCJpYXQiOjE3MzUwMjgzMzUsImV4cCI6MTczNTAzMTkzNX0.QIa_tF-q6o-JlPvs0bNl2GrgK8GnnyhbJmpfxGIIpsc";
   it('customer management test flow to add new customer', () => {
     // step 1: visit customer management page
     cy.visit(`${baseUrl}/customers`, {
@@ -10,6 +10,7 @@ describe('customer management add new test', () => {
     });
 
     // step 2: add new user
+    cy.wait(1000);
     cy.get('button[button-name="customers-add-new"]').click();
     cy.get('input[name="first_name"]').type('Hesham');
     cy.get('input[name="last_name"]').type('Reza');
@@ -19,11 +20,24 @@ describe('customer management add new test', () => {
     cy.get('p[dropdown-name="country-dropdown"]')
       .contains('India')
       .click();
+    cy.get('input[name="state_name"]').type('West Bengal');
+    cy.get('p[dropdown-name="country-dropdown"]')
+      .contains('West Bengal')
+      .click();
+    cy.get('input[name="city"]').type('Kolkata');
+    cy.get('p[dropdown-name="city-dropdown"]')
+      .contains('Kolkata')
+      .click();
+    cy.get('input[name="zipcode"]').type('123457');
+    cy.get('input[name="phone_no"]').type('1234567890');
+    cy.get('input[name="email"]').type('abc@gmail.com');
     // cy.get('input[name=""]').type('');
     // cy.get('input[name=""]').type('');
     // cy.get('input[name=""]').type('');
     // cy.get('input[name=""]').type('');
 
     // cy.get().click();
+    cy.wait(2000);
+    cy.get('button[type="submit"]').click();
   })
 })
