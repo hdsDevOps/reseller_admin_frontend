@@ -6,7 +6,7 @@ const Dotenv = require('dotenv-webpack');
 const deps = require("./package.json").dependencies;
 
 const printCompilationMessage = require('./compilation.config.js');
-       
+
 module.exports = (_, argv) => ({
   output: {
     publicPath: "auto",
@@ -18,8 +18,8 @@ module.exports = (_, argv) => ({
 
   devServer: {
     port: 4006,
-    historyApiFallback: true,
     allowedHosts: ["all"],
+    historyApiFallback: true,
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
       const port = devServer.server.address().port
@@ -60,7 +60,7 @@ module.exports = (_, argv) => ({
       },
     ],
   },
-
+   
   plugins: [
     new ModuleFederationPlugin({
       name: "role",
