@@ -122,7 +122,7 @@ const PlanPriceSetup = () => {
   const [viewMore, setViewMore] = useState(initialSubscription);
   console.log("viewMore...", viewMore);
   
-  const { defaultCurrency } = useAppSelector((state) => state.auth);
+  const { defaultCurrency, rolePermissionsSlice } = useAppSelector((state) => state.auth);
   // console.log("defaultCurrency....", defaultCurrency);
 
   const flagList = [
@@ -339,6 +339,7 @@ const PlanPriceSetup = () => {
                 onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}
                 type="button"
                 cypress-name="plan-and-price-edit"
+                disabled={!rolePermissionsSlice?.subscription_master?.plan_and_price_setup?.edit ? true : false}
               >
                 Edit
               </button>
@@ -350,6 +351,7 @@ const PlanPriceSetup = () => {
                 }}
                 type="button"
                 cypress-name="plan-and-price-delete"
+                disabled={!rolePermissionsSlice?.subscription_master?.plan_and_price_setup?.delete ? true : false}
               >
                 Delete
               </button>
@@ -522,13 +524,21 @@ const PlanPriceSetup = () => {
                 </td>
                 <td className="px-6 py-4 text-center">
                   <div className="flex gap-2">
-                    <button className="p-1 text-black hover:text-[#12A833] text-base"  onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}>
+                    <button
+                      className="p-1 text-black hover:text-[#12A833] text-base"
+                      onClick={() => {navigate('/edit-plan-and-price-setup', {state: plan})}}
+                      disabled={!rolePermissionsSlice?.subscription_master?.plan_and_price_setup?.edit ? true : false}
+                    >
                       <FaPen />
                     </button>
-                    <button className="p-1 text-black hover:text-[#E02424] text-base" onClick={() => {
-                      setDeleteId(plan?.id);
-                      setIsModalOpen(true);
-                    }}>
+                    <button
+                      className="p-1 text-black hover:text-[#E02424] text-base"
+                      onClick={() => {
+                        setDeleteId(plan?.id);
+                        setIsModalOpen(true);
+                      }}
+                      disabled={!rolePermissionsSlice?.subscription_master?.plan_and_price_setup?.delete ? true : false}
+                    >
                       <FaTrash />
                     </button>
                     <button
@@ -589,6 +599,7 @@ const PlanPriceSetup = () => {
             className="btn-green w-[139px] flex flex-row items-center gap-2"
             onClick={() => {navigate('/add-plan-and-price-setup')}}
             button-name="add-plan-and-price-btn"
+            disabled={!rolePermissionsSlice?.subscription_master?.plan_and_price_setup?.add ? true : false}
           >
             <Plus size={20} />
             Add new

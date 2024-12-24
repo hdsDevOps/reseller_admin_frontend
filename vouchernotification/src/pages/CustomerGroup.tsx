@@ -22,7 +22,7 @@ const initialFilters = {
 const CustomerGroup: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const {customerGroupFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  const {customerGroupFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState();
   const modalRef = useRef();
@@ -41,7 +41,7 @@ const CustomerGroup: React.FC = () => {
   }, [filters]);
 
   const [sampleData, setSampleData] = useState([]);
-  console.log(sampleData);
+  // console.log(sampleData);
   
   const [currentPage, setCurrentPage] = useState(customerGroupFilters === null ? 0 : currentPageNumber);
   const [itemsPerPage, setItemsPerPage] = useState(customerGroupFilters === null ? 20 : itemsPerPageNumber);
@@ -184,6 +184,7 @@ const CustomerGroup: React.FC = () => {
             <button
               onClick={() => navigate('/add-customer-group')}
               className="btn-green w-[139px] items-center"
+              disabled={!rolePermissionsSlice?.voucher_management?.customer_group?.add ? true : false}
             >
               <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
               Add new
@@ -283,13 +284,18 @@ const CustomerGroup: React.FC = () => {
                         <div className="flex flex-row gap-1">
                           <button className="text-black hover:text-orange-300"
                             onClick={() => {navigate('/edit-customer-group', {state: item})}}
+                            disabled={!rolePermissionsSlice?.voucher_management?.customer_group?.add ? true : false}
                           >
                               <Pencil className=" w-5" />
                             </button>
-                          <button className="text-black hover:text-red-600 text-md" onClick={() => {
-                            setDeleteModal(true);
-                            setVoucherGroup(item);
-                          }}>
+                          <button
+                            className="text-black hover:text-red-600 text-md"
+                            onClick={() => {
+                              setDeleteModal(true);
+                              setVoucherGroup(item);
+                            }}
+                            disabled={!rolePermissionsSlice?.voucher_management?.customer_group?.delete ? true : false}
+                          >
                             <FaTrash role="img" aria-label="trash" />
                           </button>
                         </div>
@@ -299,6 +305,7 @@ const CustomerGroup: React.FC = () => {
                             openModal(item);
                             setVoucherGroup(item);
                           }}
+                          disabled={!rolePermissionsSlice?.voucher_management?.customer_group?.view ? true : false}
                         >
                           View
                         </button>

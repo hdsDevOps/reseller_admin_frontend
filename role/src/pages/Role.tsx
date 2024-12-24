@@ -25,7 +25,7 @@ const Role = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const filterRef = useRef(null);
-  const { rolesFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  const { rolesFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [roles, setRoles] = useState([]);
   // console.log("roles...", roles);
   const [initialRoles, setIntialRoles] = useState([]);
@@ -212,11 +212,14 @@ const Role = () => {
         >Role</p>
       </div>
       <div className="bg-[#F9F9F9] p-[19px] mb-6 flex min-[835px]:flex-row max-[835px]:flex-col items-center justify-between mt-2">
-        <Link to="/add-role"
+        <button
+          type="button"
           className="btn-green ml-[19px]"
+          onClick={() => {navigate('/add-role')}}
+          disabled={!rolePermissionsSlice?.role_management?.role?.add ? true : false}
         >
           Add Role
-        </Link>
+        </button>
 
         <div className="sm:px-4 max-sm:px-0 sm:w-[350px] max-sm:w-full max-[835px]:mt-2">
           <div
@@ -378,6 +381,7 @@ const Role = () => {
                             onClick={() => {
                               navigate('/edit-role', {state: role});
                             }}
+                            disabled={!rolePermissionsSlice?.role_management?.role?.edit ? true : false}
                           >
                             <BiSolidEditAlt className="text-black text-xl" />
                           </button>
@@ -387,6 +391,7 @@ const Role = () => {
                               setDeleteModal(true);
                               setDeleteRoleId(role?.id);
                             }}
+                            disabled={!rolePermissionsSlice?.role_management?.role?.delete ? true : false}
                           >
                             <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
                           </button>

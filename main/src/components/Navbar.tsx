@@ -478,6 +478,7 @@ const Sidebar = () => {
                           {
                             item.subDomain.map((element, key) => {
                               if(rolePermissions[item.name][element?.name]?.overall) {
+                                // console.log(element?.name, rolePermissions[item.name][element?.name])
                                 return(
                                   <div
                                     className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}

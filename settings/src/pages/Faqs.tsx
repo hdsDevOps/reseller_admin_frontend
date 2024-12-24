@@ -4,7 +4,7 @@ import { ChevronUp, ChevronDown, Trash, Pencil } from 'lucide-react';
 import { FiPlus } from "react-icons/fi";
 import { FaTimes } from 'react-icons/fa';
 import { getFaqsThunk, addFaqThunk, updateFaqThunk, deleteFaqThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
-import { useAppDispatch } from 'store/hooks';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
@@ -18,6 +18,7 @@ const initialFaq = {
 const Faqs: React.FC = () => {
   const dispatch = useAppDispatch();
   const modalRef = useRef();
+  const { rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [deleteModal, setDeleteModal] = useState(false);
   const [faqModal, setFaqModal] = useState(false);
   const [editFaq, setEditFaq] = useState(false);
@@ -187,6 +188,7 @@ const Faqs: React.FC = () => {
             }}
             className="btn-green w-[139px] items-center"
             cypress-name="add-new-faq"
+            disabled={!rolePermissionsSlice?.faqs?.add ? true : false}
           >
             <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
             Add new
@@ -238,6 +240,7 @@ const Faqs: React.FC = () => {
                     setEditFaq(true);
                   }}
                   cypress-name={`edit-faq-number-${index+1}`}
+                  disabled={!rolePermissionsSlice?.faqs?.add ? true : false}
                 ><Pencil className='text-custom-green' /></button>
                 <button
                   className='btn-faq'
@@ -247,6 +250,7 @@ const Faqs: React.FC = () => {
                     setDeleteId(faq?.record_id);
                   }}
                   cypress-name={`delete-faq-number-${index+1}`}
+                  disabled={!rolePermissionsSlice?.faqs?.add ? true : false}
                 ><Trash className='text-custom-red' /></button>
               </div>
             </div>

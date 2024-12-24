@@ -5,7 +5,7 @@ import { FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk, getCustomerListThunk, removeUserAuthTokenFromLSThunk, sendTestEmailNotificationThunk } from 'store/user.thunk';
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Send, X } from "lucide-react";
@@ -13,6 +13,7 @@ import { Send, X } from "lucide-react";
 const NotificationTemplate = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
@@ -324,6 +325,7 @@ const NotificationTemplate = () => {
               }}
               className="btn-green w-[139px] items-center"
               button-name="add-new-template"
+              disabled={!rolePermissionsSlice?.notification_template?.add ? true : false}
             >
               <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
               Add new
@@ -423,7 +425,11 @@ const NotificationTemplate = () => {
                     value={filters?.search_data}
                     ref={filterRef}
                   />
-                  <button type="button" onClick={(e) => {sendNotificationEmail(e)}}>
+                  <button
+                    type="button"
+                    onClick={(e) => {sendNotificationEmail(e)}}
+                    disabled={!rolePermissionsSlice?.notification_template?.send_mail ? true : false}
+                  >
                     <Send className="w-6 text-[#12A833] sm:block my-auto" size={32} />
                   </button>
                 </div>
@@ -462,17 +468,20 @@ const NotificationTemplate = () => {
                   type="button"
                   onClick={() => {setIsPreviewOpen(true)}}
                   button-name="notificaiton-template-update-preview"
+                  disabled={!rolePermissionsSlice?.notification_template?.preview ? true : false}
                 >Preview</button>
                 <button
                   className='btn-different max-w-fit'
                   type="button"
                   onClick={() => {updateNoficationTemplateContent()}}
                   button-name="notificaiton-template-update-add"
+                  disabled={!rolePermissionsSlice?.notification_template?.update ? true : false}
                 >Update</button>
                 <button
                   className='btn-red-2 max-w-fit'
                   onClick={() => {setSelectedItem("")}}
                   button-name="notificaiton-template-update-cancel"
+                  disabled={!rolePermissionsSlice?.notification_template?.cancel ? true : false}
                 >Cancel</button>
               </div>
             </div>

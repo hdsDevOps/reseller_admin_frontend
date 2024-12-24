@@ -28,7 +28,7 @@ const UserList = () => {
   const modalRef = useRef();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { userListFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  const { userListFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add');
   const [users, setUsers] = useState([]);
@@ -347,6 +347,7 @@ const UserList = () => {
             setModalData(modalFormat);
             setModalType('add');
           }}
+          disabled={!rolePermissionsSlice?.user_list?.add ? true : false }
         >
           Add User
         </button>
@@ -467,6 +468,7 @@ const UserList = () => {
                                 setModalData(user);
                                 setIsModalOpen(true);
                               }}
+                              disabled={!rolePermissionsSlice?.role_management?.user_list?.edit ? true : false }
                             >
                               <BiSolidEditAlt className="text-black text-xl" />
                             </button>
@@ -476,6 +478,7 @@ const UserList = () => {
                                 setDeleteModalOpen(true);
                                 setDeleteUserId(user?.id);
                               }}
+                              disabled={!rolePermissionsSlice?.role_management?.user_list?.delete ? true : false }
                             >
                               <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
                             </button>

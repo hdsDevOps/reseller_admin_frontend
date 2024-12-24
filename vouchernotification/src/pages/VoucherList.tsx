@@ -27,7 +27,7 @@ const initialFilters = {
 const VoucherList: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const {voucherFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  const {voucherFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState([]);
   const [currentPage, setCurrentPage] = useState(voucherFilters === null ? 0: currentPageNumber);
@@ -378,6 +378,7 @@ const VoucherList: React.FC = () => {
               className="btn-green w-[139px] items-center"
               type="button"
               button-name="voucher-list-add-new-btn"
+              disabled={!rolePermissionsSlice?.voucher_management?.voucher_list?.add ? true : false}
             >
               <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
               Add new
@@ -535,13 +536,18 @@ const VoucherList: React.FC = () => {
                             className="text-black hover:text-orange-300"
                             onClick={() => {navigate('/edit-voucher', {state: item})}}
                             button-name="voucher-list-edit"
+                            disabled={!rolePermissionsSlice?.voucher_management?.voucher_list?.add ? true : false}
                           >
                             <Pencil className=" w-5" />
                           </button>
-                          <button className="text-black hover:text-red-600 text-md" onClick={() => {
-                            setDeleteModal(true);
-                            setVoucher(item);
-                          }}>
+                          <button
+                            className="text-black hover:text-red-600 text-md"
+                            onClick={() => {
+                              setDeleteModal(true);
+                              setVoucher(item);
+                            }}
+                            disabled={!rolePermissionsSlice?.voucher_management?.voucher_list?.delete ? true : false}
+                          >
                             <FaTrash role="img" aria-label="trash" />
                           </button>
                         </div>
@@ -551,6 +557,7 @@ const VoucherList: React.FC = () => {
                             openModal(item);
                             setVoucher(item);
                           }}
+                          disabled={!rolePermissionsSlice?.voucher_management?.voucher_list?.send_mail ? true : false}
                         >
                           Send mail
                         </button>

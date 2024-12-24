@@ -583,7 +583,7 @@ const CustomerManagement: React.FC = () => {
               onClick={() => {
                 navigate('/add-customer');
               }}
-              button-name="customers-add-new"
+              cypress-name="customers-add-new"
               disabled={!rolePermissionsSlice?.customer_management?.add ? true : false}
             >
               +&nbsp;&nbsp;Add new
@@ -617,6 +617,7 @@ const CustomerManagement: React.FC = () => {
               type="button"
               className="w-[79px] h-[38px] btn-blue max-sm:mt-1"
               onClick={(e) => {sendEmailToCustomer(e)}}
+              disabled={!rolePermissionsSlice?.customer_management?.send_mail ? true : false}
             >
               Send
             </button>
@@ -908,11 +909,12 @@ const CustomerManagement: React.FC = () => {
                       <td
                         className="td-css text-[#1F86E5] underline"
                       >
-                        <a
+                        <button
                           onClick={() => navigate('/customer-information', { state: {item, filters} })}
                           button-name="go-to-customer-information"
                           className="cursor-pointer"
-                        >{item?.first_name} {item?.last_name}</a>
+                          disabled={!rolePermissionsSlice?.customer_management?.edit ? true : false}
+                        >{item?.first_name} {item?.last_name}</button>
                       </td>
                       <td
                         className="td-css w-[180px]"
@@ -973,7 +975,7 @@ const CustomerManagement: React.FC = () => {
                               className="sr-only peer"
                               checked={item?.authentication}
                               onClick={() => handleAuthorizeChange(item)}
-                              disabled={!rolePermissionsSlice?.customer_management?.authorization}
+                              disabled={!rolePermissionsSlice?.customer_management?.authorization ? true: false}
                             />
                             <div className="w-[30px] h-[15.5px] flex items-center bg-[#E02424] rounded-full peer-checked:text-[#12A833] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[12px] after:absolute after:left-[3px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#12A833]"></div>
                           </label>
@@ -1014,7 +1016,7 @@ const CustomerManagement: React.FC = () => {
                                 className="customer-table-more-list"
                               >
                                 <li
-                                  className="customer-table-more-list-li"
+                                  className={`customer-table-more-list-li ${!rolePermissionsSlice?.customer_management?.edit ? "hidden" : ""}`}
                                 >
                                   <a
                                     className="cursor-pointer"
@@ -1024,7 +1026,7 @@ const CustomerManagement: React.FC = () => {
                                   >Edit Customer</a>
                                 </li>
                                 <li
-                                  className="customer-table-more-list-li"
+                                  className={`customer-table-more-list-li ${!rolePermissionsSlice?.customer_management?.delete ? "hidden" : ""}`}
                                 >
                                   <a
                                     className="cursor-pointer"
@@ -1032,11 +1034,10 @@ const CustomerManagement: React.FC = () => {
                                       setShowDeleteModal(!showDeleteModal);
                                       setCommonModal(true);
                                     }}
-                                    aria-disabled={!rolePermissionsSlice?.customer_management?.delete}
                                   >Delete Customer</a>
                                 </li>
                                 <li
-                                  className="customer-table-more-list-li"
+                                  className={`customer-table-more-list-li ${!rolePermissionsSlice?.customer_management?.login ? "hidden" : ""}`}
                                 >
                                   <a
                                     className="cursor-pointer"

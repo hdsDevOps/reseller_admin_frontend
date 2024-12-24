@@ -1,6 +1,6 @@
 describe('faq', () => {
-  const baseUrl = "http://localhost:3000";
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IkQ4UGhESWxaNU1oZ1VjalI3MGFZRWQ0QXNBazIiLCJpYXQiOjE3MzM5MTQxNTQsImV4cCI6MTczMzkxNzc1NH0.O3I4xFzsc_rmeWVisK_rUQyyOWyOgLnnIP_fv2mM-Lc";
+  const baseUrl = "http://localhost:4000";
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRUeGVVSWlTU2Rjb2lCOWtGd215WUowUVQyMTMiLCJpYXQiOjE3MzUwMzQ0NzksImV4cCI6MTczNTAzODA3OX0.-0LmLIYKWMGDWs3Ni9IT8RVF94Z8JbFHwUVPHHwJ-D4";
   it('faq flow', () => {
     // step 1: visit faqs page
     cy.visit(`${baseUrl}/faqs`, {

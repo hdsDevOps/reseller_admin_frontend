@@ -6,7 +6,7 @@ import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import '../styles/styles.css';
 import { updateCustomerPasswordThunk } from 'store/user.thunk';
-import { useAppDispatch } from 'store/hooks';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,6 +14,7 @@ const CustomerInformation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const { rolePermissionsSlice } = useAppSelector(state => state.auth);
 
   const [customer, setCustomer] = useState(location?.state?.item);
   console.log(customer, 'customer information');
@@ -100,23 +101,23 @@ const CustomerInformation: React.FC = () => {
         >
           <h5
             className='h5-text mb-3 uppercase'
-          >{customer?.first_name} {customer?.last_name}</h5>
+          >{customer?.first_name || 'First'} {customer?.last_name || 'Last'}</h5>
 
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Customer ID : #{customer?.record_id}</p>
+          >Customer ID : #{customer?.record_id || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Business Name : {customer?.business_name}</p>
+          >Business Name : {customer?.business_name || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Address : {customer?.address}</p>
+          >Address : {customer?.address || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Country : {customer?.country}</p>
+          >Country : {customer?.country || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Region : {customer?.state_name}</p>
+          >Region : {customer?.state_name || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
           >Domain : {customer?.domain || 'N/A'}</p>
@@ -127,15 +128,18 @@ const CustomerInformation: React.FC = () => {
           <button
             type='button'
             className='btn-as-customer-login max-w-fit'
+            disabled={!rolePermissionsSlice?.customer_management?.login ? true : false}
           >Login as Customer</button>
 
-          <a
+          <button
+            type='button'
             className='a-reset-password max-[631px]:my-2 hover:underline'
             button-name="customer-information-reset-password"
             onClick={() => {
               setResetPasswordShow(true);
             }}
-          >Reset Password</a>
+            disabled={!rolePermissionsSlice?.customer_management?.reset_password ? true : false}
+          >Reset Password</button>
         </div>
       </div>
 

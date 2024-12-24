@@ -400,6 +400,7 @@ const BillingHistory: React.FC = () => {
                       className="my-auto text-lg text-custom-green"
                       onClick={() => {downloadInvoice()}}
                       disabled={!rolePermissionsSlice?.billing_history?.download ? true : false}
+                      cypress-name="invoice_download"
                     >
                       <FaDownload />
                     </button>

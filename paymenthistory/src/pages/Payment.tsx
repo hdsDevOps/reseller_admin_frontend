@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
 import { getPaymentMethodsListThunk, updatePaymentMethodStatusThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk'
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const PaymentMethod: React.FC = () => {
   const dispatch = useAppDispatch();
+  const { rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [paymentMethods, setPaymentMethods] = useState([]);
   console.log(paymentMethods);
   
@@ -74,6 +75,7 @@ const PaymentMethod: React.FC = () => {
                       updateStatus(e.target.value, index)
                     }}
                     cypress-name={`payment-status-${index}`}
+                    disabled={!rolePermissionsSlice?.payment_method?.action ? true : false}
                   >
                     <option selected={item.status == 'ACTIVE' ? false : item.status == 'INACTIVE' ? false : true} hidden>Action</option>
                     <option selected={item.status == 'ACTIVE' ? true:  false} className="payment-option" value='ACTIVE'>Active</option>

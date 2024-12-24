@@ -12,7 +12,7 @@ const EmailLog: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  const { currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [emailLogs, setEmailLogs] = useState([]);
   console.log("emailLogs...", emailLogs);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,6 +133,7 @@ const EmailLog: React.FC = () => {
                         setIsModalOpen(true);
                         setModalData(log?.content);
                       }}
+                      disabled={!rolePermissionsSlice?.email_log?.view_details ? true : false}
                     >
                       View Details
                     </button>
