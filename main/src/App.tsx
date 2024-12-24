@@ -48,7 +48,7 @@ const App: React.FC = () => {
     };
 
     fetchUserDetails();
-  }, [userId]);
+  }, [userId, dispatch, navigate]);
 
   return (
     <Suspense fallback={<h2>Loading.....</h2>}>
