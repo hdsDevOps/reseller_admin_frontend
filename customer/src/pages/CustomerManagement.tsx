@@ -51,7 +51,7 @@ const CustomerManagement: React.FC = () => {
     renewal_date: "",
     domain: ""
   };
-  const {customerFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  const {customerFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
   // console.log('customerFilters', customerFilters);
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(customerFilters === null ? intialFilter : customerFilters);
@@ -584,6 +584,7 @@ const CustomerManagement: React.FC = () => {
                 navigate('/add-customer');
               }}
               button-name="customers-add-new"
+              disabled={!rolePermissionsSlice?.customer_management?.add ? true : false}
             >
               +&nbsp;&nbsp;Add new
             </button>
@@ -972,6 +973,7 @@ const CustomerManagement: React.FC = () => {
                               className="sr-only peer"
                               checked={item?.authentication}
                               onClick={() => handleAuthorizeChange(item)}
+                              disabled={!rolePermissionsSlice?.customer_management?.authorization}
                             />
                             <div className="w-[30px] h-[15.5px] flex items-center bg-[#E02424] rounded-full peer-checked:text-[#12A833] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[12px] after:absolute after:left-[3px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#12A833]"></div>
                           </label>
@@ -1030,6 +1032,7 @@ const CustomerManagement: React.FC = () => {
                                       setShowDeleteModal(!showDeleteModal);
                                       setCommonModal(true);
                                     }}
+                                    aria-disabled={!rolePermissionsSlice?.customer_management?.delete}
                                   >Delete Customer</a>
                                 </li>
                                 <li

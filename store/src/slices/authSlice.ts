@@ -29,6 +29,7 @@ export interface UserDetailsState {
   billingHistoryFilters: object | null;
   userListFilters: object | null;
   rolesFilters: object | null;
+  rolePermissionsSlice: object | null;
 }
 
 const initialState: UserDetailsState = {
@@ -45,6 +46,7 @@ const initialState: UserDetailsState = {
   billingHistoryFilters: null,
   userListFilters: null,
   rolesFilters: null,
+  rolePermissionsSlice: null,
 };
 
 const authSlice = createSlice({
@@ -89,6 +91,9 @@ const authSlice = createSlice({
     },
     setRolesFiltersStatus: (state, action: PayloadAction<object>) => {
       state.rolesFilters = action.payload;
+    },
+    setRolesPermissionsStatus: (state, action: PayloadAction<object>) => {
+      state.rolePermissionsSlice = action.payload;
     },
     resetUserSlice: (state) => {
       state.userAuthStatus = 'PENDING';
@@ -276,6 +281,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setTokenDetails, setUserDetails, setUserIdDetails, setUserDefaultCurrency, setUserAuthStatus, setCurrentPageStatus, setItemsPerPageStatus, resetUserSlice, setCustomerFiltersStatus,setCustomerGroupFiltersStatus, setVoucherFiltersStatus, setBillingHistoryFiltersStatus, setUserListFiltersStatus, setRolesFiltersStatus } = authSlice.actions;
+export const { setTokenDetails, setUserDetails, setUserIdDetails, setUserDefaultCurrency, setUserAuthStatus, setCurrentPageStatus, setItemsPerPageStatus, resetUserSlice, setCustomerFiltersStatus,setCustomerGroupFiltersStatus, setVoucherFiltersStatus, setBillingHistoryFiltersStatus, setUserListFiltersStatus, setRolesFiltersStatus, setRolesPermissionsStatus } = authSlice.actions;
 
 export default authSlice.reducer;

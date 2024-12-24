@@ -42,8 +42,8 @@ export async function postApiCall<T>(
 ): Promise<any | CustomError> {
   try {
     const fetchedData = await axiosInstance.post(endPoint, body);
-    console.log("fetchedData...", fetchedData);
-    console.log("endpoint", endPoint);
+    // console.log("fetchedData...", fetchedData);
+    // console.log("endpoint", endPoint);
     if (fetchedData.data?.status === 200 || fetchedData.data?.status === 201 || fetchedData.data?.status === "success 111" || fetchedData.data?.status === "success" || fetchedData.data?.success === true || fetchedData?.status === 200) {
       return fetchedData?.data;
     } else if (

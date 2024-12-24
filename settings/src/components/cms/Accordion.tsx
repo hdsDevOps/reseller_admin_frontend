@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useAppSelector } from 'store/hooks';
 
 interface MenuItem {
   id: string;
@@ -12,6 +13,7 @@ interface AccordionProps {
 }
 
 const Accordion: React.FC<AccordionProps> = ({ items }) => {
+  const { rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [activeSection, setActiveSection] = useState<string | null>('');
 
   const toggleSection = (id: string) => {
@@ -26,6 +28,7 @@ const Accordion: React.FC<AccordionProps> = ({ items }) => {
             className="w-full py-4 px-6 flex items-center justify-between bg-white hover:bg-gray-50 focus:outline-none"
             onClick={() => toggleSection(item.id)}
             cypress-name={`cms-sction-${index+1}`}
+            disabled={!rolePermissionsSlice?.cms?.view_details ? true : false}
           >
             <span className="font-inter-20px-500-cBlack4">{item.title}</span>
             {activeSection === item.id ? (

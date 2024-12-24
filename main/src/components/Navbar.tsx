@@ -31,7 +31,104 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { setTokenDetails } from "store/authSlice";
 import { RiCashFill } from "react-icons/ri";
 import { RiLogoutCircleLine } from "react-icons/ri";
-import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, setUserIdToLSThunk } from 'store/user.thunk';
+import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, setUserIdToLSThunk, getRolesThunk } from 'store/user.thunk';
+import { setRolesPermissionsStatus } from 'store/authSlice';
+
+const intitalPermissions = {
+  dashboard: false,
+  customer_management: {
+      overall: false,
+      add: false,
+      edit: false,
+      delete: false,
+      login: false,
+      authorization: false,
+      send_mail: false,
+      details: false,
+      reset_password: false
+  },
+  voucher_management: {
+      overall: false,
+      customer_group: {
+          overall: false,
+          add: false,
+          view: false,
+          delete: false
+      },
+      voucher_list: {
+          overall: false,
+          send_mail: false,
+          add: false,
+          delete: false
+      }
+  },
+  notification_template: {
+      overall: false,
+      add: false,
+      preview: false,
+      update: false,
+      cancel: false,
+      send_mail: false
+  },
+  subscription_master: {
+      overall: false,
+      plan_and_price_setup: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      },
+      gemini_setup: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      }
+  },
+  payment_method: {
+      overall: false,
+      action: false
+  },
+  billing_history: {
+      overall: false,
+      download: false
+  },
+  faqs: {
+      overall: false,
+      add: false
+  },
+  email_log: {
+      overall: false,
+      view_details: false
+  },
+  role_management: {
+      overall: false,
+      user_list: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      },
+      role: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      }
+  },
+  cms: {
+      overall: false,
+      view_details: false
+  },
+  settings: {
+      overall: false,
+      dashboard_widget: false,
+      about: false,
+      privacy_policy: false,
+      terms_and_conditions: false,
+      customer_agreement: false
+  }
+}
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -40,13 +137,38 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [username] = useState("Robert Clive"); // Replace with actual username
   const [email] = useState("roberclive@domain.co.in"); // Replace with actual email
-  const { userId, userDetails } = useAppSelector(state => state.auth);
+  const { userId, userDetails, rolePermissionsSlice } = useAppSelector(state => state.auth);
   // console.log("userId....", userId);
   // console.log("userDetails....", userDetails);
   const [width, setWidth] = useState(window.innerWidth);
   const [ dropdowns, setDropdowns ] = useState({});
-
   const dropdownRef = useRef([]);
+
+  const [rolePermissions, setRolePermissions] = useState(rolePermissionsSlice !== null ? rolePermissionsSlice : intitalPermissions);
+  console.log("rolePermissions...", rolePermissions);
+
+  useEffect(() => {
+    const getRole = async() => {
+      try {
+        const result = await dispatch(getRolesThunk({user_type: userDetails?.role})).unwrap();
+        await dispatch(setRolesPermissionsStatus(result?.roles[0]?.permission));
+        setRolePermissions(result?.roles[0]?.permission);
+      } catch (error) {
+        setRolePermissions(intitalPermissions);
+        await dispatch(setRolesPermissionsStatus(intitalPermissions));
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
+      }
+    };
+
+    getRole();
+  }, [userDetails?.role]);
 
   const toggleDropdown = (index) => {
     setDropdowns((prev) => ({
@@ -80,75 +202,86 @@ const Sidebar = () => {
       label: "Dashboard",
       icon: <ChartLine className="navbar-w-h" />,
       subDomain: [],
+      name: 'dashboard',
     },
     {
       path: ["/customers"],
       label: "Customer Management",
       icon: <ListChecks className="w-[18.5px] h-[15.5px]  border-[2px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
+      name: 'customer_management',
     },
     {
       path: ["/customer-group", "/voucher-list"],
       label: "Voucher Management",
       icon: <TicketPercent className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
       subDomain: [
-        { path: '/customer-group', label: 'Customer group' },
-        { path: '/voucher-list', label: 'Voucher list' }
-      ]
+        { path: '/customer-group', label: 'Customer group', name: 'customer_group', },
+        { path: '/voucher-list', label: 'Voucher list', name: 'voucher_list', }
+      ],
+      name: 'voucher_management',
     },
     {
       path: ["/notification-template"],
       label: "Notification Template",
       icon: <LayoutTemplate className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
       subDomain: [],
+      name: 'notification_template',
     },
     {
       path: ["/plan-and-price-setup", "/gemini-setup"],
       label: "Subscription Master",
       icon: <i className={`bi bi-cash-stack ${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`}></i>,
       subDomain: [
-        { path: '/plan-and-price-setup', label: 'Plan & price setup' },
-        { path: '/gemini-setup', label: 'Gemini setup' },
+        { path: '/plan-and-price-setup', label: 'Plan & price setup', name: 'plan_and_price_setup', },
+        { path: '/gemini-setup', label: 'Gemini setup', name: 'gemini_setup', },
       ],
+      name: 'subscription_master',
     },
     {
       path: ["/payment-method"],
       label: "Payment Method",
       icon: <CiCreditCard1 className="navbar-w-h" />,
       subDomain: [],
+      name: 'payment_method',
     },
     {
       path: ["/billing-history"],
       label: "Billing History",
       icon: <ReceiptText className="navbar-w-h" />,
       subDomain: [],
+      name: 'billing_history',
     },
     {
       path: ["/faqs"],
       label: "FAQ's",
       icon: <MessageCircleQuestion className="navbar-w-h" />,
       subDomain: [],
+      name: 'faqs',
     },
     {
       path: ["/email-log"],
       label: "Email Log",
       icon: <History className="navbar-w-h" />,
       subDomain: [],
+      name: 'email_log',
     },
     {
       path: ["/user-list", "/role"],
       label: "Role Management",
       icon: <UserPen className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
       subDomain: [
-        { path: '/user-list', label: 'User list' },
-        { path: '/role', label: 'Role' },
+        { path: '/user-list', label: 'User list', name: 'user_list', },
+        { path: '/role', label: 'Role', name: 'role', },
       ],
+      name: 'role_management',
     },
     {
       path: ["/cms"],
       label: "CMS",
       icon: <GitPullRequestDraft className="navbar-w-h" />,
       subDomain: [],
+      name: 'cms',
     },
   ];
   
@@ -158,9 +291,9 @@ const Sidebar = () => {
       label: "Settings",
       icon: <Settings className="navbar-w-h" />,
       subDomain: [
-        { path: '/customer-agreement', label: 'Customer agreement' },
-        { path: '/privacy-policy', label: 'Privacy policy' },
-        { path: '/terms-and-conditions', label: 'Terms & conditions' },
+        { path: '/customer-agreement', label: 'Customer agreement', name: 'customer_agreement', },
+        { path: '/privacy-policy', label: 'Privacy policy', name: 'privacy_policy', },
+        { path: '/terms-and-conditions', label: 'Terms & conditions', name: 'terms_and_conditions', },
       ],
     },
     {
@@ -233,7 +366,7 @@ const Sidebar = () => {
       >
         {
           links && links.map((item, index) => {
-            if(item.path == '/dashboard'){
+            if(item.path[0] === '/dashboard' && rolePermissions?.dashboard){
               return(
                 <>
                   <div key={index}
@@ -279,7 +412,7 @@ const Sidebar = () => {
                 </>
               )
             }
-            else if(item.subDomain.length != 0){
+            else if(item.subDomain.length != 0 && rolePermissions[item.name]?.overall){
               return(
                 <>
                   <div key={index}
@@ -344,33 +477,35 @@ const Sidebar = () => {
                         >
                           {
                             item.subDomain.map((element, key) => {
-                              return(
-                                <div
-                                  className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
-                                  key={key}
-                                >
-                                  <Link
-                                    to={element.path}
+                              if(rolePermissions[item.name][element?.name]?.overall) {
+                                return(
+                                  <div
+                                    className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
+                                    key={key}
                                   >
-                                    {/*  border-t-[1px]  */}
-                                    <a
-                                      className="flex flex-row"
-                                      onClick={() => {
-                                        if(width < 769){
-                                          setIsOpen(false);
-                                          toggleDropdown(index);
-                                        }
-                                        else{
-                                          toggleDropdown(index);
-                                        }
-                                      }}
+                                    <Link
+                                      to={element.path}
                                     >
-                                      <Dot />
-                                      {element.label}
-                                    </a>
-                                  </Link>
-                                </div>
-                              )
+                                      {/*  border-t-[1px]  */}
+                                      <a
+                                        className="flex flex-row"
+                                        onClick={() => {
+                                          if(width < 769){
+                                            setIsOpen(false);
+                                            toggleDropdown(index);
+                                          }
+                                          else{
+                                            toggleDropdown(index);
+                                          }
+                                        }}
+                                      >
+                                        <Dot />
+                                        {element.label}
+                                      </a>
+                                    </Link>
+                                  </div>
+                                )
+                              }
                             })
                           }
                         </div>
@@ -381,42 +516,44 @@ const Sidebar = () => {
               )
             }
             else{
-              return(
-                <>
-                  <div key={index}
-                    className="flex flex-row px-[7px] my-[4px]"
-                  >
-                    <Link
-                      to={item.path[0]}
-                      className="w-full"
+              if(rolePermissions[item.name]?.overall) {
+                return(
+                  <>
+                    <div key={index}
+                      className="flex flex-row px-[7px] my-[4px]"
                     >
-                      <div
-                        className={`flex flex-row justify-between w-full py-[12px] px-[10px] ${
-                          location.pathname == item.path[0]  && `bg-[#12A83333] rounded-[8px]`
-                        } hover:bg-[#12A83333] hover:rounded-[8px] ${
-                            !isOpen && (
-                              `ml-[10px] max-w-12 pl-[15px]`
-                            )
-                          }`}
+                      <Link
+                        to={item.path[0]}
+                        className="w-full"
                       >
                         <div
-                          className="grid grid-cols-[auto,1fr]"
-                        >
-                          <span>{item.icon}</span>
-                          <p
-                            className={`ml-[12px] font-poppins text-[16px] font-medium ${
+                          className={`flex flex-row justify-between w-full py-[12px] px-[10px] ${
+                            location.pathname == item.path[0]  && `bg-[#12A83333] rounded-[8px]`
+                          } hover:bg-[#12A83333] hover:rounded-[8px] ${
                               !isOpen && (
-                                `hidden`
+                                `ml-[10px] max-w-12 pl-[15px]`
                               )
                             }`}
-                          >{item.label}</p>
+                        >
+                          <div
+                            className="grid grid-cols-[auto,1fr]"
+                          >
+                            <span>{item.icon}</span>
+                            <p
+                              className={`ml-[12px] font-poppins text-[16px] font-medium ${
+                                !isOpen && (
+                                  `hidden`
+                                )
+                              }`}
+                            >{item.label}</p>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  </div>
-                
-                </>
-              )
+                      </Link>
+                    </div>
+                  
+                  </>
+                )
+              }
             }
           })
         }
@@ -425,7 +562,7 @@ const Sidebar = () => {
           className="sticky top-[100vh] border-t-[1px] border-custom-white6 pt-[30px] pb-[15px] mt-[35px]"
         >
           {
-            links2 && links2.map((item, index) => {
+            rolePermissions?.settings?.overall && links2 && links2.map((item, index) => {
               if(item.path[0] == '/logout'){
                 return(
                   <div key={index}
@@ -469,33 +606,35 @@ const Sidebar = () => {
                         >
                           {
                             item.subDomain.map((element, key) => {
-                              return(
-                                <div
-                                  className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
-                                  key={key}
-                                >
-                                  <Link
-                                    to={element.path}
+                              if(rolePermissions?.settings[element.name]) {
+                                return(
+                                  <div
+                                    className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
+                                    key={key}
                                   >
-                                    {/*  border-t-[1px]  */}
-                                    <a
-                                      className="flex flex-row"
-                                      onClick={() => {
-                                        if(width < 769){
-                                          setIsOpen(false);
-                                          toggleDropdown(index);
-                                        }
-                                        else{
-                                          toggleDropdown(index);
-                                        }
-                                      }}
+                                    <Link
+                                      to={element.path}
                                     >
-                                      <Dot />
-                                      {element.label}
-                                    </a>
-                                  </Link>
-                                </div>
-                              )
+                                      {/*  border-t-[1px]  */}
+                                      <a
+                                        className="flex flex-row"
+                                        onClick={() => {
+                                          if(width < 769){
+                                            setIsOpen(false);
+                                            toggleDropdown(index);
+                                          }
+                                          else{
+                                            toggleDropdown(index);
+                                          }
+                                        }}
+                                      >
+                                        <Dot />
+                                        {element.label}
+                                      </a>
+                                    </Link>
+                                  </div>
+                                )
+                              }
                             })
                           }
                         </div>

@@ -26,7 +26,7 @@ const BillingHistory: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const filterRef = useRef(null);
-  const { billingHistoryFilters, currentPageNumber, itemsPerPageNumber } = useAppSelector(state => state.auth);
+  const { billingHistoryFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -51,7 +51,7 @@ const BillingHistory: React.FC = () => {
   
 
   const [billingHistory, setBillingHistory] = useState([]);
-  console.log("billingHistory...", billingHistory);
+  // console.log("billingHistory...", billingHistory);
   const [initialBillingHistory, setInitialBillingHistory] = useState([]);
 
 
@@ -265,7 +265,7 @@ const BillingHistory: React.FC = () => {
               className="serach-input-2"
               name="domain"
               onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setSearch(e.target.value);}}
-              value={search || filter?.domain}
+              value={search}
               onFocus={() => {setIsDropdownOpen(true)}}
             />
             <div className="absolute -mt-7 w-full z-10 pointer-events-none">
@@ -282,7 +282,7 @@ const BillingHistory: React.FC = () => {
                           index !== 0 ? "border-t border-white" : ""
                         } cursor-pointer`}
                         onClick={() => {
-                          setSearch("");
+                          setSearch(item?.domain);
                           setFilter({
                             ...filter,
                             domain: item?.domain
@@ -399,6 +399,7 @@ const BillingHistory: React.FC = () => {
                       type="button"
                       className="my-auto text-lg text-custom-green"
                       onClick={() => {downloadInvoice()}}
+                      disabled={!rolePermissionsSlice?.billing_history?.download ? true : false}
                     >
                       <FaDownload />
                     </button>
