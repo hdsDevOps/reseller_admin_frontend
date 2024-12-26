@@ -33,7 +33,7 @@ function EditCustomer() {
   const dispatch = useAppDispatch();
   
   const [customer, setCustomer] = useState(location.state);
-  console.log(customer);
+  // console.log(customer);
   const [phoneNumber,setPhoneNumber] = useState();
   const [phoneCode,setPhoneCode] = useState('+1');
   const [countryName, setCountryName] = useState("");
@@ -45,9 +45,7 @@ function EditCustomer() {
   const [country, setCountry] = useState({});
   const [state, setState] = useState({});
   const [city, setCity] = useState({});
-  // console.log("countries...", countries);
-  // console.log("states...", states);
-  // console.log("cities...", cities);
+  console.log({countries, states, cities});
   // console.log({countryName, stateName, cityName});
   console.log({country, state, city});
 
@@ -183,16 +181,15 @@ function EditCustomer() {
   }, [country, state]);
 
   useEffect(() => {
-    if(location.state) {
-      const data = location.state;
-      if(data?.country !== "" && countries.length > 0) {
-        const countryData = countries?.find(item => item?.name === data?.country);
+    if(customer) {
+      if(customer?.country !== "" && countries.length > 0) {
+        const countryData = countries?.find(item => item?.name === customer?.country);
         setCountry(countryData);
-        if(data?.state_name !== "" && states.length > 0) {
-          const statesData = states?.find(item2 => item2?.name === data?.state_name);
+        if(customer?.state_name !== "" && states.length > 0) {
+          const statesData = states?.find(item2 => item2?.name === customer?.state_name);
           setState(statesData)
-          if(data?.city !== "" && cities.length > 0) {
-            const cityData = cities?.find(item3 => item3?.name === data?.city);
+          if(customer?.city !== "" && cities.length > 0) {
+            const cityData = cities?.find(item3 => item3?.name === customer?.city);
             setCity(cityData)
           } else {
             setCity({});
@@ -204,7 +201,7 @@ function EditCustomer() {
         setCountry({});
       }
     }
-  }, [location.state, countries, states, cities]);
+  }, [customer, countries, states, cities]);
 
   const formList = [
     {label: 'First name', type: 'text', name: 'first_name', placeholder: 'Enter the first name',},
@@ -609,7 +606,6 @@ function EditCustomer() {
                           authentication: !customer.authentication
                         });
                       }
-                      console.log(customer?.authentication);
                     }}
                   />
                   <div
