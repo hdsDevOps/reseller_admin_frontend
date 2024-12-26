@@ -493,6 +493,7 @@ function EditCustomer() {
                                       });
                                       setStateName("");
                                       setCityName("");
+                                      setCountry(country);
                                       setState(region);
                                       setCity({});
                                       setStateDropdownOpen(false);
