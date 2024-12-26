@@ -347,7 +347,7 @@ const UserList = () => {
             setModalData(modalFormat);
             setModalType('add');
           }}
-          disabled={!rolePermissionsSlice?.user_list?.add ? true : false }
+          disabled={!rolePermissionsSlice?.role_management?.user_list?.add ? true : false }
         >
           Add User
         </button>
