@@ -205,7 +205,7 @@ const PlanPriceSetup = () => {
       item.name === currencyIndex ? item.flag : undefined
     );
     return data;
-  }
+  };
 
   const renderGridView = () => (
     <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 gap-6">
