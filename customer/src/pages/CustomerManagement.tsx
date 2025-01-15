@@ -79,7 +79,7 @@ const CustomerManagement: React.FC = () => {
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  // console.log("customerList...", customerList);
+  console.log("customerList...", customerList);
   const [checked, setChecked] = useState([]);
   // console.log("checked...", checked);
   
@@ -905,7 +905,7 @@ const CustomerManagement: React.FC = () => {
                       </td>
                       <td
                         className="td-css"
-                      >#{item?.record_id}</td>
+                      >#{item?.profile_id}</td>
                       <td
                         className="td-css text-[#1F86E5] underline"
                       >
@@ -1217,7 +1217,7 @@ const CustomerManagement: React.FC = () => {
                   );
                 }) :
                 <tr>
-                  <td colSpan={13} className="font-inter font-normal text-base opacity-60 text-center">No data avaibale</td>
+                  <td colSpan={13} className="font-inter font-normal text-base opacity-60 text-center">No data available</td>
                 </tr>
               }
             </tbody>

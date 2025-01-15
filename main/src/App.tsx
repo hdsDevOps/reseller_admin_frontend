@@ -38,12 +38,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const fetchUserDetails = async() => {
-      try {
-        const getUserIdFromLocalStorage = await dispatch(getUserIdFromLSThunk()).unwrap();
-        await dispatch(getAdminDetailsThunk({userid: getUserIdFromLocalStorage})).unwrap();
-        await dispatch(getDefaultCurrencyThunk({userid: getUserIdFromLocalStorage})).unwrap();
-      } catch (error) {
-        //
+      if(token) {
+        try {
+          const getUserIdFromLocalStorage = await dispatch(getUserIdFromLSThunk()).unwrap();
+          await dispatch(getAdminDetailsThunk({userid: getUserIdFromLocalStorage})).unwrap();
+          await dispatch(getDefaultCurrencyThunk({userid: getUserIdFromLocalStorage})).unwrap();
+        } catch (error) {
+          //
+        }
       }
     };
 

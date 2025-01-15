@@ -7,6 +7,7 @@ import { editPlanAndPriceThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk
 import { useAppDispatch } from 'store/hooks';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { FaCaretDown, FaCaretUp, FaInfo } from 'react-icons/fa';
 
 interface AmountBoxProps {
   item: object;
@@ -34,7 +35,7 @@ function EditPlanPriceSetup() {
   // console.log("image...", iconImage);
   const [localPrice, setLocalPrice] = useState(subscription?.amount_details);
   // console.log("localPrice...", localPrice);
-  const [featureTag, setFeatureTag] = useState('');
+  const [featureHover, setFeatureHover] = useState(false);
   
   useEffect(() => {
     setLocalPrice(subscription?.amount_details);
@@ -109,6 +110,28 @@ function EditPlanPriceSetup() {
       ...subscription,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handelTrialChange = (type:string) => {
+    const value = Number(subscription?.trial_period);
+    if(type === "up") {
+      setSubscription({
+        ...subscription,
+        trial_period: value + 1,
+      });
+    } else if(type === "down") {
+      if(value > 0) {
+        setSubscription({
+          ...subscription,
+          trial_period: value - 1 ,
+        });
+      } else {
+        setSubscription({
+          ...subscription,
+          trial_period: 0,
+        });
+      }
+    }
   };
 
   const getFlag = (name) => {
@@ -202,7 +225,7 @@ function EditPlanPriceSetup() {
     if(number === 0){
       return (
         <div
-          className='flex flex-col w-full'
+          className='flex flex-col w-[99%]'
         >
           <div
             className='float-right ml-auto z-10'
@@ -346,7 +369,7 @@ function EditPlanPriceSetup() {
     else{
       return (
         <div
-          className='flex flex-col w-full'
+          className='flex flex-col w-[99%]'
         >
           <div
             className='float-right ml-auto z-10'
@@ -712,17 +735,41 @@ function EditPlanPriceSetup() {
         className='grid sm:grid-cols-2 grid-cols-1 gap-2 my-3 smLpx-0 px-2'
       >
         <div className='flex flex-row w-full mt-auto'>
-          <div className='flex flex-col w-full'>
+          <div className='flex flex-col w-full relative'>
             <label className='search-input-label'>Trail Period</label>
             <input
               type='number'
-              className='search-input-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+              className='search-input-text  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
               placeholder='Select Trial Period'
               required
               name='trial_period'
-              onChange={handleSubscriptionChange}
-              defaultValue={subscription?.trial_period}
+              onChange={e => {
+                const value = e.target.value;
+                if(value === "") {
+                  setSubscription({
+                    ...subscription,
+                    [e.target.name]: 0,
+                  });
+                } else {
+                  if(Number(value) < 0) {
+                    setSubscription({
+                      ...subscription,
+                      [e.target.name]: 0,
+                    });
+                  } else {
+                    setSubscription({
+                      ...subscription,
+                      [e.target.name]: value,
+                    });
+                  }
+                }
+              }}
+              value={subscription?.trial_period}
             />
+            <div className='absolute right-0 top-[11px] bottom-0 w-[14px] bg-[#D9D9D9] rounded-r-[10px] flex flex-col justify-between'>
+              <FaCaretUp className='tetx-black w-3 h-3' onClick={() => {handelTrialChange("up")}} />
+              <FaCaretDown className='tetx-black w-3 h-3' onClick={() => {handelTrialChange("down")}} />
+            </div>
           </div>
           <p className='font-inter font-normal text-base text-[#A6A6A6] w-10 my-auto px-1'>Days</p>
         </div>
@@ -738,7 +785,7 @@ function EditPlanPriceSetup() {
                 })
               }}
               name='sticker_exists'
-              defaultChecked={subscription?.sticker_exists}
+              checked={subscription?.sticker_exists}
             />
             <label className='my-auto -mt-[1px] ml-1 font-inter font-medium text-base text-custom-black-4'>Sticker exist</label>
           </div>
@@ -772,7 +819,7 @@ function EditPlanPriceSetup() {
         </div>
 
         <div
-          className='w-full max-w-[422px]'
+          className='w-full max-w-[450px] flex gap-2 items-center relative'
         >
           <input
             className='font-inter font-normal text-base text-[#666666] border border-custom-white rounded-md h-[46px] w-full pl-2'
@@ -780,6 +827,16 @@ function EditPlanPriceSetup() {
             placeholder='Enter top feature'
             onKeyDown={handleKeyDownFeature}
           />
+          <FaInfo className="w-[18px] h-[18px] text-[#12A833] border border-[#12A833] rounded-full p-[2px]" onMouseOver={() => {setFeatureHover(true)}} onMouseLeave={() => {setFeatureHover(false)}} />
+          
+          {
+            featureHover && (
+              <>
+                <p className='absolute w-[200px] bg-[#12A833] rounded-[10px] font-inter font-medium text-base text-white right-[26px] px-2 py-1'>Write your feature and then press ',' or 'Enter'</p>
+                <div className='absolute w-4 h-4 rotate-45 bg-[#12A833] right-5'></div>
+              </>
+            )
+          }
         </div>
       </div>
 
@@ -859,7 +916,7 @@ function EditPlanPriceSetup() {
           className='btn-red'
           type='button'
           onClick={() => {
-            setSubscription(initialSubscription);
+            setSubscription(location.state);
           }}
         >Cancel</button>
       </div>

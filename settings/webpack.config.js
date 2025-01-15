@@ -66,7 +66,8 @@ module.exports = (_, argv) => ({
       name: "settings",
       filename: "remoteEntry.js",
       remotes: {
-        store: `store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js`,
+        // store: `store@https://store.admin.gworkspace.withhordanso.com/remoteEntry.js`,
+        store: `store@http://localhost:4030/remoteEntry.js`,
       },
       exposes: {
         "./SettingsApp": "./src/pages/index.tsx",

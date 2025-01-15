@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TrashIcon, PencilIcon } from "lucide-react";
+import { TrashIcon, PencilIcon, X } from "lucide-react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { getPromotionsListThunk, addPromotionThunk,editPromotionThunk, deletetPromotionThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
@@ -7,34 +7,64 @@ import { useAppDispatch } from "store/hooks";
 import { format } from "date-fns";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const initialPromotion = {
   html_template: "",
   code: "",
   start_date: "",
   end_date: "",
-  status: ""
+  status: "",
+  discount: [],
+  record_id: "",
 };
 
+const currencyOptions = [
+  { code: "US", label: "United States", value: '$', currency_code: "USD", amount: "", },
+  { code: "EU", label: "Europe", value: '€', currency_code: "EUR", amount: "", },
+  { code: "AU", label: "Australia", value: 'A$', currency_code: "AUD", amount: "", },
+  { code: "NG", label: "Nigeria", value: 'N₦', currency_code: "NGN", amount: "", },
+  { code: "GB", label: "United Kingdom", value: '£', currency_code: "GBP", amount: "", },
+  { code: "CA", label: "Canada", value: 'C$', currency_code: "CAD", amount: "", },
+  { code: "IN", label: "India", value: '₹', currency_code: "INR", amount: "", },
+];
+
+const flagList = [
+  {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
+  {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/australia-flag.png?alt=media&token=5a2db638-131e-49c7-be83-d0c84db8d440', name: 'AUD', logo: 'A$',},
+  {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/us-flag.png?alt=media&token=c8bc35ae-de58-4a91-bf00-05a3fc9dd85a', name: 'USD', logo: '$',},
+  {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/nigeria-flag.png?alt=media&token=80438147-6c10-4b4b-8cf9-181c7c8ad4d2', name: 'NGN', logo: 'N₦',},
+  {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/england-flag.png?alt=media&token=64f093ef-b2a9-4b35-b510-a5943039ae5c', name: 'GBP', logo: '£',},
+  {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAD', logo: 'C$',},
+  {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'INR', logo: '₹',},
+];
+
 const Promotion: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [editPromo, setEditPromo] = useState(false);
   const [newPromotion, setNewPromotion] = useState(initialPromotion);
-  console.log({newPromotion})
+  console.log("newPromotion...", newPromotion);;
+  const initialPrice = { code: "US", label: "United States", value: '$', currency_code: "USD", amount: ''};
+  const [price,setPrice] = useState(initialPrice);
   
   const promotionItems = [
     { topic: 'Promo Code', name: 'code'},
     { topic: 'Start Date', name: 'start_date'},
     { topic: 'End Date', name: 'end_date'},
   ];
-  const newPromotionItems = [
+  const newPromotionItemsLeft = [
     { label: 'Promo Code', placeholder: 'Enter here', name: 'code', type: 'text'},
-    { label: 'Start date', placeholder: 'Select here', name: 'start_date', type: 'date'},
     { label: 'Template', placeholder: 'HTML/CSS script should be here to make the Promotion template', name: 'html_template', type: 'textarea'},
+  ];
+  const newPromotionItemsRight = [
+    { label: 'Start date', placeholder: 'Select here', name: 'start_date', type: 'date'},
     { label: 'End date', placeholder: 'Select here', name: 'end_date', type: 'date'},
+    { label: 'Discount Amount', placeholder: 'Enter discount percentage', name: 'discount', type: 'number'},
+    { label: 'Preview', placeholder: '', name: 'preview', type: 'button'},
   ];
 
   const [promotions, setPromotions] = useState([]);
@@ -68,6 +98,51 @@ const Promotion: React.FC = () => {
     });
   };
 
+  const updatePrice = (name, price) => {
+    const data = newPromotion?.discount;
+    const priceAmount = price?.amount;
+    const exists = data?.some(item => item?.currency_code === name);
+    if(priceAmount > 0) {
+      if(exists){
+        const newData = data?.map(item => 
+          item?.currency_code === name ? { ...item, amount: priceAmount} : item
+        );
+        setNewPromotion({
+          ...newPromotion,
+          discount: newData
+        });
+      }
+      else{
+        const newData = [ ...data, price];
+        setNewPromotion({
+          ...newPromotion,
+          discount: newData
+        });
+      }
+    } else {
+      toast.warning("Amount cannot be 0.")
+    }
+  };
+
+  const removePrice = (name) => {
+    const data = newPromotion?.discount;
+    const newData = data.filter(item => item.name !== name);
+    setNewPromotion({
+      ...newPromotion,
+      discount: newData,
+    });
+  };
+
+  const getFlagImage = (name) => {
+    const result = flagList.find(item => item.name === name);
+    return result?.flag;
+  };
+
+  const getFlagLogo = (name) => {
+    const result = flagList.find(item => item.name === name);
+    return result?.logo;
+  };
+
   const [endDateEnable, setEndDateEnable] = useState(true);
   useEffect(() => {
     if(newPromotion?.start_date != ""){
@@ -87,9 +162,17 @@ const Promotion: React.FC = () => {
       toast.warning("Please fill all the inputs");
     } else if(newPromotion?.end_date === "" || newPromotion?.end_date.trim() === "") {
       toast.warning("Please fill all the inputs");
+    } else if(newPromotion?.discount?.length < 1) {
+      toast.warning("Minimum 1 discount is needed");
     } else {
       try {
-        const result = await dispatch(addPromotionThunk(newPromotion)).unwrap();
+        const result = await dispatch(addPromotionThunk({
+          html_template: newPromotion?.html_template,
+          code: newPromotion?.code,
+          start_date: newPromotion?.start_date,
+          end_date: newPromotion?.end_date,
+          discount: newPromotion?.discount
+        })).unwrap();
         // console.log(result);
         setTimeout(() => {
           toast.success(result?.message);
@@ -125,12 +208,13 @@ const Promotion: React.FC = () => {
     } else {
       try {
         const result = await dispatch(editPromotionThunk({
-          record_id: newPromotion?.id,
+          record_id: newPromotion?.record_id,
           code: newPromotion?.code,
           start_date: newPromotion?.start_date,
           end_date: newPromotion?.end_date,
           html_template: newPromotion?.html_template,
-          status: newPromotion?.status
+          status: newPromotion?.status,
+          discount: newPromotion?.discount
         })).unwrap();
         // console.log(result);
         setTimeout(() => {
@@ -192,14 +276,14 @@ const Promotion: React.FC = () => {
   };
 
   const dateFormat = (date) => {
-    // const milliseconds = parseInt(date?._seconds) * 1000;
-    // const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
-    // const totalMilliseconds = milliseconds+extraMilliseconds;
-    const newDate = new Date(date);
+    const milliseconds = parseInt(date?._seconds) * 1000;
+    const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
+    const totalMilliseconds = milliseconds+extraMilliseconds;
+    const newDate = new Date(totalMilliseconds);
     if(newDate != "Invalid Date"){
       return format(newDate, "dd MMM yyyy");
     } else {
-      return null;
+      return format(new Date(), "dd MMM yyyy");
     }
   };
 
@@ -217,7 +301,7 @@ const Promotion: React.FC = () => {
 
   useEffect(() => {
     console.log(dateFormat1(newPromotion?.start_date))
-  }, [newPromotion?.start_date])
+  }, [newPromotion?.start_date]);
 
   const dateFormat2 = (date) => {
     // const milliseconds = parseInt(date?._seconds) * 1000;
@@ -231,16 +315,30 @@ const Promotion: React.FC = () => {
     }
   };
 
+  const dateFormat3 = (date) => {
+    const milliseconds = parseInt(date?._seconds) * 1000;
+    const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
+    const totalMilliseconds = milliseconds+extraMilliseconds;
+    const newDate = new Date(totalMilliseconds);
+    if(newDate != "Invalid Date"){
+      return format(newDate, "yyyy-MM-dd");
+    } else {
+      return format(new Date(), "yyyy-MM-dd");
+    }
+  };
+
   const udpatePromotionStatus = async(e, promo) => {
     e.preventDefault();
+    console.log("promo...", promo);
     try {
       const result = await dispatch(editPromotionThunk({
         record_id: promo?.id,
         code: promo?.code,
-        start_date: promo?.start_date,
-        end_date: promo?.end_date,
+        start_date: dateFormat3(promo?.start_date),
+        end_date: dateFormat3(promo?.end_date),
         html_template: promo?.html_template,
-        status: !promo?.status
+        status: !promo?.status,
+        discount: promo?.discount || [],
       })).unwrap();
       // console.log(result);
       setTimeout(() => {
@@ -325,7 +423,7 @@ const Promotion: React.FC = () => {
                               <td
                                 className="banner-table-td-2 py-2 pr-7 min-w-[100px]"
                               >
-                                {item.name !== "code" ? dateFormat2(promo[item.name]) : promo[item.name]}
+                                {item.name === "start_date" || item.name === "end_date" ? dateFormat(promo[item.name]) : promo[item.name]}
                               </td>
                             </tr>
                           )
@@ -341,7 +439,15 @@ const Promotion: React.FC = () => {
                   onClick={() => {
                     setEditPromo(true);
                     setIsEditModalOpen(true);
-                    setNewPromotion(promo);
+                    setNewPromotion({
+                      html_template: promo?.html_template,
+                      code: promo?.code,
+                      start_date: dateFormat3(promo?.start_date),
+                      end_date: dateFormat3(promo?.end_date),
+                      status: promo?.status,
+                      discount: promo?.discount || [],
+                      record_id: promo?.id
+                    });
                   }}
                   type="button"
                   cypress-name={`edit-promotion-${index+1}`}
@@ -401,32 +507,29 @@ const Promotion: React.FC = () => {
               </div>
 
               <form className="grid sm:grid-cols-2 grid-cols-1 gap-4" onSubmit={submitHandler}>
-                {
-                  newPromotionItems.map((item, index) => {
-                    if(item.type == 'textarea'){
-                      return(
-                        <div>
-                          <div
-                            className="flex flex-col"
-                            key={index}
-                          >
-                            <label className="search-input-label">{item.label}</label>
-                            <textarea
-                              name={item.name}
-                              className="w-full search-input-text-2 h-[140px] py-2 pl-2"
-                              placeholder={item.placeholder}
-                              onChange={handleChange}
-                              defaultValue={newPromotion[item.name]}
-                            />
+                <div className="col-span-1 grid grid-cols-1">
+                  {
+                    newPromotionItemsLeft.map((item, index) => {
+                      if(item.type == 'textarea'){
+                        return(
+                          <div>
+                            <div
+                              className="flex flex-col"
+                              key={index}
+                            >
+                              <label className="search-input-label">{item.label}</label>
+                              <textarea
+                                name={item.name}
+                                className="w-full search-input-text-2 h-[140px] py-2 pl-2"
+                                placeholder={item.placeholder}
+                                onChange={handleChange}
+                                value={newPromotion[item.name]}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      )
-                    }
-                    else if(item.name == 'end_date'){
-                      return(
-                        <div
-                          className="flex flex-col justify-between"
-                        >
+                        )
+                      } else{
+                        return(
                           <div
                             className="flex flex-col"
                             key={index}
@@ -438,53 +541,147 @@ const Promotion: React.FC = () => {
                               className="w-full search-input-text"
                               placeholder={item.placeholder}
                               onChange={handleChange}
-                              defaultValue={dateFormat(newPromotion[item.name])}
+                              value={newPromotion[item?.name]}
+                            />
+                          </div>
+                        )
+                      }
+                    })
+                  }
+                </div>
+                
+                <div className="col-span-1 grid grid-cols-1">
+                  {
+                    newPromotionItemsRight.map((item, index) => {
+                      if(item.name == 'discount'){
+                        return(
+                          <div
+                            key={index}
+                            className="flex flex-col"
+                          >
+                            <label className="search-input-label">{item.label}</label>
+                            <div
+                              className="search-input-text grid grid-cols-5 relative"
+                            >
+                              <p className="absolute mt-[9px] ml-1">{price?.value}</p>
+                              <input
+                                className="col-span-3 h-full focus:outline-none pl-5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                type={item.type}
+                                placeholder={item.placeholder}
+                                value={price?.amount}
+                                onChange={e => {
+                                  setPrice({
+                                    ...price,
+                                    amount: e.target.value,
+                                  });
+                                }}
+                              />
+                              <select
+                                className="col-span-1 h-full"
+                                onChange={e => {
+                                  setPrice(currencyOptions[e.target.value]);
+                                }}
+                              >
+                                {
+                                  currencyOptions.map((currency, inx) => (
+                                    <option key={inx} value={inx} defaultChecked={currency.currency_code === "USD" ? true : false}>{currency.currency_code}</option>
+                                  ))
+                                }
+                              </select>
+                              <div
+                                className="col-span-1 h-full flex justify-center"
+                              >
+                                <button
+                                  type="button"
+                                  className="btn-cms-2 my-auto"
+                                  onClick={() => {updatePrice(price.currency_code, price)}}
+                                >ADD</button>
+                              </div>
+                            </div>
+
+                            {
+                              <div
+                                className="flex flex-wrap gap-1 py-2"
+                              >
+                                {
+                                  newPromotion?.discount?.length > 0 ?
+                                  newPromotion?.discount?.map((price, i) => {
+                                    return(
+                                      <div key={i}
+                                        className="h-6 rounded-[15px] bg-black bg-opacity-40 flex flex-row px-2 gap-1"
+                                      >
+                                        <img
+                                          src={`${getFlagImage(price.currency_code)}`}
+                                          alt={price.name}
+                                          className="w-5 h-5 my-auto"
+                                        />
+                                        <p>{getFlagLogo(price.currency_code)}{price.amount}</p>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            removePrice(price.name)
+                                          }}
+                                        >
+                                          <X className="ml-1 w-4" />
+                                        </button>
+                                      </div>
+                                    )
+                                  }) : ''
+                                }
+                              </div>
+                            }
+                          </div>
+                        )
+                      } else if(item.name === "preview") {
+                        return (
+                          <button
+                            type="button"
+                            className="btn-green min-w-[110px] max-w-[150px] items-start mt-2 mx-auto"
+                            onClick={() => {
+                              setIsPreviewModalOpen(true);
+                            }}
+                            cypress-name="cypress-promotion-preview-btn"
+                          >Preview</button>
+                        )
+                      } else{
+                        return(
+                          <div
+                            className="flex flex-col"
+                            key={index}
+                          >
+                            <label className="search-input-label">{item.label}</label>
+                            <input
+                              type='text'
+                              name={item.name}
+                              className="w-full search-input-text"
+                              placeholder={item.placeholder}
+                              onChange={handleChange}
+                              value={newPromotion[item.name]}
                               onFocus={e => {
                                 item.type == 'date' ? e.target.type='date' : e.target.type='text'
                               }}
                               onBlur={e => {
                                 e.target.type='text'
                               }}
+                              disabled={
+                                item.name === "end_date"
+                                ? newPromotion?.start_date === ""
+                                  ? true
+                                  : false
+                                : false
+                              }
+                              min={
+                                item.name === "end_date"
+                                ? newPromotion?.start_date
+                                : ""
+                              }
                             />
                           </div>
-
-                          <button
-                            type="button"
-                            className="btn-green min-w-[110px] max-w-[150px] items-start"
-                            onClick={() => {
-                              setIsPreviewModalOpen(true);
-                            }}
-                            cypress-name="cypress-promotion-preview-btn"
-                          >Preview</button>
-                        </div>
-                      )
-                    }
-                    else{
-                      return(
-                        <div
-                          className="flex flex-col"
-                          key={index}
-                        >
-                          <label className="search-input-label">{item.label}</label>
-                          <input
-                            type='text'
-                            name={item.name}
-                            className="w-full search-input-text"
-                            placeholder={item.placeholder}
-                            onChange={handleChange}
-                            defaultValue={item?.name === "start_date" ? dateFormat(newPromotion[item.name]) : newPromotion[item?.name]}
-                            onFocus={e => {
-                              item.type == 'date' ? e.target.type='date' : e.target.type='text'
-                            }}
-                            onBlur={e => {
-                              e.target.type='text'
-                            }}
-                          />
-                        </div>
-                      )
-                    }
-                  })
-                }
+                        )
+                      }
+                    })
+                  }
+                </div>
 
                 <div className="flex flex-row max-sm:justify-center gap-3 pt-4">
                   <button

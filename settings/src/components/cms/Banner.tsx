@@ -4,7 +4,7 @@ import '../../styles/styles.css';
 import { useNavigate } from "react-router-dom";
 import { PencilIcon, TrashIcon, X } from "lucide-react";
 import { Editor } from "@tinymce/tinymce-react";
-import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getPromotionsListThunk } from 'store/user.thunk';
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,6 +19,7 @@ const initialBanner = {
   button_url: '',
   background_image: '',
   show_promotion_status: false,
+  promotion_id: '',
 }
 
 
@@ -33,9 +34,56 @@ const Banner: React.FC = () => {
   const [newBanner, setNewBanner] = useState(initialBanner);
   const [price,setPrice] = useState(initialPrice);
   const [editBanner, setEditBanner] = useState(false);
-  console.log(newBanner);
+  console.log("newBanner...", newBanner);
   const [imageFile, setImage] = useState(null);
   const imageRef = useRef(null);
+  const [searchPromotion, setSearchPromotion] = useState("");
+  const [promotionList, setPromotionList] = useState([]);
+  console.log('promotionList...', promotionList);
+  const [promotionDropdownOpen, setPromotionDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutsideRef = (event: MouseEvent) => {
+      if(dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setPromotionDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutsideRef);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideRef);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(promotionList?.length > 0 && searchPromotion !== "") {
+      setPromotionDropdownOpen(true);
+    } else {
+      setPromotionDropdownOpen(false);
+    }
+  }, [promotionList, searchPromotion]);
+
+  const getPromotionList = async() => {
+    try {
+      const result = await dispatch(getPromotionsListThunk()).unwrap();
+      setPromotionList(result);
+    } catch (error) {
+      setPromotionList([]);
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    getPromotionList();
+  }, []);
   
   const showImage = () => {
     const file = imageFile;
@@ -123,8 +171,9 @@ const Banner: React.FC = () => {
   ];
 
   const bannerRight = [
+    {label: 'Upload background image', name: 'background_image', placeholder: 'Add photo', type: 'file',},
     {label: 'Description', name: 'description', placeholder: 'TinyMCE editor will be used', type: 'text',},
-    {label: 'Upload background image ', name: 'background_image', placeholder: 'Add photo', type: 'file',},
+    {label: 'Select coupon', name: 'promotion_id', placeholder: 'Select coupon', type: 'select',},
   ];
 
   const updateBanner = e => {
@@ -215,6 +264,7 @@ const Banner: React.FC = () => {
                 button_url: newBanner.button_url,
                 background_image: imageUpload.url,
                 show_promotion_status: newBanner.show_promotion_status,
+                promotion_id: newBanner?.promotion_id
               })).unwrap()
               console.log(result);
               setTimeout(() => {
@@ -265,7 +315,8 @@ const Banner: React.FC = () => {
                 show_video_status: newBanner?.show_video_status,
                 show_promotion_status: newBanner?.show_promotion_status,
                 currency_details: newBanner?.currency_details,
-                active: newBanner?.active
+                active: newBanner?.active,
+                promotion_id: newBanner?.promotion_id
               })).unwrap()
               console.log(result);
               setIsEditModalOpen(false);
@@ -302,7 +353,8 @@ const Banner: React.FC = () => {
             show_video_status: newBanner?.show_video_status,
             show_promotion_status: newBanner?.show_promotion_status,
             currency_details: newBanner?.currency_details,
-            active: newBanner?.active
+            active: newBanner?.active,
+            promotion_id: newBanner?.promotion_id
           })).unwrap()
           console.log(result);
           setIsEditModalOpen(false);
@@ -646,7 +698,7 @@ const Banner: React.FC = () => {
                   >
                     {
                       bannerLeft.map((banner, index) => {
-                        if(banner.label == ''){
+                        if(banner.label === ''){
                           return(
                             <div
                               key={index}
@@ -663,8 +715,7 @@ const Banner: React.FC = () => {
                               />
                             </div>
                           )
-                        }
-                        else if(banner.label == 'Starting at'){
+                        } else if(banner.label === 'Starting at'){
                           return(
                             <div
                               key={index}
@@ -743,8 +794,7 @@ const Banner: React.FC = () => {
                               }
                             </div>
                           )
-                        }
-                        else if(banner.label == 'Video URL'){
+                        } else if(banner.label === 'Video URL'){
                           return(
                             <div
                               key={index}
@@ -790,8 +840,7 @@ const Banner: React.FC = () => {
                               </div>
                             </div>
                           )
-                        }
-                        else{
+                        } else{
                           return(
                             <div
                               key={index}
@@ -817,10 +866,10 @@ const Banner: React.FC = () => {
                   >
                     {
                       bannerRight.map((banner, index) => {
-                        if(banner.label == 'Description'){
+                        if(banner.label === 'Description'){
                           return(
                             <div
-                              className="flex flex-col w-full h-[230px]"
+                              className="flex flex-col w-full h-[200px]"
                               key={index}
                             >
                               <label
@@ -833,7 +882,7 @@ const Banner: React.FC = () => {
                                   apiKey={process.env.TINY_MCE_API}
                                   onChange={updateBanner}
                                   init={{
-                                    height: 200,
+                                    height: 170,
                                     menubar: false,
                                     plugins: ["lists", "link", "image", "paste"],
                                     toolbar:
@@ -850,8 +899,7 @@ const Banner: React.FC = () => {
                               </div>
                             </div>
                           )
-                        }
-                        else if(banner.label = "Upload background image"){
+                        } else if(banner.label === "Upload background image"){
                           return(
                             <div
                               key={index}
@@ -863,31 +911,6 @@ const Banner: React.FC = () => {
                                 <label
                                   className="font-inter-14px-normal-cGray text-nowrap"
                                 >{banner.label}</label>
-                                <div
-                                  className="flex flex-row gap-6 justify-end"
-                                >
-                                  <p
-                                    className="font-inter-16px-400 text-black"
-                                  >Show Banner</p>
-                                  <div
-                                    className="transition-transform duration-1000 ease-in-out my-auto tracking-[-1.1%]"
-                                  >
-                                    <label className="relative cursor-pointer">
-                                      <input type="checkbox"
-                                        className="sr-only peer" defaultChecked={newBanner.show_promotion_status}
-                                        onClick={() => {
-                                          setNewBanner({
-                                            ...newBanner,
-                                            show_promotion_status: !newBanner.show_promotion_status
-                                          })
-                                        }}
-                                      />
-                                      <div
-                                        className="w-[28px] h-[15px] flex items-center bg-red-500 rounded-full peer-checked:text-[#00D13B] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[10px] after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#00D13B]">
-                                      </div>
-                                    </label>
-                                  </div>
-                                </div>
                               </div>
                               <label
                                 htmlFor="file-upload"
@@ -921,8 +944,25 @@ const Banner: React.FC = () => {
                               </label>
                             </div>
                           )
-                        }
-                        else{
+                        } else if(banner.label === 'Select coupon'){
+                          return(
+                            <div
+                              key={index}
+                              className="flex flex-col"
+                              ref={dropdownRef}
+                            >
+                              <label className="search-input-label">{banner.label}</label>
+                              <select className={`search-input-text ${newBanner?.promotion_id === "" ? 'text-gray-400' : 'text-black'}`} onChange={updateBanner} name="promotion_id">
+                                <option selected value={""} className="text-gray-400">{banner.placeholder}</option>
+                                {
+                                  promotionList?.map((promotion, idx) => (
+                                    <option key={idx} selected={newBanner?.promotion_id === promotion?.id} value={promotion?.id} className="text-black">{promotion?.code}</option>
+                                  ))
+                                }
+                              </select>
+                            </div>
+                          )
+                        } else{
                           return(
                             <div
                               key={index}

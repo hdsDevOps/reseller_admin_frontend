@@ -490,7 +490,7 @@ const UserList = () => {
                 )
               }) : 
               <tr>
-                <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
+                <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data available</td>
               </tr>
             }
             

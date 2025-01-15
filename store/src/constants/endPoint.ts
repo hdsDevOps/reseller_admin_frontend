@@ -21,6 +21,7 @@ export const endPoints = {
     getRegionList: 'adminservices/customer/api/v1/getregion_list',
     sendEmailToCustomer: 'adminservices/notification/api/v1/sendmailtocustomer',
     getCustomerCount: 'adminservices/voucher/api/v1/getcustomer_number',
+    getCustomerDomainsList: 'adminservices/customers/',
 
     // voucher notification endpoints
     voucherList: 'voucherservices/voucher/api/v1/voucherlist',

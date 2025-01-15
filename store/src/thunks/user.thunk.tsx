@@ -343,6 +343,13 @@ export const getCustomerCountThunk = createAsyncThunk(
   }
 );
 
+export const getCustomerDomainsListThunk = createAsyncThunk(
+  "users/getCustomerDomainsList",
+  async ({id}:any) => {
+    return await userApis.getCustomerDomainsListApi(id);
+  }
+);
+
 export const addNotificationTemplateThunk = createAsyncThunk(
   "users/addNotificationTemplate",
   async ({template_heading}: any) => {
@@ -401,15 +408,15 @@ export const getBannerListThunk = createAsyncThunk(
 
 export const addBannerThunk = createAsyncThunk(
   "users/addBanner",
-  async ({title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details}: any) => {
-    return await userApis.addBannerApi(title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details);
+  async ({title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, promotion_id}: any) => {
+    return await userApis.addBannerApi(title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, promotion_id);
   }
 );
 
 export const editBannerThunk = createAsyncThunk(
   "users/editBanner",
-  async ({record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active}: any) => {
-    return await userApis.editBannerApi(record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active);
+  async ({record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active, promotion_id}: any) => {
+    return await userApis.editBannerApi(record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active, promotion_id);
   }
 );
 
@@ -429,15 +436,15 @@ export const getPromotionsListThunk = createAsyncThunk(
 
 export const addPromotionThunk = createAsyncThunk(
   "users/addPromotion",
-  async ({code, start_date, end_date, html_template}: any) => {
-    return await userApis.addPromotionApi(code, start_date, end_date, html_template);
+  async ({code, start_date, end_date, html_template, discount}: any) => {
+    return await userApis.addPromotionApi(code, start_date, end_date, html_template, discount);
   }
 );
 
 export const editPromotionThunk = createAsyncThunk(
   "users/editPromotion",
-  async ({record_id, code, start_date, end_date, html_template, status}: any) => {
-    return await userApis.editPromotionApi(record_id, code, start_date, end_date, html_template, status);
+  async ({record_id, code, start_date, end_date, html_template, status, discount}: any) => {
+    return await userApis.editPromotionApi(record_id, code, start_date, end_date, html_template, status, discount);
   }
 );
 
@@ -569,8 +576,8 @@ export const deleteFaqThunk = createAsyncThunk(
 
 export const getPlansAndPricesThunk = createAsyncThunk(
   "users/getPlanAndPrice",
-  async () => {
-    return await userApis.getPlansAndPricesApi();
+  async ({last_order}:any) => {
+    return await userApis.getPlansAndPricesApi(last_order);
   }
 );
 

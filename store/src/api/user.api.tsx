@@ -439,6 +439,17 @@ async function getCustomerCountApi(
   }
 };
 
+async function getCustomerDomainsListApi(
+  id:string
+): Promise<any> {
+  try {
+    const result = await getApiCall(endPoints.getCustomerDomainsList+id);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function addNotificationTemplateApi(
   template_heading: string
 ): Promise<any> {
@@ -531,10 +542,11 @@ async function addBannerApi(
   background_image: File,
   show_video_status: boolean,
   show_promotion_status: boolean, 
-  currency_details: []
+  currency_details: [],
+  promotion_id:string
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.addBanner, {title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details});
+    const result = await postApiCall(endPoints.addBanner, {title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, promotion_id});
     return result;
   } catch (error: any) {
     throw error;
@@ -552,10 +564,11 @@ async function editBannerApi(
   show_video_status: boolean,
   show_promotion_status: boolean, 
   currency_details: [],
-  active: boolean
+  active: boolean,
+  promotion_id:string
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.editBanner, {record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active});
+    const result = await postApiCall(endPoints.editBanner, {record_id, title, description, video_url, button_title, button_url, background_image, show_video_status, show_promotion_status, currency_details, active, promotion_id});
     return result;
   } catch (error: any) {
     throw error;
@@ -586,10 +599,11 @@ async function addPromotionApi(
   code: string,
   start_date: Date,
   end_date: Date,
-  html_template: string
+  html_template: string,
+  discount:[]
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.addPromotion, {code, start_date, end_date, html_template});
+    const result = await postApiCall(endPoints.addPromotion, {code, start_date, end_date, html_template, discount});
     return result;
   } catch (error: any) {
     throw error;
@@ -602,10 +616,11 @@ async function editPromotionApi(
   start_date: Date,
   end_date: Date,
   html_template: string,
-  status: Boolean
+  status: Boolean,
+  discount: [],
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.editPromotion, {record_id, code, start_date, end_date, html_template, status});
+    const result = await postApiCall(endPoints.editPromotion, {record_id, code, start_date, end_date, html_template, status, discount});
     return result;
   } catch (error: any) {
     throw error;
@@ -823,9 +838,11 @@ async function deleteFaqsApi(
   }
 };
 
-async function getPlansAndPricesApi(): Promise<any> {
+async function getPlansAndPricesApi(
+  last_order:Number|string,
+): Promise<any> {
   try {
-    const result = await getApiCall(endPoints.getPlansAndPrices);
+    const result = await postApiCall(endPoints.getPlansAndPrices, {last_order});
     return result;
   } catch (error: any) {
     throw error;
@@ -1212,6 +1229,7 @@ export const userApis = {
   getCustomerGroupListApi,
   deleteCustomerGroupApi,
   getCustomerCountApi,
+  getCustomerDomainsListApi,
   addNotificationTemplateApi,
   getNotificationTemplateApi,
   updateNoficationTemplateContentApi,

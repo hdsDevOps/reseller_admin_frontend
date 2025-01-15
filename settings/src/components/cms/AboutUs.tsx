@@ -6,6 +6,8 @@ import { getAboutUsThunk, updateAboutUsThunk, uploadImageThunk, removeUserAuthTo
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Camera, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const initialAboutUs = {
   heading_section: {
@@ -25,10 +27,11 @@ const initialAboutUs = {
 }
 
 const AboutUs: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isEditModalOpen,setIsEditModalOpen]=useState(false);
   const [aboutUs, setAboutUs]=useState(initialAboutUs);
-  // console.log(aboutUs);
+  console.log(aboutUs);
   const [imageFile1, setImageFile1] = useState(null);
   const [imageFile2, setImageFile2] = useState(null);
   const [imageFile3, setImageFile3] = useState(null);
@@ -343,6 +346,44 @@ const AboutUs: React.FC = () => {
         }
       }
     }
+  };
+
+  const removeHeadingImage = async(e) => {
+    try {
+      const updateAboutUs = await dispatch(updateAboutUsThunk({
+        heading_section: {
+          heading: aboutUs.heading_section.heading,
+          image: ""
+        },
+        block1: {
+          content_title: aboutUs.block1.content_title,
+          description: aboutUs.block1.description,
+          image: aboutUs.block1.image
+        },
+        block2: {
+          content_title: aboutUs.block2.content_title,
+          description: aboutUs.block2.description,
+          image: aboutUs.block2.image
+        }
+      })).unwrap();
+      console.log(updateAboutUs);
+      setTimeout(() => {
+        toast.success("Successfully updated about us");
+      }, 1000);
+    } catch (error) {
+      toast.error("Error on updating About Us");
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      };
+    } finally {
+      fetchAboutUs();
+      setImageFile3(null);
+    }
   }
 
   return (
@@ -368,11 +409,18 @@ const AboutUs: React.FC = () => {
               {aboutUs.heading_section.heading}
             </h3>
           </div>
-          <img
-            src={aboutUs.heading_section.image}
-            alt="About us"
-            className="w-full h-16 object-cover"
-          />
+          {
+            aboutUs.heading_section.image !== ""
+            ? (
+              <img
+                src={aboutUs.heading_section.image}
+                alt="About us"
+                className="w-full h-16 object-cover"
+              />
+            ) : (
+              <div className="w-full h-16 object-cover bg-[#12A83399]"></div>
+            )
+          }
         </div>
         <div className="px-5 my-2">
           <ContentBlock
@@ -433,7 +481,7 @@ const AboutUs: React.FC = () => {
               >
                 <div className="flex flex-col">
                   <label className="search-input-label">Page Heading</label>
-                  <div className="search-input-text-2 grid md:grid-cols-3 grid-cols-1 p-[15px] gap-6">
+                  <div className="search-input-text-2 grid md:grid-cols-3 grid-cols-1 p-[15px] gap-6 relative">
                     <input
                       type="text"
                       placeholder="Enter the page heading here"
@@ -453,9 +501,9 @@ const AboutUs: React.FC = () => {
                         htmlFor="file-upload"
                         className="flex flex-col items-center justify-center md:w-48 w-full h-[73px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100 md:mx-0 mx-auto"
                     >
-                        <div className={`flex flex-col items-center justify-center ${imageFile3 === null ? 'pt-5 pb-6' : ''} w-full h-full`}>
+                        <div className={`flex flex-col items-center justify-center ${imageFile3 === null ? 'pt-5 pb-2' : ''} w-full h-full`}>
                           {
-                            imageFile3 === null ?
+                            imageFile3 === null || imageFile3 === "" ?
                             (<React.Fragment>
                               <svg
                                 aria-hidden="true"
@@ -472,7 +520,7 @@ const AboutUs: React.FC = () => {
                                     d="M12 4v16m8-8H4"
                                 ></path>
                               </svg>
-                              <p className="mb-2 text-sm text-gray-500">Add banner image</p>
+                              <p className="mb-1 text-sm text-gray-500">Add banner image</p>
                             </React.Fragment>) :
                             (<img ref={imageRef3} src={imageFile3} alt="image" className="h-full object-cover" />)
                           }
@@ -480,7 +528,16 @@ const AboutUs: React.FC = () => {
                         <input id="file-upload" type="file" className="hidden" accept="image/*"
                           onChange={e => { setImageFile3(e.target.files[0]) }}
                         />
+                        <p className="text-[8px] -mt-2 text-gray-500">Dimesion: 1440 x 300</p>
                     </label>
+                    {
+                      aboutUs?.heading_section?.image === ""
+                      ? (
+                        <Camera className="absolute right-2 bottom-2 text-sm" />
+                      ) : (
+                        <Trash2 className="absolute right-2 bottom-2 text-sm" onClick={(e) => {removeHeadingImage(e)}} />
+                      )
+                    }
                   </div>
                 </div>
                 <div className="flex flex-col">
@@ -489,7 +546,7 @@ const AboutUs: React.FC = () => {
                     className="grid md:grid-cols-2 grid-cols-1 search-input-text-2 p-5 gap-6"
                   >
                     <div
-                      className="grid grid-cols-1 gap-4"
+                      className="grid grid-cols-1 gap-4 relative"
                     >
                       <div
                         className="flex flex-col"
@@ -544,7 +601,9 @@ const AboutUs: React.FC = () => {
                             setImageFile1(e.target.files[0])
                           }}
                         />
+                        <Camera className="absolute bottom-0 right-0 text-sm bg-white" />
                       </label>
+                      
                     </div>
 
                     <div
@@ -587,7 +646,7 @@ const AboutUs: React.FC = () => {
                     className="grid md:grid-cols-2 grid-cols-1 search-input-text-2 p-5 gap-6"
                   >
                     <div
-                      className="grid grid-cols-1 gap-4"
+                      className="grid grid-cols-1 gap-4 relative"
                     >
                       <div
                         className="flex flex-col"
@@ -642,6 +701,7 @@ const AboutUs: React.FC = () => {
                             setImageFile2(e.target.files[0])
                           }}
                         />
+                        <Camera className="absolute bottom-0 right-0 text-sm bg-white" />
                       </label>
                     </div>
 

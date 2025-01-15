@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import '../styles/styles.css';
-import { updateCustomerPasswordThunk } from 'store/user.thunk';
+import { getCustomerDomainsListThunk, updateCustomerPasswordThunk } from 'store/user.thunk';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,14 +16,18 @@ const CustomerInformation: React.FC = () => {
   const dispatch = useAppDispatch();
   const { rolePermissionsSlice } = useAppSelector(state => state.auth);
 
+  const [primaryDomain, setPrimaryDomain] = useState("");
+
   const [customer, setCustomer] = useState(location?.state?.item);
   console.log(customer, 'customer information');
+  const [domains, setDomains] = useState([]);
+  // console.log("domains....", domains);
   
   const bottomData = [
     { icon: <Mail className='mx-auto' />, title: `Email : ${customer?.email}` },
     { icon: <Phone className='mx-auto' />, title: `Phone : +${customer?.phone_no}` },
-    { icon: <UserRound className='mx-auto' />, title: `Domain: ${customer?.domain ? customer?.domain : 'N/A'}` },
-  ]
+    { icon: <UserRound className='mx-auto' />, title: `Domain: ${primaryDomain !== "" ? primaryDomain : 'N/A'}` },
+  ];
 
   const [resetPasswordShow, setResetPasswordShow] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -54,7 +58,33 @@ const CustomerInformation: React.FC = () => {
         console.log(error);
       }
     }
-  }
+  };
+
+  const getCustomerDomainsList = async(id:string) => {
+    try {
+      const result = await dispatch(getCustomerDomainsListThunk({id: id})).unwrap();
+      setDomains(result?.data);
+    } catch (error) {
+      setDomains([]);
+    }
+  };
+
+  useEffect(() => {
+    getCustomerDomainsList(customer?.record_id);
+  }, [customer?.record_id]);
+
+  const getPrimaryDomain = async() => {
+    const name = domains?.find(domain => domain?.domain_type === "primary");
+    if(name) {
+      setPrimaryDomain(name?.domain_name);
+    } else {
+      setPrimaryDomain("");
+    }
+  };
+
+  useEffect(() => {
+    getPrimaryDomain();
+  }, [domains]);
   
   return (
     <div
@@ -105,7 +135,7 @@ const CustomerInformation: React.FC = () => {
 
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Customer ID : #{customer?.record_id || 'N/A'}</p>
+          >Customer ID : #{customer?.profile_id || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
           >Business Name : {customer?.business_name || 'N/A'}</p>
@@ -117,10 +147,22 @@ const CustomerInformation: React.FC = () => {
           >Country : {customer?.country || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Region : {customer?.state_name || 'N/A'}</p>
+          >Region : {customer?.state || 'N/A'}</p>
           <p
-            className='py-2 font-inter-16px-400-custom-gray'
-          >Domain : {customer?.domain || 'N/A'}</p>
+            className='py-2 font-inter-16px-400-custom-gray flex max-[400px]:flex-col min-[400px]:flex-row'
+          >
+            <p>Domain :</p>
+            <div className='flex flex-col ml-1'>
+              {
+                domains?.length > 0 
+                ? domains?.map((domain, index) => (
+                  <p key={index} className='py-[1px]'>{domain?.domain_name}<br /></p>
+                )) : (
+                  <p>N/A</p>
+                )
+              } 
+            </div>
+          </p>
         </div>
         <div
           className='flex flex-col justify-between text-right max-[631px]:items-center'

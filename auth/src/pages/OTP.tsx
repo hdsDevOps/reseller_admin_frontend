@@ -23,20 +23,9 @@ const OTP: React.FC = () => {
   const email = `${location.state != null ? location.state.email : ""}`;
   const adminId = location.state.adminId;
   // console.log("Admin Id...", adminId);
-
-  const otp1Ref = useRef<HTMLInputElement>(null);
-  const otp2Ref = useRef<HTMLInputElement>(null);
-  const otp3Ref = useRef<HTMLInputElement>(null);
-  const otp4Ref = useRef<HTMLInputElement>(null);
-  const otp5Ref = useRef<HTMLInputElement>(null);
-  const otp6Ref = useRef<HTMLInputElement>(null);
-
-  const [otp1, setOtp1] = useState<string>("");
-  const [otp2, setOtp2] = useState<string>("");
-  const [otp3, setOtp3] = useState<string>("");
-  const [otp4, setOtp4] = useState<string>("");
-  const [otp5, setOtp5] = useState<string>("");
-  const [otp6, setOtp6] = useState<string>("");
+  
+  const otpRefs = useRef([]);
+  const [otpValues, SetOptValues] = useState(["", "", "", "", "", "",]);
 
   const [ time, setTime ] = useState(120);
   const [ seconds, setSeconds ] = useState(0);
@@ -60,102 +49,59 @@ const OTP: React.FC = () => {
       setMinutes(0);
       setTime(0);
     }
-  }, [time])
+  }, [time]);
 
   useEffect(() => {
-    otp1Ref.current?.focus();
+    otpRefs.current[0]?.focus();
   }, []);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const value = (e.target as HTMLInputElement).value;
-    if (/^\d$/.test(value)) {
-      switch (index) {
-        case 1:
-          setOtp1(value);
-          otp2Ref.current?.focus();
-          break;
-        case 2:
-          setOtp2(value);
-          otp3Ref.current?.focus();
-          break;
-        case 3:
-          setOtp3(value);
-          otp4Ref.current?.focus();
-          break;
-        case 4:
-          setOtp4(value);
-          otp5Ref.current?.focus();
-          break;
-        case 5:
-          setOtp5(value);
-          otp6Ref.current?.focus();
-          break;
-        case 6:
-          setOtp6(value);
-          break;
-        default:
-          break;
+    const { value } = e.target;
+
+    if(/^\d$/.test(value)) {
+      const newOtpValues = [...otpValues];
+      newOtpValues[index - 1] = value;
+      SetOptValues(newOtpValues);
+
+      if(index < 6) {
+        otpRefs.current[index]?.focus();
       }
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === "Backspace") {
-      switch (index) {
-        case 1:
-          if (!otp1) {
-            otp1Ref.current?.focus();
-          } else {
-            setOtp1("");
-          }
-          break;
-        case 2:
-          if (!otp2) {
-            otp1Ref.current?.focus();
-          } else {
-            setOtp2("");
-          }
-          break;
-        case 3:
-          if (!otp3) {
-            otp2Ref.current?.focus();
-          } else {
-            setOtp3("");
-          }
-          break;
-        case 4:
-          if (!otp4) {
-            otp3Ref.current?.focus();
-          } else {
-            setOtp4("");
-          }
-          break;
-        case 5:
-          if (!otp5) {
-            otp4Ref.current?.focus();
-          } else {
-            setOtp5("");
-          }
-          break;
-        case 6:
-          if (!otp6) {
-            otp5Ref.current?.focus();
-          } else {
-            setOtp6("");
-          }
-          break;
-        default:
-          break;
+    if(e.key === "Backspace" && !otpValues[index - 1] && index > 1) {
+      otpRefs.current[index - 2]?.focus();
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("Text").slice(0, 6);
+
+    if(/^\d{1,6}$/.test(pastedData)) {
+      const newOtpValues = pastedData.split("");
+      SetOptValues((prev) => 
+        newOtpValues.concat(Array(6 - newOtpValues.length).fill("")).slice(0, 6)
+      );
+
+      newOtpValues.forEach((val, i) => {
+        otpRefs.current[i].value = val;
+      });
+
+      const lastFilledIndex = newOtpValues.length - 1;
+      if(lastFilledIndex < 6) {
+        otpRefs.current[lastFilledIndex]?.focus();
       }
     }
   };
 
   const handleLogin = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
+    const otp = otpValues.join("");
 
     if (otp.length === 6) {
       const isValidOtp = true;
@@ -311,72 +257,23 @@ const OTP: React.FC = () => {
               }</span>
             </div>
             <div className="grid grid-cols-6 gap-2 mt-4 w-[451px]">
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp1Ref}
-                value={otp1}
-                onChange={(e) => handleInputChange(e, 1)}
-                onKeyDown={(e) => handleKeyDown(e, 1)}
-                className="otp-input"
-                placeholder="0"
-                data-otp-index="0"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp2Ref}
-                value={otp2}
-                onChange={(e) => handleInputChange(e, 2)}
-                onKeyDown={(e) => handleKeyDown(e, 2)}
-                className="otp-input"
-                placeholder="0"
-                data-otp-index="1"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp3Ref}
-                value={otp3}
-                onChange={(e) => handleInputChange(e, 3)}
-                onKeyDown={(e) => handleKeyDown(e, 3)}
-                className="otp-input"
-                placeholder="0"
-                data-otp-index="2"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp4Ref}
-                value={otp4}
-                onChange={(e) => handleInputChange(e, 4)}
-                onKeyDown={(e) => handleKeyDown(e, 4)}
-                className="otp-input"
-                placeholder="0"
-                data-otp-index="3"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp5Ref}
-                value={otp5}
-                onChange={(e) => handleInputChange(e, 5)}
-                onKeyDown={(e) => handleKeyDown(e, 5)}
-                className="otp-input"
-                placeholder="0"
-                data-otp-index="4"
-              />
-              <input
-                type="text"
-                maxLength={1}
-                ref={otp6Ref}
-                value={otp6}
-                onChange={(e) => handleInputChange(e, 6)}
-                onKeyDown={(e) => handleKeyDown(e, 6)}
-                className="otp-input"
-                placeholder="0"
-                data-otp-index="5"
-              />
+              {
+                [1, 2, 3, 4, 5, 6].map((index) => (
+                  <input
+                  key={index}
+                    type="text"
+                    maxLength={1}
+                    // ref={otp1Ref}
+                    ref={(el) => (otpRefs.current[index - 1] = el)}
+                    value={otpValues[index-1]}
+                    onChange={(e) => handleInputChange(e, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    onPaste={handlePaste}
+                    className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
+                    placeholder="0"
+                  />
+                ))
+              }
             </div>
             <div className="max-w-[451px] mt-[25px]">
               <button

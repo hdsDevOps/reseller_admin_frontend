@@ -145,7 +145,7 @@ const Sidebar = () => {
   const dropdownRef = useRef([]);
 
   const [rolePermissions, setRolePermissions] = useState(rolePermissionsSlice !== null ? rolePermissionsSlice : intitalPermissions);
-  console.log("rolePermissions...", rolePermissions);
+  // console.log("rolePermissions...", rolePermissions);
 
   useEffect(() => {
     const getRole = async() => {

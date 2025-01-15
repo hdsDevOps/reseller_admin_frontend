@@ -168,8 +168,8 @@ const PlanPriceSetup = () => {
 
   const fetchPlansAndPrices = async() => {
     try {
-      const result = await dispatch(getPlansAndPricesThunk()).unwrap();
-      setPlansAndPrices(result.data);
+      const result = await dispatch(getPlansAndPricesThunk({last_order: ""})).unwrap();
+      setPlansAndPrices(result?.data);
     } catch (error) {
       setPlansAndPrices([]);
       if(error?.message == "Request failed with status code 401") {
@@ -358,7 +358,7 @@ const PlanPriceSetup = () => {
             </div>
           </div>
         )) :
-        <div className="bg-gray-50 flex flex-col p-[15px] shadow-md rounded-xl">No data avaibale</div>
+        <div className="bg-gray-50 flex flex-col p-[15px] shadow-md rounded-xl">No data available</div>
       }
     </div>
   );
@@ -556,7 +556,7 @@ const PlanPriceSetup = () => {
               </tr>
             )) :
             <tr>
-              <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data avaibale</td>
+              <td colSpan={13} className="font-inter font-semibold text-[14px] text-black leading-6 tracking-[1px] text-center opacity-60">No data available</td>
             </tr>
           }
         </tbody>

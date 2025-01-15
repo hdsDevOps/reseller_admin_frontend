@@ -18,9 +18,9 @@ const ContactSection = () => {
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const contactItems = [
     { topic: 'Page Description', name: 'content_description', placeholder: 'Enter the text here',},
+    { topic: 'Address', name: 'address', placeholder: 'Enter the address here',},
     { topic: 'Call Us', name: 'phone_no', placeholder: 'Enter the contact number here with country code',},
-    { topic: 'email ID', name: 'email', placeholder: 'Enter the email id here',},
-    { topic: 'address', name: 'address', placeholder: 'Enter the address here',},
+    { topic: 'Email ID', name: 'email', placeholder: 'Enter the email id here',},
   ];
   const [contactData, setContactData] = React.useState(initialContactUs);
   console.log("contact", contactData);
@@ -162,23 +162,42 @@ const ContactSection = () => {
               <form className="grid sm:grid-cols-2 grid-cols-1 gap-4" onSubmit={handleSubmit}>
                 {
                   contactItems.map((item, index) => {
-                    return(
-                      <div
-                        className="flex flex-col"
-                        key={index}
-                      >
-                        <label className="search-input-label">{item.topic}</label>
-                        <input
-                          type={item.name == 'email' ? 'email' : 'text'}
-                          name={item.name}
-                          className="w-full search-input-text"
-                          placeholder={item.placeholder}
-                          // defaultValue={item.name == 'phone_no' ? convertToPhoneNumber(contactData[item.name]) : contactData[item.name]}
-                          defaultValue={newContactData[item.name]}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    )
+                    if(item?.topic === "Page Description" || item?.topic === "Address") {
+                      return(
+                        <div
+                          className="flex flex-col"
+                          key={index}
+                        >
+                          <label className="search-input-label">{item.topic}</label>
+                          <textarea
+                            name={item.name}
+                            className="w-full search-input-text-2 h-20 pt-2 px-2"
+                            placeholder={item.placeholder}
+                            // defaultValue={item.name == 'phone_no' ? convertToPhoneNumber(contactData[item.name]) : contactData[item.name]}
+                            defaultValue={newContactData[item.name]}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      )
+                    } else {
+                      return(
+                        <div
+                          className="flex flex-col"
+                          key={index}
+                        >
+                          <label className="search-input-label">{item.topic}</label>
+                          <input
+                            type={item.name == 'email' ? 'email' : 'text'}
+                            name={item.name}
+                            className="w-full search-input-text"
+                            placeholder={item.placeholder}
+                            // defaultValue={item.name == 'phone_no' ? convertToPhoneNumber(contactData[item.name]) : contactData[item.name]}
+                            defaultValue={newContactData[item.name]}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      )
+                    }
                   })
                 }
 

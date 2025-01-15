@@ -575,7 +575,7 @@ const NotificationTemplate = () => {
                 </div>
 
                 <div className='w-full border rounded-sm p-1 mt-5 shadow-sm'>
-                  <HtmlRenderer htmlContent={templateContent || `<div style="text-align: center; min-height: 100px; padding-top: 35px;">No data Available</div>`} />
+                  <HtmlRenderer htmlContent={templateContent || `<div style="text-align: center; min-height: 100px; padding-top: 35px;">No data available</div>`} />
                 </div>
               </div>
             </div>
