@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronRight, MoveLeft } from "lucide-react";
 import '../styles/styles.css';
 import { useNavigate } from "react-router-dom";
-import { Editor } from "@tinymce/tinymce-react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { getPrivacyPolicyThunk, updatePrivacyPolicyThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,6 +21,25 @@ const PrivacyPolicy: React.FC = () => {
   const dispatch = useAppDispatch();
   const [content, setContent] = useState("");
   console.log("Content...", content);
+
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }], // Header dropdown
+      ['bold', 'italic', 'underline', 'strike'], // Text styling buttons
+      [{ 'color': [] }, { 'background': [] }], // Text and background color
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }], // Lists
+      ['link',], // Links and images
+      ['blockquote', 'code-block'],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'header': 1 }, { 'header': 2 }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean'], // Remove formatting
+    ],
+  };
 
   const fetchPrivacyPolicy = async() => {
     try {
@@ -102,19 +122,14 @@ const PrivacyPolicy: React.FC = () => {
 
       <p className="font-inter-bold-16px-cGray7 mt-10">Privacy policy</p>
       <div
-        className="mt-2 shadow-md"
+        className="mt-2 shadow-md h-[450px] px-2"
       >
-        <Editor
-          apiKey={process.env.TINY_MCE_API}
+        <ReactQuill
           value={content}
-          init={{
-            height: 400,
-            menubar: false,
-            plugins: ["lists", "link", "image", "paste", "code",],
-            toolbar:
-              "undo redo | formatselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | image | code",
-          }}
-          onEditorChange={(content) => { setContent(content) }}
+          onChange={(content) => { setContent(content) }}
+          theme="snow"
+          style={{height: 370}}
+          modules={modules}
         />
       </div>
 

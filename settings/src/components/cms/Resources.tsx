@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import ResourcesModal from "./components/ResourcesModal";
 import '../../styles/styles.css';
 import { Dialog } from "@headlessui/react";
-import { Editor } from "@tinymce/tinymce-react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { getResourcesThunk, updateResourcesThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,6 +41,25 @@ const Resources: React.FC = () => {
   // console.log(resources);
   const [newResources, setNewResources] = useState(resources);
   console.log(newResources);
+
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }], // Header dropdown
+      ['bold', 'italic', 'underline', 'strike'], // Text styling buttons
+      [{ 'color': [] }, { 'background': [] }], // Text and background color
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }], // Lists
+      ['link',], // Links and images
+      ['blockquote', 'code-block'],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'header': 1 }, { 'header': 2 }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean'], // Remove formatting
+    ],
+  };
   
   const fetchResources = async() => {
     try {
@@ -241,17 +261,12 @@ const Resources: React.FC = () => {
                           <div
                             className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
                           >
-                            <Editor
-                              apiKey={process.env.TINY_MCE_API}
-                              init={{
-                                height: 200,
-                                menubar: false,
-                                plugins: ["lists", "link", "image", "paste"],
-                                toolbar:
-                                  "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
-                              }}
+                            <ReactQuill
                               value={value?.description}
-                              onEditorChange={(content) => {handleEditorChange (key, content)}}
+                              onChange={(content) => {handleEditorChange (key, content)}}
+                              theme="snow"
+                              style={{height: 130}}
+                              modules={modules}
                             />
                           </div>
                         </div>

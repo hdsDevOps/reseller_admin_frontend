@@ -3,11 +3,13 @@ import { Dialog, DialogPanel, DialogTitle, Switch } from "@headlessui/react";
 import '../../styles/styles.css';
 import { useNavigate } from "react-router-dom";
 import { PencilIcon, TrashIcon, X } from "lucide-react";
-import { Editor } from "@tinymce/tinymce-react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { getBannerListThunk, addBannerThunk, editBannerThunk, deleteBannerThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getPromotionsListThunk } from 'store/user.thunk';
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '../../styles/qlToolbar.css';
 
 const initialBanner = {
   title: '',
@@ -42,6 +44,25 @@ const Banner: React.FC = () => {
   console.log('promotionList...', promotionList);
   const [promotionDropdownOpen, setPromotionDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }], // Header dropdown
+      ['bold', 'italic', 'underline', 'strike'], // Text styling buttons
+      [{ 'color': [] }, { 'background': [] }], // Text and background color
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }], // Lists
+      ['link',], // Links and images
+      ['blockquote', 'code-block'],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'header': 1 }, { 'header': 2 }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean'], // Remove formatting
+    ],
+  };
 
   useEffect(() => {
     const handleClickOutsideRef = (event: MouseEvent) => {
@@ -172,7 +193,7 @@ const Banner: React.FC = () => {
 
   const bannerRight = [
     {label: 'Upload background image', name: 'background_image', placeholder: 'Add photo', type: 'file',},
-    {label: 'Description', name: 'description', placeholder: 'TinyMCE editor will be used', type: 'text',},
+    {label: 'Description', name: 'description', placeholder: 'quillJs editor will be used', type: 'text',},
     {label: 'Select coupon', name: 'promotion_id', placeholder: 'Select coupon', type: 'select',},
   ];
 
@@ -810,7 +831,7 @@ const Banner: React.FC = () => {
                                   className="transition-transform duration-1000 ease-in-out my-auto tracking-[-1.1%]"
                                 >
                                   <label className="relative cursor-pointer">
-                                    <input type="checkbox" className="sr-only peer" defaultChecked={newBanner?.show_video_status}
+                                    <input type="checkbox" className="sr-only peer" checked={newBanner?.show_video_status}
                                       onClick={() => {
                                         setNewBanner({
                                           ...newBanner,
@@ -876,25 +897,19 @@ const Banner: React.FC = () => {
                                 className="search-input-label w-full"
                               >Description</label>
                               <div
-                                className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
+                                className="search-input-text-2 w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 px-2"
                               >
-                                <Editor
-                                  apiKey={process.env.TINY_MCE_API}
-                                  onChange={updateBanner}
-                                  init={{
-                                    height: 170,
-                                    menubar: false,
-                                    plugins: ["lists", "link", "image", "paste"],
-                                    toolbar:
-                                      "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
-                                  }}
+                                <ReactQuill
                                   value={newBanner.description}
-                                  onEditorChange={(content) => {
+                                  onChange={(content) => {
                                     setNewBanner({
                                       ...newBanner,
                                       description: content,
                                     });
                                   }}
+                                  theme="snow"
+                                  style={{height: 100}}
+                                  modules={modules}
                                 />
                               </div>
                             </div>
@@ -946,21 +961,47 @@ const Banner: React.FC = () => {
                           )
                         } else if(banner.label === 'Select coupon'){
                           return(
-                            <div
-                              key={index}
-                              className="flex flex-col"
-                              ref={dropdownRef}
-                            >
-                              <label className="search-input-label">{banner.label}</label>
-                              <select className={`search-input-text ${newBanner?.promotion_id === "" ? 'text-gray-400' : 'text-black'}`} onChange={updateBanner} name="promotion_id">
-                                <option selected value={""} className="text-gray-400">{banner.placeholder}</option>
-                                {
-                                  promotionList?.map((promotion, idx) => (
-                                    <option key={idx} selected={newBanner?.promotion_id === promotion?.id} value={promotion?.id} className="text-black">{promotion?.code}</option>
-                                  ))
-                                }
-                              </select>
-                            </div>
+                            <>
+                              <div
+                                className="flex flex-row gap-16"
+                              >
+                                <p
+                                  className="font-inter-16px-400 text-black"
+                                >Show Coupon</p>
+                                <div
+                                  className="transition-transform duration-1000 ease-in-out my-auto tracking-[-1.1%]"
+                                >
+                                  <label className="relative cursor-pointer">
+                                    <input type="checkbox" className="sr-only peer" checked={newBanner?.show_promotion_status}
+                                      onClick={() => {
+                                        setNewBanner({
+                                          ...newBanner,
+                                          show_promotion_status: !newBanner.show_promotion_status
+                                        })
+                                      }}
+                                    />
+                                    <div
+                                      className="w-[28px] h-[15px] flex items-center bg-red-500 rounded-full peer-checked:text-[#00D13B] text-gray-300 font-extrabold after:flex after:items-center after:justify-center peer sm:peer-checked:after:translate-x-full peer-checked:after:translate-x-[10px] after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#00D13B]">
+                                    </div>
+                                  </label>
+                                </div>
+                              </div>
+                              <div
+                                key={index}
+                                className="flex flex-col"
+                                ref={dropdownRef}
+                              >
+                                <label className="search-input-label">{banner.label}</label>
+                                <select className={`search-input-text ${newBanner?.promotion_id === "" ? 'text-gray-400' : 'text-black'}`} onChange={updateBanner} name="promotion_id">
+                                  <option selected value={""} className="text-gray-400">{banner.placeholder}</option>
+                                  {
+                                    promotionList?.map((promotion, idx) => (
+                                      <option key={idx} selected={newBanner?.promotion_id === promotion?.id} value={promotion?.id} className="text-black">{promotion?.code}</option>
+                                    ))
+                                  }
+                                </select>
+                              </div>
+                            </>
                           )
                         } else{
                           return(

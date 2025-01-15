@@ -27,7 +27,7 @@ const ResetPassword: React.FC = () => {
   
 
   useEffect(() => {
-    toast.success("Otp has been verified, please update your password!");
+    toast.success("OTP has been verified, please update your password!");
   }, [])
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -48,11 +48,11 @@ const ResetPassword: React.FC = () => {
           navigate('/password-reset-successful');
         }
         else{
-          toast.error("Enter valid otp!");
+          toast.error("Enter valid OTP!");
         }
       } catch (error) {
         // console.log("Error on otp");
-        toast.error("Enter valid otp!");
+        toast.error("Enter valid OTP!");
       }
     }
   };

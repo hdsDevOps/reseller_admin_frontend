@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { Editor } from "@tinymce/tinymce-react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import '../../styles/styles.css';
 import { getFooterThunk, updateFooterThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
@@ -22,6 +23,25 @@ const FooterSection = () => {
     { topic: 'Heading', name: 'heading',},
     { topic: 'Menu', name: 'menu',},
   ];
+
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }], // Header dropdown
+      ['bold', 'italic', 'underline', 'strike'], // Text styling buttons
+      [{ 'color': [] }, { 'background': [] }], // Text and background color
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }], // Lists
+      ['link',], // Links and images
+      ['blockquote', 'code-block'],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'header': 1 }, { 'header': 2 }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean'], // Remove formatting
+    ],
+  };
 
   const footerNames = [
     {
@@ -98,7 +118,7 @@ const FooterSection = () => {
         value: content,
       },
     }));
-    console.log("Updated content:", content);
+    // console.log("Updated content:", content);
   }
 
   const addNewJson = (fieldName) => {
@@ -520,17 +540,12 @@ const FooterSection = () => {
                                   <div
                                     className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
                                   >
-                                    <Editor
-                                      apiKey={process.env.TINY_MCE_API}
-                                      init={{
-                                        height: 200,
-                                        menubar: false,
-                                        plugins: ["lists", "link", "image", "paste"],
-                                        toolbar:
-                                          "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
-                                      }}
+                                    <ReactQuill
                                       value={footerData?.contact_us_section_data?.value}
-                                      onEditorChange={handleEditorChange}
+                                      onChange={handleEditorChange}
+                                      theme="snow"
+                                      style={{height: 135}}
+                                      modules={modules}
                                     />
                                   </div>
                                 </div>

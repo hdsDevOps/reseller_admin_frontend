@@ -32,7 +32,7 @@ const OTP: React.FC = () => {
   const [ minutes, setMinutes ] = useState(0);
 
   useEffect(() => {
-    toast.success("Otp has been sent to your email!");
+    toast.success("OTP has been sent to your email!");
   }, [])
   
 
@@ -139,7 +139,7 @@ const OTP: React.FC = () => {
             }
           } catch (error) {
             // console.log("Error on otp");
-            toast.error("Enter valid otp!");
+            toast.error("Enter valid OTP!");
           }
         } else {
           try {
@@ -153,16 +153,16 @@ const OTP: React.FC = () => {
               navigate('/resetpassword', { state: { email: email, otp: otp } });
             }
             else{
-              toast.error("Enter valid otp!")
+              toast.error("Enter valid OTP!")
             }
           } catch (error) {
             // console.log("Error on otp");
-            toast.error("Enter valid otp!");
+            toast.error("Enter valid OTP!");
           }
         }
       } else {
         // alert("Invalid OTP. Please try again.");
-        toast.error("Enter valid otp!");
+        toast.error("Enter valid OTP!");
       }
     } else {
       // alert("Please enter all 6 digits.");
@@ -183,10 +183,10 @@ const OTP: React.FC = () => {
             admin_id: adminId
           })
         ).unwrap()
-        toast.success("Otp has been resent to your email!");
+        toast.success("OTP has been resend to your email!");
       } catch (error) {
         console.log("Error sending otp")
-        toast.error("Otp resending is failed!");
+        toast.error("OTP resending is failed!");
       }
     }
     else{
@@ -197,10 +197,10 @@ const OTP: React.FC = () => {
           })
         ).unwrap();
         console.log("result...", otpResend)
-        toast.success("Otp has been resent to your email!");
+        toast.success("OTP has been resend to your email!");
       } catch (error) {
         console.log("Error sending otp")
-        toast.error("Otp resending is failed!");
+        toast.error("OTP resending is failed!");
       }
     }
   }

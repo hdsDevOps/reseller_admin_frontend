@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
-import { ArrowRightLeft, Ellipsis } from "lucide-react";
+import { ArrowRightLeft, ChevronDown, Ellipsis } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -628,7 +628,7 @@ const CustomerManagement: React.FC = () => {
           <div
             className="grid grid-cols-1 min-[968px]:grid-cols-2"
           >
-            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0">
+            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 relative">
               <input
                 list="brow"
                 placeholder="Auto search domain list"
@@ -662,7 +662,7 @@ const CustomerManagement: React.FC = () => {
                   </div>
                 )
               } */}
-              
+              <ChevronDown className="absolute" />
             </div>
             <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
               <input

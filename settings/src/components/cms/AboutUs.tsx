@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../../styles/styles.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { Editor } from "@tinymce/tinymce-react";
 import { getAboutUsThunk, updateAboutUsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Camera, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const initialAboutUs = {
   heading_section: {
@@ -39,6 +40,25 @@ const AboutUs: React.FC = () => {
   const imageRef1 = useRef(null);
   const imageRef2 = useRef(null);
   const imageRef3 = useRef(null);
+
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }], // Header dropdown
+      ['bold', 'italic', 'underline', 'strike'], // Text styling buttons
+      [{ 'color': [] }, { 'background': [] }], // Text and background color
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }], // Lists
+      ['link',], // Links and images
+      ['blockquote', 'code-block'],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'header': 1 }, { 'header': 2 }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['clean'], // Remove formatting
+    ],
+  };
 
   const showImage = (imageFile: any, imageRef: any) => {
     const file = imageFile;
@@ -384,7 +404,7 @@ const AboutUs: React.FC = () => {
       fetchAboutUs();
       setImageFile3(null);
     }
-  }
+  };
 
   return (
     <div className="sm:p-4 p-0 bg-white">
@@ -607,7 +627,7 @@ const AboutUs: React.FC = () => {
                     </div>
 
                     <div
-                      className="flex flex-col w-full h-[230px]"
+                      className="flex flex-col w-full h-[250px]"
                     >
                       <label
                         className="search-input-label w-full"
@@ -615,25 +635,20 @@ const AboutUs: React.FC = () => {
                       <div
                         className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
                       >
-                        <Editor
-                          apiKey={process.env.TINY_MCE_API}
-                          init={{
-                            height: 200,
-                            menubar: false,
-                            plugins: ["lists", "link", "image", "paste"],
-                            toolbar:
-                              "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
-                          }}
+                        <ReactQuill
                           value={aboutUs.block1.description}
-                          onEditorChange={(content) => {
-                            setAboutUs((prevAboutsUs) => ({
-                              ...prevAboutsUs,
+                          onChange={(content) => {
+                            setAboutUs((prev) => ({
+                              ...prev,
                               block1: {
-                                ...prevAboutsUs.block1,
-                                description: content,
+                                ...prev.block1,
+                                description: content
                               }
-                            }));
+                            }))
                           }}
+                          theme="snow"
+                          style={{height: '150px'}}
+                          modules={modules}
                         />
                       </div>
                     </div>
@@ -706,7 +721,7 @@ const AboutUs: React.FC = () => {
                     </div>
 
                     <div
-                      className="flex flex-col w-full h-[230px]"
+                      className="flex flex-col w-full h-[250px]"
                     >
                       <label
                         className="search-input-label w-full"
@@ -714,25 +729,20 @@ const AboutUs: React.FC = () => {
                       <div
                         className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
                       >
-                        <Editor
-                          apiKey={process.env.TINY_MCE_API}
-                          init={{
-                            height: 200,
-                            menubar: false,
-                            plugins: ["lists", "link", "image", "paste"],
-                            toolbar:
-                              "undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist",
-                          }}
+                        <ReactQuill
                           value={aboutUs.block2.description}
-                          onEditorChange={(content) => {
-                            setAboutUs((prevAboutsUs) => ({
-                              ...prevAboutsUs,
+                          onChange={(content) => {
+                            setAboutUs((prev) => ({
+                              ...prev,
                               block2: {
-                                ...prevAboutsUs.block2,
-                                description: content,
+                                ...prev.block2,
+                                description: content
                               }
-                            }));
+                            }))
                           }}
+                          theme="snow"
+                          style={{height: '150px'}}
+                          modules={modules}
                         />
                       </div>
                     </div>
