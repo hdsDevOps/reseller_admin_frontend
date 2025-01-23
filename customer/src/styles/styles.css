@@ -201,3 +201,15 @@
 .fixed-popup-round3xl{
   @apply bg-white rounded-3xl shadow-lg;
 }
+
+.domain-dropdown {
+  width: 89%;
+  min-height: 100%;
+  max-height: 150px;
+}
+
+@media screen and (max-width: 640px) {
+  .domain-dropdown {
+    width: 100%;
+  }
+}

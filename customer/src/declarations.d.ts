@@ -15,6 +15,8 @@ declare module "store/ReduxProvider" {
     export const makeUserLoginThunk: import("@reduxjs/toolkit").AsyncThunk<any, { email: string, password: string, login_user_type: string }, {}>;
 
     export const getCustomerDomainsListThunk;
+    export const getPlansAndPricesThunk;
+    export const getCustomerEmailsCountThunk;
   }
 
   declare module 'store/authSlice' {

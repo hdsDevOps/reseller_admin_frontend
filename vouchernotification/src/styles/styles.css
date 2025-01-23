@@ -114,6 +114,10 @@
   @apply font-inter font-semibold text-base text-cWhite4 align-middle  focus:outline-none rounded-[10px] px-5 py-[10px] bg-cRed gap-[10px];
 }
 
+.btn-orange{
+  @apply font-inter font-semibold text-base text-cWhite4 align-middle  focus:outline-none rounded-[10px] px-5 py-[10px] bg-orange-400 gap-[10px];
+}
+
 .btn-red-2{
   @apply font-inter font-semibold text-base text-cWhite4 align-middle  focus:outline-none rounded-[10px] px-5 py-[10px] bg-[#F05252] gap-[10px];
 }

@@ -8,7 +8,7 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, editCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getCustomerCountThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, editCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getCustomerCountThunk, getPlansAndPricesThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -171,9 +171,7 @@ const EditCustomerGroup: React.FC = () =>  {
 
   const getSubscriptonPlansList = async() => {
     try {
-      const result = await dispatch(
-        getSubscriptonPlansListThunk()
-      ).unwrap()
+      const result = await dispatch(getPlansAndPricesThunk({last_order: ""})).unwrap()
       setSubscriptionPlans(result?.data);
     } catch (error) {
       setSubscriptionPlans([]);
@@ -191,6 +189,15 @@ const EditCustomerGroup: React.FC = () =>  {
   useEffect(() => {
     getSubscriptonPlansList();
   }, []);
+
+  useEffect(() => {
+    if(customerGroup?.start_date === "") {
+      setCustomerGroup({
+        ...customerGroup,
+        end_date: ""
+      })
+    }
+  }, [customerGroup?.start_date]);
   
   const getCustomerCount = async() => {
     try {

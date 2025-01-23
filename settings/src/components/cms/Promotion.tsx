@@ -64,7 +64,6 @@ const Promotion: React.FC = () => {
     { label: 'Start date', placeholder: 'Select here', name: 'start_date', type: 'date'},
     { label: 'End date', placeholder: 'Select here', name: 'end_date', type: 'date'},
     { label: 'Discount Amount', placeholder: 'Enter discount percentage', name: 'discount', type: 'number'},
-    { label: 'Preview', placeholder: '', name: 'preview', type: 'button'},
   ];
 
   const [promotions, setPromotions] = useState([]);
@@ -632,17 +631,6 @@ const Promotion: React.FC = () => {
                             }
                           </div>
                         )
-                      } else if(item.name === "preview") {
-                        return (
-                          <button
-                            type="button"
-                            className="btn-green min-w-[110px] max-w-[150px] items-start mt-2 mx-auto"
-                            onClick={() => {
-                              setIsPreviewModalOpen(true);
-                            }}
-                            cypress-name="cypress-promotion-preview-btn"
-                          >Preview</button>
-                        )
                       } else{
                         return(
                           <div
@@ -683,26 +671,39 @@ const Promotion: React.FC = () => {
                   }
                 </div>
 
-                <div className="flex flex-row max-sm:justify-center gap-3 pt-4">
-                  <button
-                    type="submit"
-                    // onClick={handleSubmit}
-                    className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
-                    cypress-name="submit-promotion-add-btn"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditModalOpen(false);
-                      setNewPromotion(initialPromotion);
-                      setEditPromo(false);
-                    }}
-                    className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
-                  >
-                    Cancel
-                  </button>
+                <div className="flex flex-col w-full sm:col-span-2 col-span-1">
+                  <div className="flex justify-center w-full">
+                    <button
+                      type="button"
+                      className="btn-green min-w-[110px] max-w-[150px] items-start mt-2 mx-auto"
+                      onClick={() => {
+                        setIsPreviewModalOpen(true);
+                      }}
+                      cypress-name="cypress-promotion-preview-btn"
+                    >Preview</button>
+                  </div>
+
+                  <div className="flex flex-row max-sm:justify-center gap-3 pt-4 w-full">
+                    <button
+                      type="submit"
+                      // onClick={handleSubmit}
+                      className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                      cypress-name="submit-promotion-add-btn"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditModalOpen(false);
+                        setNewPromotion(initialPromotion);
+                        setEditPromo(false);
+                      }}
+                      className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </form>
             </DialogPanel>

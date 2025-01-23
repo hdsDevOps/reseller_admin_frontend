@@ -32,14 +32,42 @@ function EditPlanPriceSetup() {
   const [amountCount, setAMountCount] = useState(1);
   const [dragActive, setDragActive] = useState(false);
   const [iconImage, setIconImage] = useState(location.state?.icon_image || null);
-  // console.log("image...", iconImage);
+  console.log("image...", iconImage);
   const [localPrice, setLocalPrice] = useState(subscription?.amount_details);
   // console.log("localPrice...", localPrice);
   const [featureHover, setFeatureHover] = useState(false);
+  const priceRefs = useRef({});
+  // console.log(priceRefs);
+  const imgRef = useRef(null);
+
+  const showImage = () => {
+    const file = iconImage;
+    if(file){
+      if(file instanceof File){
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (imgRef.current) {
+            imgRef.current.src = reader.result;
+            console.log(reader.result)
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      else if(typeof file === 'string'){
+        if (imgRef.current) {
+          imgRef.current.src = file;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    showImage();
+  }, [iconImage]);
   
   useEffect(() => {
     setLocalPrice(subscription?.amount_details);
-  }, [subscription]);
+  }, [subscription?.amount_details]);
   
   const productivityList = [
     {logo: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/gmail.png?alt=media&token=ce4bf445-8280-4c97-9743-e79168a27f11', html: <p className='font-inter font-normal text0base tracking-[-1.1%]'><b>Gmail</b> Business email</p>, type: 'checkbox', name: 'gmail_business_email', },
@@ -154,8 +182,7 @@ function EditPlanPriceSetup() {
   }
 
   const addAmountCount = () => {
-    const amounts = subscription?.amount_details;
-    const newAmounts = [...amounts, {
+    const newAmounts = [...localPrice, {
       currency_code: 'USD',
       price: [
         {
@@ -176,27 +203,42 @@ function EditPlanPriceSetup() {
       ],
     },]
     setAMountCount(amountCount+1);
-    setSubscription({
-      ...subscription,
-      amount_details: newAmounts
-    })
+    setLocalPrice([
+      ...newAmounts
+    ])
   };
 
   const removeAmountCount = (number) => {
-    const amounts = subscription.amount_details;
+    const amounts = [...localPrice];
     const newAmounts = amounts.filter((_, index) => index !== number);
     setAMountCount(amountCount-1);
-    setSubscription({
-      ...subscription,
-      amount_details: newAmounts
-    })
+    setLocalPrice([
+      ...newAmounts
+    ])
   };
 
   const handleAmountChange = (e, number, parent) => {
     const value = e.target.value;
     const field = e.target.name;
-    const local = localPrice[number]?.price[parent]
-    local[field] = value;
+    const toBeUpdatedPrice = [...localPrice];
+    const updatedPrice = toBeUpdatedPrice?.map((item, i) =>
+      i === number
+      ? {
+        ...item,
+        price: item?.price?.map((p, n) => 
+          n === parent
+          ? {
+            ...p,
+            [field]: value,
+          } : p
+        )
+      }
+      : item
+    );
+    setLocalPrice(updatedPrice);
+    setTimeout(() => {
+      priceRefs.current[`${number}-${parent}-${field}`]?.focus();
+    }, 0);
   };
 
   const handleServicesChange = e => {
@@ -297,31 +339,37 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Base Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[0].price || ''}
+                        value={item?.price[0].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-price`].focus()}}
                         required
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[1].price || ''}
+                        value={item?.price[1].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-price`].focus()}}
                         required
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[2].price || ''}
+                        value={item?.price[2].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-price`].focus()}}
                         required
                       />
                     </td>
@@ -330,31 +378,37 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Final Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[0].discount_price || ''}
+                        value={item?.price[0].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-discount_price`].focus()}}
                         required
                       />
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[1].discount_price || ''}
+                        value={item?.price[1].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-discount_price`].focus()}}
                         required
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[2].discount_price || ''}
+                        value={item?.price[2].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -441,31 +495,37 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Base Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[0].price || ''}
+                        value={item?.price[0].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-price`].focus()}}
                         required
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[1].price || ''}
+                        value={item?.price[1].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-price`].focus()}}
                         required
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[2].price || ''}
+                        value={item?.price[2].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-price`].focus()}}
                         required
                       />
                     </td>
@@ -474,31 +534,37 @@ function EditPlanPriceSetup() {
                     <td className="min-w-[80px] text-center text-nowrap px-[15px] py-2 h-[45px]">Final Price</td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[0].discount_price || ''}
+                        value={item?.price[0].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-discount_price`].focus()}}
                         required
                       />
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[1].discount_price || ''}
+                        value={item?.price[1].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-discount_price`].focus()}}
                         required
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
                       <input
-                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
+                        className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1 transition-none focus:outline-0'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[2].discount_price || ''}
+                        value={item?.price[2].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -576,8 +642,7 @@ function EditPlanPriceSetup() {
             toast.error("Please upload a valid image.");
           }
         }
-      }
-      else{
+      } else if(typeof iconImage === "string"){
         try {
           const addPlan = await dispatch(editPlanAndPriceThunk({
             icon_image: subscription?.icon_image,
@@ -607,6 +672,8 @@ function EditPlanPriceSetup() {
           }
           console.log(error)
         }
+      } else {
+        toast.warning("Please upload an icon image");
       }
     }
   }
@@ -665,7 +732,7 @@ function EditPlanPriceSetup() {
             name="plan_name"
             onChange={handleSubscriptionChange}
             required
-            defaultValue={subscription?.plan_name}
+            value={subscription?.plan_name}
           />
         </div>
         <div
@@ -682,9 +749,10 @@ function EditPlanPriceSetup() {
             onDrop={handleDrop}
           >
             {
-              typeof iconImage === "string" ?
-              <img src={iconImage} className='h-full object-cover' /> :
-              (
+              iconImage
+              ? (
+                <img ref={imgRef} src={iconImage === null ? subscription?.icon_image : iconImage} className='h-full object-cover' />
+              ) : (
                 <div className="flex flex-col items-center justify-center">
                   <Upload
                     className='text-xl text-custom-green'
@@ -796,7 +864,7 @@ function EditPlanPriceSetup() {
               className='h-[45px] border border-custom-white rounded-[10px] w-full pl-2'
               onChange={handleSubscriptionChange}
               name='sticker_text'
-              defaultValue={subscription?.sticker_text}
+              value={subscription?.sticker_text}
             />
           </div>
         </div>
@@ -861,8 +929,8 @@ function EditPlanPriceSetup() {
                           className={`h-7 border border-[#828282] text-custom-green accent-[#12A833] text-xs font-inter font-normal tracking-[-1.1%] focus:outline-none rounded-sm pl-2 ${item.type == 'checkbox' ? 'w-7' : 'w-[133px]'}  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                           onChange={item.type === 'checkbox' ? handleServicesChange : handleServicesChange2}
                           name={item.name}
-                          defaultValue={subscription?.services[item.name] || null}
-                          defaultChecked={subscription?.services[item.name] || false}
+                          value={subscription?.services[item.name] || null}
+                          checked={subscription?.services[item.name] || false}
                         />
                       </td>
                     </tr>
@@ -894,7 +962,7 @@ function EditPlanPriceSetup() {
                           onChange={item.type === 'checkbox' ? handleServicesChange : handleServicesChange2}
                           name={item.name}
                           defaultValue={subscription?.services[item.name] || null}
-                          defaultChecked={subscription?.services[item.name] || false}
+                          checked={subscription?.services[item.name] || false}
                         />
                       </td>
                     </tr>
@@ -917,6 +985,8 @@ function EditPlanPriceSetup() {
           type='button'
           onClick={() => {
             setSubscription(location.state);
+            setLocalPrice(subscription?.amount_details);
+            setIconImage(location.state?.icon_image || null);
           }}
         >Cancel</button>
       </div>

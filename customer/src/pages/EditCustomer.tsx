@@ -33,7 +33,7 @@ function EditCustomer() {
   const dispatch = useAppDispatch();
   
   const [customer, setCustomer] = useState(location.state);
-  // console.log(customer);
+  console.log(customer);
   const [phoneNumber,setPhoneNumber] = useState();
   const [phoneCode,setPhoneCode] = useState('+1');
   const [countryName, setCountryName] = useState("");
@@ -185,8 +185,8 @@ function EditCustomer() {
       if(customer?.country !== "" && countries.length > 0) {
         const countryData = countries?.find(item => item?.name === customer?.country);
         setCountry(countryData);
-        if(customer?.state_name !== "" && states.length > 0) {
-          const statesData = states?.find(item2 => item2?.name === customer?.state_name);
+        if(customer?.state !== "" && states.length > 0) {
+          const statesData = states?.find(item2 => item2?.name === customer?.state);
           setState(statesData)
           if(customer?.city !== "" && cities.length > 0) {
             const cityData = cities?.find(item3 => item3?.name === customer?.city);
@@ -208,7 +208,7 @@ function EditCustomer() {
     {label: 'Last name', type: 'text', name: 'last_name', placeholder: 'Enter the last name',},
     {label: 'Street Address', type: 'text', name: 'address', placeholder: 'Enter the street address',},
     {label: 'Country/Region', type: 'text', name: 'country', placeholder: 'Select the Country/Region',},
-    {label: 'State/Territory', type: 'text', name: 'state_name', placeholder: 'Select the State/Territory',},
+    {label: 'State/Territory', type: 'text', name: 'state', placeholder: 'Select the State/Territory',},
     {label: 'City', type: 'text', name: 'city', placeholder: 'Enter the city name',},
     {label: 'Zip code', type: 'number', name: 'zipcode', placeholder: 'Enter the zipcode',},
     {label: 'Business phone number', type: 'number', name: 'phone_no', placeholder: '0000000000',},
@@ -283,7 +283,20 @@ function EditCustomer() {
     if(validateForm()) {
       try {
         const result = await dispatch(
-          editCustomerThunk(customer)
+          editCustomerThunk({
+            first_name: customer?.first_name,
+            last_name: customer?.last_name,
+            address: customer?.address,
+            state: customer?.state,
+            city: customer?.city,
+            country: customer?.country,
+            zipcode: customer?.zipcode,
+            phone_no: customer?.phone_no,
+            email: customer?.email,
+            authentication: customer?.authentication,
+            record_id: customer?.id,
+            account_status: customer?.account_status
+          })
         ).unwrap();
         toast.success(result?.message);
       } catch (error) {
@@ -400,7 +413,7 @@ function EditCustomer() {
                             setCustomer({
                               ...customer,
                               country: '',
-                              state_name: '',
+                              state: '',
                               city: ''
                             });
                             setCountryName(e.target.value);
@@ -444,7 +457,7 @@ function EditCustomer() {
                         }
                       </div>
                     )
-                  } else if(item.name == 'state_name'){
+                  } else if(item.name == 'state'){
                     return(
                       <div
                         key={index}
@@ -458,11 +471,11 @@ function EditCustomer() {
                           type='text'
                           className='search-input-text focus:outline-none w-full h-full p-0'
                           placeholder={item?.placeholder}
-                          name='state_name'
+                          name='state'
                           onChange={e => {
                             setCustomer({
                               ...customer,
-                              state_name: "",
+                              state: "",
                               city: ""
                             });
                             setStateName(e.target.value);
@@ -470,7 +483,7 @@ function EditCustomer() {
                             setState({});
                             setCity({});
                           }}
-                          value={customer?.state_name || stateName}
+                          value={customer?.state || stateName}
                           required={states?.length > 0 ? true : false}
                           onFocus={() => {setStateDropdownOpen(true)}}
                         />
@@ -485,7 +498,7 @@ function EditCustomer() {
                                     onClick={() => {
                                       setCustomer({
                                         ...customer,
-                                        state_name: region?.name,
+                                        state: region?.name,
                                         city: ""
                                       });
                                       setStateName("");

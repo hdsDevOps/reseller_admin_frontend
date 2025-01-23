@@ -3,7 +3,7 @@ import { IoChevronDownOutline } from "react-icons/io5";
 import '../styles/styles.css';
 import { getPaymentMethodsListThunk, updatePaymentMethodStatusThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk'
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const PaymentMethod: React.FC = () => {

@@ -19,6 +19,9 @@ import { RiEyeCloseLine } from "react-icons/ri";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const logoImage = 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo-2.png?alt=media&token=9315e750-1f5d-4032-ba46-1aeafa340a75';
+const logoImageSmall = 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899';
+
 export default function Header() {
   const[showNotification,setShowNotfication] = useState(false);
   const notificationRef = useRef();
@@ -37,6 +40,17 @@ export default function Header() {
   
   const [showCurrency, setShowCurrency] = useState(false);
   const { userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);
+  // console.log("userDetails...", userDetails);
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleWidthChange = () => {
+      setWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleWidthChange);
+    return () => window.removeEventListener('resize', handleWidthChange);
+  }, []);
 
   useEffect(() => {
     let count = 0;
@@ -244,33 +258,40 @@ export default function Header() {
 
   const changePassword = async(e) => {
     e.preventDefault();
-    try {
-      if(password === cPassword) {
-        const result = await dispatch(updateAdminDetailsThunk({
-          userid: userId,
-          password: password
-        })).unwrap();
-        if(result?.message === "Profile updated successfully") {
-          toast.success("Password updated successfully");
-          setPassword("");
-          setCPassword("");
-          setPasswordModal(false);
+    if(
+      password !== "" && password.trim() !== "" &&
+      cPassword !== "" && cPassword.trim() !== ""
+    ) {
+      try {
+        if(password === cPassword) {
+          const result = await dispatch(updateAdminDetailsThunk({
+            userid: userId,
+            password: password
+          })).unwrap();
+          if(result?.message === "Profile updated successfully") {
+            toast.success("Password updated successfully");
+            setPassword("");
+            setCPassword("");
+            setPasswordModal(false);
+          }
+        } else{
+          toast.warning("Password and confirm password do no match");
         }
-      } else{
-        toast.warning("Password and confirm password do no match");
-      }
-    } catch (error) {
-      toast.error("Error upading password");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
+      } catch (error) {
+        toast.error("Error upading password");
+        if(error?.message == "Request failed with status code 401") {
+          try {
+            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
         }
+      } finally {
+        
       }
-    } finally {
-      
+    } else {
+      toast.warning("Password fields cannot be empty");
     }
   }
 
@@ -283,9 +304,9 @@ export default function Header() {
         className="flex items-center justify-center md:ml-[70px] sm:ml-[20px]"
       >
         <img 
-          src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo-2.png?alt=media&token=9315e750-1f5d-4032-ba46-1aeafa340a75"} 
+          src={width < 640 ? logoImageSmall : logoImage}
           alt="logo" 
-          className="h-[45px] "
+          className="sm:h-[45px] h-[60px]"
         />
       </a>
 
@@ -315,15 +336,26 @@ export default function Header() {
           <div
             className="flex flex-row"
           >
-            <div
-              className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-0 mt-[8px] sm:mr-[10px] mr-0"
-            >
-              <a
-                className="font-montserrat sm:text-base text-[12px] font-semibold text-white"
-              >
-                {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
-              </a>
-            </div>
+            {
+              userDetails?.profile_pic
+              ? (
+                <img
+                  src={userDetails?.profile_pic}
+                  alt='Profile'
+                  className={`border-[3px] ${userDetails?.profile_pic ? "border-custom-green" : "border-white"} sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full bg-custom-green object-cover sm:mt-0 mt-[8px]`}
+                />
+              ) : (
+                <div
+                  className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-0 mt-[8px] sm:mr-[10px] mr-0"
+                >
+                  <a
+                    className="font-montserrat sm:text-base text-[12px] font-semibold text-white"
+                  >
+                    {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
+                  </a>
+                </div>
+              )
+            }
             <button
               type="button"
               className="sm:mr-[10px] mr-[5px] sm:mt-0 mt-[7px]"
@@ -336,21 +368,32 @@ export default function Header() {
 
             {
               showProfile && <div 
-                className="fixed flex flex-col bg-white sm:w-[220px] w-[200px] ml-[-5px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px]"
+                className="fixed flex flex-col bg-white sm:w-[220px] w-[200px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px] -ml-16"
                 ref={elementRef}
               >
                 <div
                   className="flex flex-row"
                 >
-                  <div
-                    className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0"
-                  >
-                    <a
-                      className="font-montserrat sm:text-base text-[10px] font-semibold text-white"
-                    >
-                      {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
-                    </a>
-                  </div>
+                  {
+                    userDetails?.profile_pic
+                    ? (
+                      <img
+                        src={userDetails?.profile_pic}
+                        alt='Profile'
+                        className={`border-[3px] ${userDetails?.profile_pic ? "border-custom-green" : "border-white"} sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0 object-cover sm:pt-[1px]`}
+                      />
+                    ) : (
+                      <div
+                        className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0"
+                      >
+                        <a
+                          className="font-montserrat sm:text-base text-[10px] font-semibold text-white"
+                        >
+                          {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
+                        </a>
+                      </div>
+                    )
+                  }
                   <div
                     className="flex flex-col w-[123px] sm:ml-[5px] ml-[10px]"
                   >
@@ -360,14 +403,14 @@ export default function Header() {
                       {userDetails?.first_name} {userDetails?.last_name}
                     </p>
                     <p
-                      className="text-inter sm:text-[12px] text-[10px] text-normal text-custom-gray2"
+                      className="text-inter text-[10px] text-normal text-custom-gray2"
                     >
                       {userDetails?.email}
                     </p>
                     <p
                       className="text-inter sm:text-[10px] text-[8px] text-normal text-custom-gray3"
                     >
-                      (Super admin)
+                      ({userDetails?.role || "Super Admin"})
                     </p>
                   </div>
                 </div>
@@ -608,7 +651,7 @@ export default function Header() {
           <a
             className="font-inter font-normal sm:mt-[1px] mt-[9px] sm:text-[16px] text-[14px]"
           >
-            Super admin
+            {userDetails?.role}
           </a>
         </div>
       </div>

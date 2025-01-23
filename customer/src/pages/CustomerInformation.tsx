@@ -26,7 +26,11 @@ const CustomerInformation: React.FC = () => {
   const bottomData = [
     { icon: <Mail className='mx-auto' />, title: `Email : ${customer?.email}` },
     { icon: <Phone className='mx-auto' />, title: `Phone : +${customer?.phone_no}` },
-    { icon: <UserRound className='mx-auto' />, title: `Domain: ${primaryDomain !== "" ? primaryDomain : 'N/A'}` },
+    { icon: <UserRound className='mx-auto' />, title: `Domain: ${
+      customer?.domain_details
+      ? customer?.domain_details?.domain_name
+      : "N/A"
+    }` },
   ];
 
   const [resetPasswordShow, setResetPasswordShow] = useState(false);
@@ -44,7 +48,7 @@ const CustomerInformation: React.FC = () => {
     else{
       try {
         const result = await dispatch(
-          updateCustomerPasswordThunk({record_id: customer?.record_id, password: newPassword})
+          updateCustomerPasswordThunk({record_id: customer?.id, password: newPassword})
         ).unwrap()
         // console.log(result);
         setResetPasswordShow(false);
@@ -62,7 +66,7 @@ const CustomerInformation: React.FC = () => {
 
   const getCustomerDomainsList = async(id:string) => {
     try {
-      const result = await dispatch(getCustomerDomainsListThunk({id: id})).unwrap();
+      const result = await dispatch(getCustomerDomainsListThunk({search_text: "", customer_id: id})).unwrap();
       setDomains(result?.data);
     } catch (error) {
       setDomains([]);

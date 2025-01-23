@@ -23,6 +23,7 @@ const OTP: React.FC = () => {
   const email = `${location.state != null ? location.state.email : ""}`;
   const adminId = location.state.adminId;
   // console.log("Admin Id...", adminId);
+  const [isLoading, setIsLoading] = useState(false);
   
   const otpRefs = useRef([]);
   const [otpValues, SetOptValues] = useState(["", "", "", "", "", "",]);
@@ -73,8 +74,13 @@ const OTP: React.FC = () => {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
-    if(e.key === "Backspace" && !otpValues[index - 1] && index > 1) {
-      otpRefs.current[index - 2]?.focus();
+    if(e.key === "Backspace") {
+      const newOtpValues = [...otpValues];
+      newOtpValues[index - 1] = "";
+      SetOptValues(newOtpValues);
+      if(!otpValues[index - 1] && index > 1) {
+        otpRefs.current[index - 2]?.focus();
+      }
     }
   };
 
@@ -102,71 +108,82 @@ const OTP: React.FC = () => {
   const handleLogin = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const otp = otpValues.join("");
+    setIsLoading(true);
 
     if (otp.length === 6) {
       const isValidOtp = true;
 
       if (isValidOtp) {
-        if (mode === "signin") {
-          try {
-            const result = await dispatch(
-              verifyUserOtpThunk({
-                admin_id: adminId,
-                otp: otp
-              })
-            ).unwrap()
-            if(result.message == 'Login successful'){
-              try {
-                const setToken = await dispatch(setUserAuthTokenToLSThunk(result?.token)).unwrap();
-                //aXINQcCzh9z0WnNVXvt2
-                const setUserId = await dispatch(setUserIdToLSThunk(adminId)).unwrap();
-                // console.log({setToken, setUserId})
-                navigate('/dashboard', {state: {from: 'otp'}})
-              } catch (error) {
-                console.log("Error on token")
-              } finally {
+        // if() {
+          if (mode === "signin") {
+            try {
+              const result = await dispatch(
+                verifyUserOtpThunk({
+                  admin_id: adminId,
+                  otp: otp
+                })
+              ).unwrap()
+              if(result.message == 'Login successful'){
                 try {
-                  const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
-                  const getUserId = await dispatch(getUserIdFromLSThunk()).unwrap();
+                  const setToken = await dispatch(setUserAuthTokenToLSThunk(result?.token)).unwrap();
+                  //aXINQcCzh9z0WnNVXvt2
+                  const setUserId = await dispatch(setUserIdToLSThunk(adminId)).unwrap();
+                  // console.log({setToken, setUserId})
                   navigate('/dashboard', {state: {from: 'otp'}})
                 } catch (error) {
                   console.log("Error on token")
+                } finally {
+                  try {
+                    const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+                    const getUserId = await dispatch(getUserIdFromLSThunk()).unwrap();
+                    navigate('/dashboard', {state: {from: 'otp'}})
+                  } catch (error) {
+                    console.log("Error on token")
+                  }
                 }
               }
+              else{
+                navigate('/login');
+                setIsLoading(false);
+              }
+            } catch (error) {
+              // console.log("Error on otp");
+              toast.error("Enter valid OTP!");
+              setIsLoading(false);
             }
-            else{
-              navigate('/login')
+          } else {
+            try {
+              const result = await dispatch(
+                forgetPasswordVerifyOtpThunk({
+                  email: email,
+                  otp: otp
+                })
+              ).unwrap()
+              if(result.message == 'OTP verified successfully'){
+                navigate('/resetpassword', { state: { email: email, otp: otp } });
+              }
+              else{
+                toast.error("Enter valid OTP!");
+                setIsLoading(false);
+              }
+            } catch (error) {
+              // console.log("Error on otp");
+              toast.error("Enter valid OTP!");
+              setIsLoading(false);
             }
-          } catch (error) {
-            // console.log("Error on otp");
-            toast.error("Enter valid OTP!");
           }
-        } else {
-          try {
-            const result = await dispatch(
-              forgetPasswordVerifyOtpThunk({
-                email: email,
-                otp: otp
-              })
-            ).unwrap()
-            if(result.message == 'OTP verified successfully'){
-              navigate('/resetpassword', { state: { email: email, otp: otp } });
-            }
-            else{
-              toast.error("Enter valid OTP!")
-            }
-          } catch (error) {
-            // console.log("Error on otp");
-            toast.error("Enter valid OTP!");
-          }
-        }
+        // } else {
+        //   toast.warning("Input fields cannot be empty.");
+        // }
       } else {
         // alert("Invalid OTP. Please try again.");
         toast.error("Enter valid OTP!");
+        setIsLoading(false);
       }
     } else {
       // alert("Please enter all 6 digits.");
       toast.warning("Please enter all 6 digits.");
+      setIsLoading(false);
     }
   };
 
@@ -282,8 +299,9 @@ const OTP: React.FC = () => {
                 className={`w-full ${
                   mode === "signin" ? "btn-green" : "btn-black"
                 } h-11`}
+                disabled={isLoading}
               >
-                Submit
+                {isLoading ? "Loading..." : "Submit"}
               </button>
             </div>
             <div className="text-center mt-8 xsm-max:text-sm">

@@ -371,7 +371,7 @@ const BillingHistory: React.FC = () => {
                     <small className="text-custom-green">12309864</small>
                   </td>
                   <td className="td-css-3 text-custom-black-5">
-                    {detail?.production_type || ' '}
+                    {detail?.product_type || ' '}
                   </td>
                   <td className="td-css-3 text-custom-black-5">
                     {detail?.description || ' '}
@@ -383,7 +383,7 @@ const BillingHistory: React.FC = () => {
                       <span className="font-inter-bold-xs-60percent-black">
                         {detail?.paymentMethod || ' '}
                       </span> */}
-                      <span className="font-inter-bold-xs-60percent-black">{detail?.payment_method}</span>
+                      <span className="font-inter-bold-xs-60percent-black capitalize">{detail?.payment_method}</span>
                     </span>
                   </td>
                   <td className="td-css-full-opactiy text-custom-black-5">

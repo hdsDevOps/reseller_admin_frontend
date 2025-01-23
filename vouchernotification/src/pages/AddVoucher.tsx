@@ -45,6 +45,14 @@ const AddVoucher: React.FC = () =>  {
     return isoDate;
   };
   
+  useEffect(() => {
+    if(voucher?.start_date === "") {
+      setVoucher({
+        ...voucher,
+        end_date: ""
+      })
+    }
+  }, [voucher?.start_date]);
 
   const updateVoucher = (e) => {
     setVoucher({

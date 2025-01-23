@@ -115,11 +115,12 @@ async function customerListApi(
   search_data: string,
   country: string,
   state_name: string,
-  authentication: boolean,
-  license_usage: string,
-  subscritption_date: string,
-  renewal_date: string,
+  authentication: Boolean|string,
+  license_usage: string|Number,
+  subscritption_date: string|[],
+  renewal_date: string|[],
   domain: string,
+  sortdata:object
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.customerList, {
@@ -130,7 +131,8 @@ async function customerListApi(
       license_usage,
       subscritption_date,
       renewal_date,
-      domain
+      domain,
+      sortdata
     });
     return result;
   } catch (error: any) {
@@ -173,7 +175,7 @@ async function editCustomerApi(
   first_name: string,
   last_name: string,
   address: string,
-  state_name: string,
+  state: string,
   city: string,
   country: string,
   zipcode: string,
@@ -189,7 +191,7 @@ async function editCustomerApi(
       first_name,
       last_name,
       address,
-      state_name,
+      state,
       city,
       country,
       zipcode,
@@ -264,7 +266,7 @@ async function updateCustomerPasswordApi(
 
 async function getCountryListAPi(): Promise<any> {
   try {
-    const result = await getApiCall(endPoints.getCountryList);
+    const result = await postApiCall(endPoints.getCountryList, {});
     return result;
   } catch (error: any) {
     throw error;
@@ -273,7 +275,7 @@ async function getCountryListAPi(): Promise<any> {
 
 async function getRegionListAPi(): Promise<any> {
   try {
-    const result = await getApiCall(endPoints.getRegionList);
+    const result = await postApiCall(endPoints.getRegionList, {});
     return result;
   } catch (error: any) {
     throw error;
@@ -440,10 +442,22 @@ async function getCustomerCountApi(
 };
 
 async function getCustomerDomainsListApi(
-  id:string
+  search_text:string,
+  customer_id:string
 ): Promise<any> {
   try {
-    const result = await getApiCall(endPoints.getCustomerDomainsList+id);
+    const result = await postApiCall(endPoints.getCustomerDomainsList, {search_text, customer_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function getCustomerEmailsCountApi(
+  customer_id:string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getCustomerEmailsCount, {customer_id});
     return result;
   } catch (error: any) {
     throw error;
@@ -1230,6 +1244,7 @@ export const userApis = {
   deleteCustomerGroupApi,
   getCustomerCountApi,
   getCustomerDomainsListApi,
+  getCustomerEmailsCountApi,
   addNotificationTemplateApi,
   getNotificationTemplateApi,
   updateNoficationTemplateContentApi,

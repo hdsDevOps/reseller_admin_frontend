@@ -8,7 +8,7 @@ import {
 import "react-country-state-city/dist/react-country-state-city.css";
 import './countryList-2.css';
 import { useAppDispatch } from 'store/hooks';
-import { getSubscriptonPlansListThunk, addCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getCustomerCountThunk } from 'store/user.thunk';
+import { getSubscriptonPlansListThunk, addCustomerGroupThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getCustomerCountThunk, getPlansAndPricesThunk } from 'store/user.thunk';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -29,7 +29,7 @@ const AddCustomerGroup: React.FC = () =>  {
     license_usage: 0, 
     no_customer: 0,
   });
-  // console.log(customerGroup);
+  console.log(customerGroup);
   const [customerCount, setCustomerCount] = useState<number>(0);
 
   const updateCustomerGroup = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -177,11 +177,18 @@ const AddCustomerGroup: React.FC = () =>  {
     getRegionList();
   }, []);
 
+  useEffect(() => {
+    if(customerGroup?.start_date === "") {
+      setCustomerGroup({
+        ...customerGroup,
+        end_date: ""
+      })
+    }
+  }, [customerGroup?.start_date]);
+
   const getSubscriptonPlansList = async() => {
     try {
-      const result = await dispatch(
-        getSubscriptonPlansListThunk()
-      ).unwrap()
+      const result = await dispatch(getPlansAndPricesThunk({last_order: ""})).unwrap();
       setSubscriptionPlans(result?.data);
     } catch (error) {
       setSubscriptionPlans([]);
@@ -389,6 +396,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       name={item.name}
                       className='search-input-text px-4'
                       onChange={updateCustomerGroup}
+                      value={customerGroup?.start_date}
                     />
                   </div>
                 )
@@ -416,6 +424,7 @@ const AddCustomerGroup: React.FC = () =>  {
                       disabled={endDateEnable}
                       min={customerGroup?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(customerGroup?.start_date)) }
                       required={customerGroup?.start_date !== "" ? true : false}
+                      value={customerGroup?.end_date}
                     />
                   </div>
                 )

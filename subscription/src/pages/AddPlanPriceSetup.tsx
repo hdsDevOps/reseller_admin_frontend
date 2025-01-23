@@ -26,6 +26,7 @@ function AddPlanPriceSetup() {
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/canada-flag.png?alt=media&token=4f660f4d-0f72-495c-bad4-7b8681f1c936', name: 'CAD', logo: 'C$',},
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'INR', logo: '₹',},
   ];
+  const priceRefs = useRef({});
 
   const initialSubscription = {
     icon_image: '',
@@ -83,6 +84,32 @@ function AddPlanPriceSetup() {
   const [localPrice, setLocalPrice] = useState(subscription?.amount_details);
   // console.log("localPrice...", localPrice);
   const [featureHover, setFeatureHover] = useState(false);
+  const imgRef = useRef(null);
+
+  const showImage = () => {
+    const file = iconImage;
+    if(file){
+      if(file instanceof File){
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (imgRef.current) {
+            imgRef.current.src = reader.result;
+            console.log(reader.result)
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      else if(typeof file === 'string'){
+        if (imgRef.current) {
+          imgRef.current.src = file;
+        }
+      }
+    }
+  };
+  
+  useEffect(() => {
+    showImage();
+  }, [iconImage]);
   
   useEffect(() => {
     setLocalPrice(subscription?.amount_details);
@@ -201,8 +228,7 @@ function AddPlanPriceSetup() {
   }
 
   const addAmountCount = () => {
-    const amounts = subscription?.amount_details;
-    const newAmounts = [...amounts, {
+    const newAmounts = [...localPrice, {
       currency_code: 'USD',
       price: [
         {
@@ -223,27 +249,42 @@ function AddPlanPriceSetup() {
       ],
     },]
     setAMountCount(amountCount+1);
-    setSubscription({
-      ...subscription,
-      amount_details: newAmounts
-    })
+    setLocalPrice([
+      ...newAmounts
+    ])
   };
 
   const removeAmountCount = (number) => {
-    const amounts = subscription.amount_details;
+    const amounts = [...localPrice];
     const newAmounts = amounts.filter((_, index) => index !== number);
     setAMountCount(amountCount-1);
-    setSubscription({
-      ...subscription,
-      amount_details: newAmounts
-    })
+    setLocalPrice([
+      ...newAmounts
+    ])
   };
 
   const handleAmountChange = (e, number, parent) => {
     const value = e.target.value;
     const field = e.target.name;
-    const local = localPrice[number]?.price[parent]
-    local[field] = value;
+    const toBeUpdatedPrice = [...localPrice];
+    const updatedPrice = toBeUpdatedPrice?.map((item, i) =>
+      i === number
+      ? {
+        ...item,
+        price: item?.price?.map((p, n) => 
+          n === parent
+          ? {
+            ...p,
+            [field]: value,
+          } : p
+        )
+      }
+      : item
+    );
+    setLocalPrice(updatedPrice);
+    setTimeout(() => {
+      priceRefs.current[`${number}-${parent}-${field}`]?.focus();
+    }, 0);
   };
 
   const handleServicesChange = e => {
@@ -348,8 +389,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[0].price || ''}
+                        value={item?.price[0].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-price`].focus()}}
                         required
                       />
                     </td>
@@ -358,8 +401,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[1].price || ''}
+                        value={item?.price[1].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-price`].focus()}}
                         required
                       />
                     </td>
@@ -368,8 +413,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[2].price || ''}
+                        value={item?.price[2].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-price`].focus()}}
                         required
                       />
                     </td>
@@ -381,8 +428,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[0].discount_price || ''}
+                        value={item?.price[0].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -391,8 +440,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[1].discount_price || ''}
+                        value={item?.price[1].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -401,8 +452,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[2].discount_price || ''}
+                        value={item?.price[2].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -492,8 +545,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[0].price || ''}
+                        value={item?.price[0].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-price`].focus()}}
                         required
                       />
                     </td>
@@ -502,8 +557,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[1].price || ''}
+                        value={item?.price[1].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-price`].focus()}}
                         required
                       />
                     </td>
@@ -512,8 +569,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='price'
-                        defaultValue={item?.price[2].price || ''}
+                        value={item?.price[2].price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-price`].focus()}}
                         required
                       />
                     </td>
@@ -525,8 +584,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[0].discount_price || ''}
+                        value={item?.price[0].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 0)}}
+                        ref={el => (priceRefs.current[`${number}-0-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-0-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -535,8 +596,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[1].discount_price || ''}
+                        value={item?.price[1].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 1)}}
+                        ref={el => (priceRefs.current[`${number}-1-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-1-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -545,8 +608,10 @@ function AddPlanPriceSetup() {
                         className='min-w-full border border-custom-white rounded-md h-[45px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none px-1'
                         type='number'
                         name='discount_price'
-                        defaultValue={item?.price[2].discount_price || ''}
+                        value={item?.price[2].discount_price || ''}
                         onChange={(e) => {handleAmountChange(e, number, 2)}}
+                        ref={el => (priceRefs.current[`${number}-2-discount_price`] = el)}
+                        onClick={() => {priceRefs.current[`${number}-2-discount_price`].focus()}}
                         required
                       />
                     </td>
@@ -683,6 +748,7 @@ function AddPlanPriceSetup() {
             name="plan_name"
             onChange={handleSubscriptionChange}
             required
+            value={subscription?.plan_name}
           />
         </div>
         <div
@@ -698,14 +764,22 @@ function AddPlanPriceSetup() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <div className="flex flex-col items-center justify-center">
-              <Upload
-                className='text-xl text-custom-green'
-              />
-              <p className="font-mulish font-semibold text-xs text-custom-black-8">
-                Drag & drop files or <span className='text-custom-green underline'>Browse</span>
-              </p>
-            </div>
+            {
+              iconImage
+              ? (
+                <img ref={imgRef} src={iconImage === null ? subscription?.icon_image : iconImage} className='h-full object-cover' />
+              ) : (
+                <div className="flex flex-col items-center justify-center">
+                  <Upload
+                    className='text-xl text-custom-green'
+                  />
+                  <p className="font-mulish font-semibold text-xs text-custom-black-8">
+                    Drag & drop files or <span className='text-custom-green underline'>Browse</span>
+                  </p>
+                </div>
+              )
+                
+            }
             <input
               id="file-upload"
               type="file"
@@ -925,6 +999,8 @@ function AddPlanPriceSetup() {
           type='button'
           onClick={() => {
             setSubscription(initialSubscription);
+            setLocalPrice(initialSubscription?.amount_details);
+            setIconImage(null);
           }}
         >Cancel</button>
       </div>

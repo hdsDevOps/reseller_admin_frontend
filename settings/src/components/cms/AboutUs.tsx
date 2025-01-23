@@ -40,6 +40,7 @@ const AboutUs: React.FC = () => {
   const imageRef1 = useRef(null);
   const imageRef2 = useRef(null);
   const imageRef3 = useRef(null);
+  const [deleteClicked, setDeleteClicked] = useState(false);
 
   const modules = {
     toolbar: [
@@ -369,41 +370,9 @@ const AboutUs: React.FC = () => {
   };
 
   const removeHeadingImage = async(e) => {
-    try {
-      const updateAboutUs = await dispatch(updateAboutUsThunk({
-        heading_section: {
-          heading: aboutUs.heading_section.heading,
-          image: ""
-        },
-        block1: {
-          content_title: aboutUs.block1.content_title,
-          description: aboutUs.block1.description,
-          image: aboutUs.block1.image
-        },
-        block2: {
-          content_title: aboutUs.block2.content_title,
-          description: aboutUs.block2.description,
-          image: aboutUs.block2.image
-        }
-      })).unwrap();
-      console.log(updateAboutUs);
-      setTimeout(() => {
-        toast.success("Successfully updated about us");
-      }, 1000);
-    } catch (error) {
-      toast.error("Error on updating About Us");
-      if(error?.message == "Request failed with status code 401") {
-        try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-          navigate('/login');
-        } catch (error) {
-          //
-        }
-      };
-    } finally {
-      fetchAboutUs();
-      setImageFile3(null);
-    }
+    await setDeleteClicked(true);
+    await setImageFile3(null);
+    setDeleteClicked(false);
   };
 
   return (
@@ -548,16 +517,38 @@ const AboutUs: React.FC = () => {
                         <input id="file-upload" type="file" className="hidden" accept="image/*"
                           onChange={e => { setImageFile3(e.target.files[0]) }}
                         />
-                        <p className="text-[8px] -mt-2 text-gray-500">Dimesion: 1440 x 300</p>
+                        {
+                          imageFile3 === null || imageFile3 === ""
+                          ? (
+                            <p className="text-[8px] -mt-2 text-gray-500">Dimesion: 1440 x 300</p>
+                          ) : (
+                            ""
+                          )
+                        }
                     </label>
-                    {
-                      aboutUs?.heading_section?.image === ""
-                      ? (
-                        <Camera className="absolute right-2 bottom-2 text-sm" />
-                      ) : (
-                        <Trash2 className="absolute right-2 bottom-2 text-sm" onClick={(e) => {removeHeadingImage(e)}} />
-                      )
-                    }
+                      {
+                        imageFile3 === null || imageFile3 === ""
+                        ? (
+                          <label
+                            htmlFor="file-upload-head"
+                            className="absolute right-2 bottom-2"
+                        >
+                            <Camera className="text-sm" />
+                            <input id="file-upload-head" type="file" className="hidden" accept="image/*"
+                              onChange={e => { setImageFile3(e.target.files[0]) }}
+                            />
+                        </label>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(e) => {removeHeadingImage(e)}}
+                            disabled={deleteClicked}
+                            className="absolute right-2 bottom-2"
+                          >
+                            <Trash2 className="text-sm" />
+                          </button>
+                        )
+                      }
                   </div>
                 </div>
                 <div className="flex flex-col">

@@ -31,6 +31,15 @@ const EditVoucher: React.FC = () =>  {
       setEndDateEnable(true);
     }
   }, [voucher?.start_date]);
+    
+    useEffect(() => {
+      if(voucher?.start_date === "") {
+        setVoucher({
+          ...voucher,
+          end_date: ""
+        })
+      }
+    }, [voucher?.start_date]);
 
   const dateToIsoString = (date) => {
     if(typeof date === "string"){

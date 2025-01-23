@@ -17,6 +17,7 @@ const Login: React.FC = () => {
   const [show, setShow] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if(localStorage.getItem('email') && localStorage.getItem('password')){
@@ -29,25 +30,35 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setIsLoading(true);
     // navigate("/otp?mode=signin");
-
-    try {
-      const result = await dispatch(
-        makeUserLoginThunk({
-          email: email,
-          password: password
-        })
-      ).unwrap();
-      console.log("result....", result);
-      if(rememberMe){
-        localStorage.setItem('email', email);
-        localStorage.setItem('password', password);
+    if(
+      email === "" || email.trim() === "" ||
+      password === "" || password.trim() === ""
+    ) {
+      toast.warning("Input fields cannot be empty");
+      setIsLoading(false);
+    } else {
+      try {
+        const result = await dispatch(
+          makeUserLoginThunk({
+            email: email,
+            password: password
+          })
+        ).unwrap();
+        console.log("result....", result);
+        if(rememberMe){
+          localStorage.setItem('email', email);
+          localStorage.setItem('password', password);
+        }
+        navigate("/otp?mode=signin", {state: {adminId: result?.userId}});
+      } catch (error) {
+        // console.error("Login error:", error);
+        toast.error("Please enter valid email or password!");
+        setIsLoading(false);
       }
-      navigate("/otp?mode=signin", {state: {adminId: result?.userId}});
-    } catch (error) {
-      // console.error("Login error:", error);
-      toast.error("Please enter valid email or password!");
     }
+      
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -170,8 +181,9 @@ const Login: React.FC = () => {
                   type="submit"
                   data-testid="log-in"
                   className="w-full btn-green h-11"
+                  disabled={isLoading}
                 >
-                  Log in
+                  {isLoading ? "Loading..." : "Log in"}
                 </button>
               </div>
               <div className="text-center mt-8">

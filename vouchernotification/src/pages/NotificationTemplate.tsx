@@ -427,14 +427,14 @@ const NotificationTemplate = () => {
                   />
                   <button
                     type="button"
-                    onClick={(e) => {sendNotificationEmail(e)}}
+                    // onClick={(e) => {sendNotificationEmail(e)}}
                     disabled={!rolePermissionsSlice?.notification_template?.send_mail ? true : false}
                   >
                     <Send className="w-6 text-[#12A833] sm:block my-auto" size={32} />
                   </button>
                 </div>
 
-                {
+                {/* {
                   filters?.search_data != "" && filters?.search_data.length > 1 && showCustomerList.length > 0 && (
                     <div
                       className={`absolute sm:min-w-[400px] flex flex-col max-sm:w-full max-w-[400px] mt-[44px] bg-custom-white shadow-sm max-lg:mx-auto p-2`}
@@ -446,7 +446,7 @@ const NotificationTemplate = () => {
                       }
                     </div>
                   )
-                }
+                } */}
 
                 <div className="flex flex-wrap">
                   {
@@ -478,11 +478,17 @@ const NotificationTemplate = () => {
                   disabled={!rolePermissionsSlice?.notification_template?.update ? true : false}
                 >Update</button>
                 <button
-                  className='btn-red-2 max-w-fit'
+                  className='btn-orange max-w-fit'
                   onClick={() => {setSelectedItem("")}}
                   button-name="notificaiton-template-update-cancel"
                   disabled={!rolePermissionsSlice?.notification_template?.cancel ? true : false}
                 >Cancel</button>
+                <button
+                  className='btn-red-2 max-w-fit'
+                  // onClick={() => {setSelectedItem("")}}
+                  button-name="notificaiton-template-update-delete"
+                  disabled={!rolePermissionsSlice?.notification_template?.cancel ? true : false}
+                >Delete</button>
               </div>
             </div>
           </div>
@@ -574,7 +580,7 @@ const NotificationTemplate = () => {
                   </div>
                 </div>
 
-                <div className='w-full border rounded-sm p-1 mt-5 shadow-sm'>
+                <div className='w-full border rounded-sm p-1 mt-5 shadow-sm max-h-[400px] overflow-auto'>
                   <HtmlRenderer htmlContent={templateContent || `<div style="text-align: center; min-height: 100px; padding-top: 35px;">No data available</div>`} />
                 </div>
               </div>

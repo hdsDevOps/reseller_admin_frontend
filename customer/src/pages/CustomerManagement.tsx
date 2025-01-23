@@ -4,7 +4,7 @@ import { ArrowRightLeft, ChevronDown, Ellipsis } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getNotificationTemplateThunk, sendEmailToCustomerThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getNotificationTemplateThunk, sendEmailToCustomerThunk, getPlansAndPricesThunk, getCustomerDomainsListThunk, getCustomerEmailsCountThunk } from 'store/user.thunk';
 import { setCustomerFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +16,11 @@ const options: Intl.DateTimeFormatOptions = {
   year: "numeric",
 };
 
+interface SortData {
+  sort_text:string;
+  order:string
+}
+
 interface Filter {
   search_data: string,
   country: string,
@@ -24,7 +29,8 @@ interface Filter {
   license_usage: string | Number,
   subscritption_date: string | Date,
   renewal_date: string | Date,
-  domain: string
+  domain: string,
+  sortdata: SortData
 }
 
 const CustomerManagement: React.FC = () => {
@@ -40,7 +46,12 @@ const CustomerManagement: React.FC = () => {
     license_usage: "",
     subscritption_date: "",
     renewal_date: "",
-    domain: ""
+    domain: "",
+    sortdata: {
+      sort_text: "",
+      //next_payment,createdAt,license_usage,name
+      order: "asc"
+    }
   };
   const intialFilter2= {
     country: "",
@@ -55,7 +66,7 @@ const CustomerManagement: React.FC = () => {
   // console.log('customerFilters', customerFilters);
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(customerFilters === null ? intialFilter : customerFilters);
-  // console.log("filters...", filters);
+  console.log("filters...", filters);
   
   const [filters2, setFilters2] = useState(customerFilters === null ? intialFilter2 : {
     country: customerFilters?.country || "",
@@ -66,7 +77,7 @@ const CustomerManagement: React.FC = () => {
     renewal_date: customerFilters?.renewal_date || "",
     domain: customerFilters?.domain || ""
   });
-  // console.log("filters2...", filters2);
+  console.log("filters2...", filters2);
 
   useEffect(() => {
     const setCustomerFiltersSlice = async() => {
@@ -78,13 +89,17 @@ const CustomerManagement: React.FC = () => {
   
   const [domain, setDomain] = useState("");
   const [domainList, setDomainList] = useState([]);
+  // console.log("domains list...", domainList);
   const [customerList, setCustomerList] = useState([]);
-  console.log("customerList...", customerList);
+  // console.log("customerList...", customerList);
   const [checked, setChecked] = useState([]);
-  // console.log("checked...", checked);
+  console.log("checked...", checked);
+  const domainRef = useRef(null);
+  const [isDomainDropdownOpen, setIsDomainDropdownOpen] = useState(false);
   
   
   const [showList, setShowList] = useState(null);
+  // console.log("show list...", showList);
   const listRef = useRef(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
@@ -92,7 +107,9 @@ const CustomerManagement: React.FC = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [commonModal, setCommonModal] = useState(false);
   const [selectAll, setSelectAll] = useState<boolean>(false);
+  console.log("selectAll...", selectAll)
   const [selectAllCount, setSelectAllCount] = useState<number>(0);
+  console.log("selected count...", selectAllCount);
   const [selectAllPage, setSelectAllPage] = useState<number>(0);
   const [authorization, setAuthorization] = useState("");
   const [notificationTemplates, setNotificationTemplates] = useState([]);
@@ -104,9 +121,31 @@ const CustomerManagement: React.FC = () => {
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = customerList?.slice(indexOfFirstItem, indexOfLastItem);
-  // console.log("currentItems...", currentItems);
+  console.log("currentItems...", currentItems);
   const totalPages = Math.ceil(customerList.length / itemsPerPage);
   // console.log({currentPage, totalPages, lenght: currentItems?.length});
+
+  const [plansList, setPlansList] = useState([]);
+  // console.log("plan list...", plansList);
+
+  const [countryList, setCountryList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
+  // console.log({countryList, regionList})
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  // console.log({countries, states});
+  const [country, setCountry] = useState({});
+  const [state, setState] = useState({});
+
+  const [emailsCount, setEmailsCount] = useState([]);
+  console.log("emailsCount...", emailsCount);
+
+  // useEffect(() => {
+  //   if(currentItems?.length > 0) {
+  //     setEmailsCount(currentItems?.map((_, index) => 0));
+  //   }
+  // }, [currentItems]);
 
   useEffect(() => {
     if(customerList?.length > 0 && totalPages < currentPage + 1) {
@@ -117,6 +156,32 @@ const CustomerManagement: React.FC = () => {
       }
     }
   }, [totalPages, currentPage, customerList]);
+
+  const getPlansList = async() => {
+    try {
+      const result = await dispatch(getPlansAndPricesThunk({last_order: ''})).unwrap();
+      setPlansList(result?.data);
+    } catch (error) {
+      setPlansList([]);
+    }
+  };
+
+  useEffect(() => {
+    getPlansList();
+  }, []);
+
+  const getDomainsList = async() => {
+    try {
+      const result = await dispatch(getCustomerDomainsListThunk({search_text: "", customer_id: ""})).unwrap();
+      setDomainList(result?.domainlist);
+    } catch (error) {
+      setDomainList([]);
+    }
+  };
+
+  useEffect(() => {
+    getDomainsList();
+  }, []);
 
   useEffect(() => {
     const setCurrentPageNumberSlice = async() => {
@@ -177,21 +242,28 @@ const CustomerManagement: React.FC = () => {
         }
       }
     }
-  }
+  };
 
   useEffect(() => {
     getCustomerList();
   }, [filters]);
 
-  const [countryList, setCountryList] = useState([]);
-  const [regionList, setRegionList] = useState([]);
-  // console.log({countryList, regionList})
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [availableStates, setAvailableStates] = useState([]);
-  // console.log({countries, states});
-  const [country, setCountry] = useState({});
-  const [state, setState] = useState({});
+  // const getCustomerEmailsCount = async(id:string, index:Number) => {
+  //   if(currentItems?.length === emailsCount?.length) {
+  //     const newEmailCounts = [...emailsCount];
+  //     try {
+  //       const result = await dispatch(getCustomerEmailsCountThunk({customer_id: id})).unwrap();
+  //       console.log("result...", result?.emaillist?.length);
+  //       // return result?.emaillist?.length || 0;
+  //       newEmailCounts[index] = result?.emaillist?.length;
+  //       setEmailsCount(newEmailCounts);
+  //     } catch (error) {
+  //       newEmailCounts[index] = 0;
+  //       setEmailsCount(newEmailCounts);
+  //     }
+  //   }
+  // };
+
   // console.log({country, state});
   useEffect(() => {
     var config = {
@@ -267,9 +339,7 @@ const CustomerManagement: React.FC = () => {
 
   const getCountryList = async() => {
     try {
-      const countries = await dispatch(
-        getCountryListThunk()
-      ).unwrap();
+      const countries = await dispatch(getCountryListThunk()).unwrap();
       setCountryList(countries.countrylist);
     } catch (error) {
       console.log("Error on token")
@@ -317,6 +387,24 @@ const CustomerManagement: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutOfFilter);
     };
   }, []);
+  
+  const handleClickOutOfDomain = e => {
+    if(domainRef.current && !domainRef.current.contains(e.target)){
+      setIsDomainDropdownOpen(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutOfDomain);
+    return() => {
+      document.removeEventListener('mousedown', handleClickOutOfDomain);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(domainList?.length > 0 && domain !== "") {
+      setIsDomainDropdownOpen(true);
+    }
+  }, [domainList, domain]);
 
   const handleFilterChange = (e) => {
     setFilters2({
@@ -347,11 +435,10 @@ const CustomerManagement: React.FC = () => {
 
   const handleAuthorizeChange = async(item) => {
     const customerItem = item;
+    console.log(item);
     customerItem.authentication = !customerItem?.authentication;
     try {
-      const result = await dispatch(
-        editCustomerThunk(customerItem)
-      ).unwrap();
+      const result = await dispatch(editCustomerThunk(customerItem)).unwrap();
     } catch (error) {
       toast.error("Authentication could not be updated");
     } finally{
@@ -365,14 +452,27 @@ const CustomerManagement: React.FC = () => {
   const handleStatusChange = async(item) => {
     const customerItem = item;
     const accountStatus = customerItem?.account_status;
-    customerItem.account_status = `${
+    const newAccountStatus = `${
       accountStatus == "active" ? "inactive"
       : accountStatus == "suspended" ? "suspended"
       : "active"
     }`;
     try {
       const result = await dispatch(
-        editCustomerThunk(customerItem)
+        editCustomerThunk({
+          first_name: item?.first_name,
+          last_name: item?.last_name,
+          address: item?.address,
+          state: item?.state,
+          city: item?.city,
+          country: item?.country,
+          zipcode: item?.zipcode,
+          phone_no: item?.phone_no,
+          email: item?.email,
+          authentication: item?.authentication,
+          record_id: item?.id,
+          account_status: newAccountStatus
+        })
       ).unwrap();
     } catch (error) {
       toast.error("Status could not be updated");
@@ -423,7 +523,7 @@ const CustomerManagement: React.FC = () => {
   const cancelCustomerSubscription = async(item) => {
     try {
       const result = await dispatch(
-        cancelCustomerSubscriptionThunk({record_id: item?.record_id})
+        cancelCustomerSubscriptionThunk({record_id: item?.id})
       ).unwrap()
       setTimeout(() => {
         toast.success(result?.message);
@@ -439,7 +539,7 @@ const CustomerManagement: React.FC = () => {
   const declineCustomerSubscription = async(item) => {
     try {
       const result = await dispatch(
-        declineCustomerSubscriptionThunk({record_id: item?.record_id})
+        declineCustomerSubscriptionThunk({record_id: item?.id})
       ).unwrap()
       setTimeout(() => {
         toast.success("Subscription cancellation has been declined.");
@@ -455,7 +555,7 @@ const CustomerManagement: React.FC = () => {
   const deleteCustomer = async(item) => {
     try {
       const result = await dispatch(
-        deleteCustomerThunk({record_id: item?.record_id})
+        deleteCustomerThunk({record_id: item?.id})
       ).unwrap()
       // console.log(result);
       setTimeout(() => {
@@ -473,7 +573,7 @@ const CustomerManagement: React.FC = () => {
   const suspendCustomer = async(item) => {
     try {
       const result = await dispatch(
-        suspendCustomerThunk({record_id: item?.record_id})
+        suspendCustomerThunk({record_id: item?.id})
       ).unwrap()
       // console.log(result);
       setTimeout(() => {
@@ -520,11 +620,11 @@ const CustomerManagement: React.FC = () => {
 
   const toggleCheck = (newJson:any) => {
     setChecked((prevChecked) => {
-      const isChecked = prevChecked.some((item) => item?.record_id === newJson?.record_id);
+      const isChecked = prevChecked.some((item) => item?.id === newJson?.id);
 
       if (isChecked) {
         // If found, remove it
-        return prevChecked.filter((item) => item?.record_id !== newJson?.record_id);
+        return prevChecked.filter((item) => item?.id !== newJson?.id);
       } else {
         // If not found, add it
         return [...prevChecked, newJson];
@@ -628,41 +728,59 @@ const CustomerManagement: React.FC = () => {
           <div
             className="grid grid-cols-1 min-[968px]:grid-cols-2"
           >
-            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 relative">
+            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 relative" ref={domainRef}>
               <input
                 list="brow"
                 placeholder="Auto search domain list"
                 className="serach-input"
                 name="domain"
-                // onChange={e => {setDomain(e.target.value)}}
-                // value={domain}
-                onChange={e => {setFilters({
-                  ...filters,
-                  domain: e.target.value
-                })}}
-                value={filters?.domain}
+                onChange={e => {
+                  setFilters({
+                    ...filters,
+                    domain: ""
+                  });
+                  setDomain(e.target.value);
+                }}
+                value={filters?.domain || domain}
+                onFocus={() => {setIsDomainDropdownOpen(true)}}
+                // onChange={e => {setFilters({
+                //   ...filters,
+                //   domain: e.target.value
+                // })}}
+                // value={filters?.domain}
               />
-              {/* {
-                domainList.length !== 0 && (
+              {
+                isDomainDropdownOpen && domainList?.length > 0 && (
                   <div
-                    className={`fixed flex flex-col py-1 min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] bg-custom-white rounded-b`}
+                    className={`absolute flex flex-col py-1 domain-dropdown bg-custom-white rounded-b overflow-y-auto z-10`}
                   >
-                    {domainList.map((item, index) => {
-                      return (
-                        <a
-                          key={index}
-                          className={`font-inter-16px-400 pl-4 py-1 ${
-                            index != 0 && `border-t border-white`
-                          }`}
-                        >
-                          {item}
-                        </a>
-                      );
-                    })}
+                    {/* min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] */}
+                    {
+                      domainList?.filter(item => item?.domain_name?.toLowerCase()?.includes(domain?.toLowerCase()))?.map((item, index) => {
+                        return (
+                          <a
+                            key={index}
+                            className={`font-inter-16px-400 pl-4 py-1 ${
+                              index != 0 && `border-t border-white break-words`
+                            }`}
+                            onClick={() => {
+                              setDomain("");
+                              setIsDomainDropdownOpen(false);
+                              setFilters({
+                                ...filters,
+                                domain: item?.domain_name
+                              })
+                            }}
+                          >
+                            {item?.domain_name}
+                          </a>
+                        );
+                      })
+                    }
                   </div>
                 )
-              } */}
-              <ChevronDown className="absolute" />
+              }
+              <ChevronDown className={`absolute top-[9px] right-5 w-5 h-5 pointer-events-none ${isDomainDropdownOpen ? "rotate-180" : ""} transition duration-300`} />
             </div>
             <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
               <input
@@ -899,7 +1017,7 @@ const CustomerManagement: React.FC = () => {
                       <td>
                         <input type="checkbox"
                           className="w-3 h-3 border border-black accent-[#12A833]"
-                          checked={checked?.some((check) => check?.record_id === item?.record_id)}
+                          checked={checked?.some((check) => check?.id === item?.id)}
                           onChange={() => {toggleCheck(item)}}
                         />
                       </td>
@@ -917,54 +1035,78 @@ const CustomerManagement: React.FC = () => {
                         >{item?.first_name} {item?.last_name}</button>
                       </td>
                       <td
-                        className="td-css w-[180px]"
+                        className="td-css w-[180px] items-center justify-center content-center"
                       >
-                        {/* {item?.product?.map((e, i) => {
-                          if (i > 0) {
-                            return (
-                              <p key={i}>
-                                + &nbsp; {e}
-                              </p>
-                            );
-                          } else {
-                            return <p key={i}>{e}</p>;
-                          }
-                        })} */}
-                        N/A
+                        {
+                          item?.workspace
+                          ? item?.domain_details
+                            ? "Google workspace + Domain"
+                            : "Google workspace"
+                          : item?.domain_details
+                            ? "Domain"
+                            : "N/A"
+                        }
                       </td>
                       <td
                         className="td-css"
                       >
-                        {/* {item?.domain} */}
-                        N/A
+                        {
+                          item?.domain_details
+                          ? item?.domain_details?.domain_name
+                            ? item?.domain_details?.domain_name
+                            : "N/A"
+                          : "N/A"
+                        }
                       </td>
                       <td
                         className="td-css"
                       >
-                        {/* {item?.subscriptionPlan} */}
-                        N/A
+                        {
+                          item?.workspace
+                          ? plansList?.find(plan => plan?.id === item?.workspace?.plan_name_id)
+                            ? plansList?.find(plan => plan?.id === item?.workspace?.plan_name_id)?.plan_name
+                            : "N/A"
+                          : "N/A"
+                        }
                       </td>
                       <td
                         className="td-css"
                       >
-                        {/* {item?.licenseUsage} */}
-                        N/A
+                        {/* ${getCustomerEmailsCount(item?.id, index)}/ */}
+                        {
+                          item?.license_usage
+                          ? `${item?.license_usage}`
+                          : "N/A"
+                        }
                       </td>
                       <td
                         className="td-css"
                       >
-                        {`${convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.created_at?._seconds, item?.created_at?._nanoseconds), 'dd MMM yyyy')}`}
+                        {`${convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds), 'dd MMM yyyy')}`}
                       </td>
                       <td
                         className="td-css"
                       >
-                        {/* {item?.paymentCycle} */}
-                        N/A
+                        {
+                          item?.workspace
+                          ? item?.workspace?.payment_cycle
+                          : item?.domain_details
+                          ? item?.domain_details?.payment_cycle
+                          : "N/A"
+                        }
                       </td>
                       <td
                         className="td-css"
                       >
-                        {`${convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds) == "Invalid Date" ? "N/A" : format(convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds), 'dd MMM yyyy')}`}
+                        {
+                          item?.workspace
+                          ? item?.workspace?.last_payment
+                            ? convertToDate(item?.workspace?.last_payment?._seconds, item?.workspace?.last_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.workspace?.last_payment?._seconds, item?.workspace?.last_payment?._nanoseconds), 'dd MMM yyyy')
+                            : "N/A"
+                          : item?.domain_details
+                            ? convertToDate(item?.domain_details?.last_payment?._seconds, item?.domain_details?.last_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.domain_details?.last_payment?._seconds, item?.domain_details?.last_payment?._nanoseconds), 'dd MMM yyyy')
+                            : "N/A"
+                        }
                       </td>
                       <td>
                         <div className="mt-[7.5px] transition-transform duration-1000 ease-in-out flex justify-center">
@@ -1002,14 +1144,14 @@ const CustomerManagement: React.FC = () => {
                         >
                           <Ellipsis
                             className="w-[19px] m-auto"
-                            onClick={() => {toggleList(item?.record_id)}}
+                            onClick={() => {toggleList(item?.id)}}
                           />
                         </button>
 
                         {
-                          showList === item?.record_id && (
+                          showList === item?.id && (
                             <div
-                              className={`absolute right-0 rounded-3xl bg-white border-2 w-[186px]`}
+                              className={`absolute right-0 rounded-3xl bg-white border-2 w-[186px] z-10`}
                               ref={listRef}
                             >
                               <ul

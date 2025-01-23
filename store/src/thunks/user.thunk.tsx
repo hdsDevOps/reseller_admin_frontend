@@ -129,7 +129,8 @@ export const getCustomerListThunk = createAsyncThunk(
     license_usage,
     subscritption_date,
     renewal_date,
-    domain
+    domain,
+    sortdata
   }: any) => {
     return await userApis.customerListApi(
       search_data,
@@ -139,13 +140,14 @@ export const getCustomerListThunk = createAsyncThunk(
       license_usage,
       subscritption_date,
       renewal_date,
-      domain
+      domain,
+      sortdata
     );
   }
 );
 
 export const addCustomerThunk = createAsyncThunk(
-  "users/editCustomer",
+  "users/addCustomer",
   async ({first_name, last_name, address, state_name, city, country, zipcode, phone_no, email, authentication}: any) => {
     return await userApis.addCustomerApi(
       first_name,
@@ -164,12 +166,12 @@ export const addCustomerThunk = createAsyncThunk(
 
 export const editCustomerThunk = createAsyncThunk(
   "users/editCustomer",
-  async ({first_name, last_name, address, state_name, city, country, zipcode, phone_no, email, authentication, record_id, status, account_status}: any) => {
+  async ({first_name, last_name, address, state, city, country, zipcode, phone_no, email, authentication, record_id, status, account_status}: any) => {
     return await userApis.editCustomerApi(
       first_name,
       last_name,
       address,
-      state_name,
+      state,
       city,
       country,
       zipcode,
@@ -345,8 +347,15 @@ export const getCustomerCountThunk = createAsyncThunk(
 
 export const getCustomerDomainsListThunk = createAsyncThunk(
   "users/getCustomerDomainsList",
-  async ({id}:any) => {
-    return await userApis.getCustomerDomainsListApi(id);
+  async ({search_text, customer_id}:any) => {
+    return await userApis.getCustomerDomainsListApi(search_text, customer_id);
+  }
+);
+
+export const getCustomerEmailsCountThunk = createAsyncThunk(
+  "users/getCustomerEmailsCount",
+  async ({customer_id}:any) => {
+    return await userApis.getCustomerEmailsCountApi(customer_id);
   }
 );
 

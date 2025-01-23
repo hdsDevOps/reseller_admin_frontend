@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/styles.css';
 import { RiCameraFill } from "react-icons/ri";
-import { X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk } from "store/user.thunk";
+import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getAdminDetailsThunk } from "store/user.thunk";
 import { setUserDetails } from 'store/authSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,6 +26,7 @@ function ProfileSettings() {
   const { userDetails, userId } = useAppSelector((state) => state.auth);
   // console.log("userDetails...", userDetails);
   const modalRef = useRef();
+  const [isNumberValid, setIsNumberValid] = useState(false);
 
   const [modalShow, setModalShow] = useState(false);
   const [profile, setProfile] = useState(userDetails);
@@ -100,18 +101,20 @@ function ProfileSettings() {
     }
   }, [cities, cityName]);
 
-  
+  const getFirstAlphabet = (str: string) => {
+    return Array.from(str)[0].toUpperCase();
+  }
 
   useEffect(() => {
     if(profile) {
       const data = profile;
-      if(data?.country !== "" && countries.length > 0) {
+      if(data?.country !== "" && countries?.length > 0) {
         const countryData = countries?.find(item => item?.name === data?.country);
         setCountry(countryData);
-        if(data?.state_name !== "" && states.length > 0) {
+        if(data?.state_name !== "" && states?.length > 0) {
           const statesData = states?.find(item2 => item2?.name === data?.state_name);
           setState(statesData)
-          if(data?.city !== "" && cities.length > 0) {
+          if(data?.city !== "" && cities?.length > 0) {
             const cityData = cities?.find(item3 => item3?.name === data?.city);
             setCity(cityData)
           } else {
@@ -151,17 +154,17 @@ function ProfileSettings() {
     else{
       setSelectedOption({ name: "United States", dial_code: '+1', code: "US" });
     }
-  }, [profile?.country]);
+  }, [country]);
 
   const formList = [
     { label: 'First Name', placeholder: 'Enter first name', name: 'first_name', type: 'text',},
     { label: 'Last Name', placeholder: 'Enter last name', name: 'last_name', type: 'text',},
     { label: 'Email', placeholder: 'Enter email', name: 'email', type: 'email',},
     { label: 'Phone Number', placeholder: 'Enter phone number', name: 'phone', type: 'text',},
-    { label: 'Street Address', placeholder: 'Enter street address', name: 'street_name', type: 'text',},
-    { label: 'City', placeholder: 'Enter name of City', name: 'city', type: 'text',},
-    { label: 'State', placeholder: 'Enter name of State', name: 'state_name', type: 'text',},
     { label: 'Country', placeholder: 'Enter name of Country', name: 'country', type: 'text',},
+    { label: 'State', placeholder: 'Enter name of State', name: 'state_name', type: 'text',},
+    { label: 'City', placeholder: 'Enter name of City', name: 'city', type: 'text',},
+    { label: 'Street Address', placeholder: 'Enter street address', name: 'street_name', type: 'text',},
   ];
 
   useEffect(() => {
@@ -170,6 +173,15 @@ function ProfileSettings() {
 
   const handlePhoneChange = (value: string) => {
     setProfile((prevData) => ({ ...prevData, phone: value }));
+  };
+
+  const removePrefix = (input:string, prefix:string) => {
+    if(input.startsWith(prefix)) {
+      return input.slice(prefix.length);
+    } else if(input.startsWith('0')) {
+      return input.slice(1);
+    }
+    return input;
   };
 
   const showImage = () => {
@@ -207,32 +219,69 @@ function ProfileSettings() {
     });
   };
 
+  const getAdminDetails = async() => {
+    try {
+      const result = await dispatch(getAdminDetailsThunk({userid: userId})).unwrap();
+      console.log("result...", result);
+    } catch (error) {
+      // toast.error()
+      if(error?.message == "Request failed with status code 401") {
+        try {
+          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          navigate('/login');
+        } catch (error) {
+          //
+        }
+      }
+    }
+  }
+
   const submitProfile = async(e) => {
     e.preventDefault();
-    if(
-      profile?.first_name === "" || profile?.first_name.trim() === "" ||
-      profile?.last_name === "" || profile?.last_name.trim() === "" ||
-      profile?.email === "" || profile?.email.trim() === "" ||
-      profile?.phone === "" || profile?.phone.trim() === "" ||
-      profile?.street_name === "" || profile?.street_name.trim() === "" ||
-      profile?.country === "" || profile?.country.trim() === ""
-    ) {
-      toast.warning("Please fill the fields.");
-    } else if(states.length > 0 && profile?.state_name === "" && profile?.state_name.trim() === "") {
-      toast.warning("Please fill the fields.");
-    } else if(cities.length > 0 && profile?.city === "" && profile?.city.trim() === "") {
-      toast.warning("Please fill the fields.");
-    } else {
-      try {
-        if(cPassword !== "" && cPassword.trim() !== "") {
-          if(profile?.password === cPassword){
+    if(isNumberValid) {
+      if(
+        profile?.first_name === "" || profile?.first_name.trim() === "" ||
+        profile?.last_name === "" || profile?.last_name.trim() === "" ||
+        profile?.email === "" || profile?.email.trim() === "" ||
+        profile?.phone === "" || profile?.phone.trim() === "" ||
+        profile?.street_name === "" || profile?.street_name.trim() === "" ||
+        profile?.country === "" || profile?.country.trim() === ""
+      ) {
+        toast.warning("Please fill the fields.");
+      } else if(states.length > 0 && profile?.state_name === "" && profile?.state_name.trim() === "") {
+        toast.warning("Please fill the fields.");
+      } else if(cities.length > 0 && profile?.city === "" && profile?.city.trim() === "") {
+        toast.warning("Please fill the fields.");
+      } else {
+        try {
+          if(cPassword !== "" && cPassword.trim() !== "") {
+            if(profile?.password === cPassword){
+              const result = await dispatch(updateAdminDetailsThunk({
+                userid: userId,
+                first_name: profile?.first_name,
+                last_name: profile?.last_name,
+                email: profile?.email,
+                phone: profile?.phone,
+                password: cPassword,
+                profile_pic: profile?.profile_pic,
+                street_name: profile?.street_name,
+                city: profile?.city,
+                state_name: profile?.state_name,
+                country: profile?.country
+              })).unwrap();
+              dispatch(setUserDetails(profile));
+              toast.success(result?.message);
+              setModalShow(false);
+            } else {
+              toast.warning("Password and confirm password do not match");
+            }
+          } else {
             const result = await dispatch(updateAdminDetailsThunk({
               userid: userId,
               first_name: profile?.first_name,
               last_name: profile?.last_name,
               email: profile?.email,
               phone: profile?.phone,
-              password: cPassword,
               profile_pic: profile?.profile_pic,
               street_name: profile?.street_name,
               city: profile?.city,
@@ -242,37 +291,21 @@ function ProfileSettings() {
             dispatch(setUserDetails(profile));
             toast.success(result?.message);
             setModalShow(false);
-          } else {
-            toast.warning("Password and confirm password do not match");
           }
-        } else {
-          const result = await dispatch(updateAdminDetailsThunk({
-            userid: userId,
-            first_name: profile?.first_name,
-            last_name: profile?.last_name,
-            email: profile?.email,
-            phone: profile?.phone,
-            profile_pic: profile?.profile_pic,
-            street_name: profile?.street_name,
-            city: profile?.city,
-            state_name: profile?.state_name,
-            country: profile?.country
-          })).unwrap();
-          dispatch(setUserDetails(profile));
-          toast.success(result?.message);
-          setModalShow(false);
-        }
-      } catch (error) {
-        toast.error("Error updating profile");
-        if(error?.message == "Request failed with status code 401") {
-          try {
-            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-            navigate('/login');
-          } catch (error) {
-            //
+        } catch (error) {
+          toast.error("Error updating profile");
+          if(error?.message == "Request failed with status code 401") {
+            try {
+              const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+              navigate('/login');
+            } catch (error) {
+              //
+            }
           }
         }
       }
+    } else {
+      toast.warning("Please enter a valid number");
     }
   };
 
@@ -342,6 +375,7 @@ function ProfileSettings() {
               userid: userId,
               profile_pic: result?.url
             })).unwrap();
+            await getAdminDetails();
           }
         })
       } catch (error) {
@@ -397,6 +431,7 @@ function ProfileSettings() {
               userid: userId,
               profile_pic: result?.url
             })).unwrap();
+            await getAdminDetails();
           }
         })
       } catch (error) {
@@ -497,11 +532,20 @@ function ProfileSettings() {
           <div
             className='flex flex-col w-[93px]'
           >
-            <img
-              src={profile?.profile_pic}
-              alt='Profile'
-              className={`border-[3px] ${profile?.profile_pic ? "border-custom-green" : "border-white"} w-full h-full min-h-[93px] rounded-full bg-custom-green object-cover`}
-            />
+            {
+              profile?.profile_pic ?
+              (
+                <img
+                  src={profile?.profile_pic}
+                  alt='Profile'
+                  className={`border-[3px] ${profile?.profile_pic ? "border-custom-green" : "border-white"} w-full h-full min-h-[93px] rounded-full bg-custom-green object-cover`}
+                />
+              ) : (
+                <h6 className='border-[3px] border-white w-full h-full min-h-[93px] rounded-full bg-custom-green text-center items-center text-white text-5xl pt-4'>
+                  {getFirstAlphabet(profile?.first_name)}{getFirstAlphabet(profile?.last_name)}
+                </h6>
+              )
+            }
             <label
               className="float-right ml-auto mt-[-20px] w-[29px] h-[29px] border border-custom-gray-2 rounded-full items-center bg-white cursor-pointer"
               onClick={() => {setImageModal(true)}}
@@ -652,8 +696,21 @@ function ProfileSettings() {
                               className='search-input-label'
                             >{item.label}</label>
                             <PhoneInput
-                              country={selectedOption?.code?.toLowerCase()}
-                              onChange={handlePhoneChange}
+                              country={"us"}
+                              // onChange={handlePhoneChange}
+                              onChange={(inputPhone, countryData, event, formattedValue) => {
+                                handlePhoneChange(inputPhone);
+                                if(countryData?.format?.length === formattedValue.length) {
+                                  const newValue = removePrefix(inputPhone, countryData?.dialCode);
+                                  if (newValue.startsWith('0')) {
+                                    setIsNumberValid(false);
+                                  } else {
+                                    setIsNumberValid(true);
+                                  }
+                                } else {
+                                  setIsNumberValid(false);
+                                }
+                              }}
                               value={profile?.phone}
                               placeholder='00000-00000'
                               inputProps={{
@@ -935,11 +992,11 @@ function ProfileSettings() {
           setZoom(1);
         }}
       >
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen mt-16">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-full mt-20">
           <div className="flex min-h-full items-center justify-center p-4">
             <DialogPanel
               transition
-              className="w-full max-w-[1053px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+              className="w-full max-w-[600px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
             >
               <div className="flex justify-between items-center mb-6">
                 <DialogTitle
@@ -969,12 +1026,21 @@ function ProfileSettings() {
                       onChange={(newCrop) => { setCrop(newCrop) }}
                       className='w-[300px] h-[300px] relative overflow-hidden'
                     >
-                      <img
-                        ref={imgRef}
-                        src={image === null ? profile?.profile_pic : image}
-                        alt='profile picture'
-                        className={`absolute top-0 left-0 transform scale-[${zoom}] duration-200 ease-in-out w-full h-full`}
-                      />
+                      {
+                        image === null || profile?.profile_pic === ""
+                        ? (
+                          <div className={`absolute top-0 left-0 bottom-0 right-0 transform duration-200 ease-in-out w-full h-full items-center`}>
+                            <p className='my-auto text-center items-center pt-32'>Add profile photo from the camera icon</p>
+                          </div>
+                        ) : (
+                          <img
+                            ref={imgRef}
+                            src={image === null ? profile?.profile_pic : image}
+                            alt='profile picture'
+                            className={`absolute top-0 left-0 transform scale-[${zoom}] duration-200 ease-in-out w-full h-full`}
+                          />
+                        )
+                      }
                       <div className='absolute inset-0 flex items-center justify-center'>
                         <div className='w-full h-full rounded-full bg-transparent z-10' style={{boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.6)'}}></div>
                         {/* <div className='absolute inset-0 bg-black opacity-50 mix-blend-darken pointer-events-none'></div> */}
@@ -993,21 +1059,26 @@ function ProfileSettings() {
                     <input id="file-upload" type="file" className="hidden" name='image' onChange={e => {setImage(e.target.files[0])}} accept='image/*' />
                   </label>
                 </div>
-                <div className="flex flex-row justify-center gap-3 pt-4">
-                <label htmlFor="zoom" className="font-medium">
-                  Zoom: {Math.round(zoom * 100)}%
-                </label>
-                <input
-                  type="range"
-                  id="zoom"
-                  min="0.5"
-                  max="3"
-                  step="0.1"
-                  value={zoom}
-                  onChange={handleZoomChange}
-                  className="w-64"
-                />
-                </div>
+                {
+                  image === null || profile?.profile_pic === ""
+                  ? ("") : (
+                    <div className="flex flex-row justify-center gap-3 pt-4">
+                      <label htmlFor="zoom" className="font-medium">
+                        Zoom: {Math.round(zoom * 100)}%
+                      </label>
+                      <input
+                        type="range"
+                        id="zoom"
+                        min="0.5"
+                        max="3"
+                        step="0.1"
+                        value={zoom}
+                        onChange={handleZoomChange}
+                        className="w-64"
+                      />
+                    </div>
+                  )
+                }
                 <div className="flex flex-row justify-center gap-3 pt-4">
                   <button
                     type="submit"
