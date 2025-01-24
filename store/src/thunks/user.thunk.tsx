@@ -148,12 +148,12 @@ export const getCustomerListThunk = createAsyncThunk(
 
 export const addCustomerThunk = createAsyncThunk(
   "users/addCustomer",
-  async ({first_name, last_name, address, state_name, city, country, zipcode, phone_no, email, authentication}: any) => {
+  async ({first_name, last_name, address, state, city, country, zipcode, phone_no, email, authentication}: any) => {
     return await userApis.addCustomerApi(
       first_name,
       last_name,
       address,
-      state_name,
+      state,
       city,
       country,
       zipcode,

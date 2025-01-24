@@ -30,7 +30,7 @@ const AddCustomer: React.FC = () => {
     first_name: '',
     last_name: '',
     address: '',
-    state_name: '',
+    state: '',
     city: '',
     country: '',
     zipcode: '',
@@ -194,7 +194,7 @@ const AddCustomer: React.FC = () => {
     {label: 'Last name', type: 'text', name: 'last_name', placeholder: 'Enter the last name',},
     {label: 'Street Address', type: 'text', name: 'address', placeholder: 'Enter the street address',},
     {label: 'Country/Region', type: 'text', name: 'country', placeholder: 'Select the Country/Region',},
-    {label: 'State/Territory', type: 'text', name: 'state_name', placeholder: 'Select the State/Territory',},
+    {label: 'State/Territory', type: 'text', name: 'state', placeholder: 'Select the State/Territory',},
     {label: 'City', type: 'text', name: 'city', placeholder: 'Enter the city name',},
     {label: 'Zip code', type: 'number', name: 'zipcode', placeholder: 'Enter the zipcode',},
     {label: 'Business phone number', type: 'number', name: 'phone_no', placeholder: '0000000000',},
@@ -383,7 +383,7 @@ const AddCustomer: React.FC = () => {
                             setCustomer({
                               ...customer,
                               country: '',
-                              state_name: '',
+                              state: '',
                               city: ''
                             });
                             setCountryName(e.target.value);
@@ -429,7 +429,7 @@ const AddCustomer: React.FC = () => {
                       </div>
                     )
                   }
-                  else if(item.name == 'state_name'){
+                  else if(item.name == 'state'){
                     return(
                       <div
                         key={index}
@@ -443,11 +443,11 @@ const AddCustomer: React.FC = () => {
                           type='text'
                           className='search-input-text focus:outline-none w-full h-full p-0'
                           placeholder={item?.placeholder}
-                          name='state_name'
+                          name='state'
                           onChange={e => {
                             setCustomer({
                               ...customer,
-                              state_name: "",
+                              state: "",
                               city: ""
                             });
                             setStateName(e.target.value);
@@ -455,7 +455,7 @@ const AddCustomer: React.FC = () => {
                             setState({});
                             setCity({});
                           }}
-                          value={customer?.state_name || stateName}
+                          value={customer?.state || stateName}
                           required={states?.length > 0 ? true : false}
                           onFocus={() => {setStateDropdownOpen(true)}}
                           cypress-name="state_input"
@@ -471,7 +471,7 @@ const AddCustomer: React.FC = () => {
                                     onClick={() => {
                                       setCustomer({
                                         ...customer,
-                                        state_name: region?.name,
+                                        state: region?.name,
                                         city: ""
                                       });
                                       setStateName("");
@@ -614,7 +614,7 @@ const AddCustomer: React.FC = () => {
                     first_name: '',
                     last_name: '',
                     address: '',
-                    state_name: '',
+                    state: '',
                     city: '',
                     country: '',
                     zipcode: '',

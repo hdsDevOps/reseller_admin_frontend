@@ -434,11 +434,24 @@ const CustomerManagement: React.FC = () => {
   }
 
   const handleAuthorizeChange = async(item) => {
-    const customerItem = item;
+    const customerAuthentication = item?.authentication;
     console.log(item);
-    customerItem.authentication = !customerItem?.authentication;
+    const newCustomerAuthentication = !customerAuthentication;
     try {
-      const result = await dispatch(editCustomerThunk(customerItem)).unwrap();
+      const result = await dispatch(editCustomerThunk({
+        first_name: item?.first_name,
+        last_name: item?.last_name,
+        address: item?.address,
+        state: item?.state,
+        city: item?.city,
+        country: item?.country,
+        zipcode: item?.zipcode,
+        phone_no: item?.phone_no,
+        email: item?.email,
+        authentication: newCustomerAuthentication,
+        record_id: item?.id,
+        account_status: item?.account_status
+      })).unwrap();
     } catch (error) {
       toast.error("Authentication could not be updated");
     } finally{
