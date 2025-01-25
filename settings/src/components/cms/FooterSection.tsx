@@ -173,7 +173,7 @@ const FooterSection = () => {
       !footerData?.contact_us_section_data?.value?.trim()) {
       return false;
     }
-    if (!editFooterData?.newsletter_section_data?.some(element => 
+    if (editFooterData?.newsletter_section_data?.some(element => 
       !element?.name?.trim() || !element?.value?.trim()
     )) {
       return false;
