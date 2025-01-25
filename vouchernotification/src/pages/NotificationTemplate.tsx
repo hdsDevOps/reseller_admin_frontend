@@ -55,6 +55,7 @@ const NotificationTemplate = () => {
     "{last_name}",
     "{email}",
   ]);
+  const [sendEmailNotification, setSendEmailNotification] = useState("");
   
   const handleFilterChange = (e) => {
     // console.log("User Input:", e.target.value);
@@ -316,16 +317,18 @@ const NotificationTemplate = () => {
 
   const sendNotificationEmail = async(e) => {
     e.preventDefault();
-    if(selectedCustomers.length < 1) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(sendEmailNotification)) {
       toast.warning("No emails are selected");
     } else {
       const emailLists = selectedCustomers.map(item => item?.email);
       try {
         const result = await dispatch(sendTestEmailNotificationThunk({
-          email_ids: emailLists,
+          email_ids: [sendEmailNotification],
           record_id: selectedItem?.id
         })).unwrap();
-        toast.success("Email sent");
+        toast.success("Email sent successfully");
+        // console.log("result...", result);
       } catch (error) {
         toast.error("Error sending email.")
         if(error?.message == "Request failed with status code 401") {
@@ -453,14 +456,15 @@ const NotificationTemplate = () => {
                   <input
                     className="border border-custom-white h-[41px] sm:min-w-[400px] max-sm:w-full max-w-[400px] p-2"
                     name="search_data"
-                    onChange={handleFilterChange}
+                    onChange={(e) => {setSendEmailNotification(e.target.value)}}
+                    type="email"
                     placeholder="Enter email"
-                    value={filters?.search_data}
+                    value={sendEmailNotification}
                     ref={filterRef}
                   />
                   <button
                     type="button"
-                    // onClick={(e) => {sendNotificationEmail(e)}}
+                    onClick={(e) => {sendNotificationEmail(e)}}
                     disabled={!rolePermissionsSlice?.notification_template?.send_mail ? true : false}
                   >
                     <Send className="w-6 text-[#12A833] sm:block my-auto" size={32} />

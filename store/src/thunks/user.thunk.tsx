@@ -788,8 +788,8 @@ export const updateNotificationStatusThunk = createAsyncThunk(
 
 export const monthlyRevenueDataThunk = createAsyncThunk(
   "users/monthlyRevenueData",
-  async () => {
-    return await userApis.monthlyRevenueDataApi();
+  async ({currency}:any) => {
+    return await userApis.monthlyRevenueDataApi(currency);
   }
 );
 

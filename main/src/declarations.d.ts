@@ -48,6 +48,8 @@ declare module 'store/user.thunk' {
   export const getUserAuthTokenFromLSThunk: AsyncThunkAction<UserAuthToken, void, {}>;
   export const checkUserTokenThunk: AsyncThunkAction<CheckUserTokenResult, void, {}>;
   // Add more thunk declarations as needed
+
+  export const monthlyRevenueDataThunk;
 }
 
 declare module 'store/authSlice' {

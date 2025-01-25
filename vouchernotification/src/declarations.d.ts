@@ -17,6 +17,7 @@ declare module "store/ReduxProvider" {
     //
     export const getPlansAndPricesThunk;
     export const deleteNotificationTemplateThunk;
+    export const sendTestEmailNotificationThunk;
   }
 
   declare module 'store/authSlice' {

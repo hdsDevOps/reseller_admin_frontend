@@ -1206,9 +1206,9 @@ async function updateNotificationStatusApi(
   }
 };
 
-async function monthlyRevenueDataApi(): Promise<any> {
+async function monthlyRevenueDataApi(currency:strinf): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.monthlyRevenueData, {});
+    const result = await postApiCall(endPoints.monthlyRevenueData, {currency});
     return result;
   } catch (error: any) {
     throw error;

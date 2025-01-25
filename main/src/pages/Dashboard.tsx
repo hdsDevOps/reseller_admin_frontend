@@ -99,6 +99,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [monthlyRevenueData, setMonthlyRevenueData] = useState(initialMonthlyRevenueData);
+  console.log("monthlyRevenueData...", monthlyRevenueData);
   const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([initialYearlySpendingStatistics]);
   // console.log("yearlySpendingStatistics...", yearlySpendingStatistics);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -174,7 +175,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const getMonltyRevenueData = async() => {
       try {
-        const result = await dispatch(monthlyRevenueDataThunk()).unwrap();
+        const result = await dispatch(monthlyRevenueDataThunk({currency: defaultCurrency})).unwrap();
         setMonthlyRevenueData(result?.result);
       } catch (error) {
         setMonthlyRevenueData(initialMonthlyRevenueData);
@@ -190,7 +191,7 @@ const Dashboard: React.FC = () => {
     };
 
     getMonltyRevenueData();
-  }, []);
+  }, [defaultCurrency]);
 
   useEffect(() => {
     const getYearlySpendingStatistics = async() => {
