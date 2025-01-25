@@ -39,6 +39,7 @@ export const endPoints = {
     addNotificationTemplate: 'adminservices/notification/api/v1/addnotificationtemplatedetails',
     getNotificationTemplate: 'adminservices/notification/api/v1/getnotificationlist',
     updateNoficationTemplateContent: 'adminservices/notification/api/v1/updatenotificationtemplate',
+    deleteNotificationTemplate: 'adminservices/notification/api/v1/deletetemplate',
     sendTestEmailNotification: 'adminservices/notification/api/v1/sendtestemailnotification',
 
     // subscription
@@ -140,4 +141,7 @@ export const endPoints = {
     //dashboard
     monthlyRevenueData: 'reportservices/users/api/v1/monthly_revenue_data',
     yearlySpendingStatistics: 'reportservices/users/api/v1/yearly_spending_statistics',
+    
+    // here platform
+    hereMapSearch: 'customerservices/user/api/v1/get_address',
 }

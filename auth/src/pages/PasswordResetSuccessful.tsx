@@ -33,7 +33,7 @@ const PasswordResetSuccessful: React.FC = () => {
             <p
               className="text-center font-inter-16px-400 w-[430px]"
             >
-              Now you can use your new password to log in in to your account!
+              Now you can use your new password to log in to your account!
             </p>
           </div>
           <div className="max-w-[456px] mt-[25px]">

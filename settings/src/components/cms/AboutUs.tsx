@@ -381,9 +381,9 @@ const AboutUs: React.FC = () => {
       <div className="flex items-center justify-start mx-4 mb-3">
         <button className="btn-cms" onClick={() => {
           setIsEditModalOpen(true);
-          setImageFile1(aboutUs.block1.image);
-          setImageFile2(aboutUs.block2.image);
-          setImageFile3(aboutUs.heading_section.image);
+          setImageFile1(aboutUs?.block1.image);
+          setImageFile2(aboutUs?.block2.image);
+          setImageFile3(aboutUs?.heading_section.image);
         }}>
           EDIT
         </button>
@@ -487,51 +487,51 @@ const AboutUs: React.FC = () => {
                       }}
                     />
                     <label
-                        htmlFor="file-upload"
-                        className="flex flex-col items-center justify-center md:w-48 w-full h-[73px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100 md:mx-0 mx-auto"
+                      htmlFor="file-upload"
+                      className="flex flex-col items-center justify-center md:w-48 w-full h-[73px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100 md:mx-0 mx-auto"
                     >
-                        <div className={`flex flex-col items-center justify-center ${imageFile3 === null ? 'pt-5 pb-2' : ''} w-full h-full`}>
-                          {
-                            imageFile3 === null || imageFile3 === "" ?
-                            (<React.Fragment>
-                              <svg
-                                aria-hidden="true"
-                                className="w-[25px] h-5 mb-1 mt-3 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M12 4v16m8-8H4"
-                                ></path>
-                              </svg>
-                              <p className="mb-1 text-sm text-gray-500">Add banner image</p>
-                            </React.Fragment>) :
-                            (<img ref={imageRef3} src={imageFile3} alt="image" className="h-full object-cover" />)
-                          }
-                        </div>
-                        <input id="file-upload" type="file" className="hidden" accept="image/*"
-                          onChange={e => { setImageFile3(e.target.files[0]) }}
-                        />
+                      <div className={`flex flex-col items-center justify-center ${imageFile3 === null ? 'pt-5 pb-2' : ''} w-full h-full`}>
                         {
-                          imageFile3 === null || imageFile3 === ""
-                          ? (
-                            <p className="text-[8px] -mt-2 text-gray-500">Dimesion: 1440 x 300</p>
-                          ) : (
-                            ""
-                          )
+                          imageFile3 === null || imageFile3 === "" ?
+                          (<React.Fragment>
+                            <svg
+                              aria-hidden="true"
+                              className="w-[25px] h-5 mb-1 mt-3 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 4v16m8-8H4"
+                              ></path>
+                            </svg>
+                            <p className="mb-1 text-sm text-gray-500">Add banner image</p>
+                          </React.Fragment>) :
+                          (<img ref={imageRef3} src={imageFile3} alt="image" className="h-full object-cover" />)
                         }
+                      </div>
+                      <input id="file-upload" type="file" className="hidden" accept="image/*"
+                        onChange={e => { setImageFile3(e.target.files[0]) }}
+                      />
+                      {
+                        imageFile3 === null || imageFile3 === ""
+                        ? (
+                          <p className="text-[12px] -mt-3 text-gray-500">Dimesion: 1440 x 300</p>
+                        ) : (
+                          ""
+                        )
+                      }
                     </label>
                       {
                         imageFile3 === null || imageFile3 === ""
                         ? (
                           <label
                             htmlFor="file-upload-head"
-                            className="absolute right-2 bottom-2"
+                            className="absolute right-2 bottom-2 cursor-pointer"
                         >
                             <Camera className="text-sm" />
                             <input id="file-upload-head" type="file" className="hidden" accept="image/*"
@@ -541,7 +541,7 @@ const AboutUs: React.FC = () => {
                         ) : (
                           <button
                             type="button"
-                            onClick={(e) => {removeHeadingImage(e)}}
+                            onClick={(e) => {setImageFile3(null)}}
                             disabled={deleteClicked}
                             className="absolute right-2 bottom-2"
                           >
@@ -580,7 +580,7 @@ const AboutUs: React.FC = () => {
                         />
                       </div>
                       <label
-                        htmlFor="file-upload"
+                        htmlFor="file-upload-1"
                         className="flex flex-col items-center justify-center w-full h-[165px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
                       >
                         <div className={`flex flex-col items-center justify-center ${imageFile1 === null ? 'pt-5 pb-6' : ''} w-full h-full`}>
@@ -607,7 +607,7 @@ const AboutUs: React.FC = () => {
                             (<img ref={imageRef1} src={imageFile1} alt="image" className="h-full object-cover" />)
                           }
                         </div>
-                        <input id="file-upload" type="file" className="hidden"accept="image/*"
+                        <input id="file-upload-1" type="file" className="hidden"accept="image/*"
                           onChange={e => {
                             setImageFile1(e.target.files[0])
                           }}
@@ -675,7 +675,7 @@ const AboutUs: React.FC = () => {
                         />
                       </div>
                       <label
-                        htmlFor="file-upload"
+                        htmlFor="file-upload-2"
                         className="flex flex-col items-center justify-center w-full h-[165px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
                       >
                         <div className={`flex flex-col items-center justify-center ${imageFile2 === null ? 'pt-5 pb-6' : ''} w-full h-full`}>
@@ -702,7 +702,7 @@ const AboutUs: React.FC = () => {
                             (<img ref={imageRef2} src={imageFile2} alt="image" className="h-full object-cover" />)
                           }
                         </div>
-                        <input id="file-upload" type="file" className="hidden"accept="image/*"
+                        <input id="file-upload-2" type="file" className="hidden"accept="image/*"
                           onChange={e => {
                             setImageFile2(e.target.files[0])
                           }}

@@ -42,10 +42,14 @@ const CustomerInformation: React.FC = () => {
 
   const resetPasswordSubmit = async(e) => {
     e.preventDefault();
-    if(newPassword != confirmPassword){
+    if(newPassword !== confirmPassword){
       toast.warning("Password and confirm password do not match");
-    }
-    else{
+    } else if(
+      newPassword === "" || newPassword?.trim() === "" ||
+      confirmPassword === "" || confirmPassword?.trim() === ""
+    ) {
+      toast.warning("Password fields cannot be empty");
+    } else {
       try {
         const result = await dispatch(
           updateCustomerPasswordThunk({record_id: customer?.id, password: newPassword})

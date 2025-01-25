@@ -6,7 +6,7 @@ import { FaChevronDown, FaDownload } from "react-icons/fa6";
 // import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
-import { getBillingHistoryThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getBillingHistoryThunk, getPaymentMethodsListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { setBillingHistoryFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ArrowRightLeft, FilterX } from 'lucide-react';
@@ -35,6 +35,8 @@ const BillingHistory: React.FC = () => {
   const pdfRef = useRef();
   // console.log("pdfRef...", pdfRef.current);
   const [pdfDownload, setPdfDownload] = useState('hidden');
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  console.log("payment methods....", paymentMethods);
 
   const [filter, setFilter] = useState(billingHistoryFilters === null ? initialFilter : billingHistoryFilters);
   // console.log("filter...", filter);
@@ -110,6 +112,26 @@ const BillingHistory: React.FC = () => {
     fetchInitialBillingHistory();
   }, []);
 
+  const getPaymentMethodsList = async() => {
+    try {
+      const result = await dispatch(getPaymentMethodsListThunk()).unwrap();
+      setPaymentMethods(result?.data);
+    } catch (error) {
+      setPaymentMethods([]);
+    }
+  };
+
+  const getUsedPaymentMethod = (method) => {
+    const found = paymentMethods?.find(item => item?.method_name?.toLowerCase() === method?.toLowerCase());
+    if(found) {
+      return found?.method_image;
+    }
+  }
+
+  useEffect(() => {
+    getPaymentMethodsList();
+  }, []);
+
   const handleChangeFilter = (e) => {
     setFilter({
       ...filter,
@@ -177,11 +199,11 @@ const BillingHistory: React.FC = () => {
   };
 
   const formatDate = (seconds, nanoseconds) => {
-    const miliseconds = parseInt(seconds) * 1000 + parseInt(nanoseconds) / 1e6;
+    const miliseconds = (parseInt(seconds) * 1000) + (parseInt(nanoseconds) / 1e6);
 
     const date = new Date(miliseconds);
 
-    const formattedDate = format(date, "dd MMM yyyy");
+    const formattedDate = format(new Date(date?.toISOString()), "dd MMM yyyy");
     return formattedDate;
   };
 
@@ -205,11 +227,8 @@ const BillingHistory: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if(initialBillingHistory?.length === 0) {
-      setIsDropdownOpen(false);
-    }
-    if(search.length > 0) {
-      setIsDropdownOpen(true)
+    if(initialBillingHistory?.length > 0 && search?.length > 0) {
+      setIsDropdownOpen(true);
     }
   }, [initialBillingHistory, search])
 
@@ -268,11 +287,11 @@ const BillingHistory: React.FC = () => {
               value={search}
               onFocus={() => {setIsDropdownOpen(true)}}
             />
-            <div className="absolute -mt-7 w-full z-10 pointer-events-none">
-              <FaChevronDown className="ml-auto mr-10" />
+            <div className={`absolute right-0  -mt-7 w-full pointer-events-none`}>
+              <FaChevronDown className={`ml-auto mr-5 ${isDropdownOpen ? "rotate-180" : ""} transition duration-300`} />
             </div>
             {
-              isDropdownOpen === true && initialBillingHistory?.filter(history => history?.domain.toLowerCase().includes(search.toLowerCase())).length > 0 && (
+              isDropdownOpen && initialBillingHistory?.filter(history => history?.domain?.toLowerCase()?.includes(search?.toLowerCase())).length > 0 && (
                 <div className='absolute flex flex-col py-1 2xl:w-[90%] min-[1450px]:w-[89%] min-[1350px]:w-[88%] xl:w-[87%] min-[900px]:w-[90%] md:w-[94%] min-[415px]:w-[90%] w-[88%] bg-custom-white rounded-b max-h-40 overflow-y-auto z-[9999] border'>
                   {
                     initialBillingHistory?.filter(history => history?.domain.toLowerCase().includes(search.toLowerCase())).map((item, index) => (
@@ -322,6 +341,7 @@ const BillingHistory: React.FC = () => {
               onClick={() => {
                 setFilter(initialFilter);
                 setSearchData("");
+                setSearch("");
               }}
             >
               <FilterX
@@ -367,8 +387,8 @@ const BillingHistory: React.FC = () => {
                   </td>
                   <td className="td-css-3 text-custom-black-5 flex items-center flex-col">
                     {/* <a>{detail?.date_invoice || ' '}</a> */}
-                    <a>{formatDate(detail?.created_at?._seconds,detail?.created_at?._nanoseconds)}</a>
-                    <small className="text-custom-green">12309864</small>
+                    <a>{formatDate(detail?.date?._seconds, detail?.date?._nanoseconds)}</a>
+                    <small className="text-custom-green">{detail?.invoice}</small>
                   </td>
                   <td className="td-css-3 text-custom-black-5">
                     {detail?.product_type || ' '}
@@ -383,7 +403,15 @@ const BillingHistory: React.FC = () => {
                       <span className="font-inter-bold-xs-60percent-black">
                         {detail?.paymentMethod || ' '}
                       </span> */}
-                      <span className="font-inter-bold-xs-60percent-black capitalize">{detail?.payment_method}</span>
+                      {
+                        getUsedPaymentMethod(detail?.payment_method)
+                        ? (
+                          <img src={getUsedPaymentMethod(detail?.payment_method)} alt={detail?.payment_method} className="h-6 object-contain mr-1" />
+                        ) : (
+                          <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-6 object-contain mr-1" />
+                        )
+                      }
+                      <span className="font-inter-bold-xs-60percent-black capitalize">...{detail?.transaction_data?.payment_method_details?.card?.last4 || "0000"}</span>
                     </span>
                   </td>
                   <td className="td-css-full-opactiy text-custom-black-5">
@@ -392,7 +420,7 @@ const BillingHistory: React.FC = () => {
                     </button>
                   </td>
                   <td className="td-css-4 text-custom-green">
-                    ${detail?.amount || ' '}
+                    {detail?.amount || ' '}
                   </td>
                   <td className="cursor-pointer w-full items-center text-center">
                     <button

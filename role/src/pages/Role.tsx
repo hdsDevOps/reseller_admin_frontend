@@ -231,7 +231,13 @@ const Role = () => {
               placeholder="Auto search"
               className="serach-input-no-radius"
               name="user_type"
-              onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setSearch(e.target.value);}}
+              onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+                setSearch(e.target.value);
+                setFilter({
+                  ...filter,
+                  user_type: ""
+                })
+              }}
               value={search || filter?.user_type}
               onFocus={() => {setIsDropdownOpen(true)}}
             />

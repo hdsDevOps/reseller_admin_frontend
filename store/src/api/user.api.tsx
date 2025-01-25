@@ -117,8 +117,8 @@ async function customerListApi(
   state_name: string,
   authentication: Boolean|string,
   license_usage: string|Number,
-  subscritption_date: string|[],
-  renewal_date: string|[],
+  subscription_date: object,
+  renewal_date: object,
   domain: string,
   sortdata:object
 ): Promise<any> {
@@ -129,7 +129,7 @@ async function customerListApi(
       state_name,
       authentication,
       license_usage,
-      subscritption_date,
+      subscription_date,
       renewal_date,
       domain,
       sortdata
@@ -490,6 +490,17 @@ async function updateNoficationTemplateContentApi(
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.updateNoficationTemplateContent, {record_id, template_content});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+async function deleteNotificationTemplateApi(
+  record_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.deleteNotificationTemplate, {record_id});
     return result;
   } catch (error: any) {
     throw error;
@@ -1213,6 +1224,15 @@ async function yearlySpendingStatisticsApi(): Promise<any> {
   }
 };
 
+async function hereMapSearchApi(address:object): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.hereMapSearch, address);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -1248,6 +1268,7 @@ export const userApis = {
   addNotificationTemplateApi,
   getNotificationTemplateApi,
   updateNoficationTemplateContentApi,
+  deleteNotificationTemplateApi,
   sendTestEmailNotificationApi,
   subscriptionPlansListApi,
   getPaymentMethodsListApi,
@@ -1307,4 +1328,5 @@ export const userApis = {
   updateNotificationStatusApi,
   monthlyRevenueDataApi,
   yearlySpendingStatisticsApi,
+  hereMapSearchApi,
 };

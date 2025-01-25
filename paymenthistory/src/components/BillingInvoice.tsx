@@ -8,11 +8,11 @@ const BillingInvoice: React.FC = ({pdfRef, data}) => {
   // const visa = "http://localhost:3000/images/visa-logo-grey.png";
 
   const formatDate = (seconds, nanoseconds) => {
-    const miliseconds = parseInt(seconds) * 1000 + parseInt(nanoseconds) / 1e6;
+    const miliseconds = (parseInt(seconds) * 1000) + (parseInt(nanoseconds) / 1e6);
 
     const date = new Date(miliseconds);
 
-    const formattedDate = format(date, "MMM dd, yyyy, h:mm:ss a");
+    const formattedDate = format(new Date(date?.toISOString()), "MMM dd, yyyy, h:mm:ss a");
     return formattedDate;
   };
   return (
@@ -80,7 +80,7 @@ const BillingInvoice: React.FC = ({pdfRef, data}) => {
             >DATE PAID</h6>
             <p
               className='text-sm'
-            >{formatDate(data?.created_at?._seconds,data?.created_at?._nanoseconds)}</p>
+            >{formatDate(data?.date?._seconds, data?.date?._nanoseconds)}</p>
           </div>
           <div
             className='flex flex-col text-start'

@@ -28,13 +28,13 @@ function EditPlanPriceSetup() {
     {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/India-flag.png?alt=media&token=2c9bf400-34b3-42ae-9f2b-1548c32d0345', name: 'INR', logo: '₹',},
   ];
   const [subscription, setSubscription] = useState(location.state);
-  // console.log(subscription);
+  console.log(subscription);
   const [amountCount, setAMountCount] = useState(1);
   const [dragActive, setDragActive] = useState(false);
   const [iconImage, setIconImage] = useState(location.state?.icon_image || null);
   console.log("image...", iconImage);
   const [localPrice, setLocalPrice] = useState(subscription?.amount_details);
-  // console.log("localPrice...", localPrice);
+  console.log("localPrice...", localPrice);
   const [featureHover, setFeatureHover] = useState(false);
   const priceRefs = useRef({});
   // console.log(priceRefs);
@@ -596,14 +596,31 @@ function EditPlanPriceSetup() {
     setDragActive(false);
   };
 
+  const localPriceValidation = () => {
+    const invalidPattern = /^0+$/;
+
+    for (const item of localPrice) {
+      for (const priceDetail of item?.price) {
+        if(
+          invalidPattern.test(priceDetail?.price) || priceDetail?.price === "" || priceDetail?.price?.trim() === "" ||
+          invalidPattern.test(priceDetail?.discount_price) || priceDetail?.discount_price === "" || priceDetail?.discount_price?.trim() === ""
+        ) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async(e) => {
     e.preventDefault();
-    setSubscription({
-      ...subscription,
-      amount_details: localPrice
-    });
+    console.log(subscription?.amount_details)
     if(subscription?.plan_name.trim() === '') {
       toast.error("Plan name cannot be empty");
+    } else if(subscription?.sticker_exists && subscription?.sticker_text?.trim() === "") {
+      toast.warning("Please enter sticker text");
+    } else if(!localPriceValidation()) {
+      toast.warning("Please enter valid price values");
     } else {
       if(iconImage !== null && typeof iconImage !== "string") {
         try {
@@ -618,7 +635,7 @@ function EditPlanPriceSetup() {
                 plan_name: subscription?.plan_name,
                 sticker_text: subscription?.sticker_text,
                 sticker_exists: subscription?.sticker_exists,
-                amount_details: subscription?.amount_details,
+                amount_details: localPrice,
                 record_id: subscription?.id
               })).unwrap();
               setTimeout(() => {
@@ -652,7 +669,7 @@ function EditPlanPriceSetup() {
             plan_name: subscription?.plan_name,
             sticker_text: subscription?.sticker_text,
             sticker_exists: subscription?.sticker_exists,
-            amount_details: subscription?.amount_details,
+            amount_details: localPrice,
             record_id: subscription?.id
           })).unwrap();
           setTimeout(() => {

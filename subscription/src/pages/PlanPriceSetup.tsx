@@ -515,7 +515,7 @@ const PlanPriceSetup = () => {
                   <div className="flex flex-col gap-1 text-center items-center">
                     {
                       plan?.top_features?.slice(0, 2).map((feature, idx) => (
-                        <div key={idx} className="flex text-center items-center gap-1 text-[#12A833] font-inter font-normal text-[6px]">
+                        <div key={idx} className="flex text-center items-center gap-1 text-[#12A833] font-inter font-normal text-[10px] text-nowrap">
                           <p className="text-center">{feature}</p>
                         </div>
                       ))

@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const intialUserFilter = {
   role: "",
@@ -46,13 +48,15 @@ const UserList = () => {
   const [searchData, setSearchData] = useState("");
   const [deleteUserId, setDeleteUserId] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  
+  const backgroundColors = ['bg-[#B4D3DC]', 'bg-[#C5E0B2]', 'bg-[#E2BFC6]',];
 
   const formArray = [
     {label: 'First name', name: 'first_name', placeholder: 'Enter First name', type: 'text'},
     {label: 'Last name', name: 'last_name', placeholder: 'Enter Last name', type: 'text'},
     {label: 'Email address', name: 'email', placeholder: 'Enter Email address ', type: 'email'},
     {label: 'Phone No.', name: 'phone', placeholder: '+0 000 000 0000', type: 'text'},
-    {label: 'Role', name: 'role', placeholder: 'Select user type', type: 'select'},
+    {label: 'User Type', name: 'role', placeholder: 'Select user type', type: 'select'},
   ];
 
   const modalFormat = {
@@ -65,10 +69,29 @@ const UserList = () => {
   const [modalData, setModalData] = useState(modalFormat);
   // console.log("modal data....", modalData);
 
+  const [isNumberValid, setIsNumberValid] = useState(false);
+  console.log(isNumberValid);
+  const [prevNumber, setPrevNumber] = useState("");
+
+  useEffect(() => {
+    if(prevNumber === modalData?.phone_no) {
+      setIsNumberValid(true);
+    }
+  }, [prevNumber, modalData]);
+
   const updateModalData = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setModalData({
       ...modalData,
       [e.target.name]: e.target.value
+    });
+  };
+  
+  const updateModalName = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+    setModalData({
+      ...modalData,
+      [e.target.name]: filteredValue
     });
   };
   
@@ -149,7 +172,24 @@ const UserList = () => {
   const clickOutsideModal = (event) => {
     if(modalRef.current && !modalRef.current.contains(event.target)){
       setIsModalOpen(false);
+      setPrevNumber("");
     }
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setModalData((prevData) => ({
+      ...prevData,
+      phone: value,
+    }));
+  };
+
+  const removePrefix = (input:string, prefix:string) => {
+    if(input.startsWith(prefix)) {
+      return input.slice(prefix.length);
+    } else if(input.startsWith('0')) {
+      return input.slice(1);
+    }
+    return input;
   };
 
   useEffect(() => {
@@ -174,71 +214,79 @@ const UserList = () => {
   const validateForm = () => {
     // Check for spaces only in any field
     for (const key in modalData) {
-      if (modalData[key].trim() === '') {
+      if (modalData[key]?.trim() === '') {
         return false;
-      } else {
-        return true;
       }
     }
     return true;
   };
 
   const handleAddSubmit = async() => {
-    if(validateForm()) {
-      try {
-        const result = await dispatch(addUsersThunk(modalData)).unwrap();
-        setModalData(modalFormat);
-        setModalType("add");
-        setIsModalOpen(false);
-        setTimeout(() => {
-          toast.success(result?.message);
-        }, 1000);
-      } catch (error) {
-        if(error?.message == "Request failed with status code 401") {
-          try {
-            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-            navigate('/login');
-          } catch (error) {
-            //
+    if(isNumberValid) {
+      if(validateForm()) {
+        try {
+          const result = await dispatch(addUsersThunk(modalData)).unwrap();
+          setModalData(modalFormat);
+          setModalType("add");
+          setIsModalOpen(false);
+          setPrevNumber("");
+          setTimeout(() => {
+            toast.success(result?.message);
+          }, 1000);
+        } catch (error) {
+          if(error?.message == "Request failed with status code 401") {
+            try {
+              const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+              navigate('/login');
+            } catch (error) {
+              //
+            }
+          } else if(error === "Failed to add user.Error: The email address is already in use by another account.") {
+            toast.error("The email address is already in use by another account.")
+          } else {
+            toast.error("Error adding user");
           }
-        } else if(error?.error === "Failed to add user.Error: The email address is already in use by another account.") {
-          toast.error("The email address is already in use by another account.")
-        } else {
-          toast.error("Error adding user");
+        } finally {
+          fetchUsers();
         }
-      } finally {
-        fetchUsers();
+      } else {
+        toast.warning("Spaces cannot be empty");
       }
     } else {
-      toast.warning("Spaces cannot be empty");
+      toast.warning("Please enter a valid number");
     }
   };
 
   const handleEditSubmit = async() => {
-    if(validateForm()) {
-      try {
-        const result = await dispatch(updateUsersThunk(modalData)).unwrap();
-        setModalData(modalFormat);
-        setModalType("add");
-        setIsModalOpen(false);
-        setTimeout(() => {
-          toast.success(result?.message);
-        }, 1000);
-      } catch (error) {
-        toast.error("Error adding user");
-        if(error?.message == "Request failed with status code 401") {
-          try {
-            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-            navigate('/login');
-          } catch (error) {
-            //
+    if(isNumberValid) {
+      if(validateForm()) {
+        try {
+          const result = await dispatch(updateUsersThunk(modalData)).unwrap();
+          setModalData(modalFormat);
+          setModalType("add");
+          setIsModalOpen(false);
+          setPrevNumber("");
+          setTimeout(() => {
+            toast.success(result?.message);
+          }, 1000);
+        } catch (error) {
+          toast.error("Error adding user");
+          if(error?.message == "Request failed with status code 401") {
+            try {
+              const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+              navigate('/login');
+            } catch (error) {
+              //
+            }
           }
+        } finally {
+          fetchUsers();
         }
-      } finally {
-        fetchUsers();
+      } else {
+        toast.warning("Spaces cannot be empty");
       }
     } else {
-      toast.warning("Spaces cannot be empty");
+      toast.warning("Please enter a valid number");
     }
   }
 
@@ -346,6 +394,7 @@ const UserList = () => {
             setIsModalOpen(true);
             setModalData(modalFormat);
             setModalType('add');
+            setPrevNumber("");
           }}
           disabled={!rolePermissionsSlice?.role_management?.user_list?.add ? true : false }
         >
@@ -443,13 +492,13 @@ const UserList = () => {
                       className="flex flex-row m-2 justify-center"
                     >
                       <p
-                        className={`td-initial text-center pt-3 rounded-full`}
+                        className={`td-initial text-center pt-3 rounded-full ${backgroundColors[index % backgroundColors.length]}`}
                         // bg-[${roleColors[item?.role]}]
                       >{user?.first_name?.charAt(0).toUpperCase()}{user?.last_name?.charAt(0).toUpperCase()}</p>
                       <p className="td-css-text pt-2">{user?.first_name} {user?.last_name}</p>
                     </td>
                     <td className="td-css-text m-2">{user?.email}</td>
-                    <td className="td-css-text m-2">{user?.phone}</td>
+                    <td className="td-css-text m-2">+{user?.phone}</td>
                     <td className="td-css-text m-2">{user?.role}</td>
                     <td className="td-css-text m-2">
                       {
@@ -467,6 +516,7 @@ const UserList = () => {
                                 setModalType('edit');
                                 setModalData(user);
                                 setIsModalOpen(true);
+                                setPrevNumber(user?.phone_no);
                               }}
                               disabled={!rolePermissionsSlice?.role_management?.user_list?.edit ? true : false }
                             >
@@ -573,6 +623,7 @@ const UserList = () => {
                     setIsModalOpen(false);
                     setModalType('add');
                     setModalData(modalFormat);
+                    setPrevNumber("");
                   }}
                 >
                   <IoClose />
@@ -619,7 +670,7 @@ const UserList = () => {
                             <label
                               className='search-input-label [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                             >{item.label}</label>
-                            <input
+                            {/* <input
                               type={item.type}
                               placeholder={item.placeholder}
                               name="phone"
@@ -629,6 +680,47 @@ const UserList = () => {
                               className='search-input-text px-4'
                               // onChange={updateModalData}
                               value={modalData?.phone}
+                            /> */}
+                            <PhoneInput
+                              country={"us"}
+                              value={modalData?.phone}
+                              onChange={(inputPhone, countryData, event, formattedValue) => {
+                                handlePhoneChange(inputPhone);
+                                if(countryData?.format?.length === formattedValue.length) {
+                                  const newValue = removePrefix(inputPhone, countryData?.dialCode);
+                                  if (newValue.startsWith('0')) {
+                                    setIsNumberValid(false);
+                                  } else {
+                                    setIsNumberValid(true);
+                                  }
+                                } else {
+                                  setIsNumberValid(false);
+                                }
+                              }}
+                              inputClass="!w-full !outline-none border !border-black/30 !bg-[#E7E8F4] !h-[45px]"
+                              dropdownClass="peer"
+                            // border border-cWhite rounded-[10px] h-[45px] mt-[-9px] pl-2
+                              containerClass="!outline-none !w-full !border !border-[#E4E4E4] !rounded-[10px] !bg-[#E7E8F4] !h-[45px] !-mt-[10px]"
+                            />
+                          </div>
+                        )
+                      } else if(item.name === "first_name" || item.name === "last_name"){
+                        return(
+                          <div
+                            className='flex flex-col px-2 mb-2'
+                            key={index}
+                          >
+                            <label
+                              className='search-input-label [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                            >{item.label}</label>
+                            <input
+                              type={item.type}
+                              placeholder={item.placeholder}
+                              name={item.name}
+                              required
+                              className='search-input-text px-4'
+                              onChange={updateModalName}
+                              value={modalData[item.name]}
                             />
                           </div>
                         )
@@ -670,6 +762,7 @@ const UserList = () => {
                       setIsModalOpen(false);
                       setModalData(modalFormat);
                       setModalType('add');
+                      setPrevNumber("");
                     }}
                     className="btn-red w-[181px] h-[46px]"
                   >

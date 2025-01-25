@@ -16,6 +16,7 @@ declare module "store/ReduxProvider" {
     export const getPromotionsListThunk;
     export const addBannerThunk;
     export const editBannerThunk;
+    export const hereMapSearchThunk;
   }
 
   declare module 'store/authSlice' {

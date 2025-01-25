@@ -127,7 +127,7 @@ export const getCustomerListThunk = createAsyncThunk(
     state_name,
     authentication,
     license_usage,
-    subscritption_date,
+    subscription_date,
     renewal_date,
     domain,
     sortdata
@@ -138,7 +138,7 @@ export const getCustomerListThunk = createAsyncThunk(
       state_name,
       authentication,
       license_usage,
-      subscritption_date,
+      subscription_date,
       renewal_date,
       domain,
       sortdata
@@ -377,6 +377,13 @@ export const updateNoficationTemplateContentThunk = createAsyncThunk(
   "users/updateNoficationTemplateContent",
   async ({record_id, template_content}: any) => {
     return await userApis.updateNoficationTemplateContentApi(record_id, template_content);
+  }
+);
+
+export const deleteNotificationTemplateThunk = createAsyncThunk(
+  "users/deleteNotificationTemplate",
+  async ({record_id}: any) => {
+    return await userApis.deleteNotificationTemplateApi(record_id);
   }
 );
 
@@ -790,5 +797,12 @@ export const yearlySpendingStatisticsThunk = createAsyncThunk(
   "users/yearlySpendingStatistics",
   async () => {
     return await userApis.yearlySpendingStatisticsApi();
+  }
+);
+
+export const hereMapSearchThunk = createAsyncThunk(
+  "users/hereMapSearch",
+  async (address:any) => {
+    return await userApis.hereMapSearchApi(address);
   }
 );

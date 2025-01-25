@@ -5,7 +5,7 @@ import { Plus, X } from 'lucide-react';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getAdminDetailsThunk } from "store/user.thunk";
+import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getAdminDetailsThunk, hereMapSearchThunk } from "store/user.thunk";
 import { setUserDetails } from 'store/authSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,9 +20,10 @@ import "react-phone-input-2/lib/style.css";
 function ProfileSettings() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const countryRef = useRef();
-  const stateRef = useRef();
-  const cityRef = useRef();
+  const countryRef = useRef(null);
+  const stateRef = useRef(null);
+  const cityRef = useRef(null);
+  const streetRef = useRef(null);
   const { userDetails, userId } = useAppSelector((state) => state.auth);
   // console.log("userDetails...", userDetails);
   const modalRef = useRef();
@@ -30,12 +31,13 @@ function ProfileSettings() {
 
   const [modalShow, setModalShow] = useState(false);
   const [profile, setProfile] = useState(userDetails);
+  console.log("profile...", profile);
   const [cPassword, setCPassword] = useState("");
   const [showPassword,setShowPassword] = useState(false);
   const [showCPassword,setShowCPassword] = useState(false);
   const [imageModal, setImageModal] = useState(false);
   const [image, setImage] = useState(null);
-  // console.log("image...", image);
+  console.log("image...", image);
   const [countryName, setCountryName] = useState("");
   const [stateName, setStateName] = useState("");
   const [cityName, setCityName] = useState("");
@@ -51,9 +53,14 @@ function ProfileSettings() {
   // console.log("cities...", cities);
   // console.log({countryName, stateName, cityName});
 
+  const [hereList, setHereList] = useState([]);
+  const [hereSearch, setHereSearch] = useState("");
+  const [hereData, setHereData] = useState<object|null>(null);
+
   const [countryDropdownOpen, setCountryDropdownOpen] = useState<Boolean>(false);
   const [stateDropdownOpen, setStateDropdownOpen] = useState<Boolean>(false);
   const [cityDropdownOpen, setCityDropdownOpen] = useState<Boolean>(false);
+  const [streetDropdownOpen, setStreetDropdownOpen] = useState<Boolean>(false);
   // console.log("isDropdownOpen", isDropdownOpen);
   
   const handleClickOutsideCountry = (event: MouseEvent) => {
@@ -71,15 +78,22 @@ function ProfileSettings() {
       setCityDropdownOpen(false);
     }
   };
+  const handleClickOutsideStreet = (event: MouseEvent) => {
+    if(streetRef.current && !streetRef.current.contains(event.target as Node)) {
+      setStreetDropdownOpen(false);
+    }
+  };
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutsideCountry);
     document.addEventListener('mousedown', handleClickOutsideState);
     document.addEventListener('mousedown', handleClickOutsideCity);
+    document.addEventListener('mousedown', handleClickOutsideStreet);
     return () => {
       document.removeEventListener('mousedown', handleClickOutsideCountry);
       document.removeEventListener('mousedown', handleClickOutsideState);
       document.removeEventListener('mousedown', handleClickOutsideCity);
+      document.removeEventListener('mousedown', handleClickOutsideStreet);
     };
   }, []);
 
@@ -101,9 +115,21 @@ function ProfileSettings() {
     }
   }, [cities, cityName]);
 
+  useEffect(() => {
+    if(hereList?.length > 0 && hereSearch !== "") {
+      setStateDropdownOpen(true);
+    }
+  }, [hereList, hereSearch]);
+
   const getFirstAlphabet = (str: string) => {
     return Array.from(str)[0].toUpperCase();
-  }
+  };
+
+  useEffect(() => {
+    if(userDetails?.phone_no === profile?.phone_no) {
+      setIsNumberValid(true);
+    }
+  }, [userDetails, profile]);
 
   useEffect(() => {
     if(profile) {
@@ -175,6 +201,21 @@ function ProfileSettings() {
     setProfile((prevData) => ({ ...prevData, phone: value }));
   };
 
+  const getHereData = async() => {
+    try {
+      const result = await dispatch(hereMapSearchThunk({address: hereSearch})).unwrap();
+      console.log("result...", result);
+    } catch (error) {
+      setHereList([]);
+    }
+  };
+
+  useEffect(() => {
+    if(hereSearch !== '') {
+      getHereData();
+    }
+  }, [hereSearch]);
+
   const removePrefix = (input:string, prefix:string) => {
     if(input.startsWith(prefix)) {
       return input.slice(prefix.length);
@@ -218,6 +259,15 @@ function ProfileSettings() {
       [e.target.name]: e.target.value,
     });
   };
+  
+  const updateProfileName = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+    setProfile({
+      ...profile,
+      [e.target.name]: filteredValue,
+    });
+  };
 
   const getAdminDetails = async() => {
     try {
@@ -240,12 +290,12 @@ function ProfileSettings() {
     e.preventDefault();
     if(isNumberValid) {
       if(
-        profile?.first_name === "" || profile?.first_name.trim() === "" ||
-        profile?.last_name === "" || profile?.last_name.trim() === "" ||
-        profile?.email === "" || profile?.email.trim() === "" ||
-        profile?.phone === "" || profile?.phone.trim() === "" ||
-        profile?.street_name === "" || profile?.street_name.trim() === "" ||
-        profile?.country === "" || profile?.country.trim() === ""
+        profile?.first_name === "" || profile?.first_name?.trim() === "" ||
+        profile?.last_name === "" || profile?.last_name?.trim() === "" ||
+        profile?.email === "" || profile?.email?.trim() === "" ||
+        profile?.phone === "" || profile?.phone?.trim() === "" ||
+        profile?.street_name === "" || profile?.street_name?.trim() === "" ||
+        profile?.country === "" || profile?.country?.trim() === ""
       ) {
         toast.warning("Please fill the fields.");
       } else if(states.length > 0 && profile?.state_name === "" && profile?.state_name.trim() === "") {
@@ -538,7 +588,7 @@ function ProfileSettings() {
                 <img
                   src={profile?.profile_pic}
                   alt='Profile'
-                  className={`border-[3px] ${profile?.profile_pic ? "border-custom-green" : "border-white"} w-full h-full min-h-[93px] rounded-full bg-custom-green object-cover`}
+                  className={`border-[3px] ${profile?.profile_pic ? "border-custom-green" : "border-white"} w-full h-full rounded-full bg-custom-green object-contain`}
                 />
               ) : (
                 <h6 className='border-[3px] border-white w-full h-full min-h-[93px] rounded-full bg-custom-green text-center items-center text-white text-5xl pt-4'>
@@ -548,7 +598,10 @@ function ProfileSettings() {
             }
             <label
               className="float-right ml-auto mt-[-20px] w-[29px] h-[29px] border border-custom-gray-2 rounded-full items-center bg-white cursor-pointer"
-              onClick={() => {setImageModal(true)}}
+              onClick={() => {
+                setImageModal(true);
+                setImage(profile?.profile_pic);
+              }}
             >
               <RiCameraFill
                 className='mx-auto my-auto mt-[5px] w-[20px] text-custom-green'
@@ -686,10 +739,10 @@ function ProfileSettings() {
                             />
                           </div>
                         )
-                      } else if(item.name == 'phone'){
+                      } else if(item.name === 'phone'){
                         return(
                           <div
-                            key={index}
+                setIsNumberValid            key={index}
                             className='flex flex-col col-span-2 mb-2'
                           >
                             <label
@@ -724,7 +777,7 @@ function ProfileSettings() {
                             />
                           </div>
                         )
-                      } else if(item.name == 'country'){
+                      } else if(item.name === 'country'){
                         return(
                           <div
                             key={index}
@@ -787,7 +840,7 @@ function ProfileSettings() {
                             }
                           </div>
                         )
-                      } else if(item.name == 'state_name'){
+                      } else if(item.name === 'state_name'){
                         return(
                           <div
                             key={index}
@@ -845,7 +898,7 @@ function ProfileSettings() {
                             }
                           </div>
                         )
-                      } else if(item.name == 'city'){
+                      } else if(item.name === 'city'){
                         return(
                           <div
                             key={index}
@@ -897,7 +950,7 @@ function ProfileSettings() {
                             }
                           </div>
                         )
-                      } else{
+                      } else if(item.name === "first_name" || item.name === "last_name"){
                         return(
                           <div
                             key={index}
@@ -908,7 +961,79 @@ function ProfileSettings() {
                               type={item.type}
                               name={item.name}
                               placeholder={item.placeholder}
-                              defaultValue={profile[item.name] || ""}
+                              value={profile[item.name] || ""}
+                              className='search-input-text'
+                              onChange={updateProfileName}
+                              required
+                            />
+                          </div>
+                        )
+                      }
+                      // else if(item.name === 'street_name'){
+                      //   return(
+                      //     <div
+                      //       key={index}
+                      //       className='flex flex-col sm:col-span-1 col-span-2 my-1 relative'
+                      //       ref={streetRef}
+                      //     >
+                      //       <label
+                      //         className='search-input-label'
+                      //       >{item.label}</label>
+                      //       <input
+                      //         type='text'
+                      //         className='search-input-text focus:outline-none w-full h-full p-0'
+                      //         placeholder={item?.placeholder}
+                      //         name='city'
+                      //         onChange={e => {
+                      //           setProfile({
+                      //             ...profile,
+                      //             street_name: ''
+                      //           });
+                      //           setHereSearch(e.target.value);
+                      //           setHereData(null);
+                      //         }}
+                      //         value={profile?.street_name || hereSearch}
+                      //         required
+                      //         onFocus={() => {setStreetDropdownOpen(true)}}
+                      //       />
+                      //       {
+                      //         // streetDropdownOpen && (
+                      //         //   <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2'>
+                      //         //     {
+                      //         //       hereList?.filter(name => name?.name.toLowerCase().includes(cityName.toLowerCase())).map((city_name, idx) => (
+                      //         //         <p
+                      //         //           key={idx}
+                      //         //           className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                      //         //           onClick={() => {
+                      //         //             setProfile({
+                      //         //               ...profile,
+                      //         //               street_name: city_name?.name
+                      //         //             });
+                      //         //             setHereSearch("");
+                      //         //             setHereData(city_name);
+                      //         //             setStreetDropdownOpen(false);
+                      //         //           }}
+                      //         //         >{city_name?.name}</p>
+                      //         //       ))
+                      //         //     }
+                      //         //   </div>
+                      //         // )
+                      //       }
+                      //     </div>
+                      //   )
+                      // }
+                      else{
+                        return(
+                          <div
+                            key={index}
+                            className='flex flex-col sm:col-span-1 col-span-2 my-1'
+                          >
+                            <label className='search-input-label'>{item.label}</label>
+                            <input
+                              type={item.type}
+                              name={item.name}
+                              placeholder={item.placeholder}
+                              value={profile[item.name] || ""}
                               className='search-input-text'
                               onChange={updateProfile}
                               required
@@ -1002,7 +1127,7 @@ function ProfileSettings() {
                 <DialogTitle
                   as="h3"
                   className="text-lg font-semibold text-gray-900"
-                >Edit about us</DialogTitle>
+                >Change Profile Photo</DialogTitle>
                 <div className='btn-close-bg'>
                   <button
                     type='button'

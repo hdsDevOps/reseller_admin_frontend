@@ -68,6 +68,7 @@ const FooterSection = () => {
 
   const [footerData, setFooterData] = useState([]);
   console.log(footerData);
+  const [editFooterData, setEditFooterData] = useState([]);
 
   const fetchFooterData = async() => {
     try {
@@ -91,10 +92,10 @@ const FooterSection = () => {
   }, []);
 
   const handleFooterArrayChange = (e, fieldName, index, field) => {
-    const data = footerData[fieldName];
+    const data = editFooterData[fieldName];
     // console.log(data[index]);
     data[index][field] = e.target.value;
-    setFooterData({
+    setEditFooterData({
       ...footerData,
       [fieldName]: data
     });
@@ -111,7 +112,7 @@ const FooterSection = () => {
   };
 
   const handleEditorChange = (content) => {
-    setFooterData((prev) => ({
+    setEditFooterData((prev) => ({
       ...prev,
       contact_us_section_data: {
         ...prev.contact_us_section_data,
@@ -122,10 +123,10 @@ const FooterSection = () => {
   }
 
   const addNewJson = (fieldName) => {
-    const newArray = footerData[fieldName];
+    const newArray = editFooterData[fieldName];
     newArray.push(initialJson);
-    setFooterData({
-      ...footerData,
+    setEditFooterData({
+      ...editFooterData,
       [fieldName]: newArray
     })
     console.log(newArray)
@@ -133,11 +134,11 @@ const FooterSection = () => {
 
   const removeJson = (index, fieldName) => {
     // setItems((prevItems) => prevItems.filter((_, i) => i !== index));
-    const array = footerData[fieldName];
+    const array = editFooterData[fieldName];
     const newArray = array?.filter((_, i) => i !== index);
     // console.log(newArray);
-    setFooterData({
-      ...footerData,
+    setEditFooterData({
+      ...editFooterData,
       [fieldName]: newArray
     })
   };
@@ -158,25 +159,26 @@ const FooterSection = () => {
   // };
 
   const validateForm = () => {
-    if (footerData?.marketing_section_data?.some(element => 
+    if (editFooterData?.marketing_section_data?.some(element => 
       !element?.name?.trim() || !element?.value?.trim()
     )) {
       return false;
     }
-    if (footerData?.website_section_data?.some(element => 
+    if (editFooterData?.website_section_data?.some(element => 
       !element?.name?.trim() || !element?.value?.trim()
     )) {
       return false;
     }
-    if (!footerData?.contact_us_section_data?.name?.trim() || 
+    if (!editFooterData?.contact_us_section_data?.name?.trim() || 
       !footerData?.contact_us_section_data?.value?.trim()) {
       return false;
     }
-    if (!footerData?.newsletter_section_data?.name?.trim() || 
-      !footerData?.newsletter_section_data?.value?.trim()) {
+    if (!editFooterData?.newsletter_section_data?.some(element => 
+      !element?.name?.trim() || !element?.value?.trim()
+    )) {
       return false;
     }
-    if (footerData?.social_section_data?.some(element => 
+    if (editFooterData?.social_section_data?.some(element => 
       !element?.name?.trim() || !element?.value?.trim()
     )) {
       return false;
@@ -189,11 +191,11 @@ const FooterSection = () => {
     if(validateForm()) {
       try {
         const updateFooter = await dispatch(updateFooterThunk({
-          marketing_section_data : footerData?.marketing_section_data,
-          website_section_data: footerData?.website_section_data,
-          contact_us_section_data: footerData?.contact_us_section_data,
-          newsletter_section_data: footerData?.newsletter_section_data,
-          social_section_data: footerData?.social_section_data,
+          marketing_section_data : editFooterData?.marketing_section_data,
+          website_section_data: editFooterData?.website_section_data,
+          contact_us_section_data: editFooterData?.contact_us_section_data,
+          newsletter_section_data: editFooterData?.newsletter_section_data,
+          social_section_data: editFooterData?.social_section_data,
         })).unwrap();
         setTimeout(() => {
           toast.success(updateFooter?.message);
@@ -221,7 +223,10 @@ const FooterSection = () => {
     <div className="sm:p-4 p-0 bg-white">
       <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
-        <button className="btn-cms" onClick={() => {setShowModal(true)}}>
+        <button className="btn-cms" onClick={() => {
+          setShowModal(true);
+          setEditFooterData(footerData);
+        }}>
           EDIT
         </button>
       </div>
@@ -254,24 +259,24 @@ const FooterSection = () => {
                                 }`}
                               >
                                 {
-                                  footer?.name === "newsletter_section_data" ?
-                                  (
-                                    <tr
-                                      className="py-0"
-                                    >
-                                      <td
-                                        className="banner-table-td-1 w-[150px] py-2 sm:pl-7 pl-1"
-                                      >{footerData?.newsletter_section_data?.name}</td>
-                                      <td
-                                        className="px-3 text-center banner-table-td-1 py-2"
-                                      >:</td>
-                                      <td
-                                        className={`banner-table-td-2 py-2 pr-7 text-black`}
-                                      >
-                                        {footerData?.newsletter_section_data?.value}
-                                      </td>
-                                    </tr>
-                                  ) :
+                                  // footer?.name === "newsletter_section_data" ?
+                                  // (
+                                  //   <tr
+                                  //     className="py-0"
+                                  //   >
+                                  //     <td
+                                  //       className="banner-table-td-1 w-[150px] py-2 sm:pl-7 pl-1"
+                                  //     >{footerData?.newsletter_section_data?.name}</td>
+                                  //     <td
+                                  //       className="px-3 text-center banner-table-td-1 py-2"
+                                  //     >:</td>
+                                  //     <td
+                                  //       className={`banner-table-td-2 py-2 pr-7 text-black`}
+                                  //     >
+                                  //       {footerData?.newsletter_section_data?.value}
+                                  //     </td>
+                                  //   </tr>
+                                  // ) :
                                   footer?.name === "contact_us_section_data" ?
                                   (
                                     <tr
@@ -356,7 +361,10 @@ const FooterSection = () => {
         open={showModal}
         as="div"
         className="relative z-10 focus:outline-none"
-        onClose={() => {setShowModal(false)}}
+        onClose={() => {
+          setShowModal(false);
+          setEditFooterData([]);
+        }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
@@ -373,7 +381,10 @@ const FooterSection = () => {
                     <button
                       type='button'
                       className='text-3xl rotate-45 mt-[-8px] text-white'
-                      onClick={() => {setShowModal(false)}}
+                      onClick={() => {
+                        setShowModal(false);
+                        setEditFooterData([]);
+                      }}
                     >+</button>
                   </div>
                 </div>
@@ -395,7 +406,7 @@ const FooterSection = () => {
                             className="search-input-text-2 p-3"
                           >
                             {
-                              index < 2 && footerData[footer.name]?.map((item, idx) => {
+                              index < 2 && editFooterData[footer.name]?.map((item, idx) => {
                                 if(idx == 0){
                                   return (
                                     <div
@@ -541,7 +552,7 @@ const FooterSection = () => {
                                     className="search-input-text w-full font-inter font-normal text-custom-black-4 text-base min-h-full py-4 pr-2"
                                   >
                                     <ReactQuill
-                                      value={footerData?.contact_us_section_data?.value}
+                                      value={editFooterData?.contact_us_section_data?.value}
                                       onChange={handleEditorChange}
                                       theme="snow"
                                       style={{height: 135}}
@@ -553,23 +564,138 @@ const FooterSection = () => {
                             }
 
                             {
-                              index === 3 && (
-                                <div
-                                  className="flex flex-col"
-                                >
-                                  <label
-                                    className="search-input-label"
-                                  >Content Description</label>
-                                  <input
-                                    type="text"
-                                    className="search-input-text"
-                                    placeholder="Enter the news letter"
-                                    value={footerData?.newsletter_section_data?.value}
-                                    onChange={e => {handleFooterChange(e, "newsletter_section_data")}}
-                                    required
-                                  />
-                                </div>
-                              )
+                              index === 3 && editFooterData?.newsletter_section_data?.map((item, idx) => {
+                                if(idx == 0){
+                                  return (
+                                    <div
+                                      className={`flex flex-row ${
+                                        index === 3 ? 'gap-4 justify-between' : ''
+                                      }`}
+                                    >
+                                      <div
+                                        className={`grid sm:grid-cols-3 grid-cols-1 gap-4 w-full`}
+                                      >
+                                        <div
+                                          className="sm:col-span-1 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Name</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the name"
+                                            value={item?.name}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "name")}}
+                                            required
+                                          />
+                                        </div>
+                                        <div
+                                          className="sm:col-span-2 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Link</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the link"
+                                            value={item?.value}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "value")}}
+                                            required
+                                          />
+                                        </div>
+                                      </div>
+                                      <button
+                                        className={`flex flex-col items-center justify-center w-9 h-[46px] border border-custom-white rounded-[5px] sm:mt-3 my-auto`}
+                                        type="button"
+                                        onClick={() => {addNewJson(footer?.name)}}
+                                      >
+                                        <svg
+                                          aria-hidden="true"
+                                          className="w-4 h-4 text-custom-gray-6"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M12 4v16m8-8H4"
+                                          ></path>
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  )
+                                }
+                                else {
+                                  return (
+                                    <div
+                                      className={`flex flex-row ${
+                                        index === 3 ? 'gap-4 justify-between' : ''
+                                      }`}
+                                    >
+                                      <div
+                                        className={`grid sm:grid-cols-3 grid-cols-1 gap-4 w-full`}
+                                      >
+                                        <div
+                                          className="sm:col-span-1 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Name</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the name"
+                                            value={item?.name}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "name")}}
+                                            required
+                                          />
+                                        </div>
+                                        <div
+                                          className="sm:col-span-2 flex flex-col"
+                                        >
+                                          <label
+                                            className="search-input-label"
+                                          >Link</label>
+                                          <input
+                                            type="text"
+                                            className="search-input-text"
+                                            placeholder="Enter the link"
+                                            value={item?.value}
+                                            onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "value")}}
+                                            required
+                                          />
+                                        </div>
+                                      </div>
+                                      <button
+                                        className={`flex flex-col items-center justify-center w-9 h-[46px] border border-custom-white rounded-[5px] sm:mt-3 my-auto`}
+                                        type="button"
+                                        onClick={() => {removeJson(idx, footer?.name)}}
+                                      >
+                                        <svg
+                                          aria-hidden="true"
+                                          className="w-4 h-4 text-custom-gray-6"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M5 12h14"
+                                          ></path>
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  )
+                                }
+                              })
                             }
 
                             {
@@ -578,7 +704,7 @@ const FooterSection = () => {
                                   className={`grid sm:grid-cols-3 grid-cols-1 gap-4 w-full`}
                                 >
                                   {
-                                    footerData?.social_section_data?.map((social, ind) => {
+                                    editFooterData?.social_section_data?.map((social, ind) => {
                                       return(
                                         <div
                                           key={ind}
@@ -618,6 +744,7 @@ const FooterSection = () => {
                       type="button"
                       onClick={() => {
                         setShowModal(false);
+                        setEditFooterData([]);
                       }}
                       className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
                     >

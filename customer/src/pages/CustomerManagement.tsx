@@ -27,10 +27,15 @@ interface Filter {
   state_name: string,
   authentication: string | Boolean,
   license_usage: string | Number,
-  subscritption_date: string | Date,
-  renewal_date: string | Date,
+  subscription_date: object,
+  renewal_date: object,
   domain: string,
   sortdata: SortData
+}
+
+interface DateRange {
+  start_date: string,
+  end_date: string
 }
 
 const CustomerManagement: React.FC = () => {
@@ -38,14 +43,18 @@ const CustomerManagement: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const filterRef = useRef();
-  const intialFilter:Filter= {
+  const initialDateRange:DateRange = {
+    start_date: "",
+    end_date: ""
+  }
+  const intialFilter:Filter = {
     search_data: "",
     country: "",
     state_name: "",
     authentication: "",
     license_usage: "",
-    subscritption_date: "",
-    renewal_date: "",
+    subscription_date: initialDateRange,
+    renewal_date: initialDateRange,
     domain: "",
     sortdata: {
       sort_text: "",
@@ -58,8 +67,8 @@ const CustomerManagement: React.FC = () => {
     state_name: "",
     authentication: "",
     license_usage: "",
-    subscritption_date: "",
-    renewal_date: "",
+    subscription_date: initialDateRange,
+    renewal_date: initialDateRange,
     domain: ""
   };
   const {customerFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
@@ -73,8 +82,8 @@ const CustomerManagement: React.FC = () => {
     state_name: customerFilters?.state_name || "",
     authentication: customerFilters?.authentication || "",
     license_usage: customerFilters?.license_usage || "",
-    subscritption_date: customerFilters?.subscritption_date || "",
-    renewal_date: customerFilters?.renewal_date || "",
+    subscription_date: customerFilters?.subscription_date || initialDateRange,
+    renewal_date: customerFilters?.renewal_date || initialDateRange,
     domain: customerFilters?.domain || ""
   });
   console.log("filters2...", filters2);

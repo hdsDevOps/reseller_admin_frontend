@@ -38,7 +38,14 @@ const VoucherList: React.FC = () => {
   const [voucher, setVoucher] = useState({});
   // console.log(voucher);
   const [customerId, setCustomerId] = useState<string>("");
-  // console.log("customerId...", customerId);
+  const [customerGroupId, setCustomerGroupId] = useState<string>("");
+  console.log("customerId...", customerId);
+
+  const dropwdownSearchRef = useRef(null);
+  const dropwdownSearchRef2 = useRef(null);
+
+  const [customerGroupNameFound, setCustomerGroupNameFound] = useState("");
+  const [customerEmailFound, setCustomerEmailFound] = useState("");
   
   const [customerGroupList, setCustomerGroupList] = useState([]);
   // console.log("customerGroupList...", customerGroupList);
@@ -51,8 +58,20 @@ const VoucherList: React.FC = () => {
     state_name: "",
     authentication: "",
     license_usage: "",
-    subscritption_date: "",
-    renewal_date: ""
+    subscription_date: {
+      start_date: "",
+      end_date: ""
+    },
+    renewal_date: {
+      start_date: "",
+      end_date: ""
+    },
+    domain: "",
+    sortdata: {
+      sort_text: "",
+      //next_payment,createdAt,license_usage,name
+      order: "asc"
+    }
   });
   // console.log(customerSearch);
 
@@ -76,14 +95,9 @@ const VoucherList: React.FC = () => {
 
   const [dropwdownSearch, setDropdownSearch] = useState(false);
   useEffect(() => {
-    if(customerSearch?.search_data != ""){
-      if(customerList.length > 0){
-        if(customerId == ""){
-          setDropdownSearch(true);
-        }
-        else{
-          setDropdownSearch(false);
-        }
+    if(customerSearch?.search_data !== ""){
+      if(customerList?.length > 0){
+        setDropdownSearch(true);
       }
       else{
         setDropdownSearch(false);
@@ -91,20 +105,14 @@ const VoucherList: React.FC = () => {
     }
     else{
       setDropdownSearch(false);
-      setCustomerList([]);
     }
   }, [customerSearch, customerId]);
 
   const [dropwdownSearch2, setDropdownSearch2] = useState(false);
   useEffect(() => {
-    if(customerGroupName != ""){
-      if(customerGroupList.length >= 2){
-        if(customerId == ""){
-          setDropdownSearch2(true);
-        }
-        else{
-          setDropdownSearch2(false);
-        }
+    if(customerGroupName !== ""){
+      if(customerGroupList?.length > 0){
+        setDropdownSearch2(true);
       }
       else{
         setDropdownSearch2(false);
@@ -112,17 +120,14 @@ const VoucherList: React.FC = () => {
     }
     else{
       setDropdownSearch2(false);
-      setCustomerGroupList([]);
     }
   }, [customerGroupName, customerId]);
 
   const getCustomerList = async() => {
     try {
-      const result = await dispatch(
-        getCustomerListThunk(customerSearch)
-      ).unwrap()
-      if(result.data){
-        setCustomerList(result.data);
+      const result = await dispatch(getCustomerListThunk(customerSearch)).unwrap()
+      if(result?.data){
+        setCustomerList(result?.data);
       }
       else{
         setCustomerList([]);
@@ -141,24 +146,13 @@ const VoucherList: React.FC = () => {
   };
 
   useEffect(() => {
-    if(customerSearch?.search_data != ""){
-      getCustomerList();
-    }
-    else{
-      setCustomerList([]);
-    }
+    getCustomerList();
   }, [customerSearch]);
 
   const [selectedRadio, setSelectedRadio] = useState('group');
 
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedRadio(e.target.value);
-    setCustomerId("");
-    setCustomerGroupName("");
-    setCustomerSearch({
-      ...customerSearch,
-      search_data: "",
-    });
   };
 
   const tableHeads = [
@@ -225,7 +219,7 @@ const VoucherList: React.FC = () => {
   const getCustomerGroupListData = async() => {
     try {
       const result = await dispatch(
-        getCustomerGroupListThunk({group_name: customerGroupName, create_date: ""})
+        getCustomerGroupListThunk({group_name: "", create_date: ""})
       ).unwrap();
       setCustomerGroupList(result.data);
     } catch (error) {
@@ -235,12 +229,8 @@ const VoucherList: React.FC = () => {
   };
 
   useEffect(() => {
-    if(customerGroupName !== "" && customerGroupName.length >= 2){
-      getCustomerGroupListData();
-    } else {
-      setCustomerGroupList([]);
-    }
-  }, [customerGroupName]);
+    getCustomerGroupListData();
+  }, []);
 
   // Calculate displayed data based on current page
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
@@ -344,10 +334,9 @@ const VoucherList: React.FC = () => {
       customer_type: customerType
     });
     
-    if(customerId == ""){
+    if(customerId === ""){
       toast.warning("Please select customer group or individual customer");
-    }
-    else{
+    } else{
       try {
         const result = await dispatch(
           sendVoucherEmailThunk({
@@ -741,19 +730,22 @@ const VoucherList: React.FC = () => {
               <div className="w-full my-5">
                 {
                   selectedRadio === "group" ? 
-                  <div className="w-full py-4 relative">
+                  <div className="w-full py-4 relative" ref={dropwdownSearchRef2}>
                     <input type="text" className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-80 font-inter font-extralight text-base text-black" onChange={e => {
                       setCustomerGroupName(e.target.value);
-                      setCustomerId("");
-                    }} placeholder="Search group" value={customerGroupName} />
+                      setCustomerGroupId("");
+                      setCustomerGroupNameFound("");
+                    }} placeholder="Search group" value={customerGroupName || customerGroupNameFound} onFocus={() => {setDropdownSearch2(true)}} />
                     {
                       dropwdownSearch2 && (
                         <div className="absolute bg-[#F4F4F4] w-full max-h-40 overflow-y-auto p-1 grid grid-cols-1">
                           {
-                            customerGroupList?.map((group, index) => (
+                            customerGroupList?.filter(item => item?.group_name?.toLowerCase()?.includes(customerGroupName?.toLowerCase()))?.map((group, index) => (
                               <div key={index} className="py-1 px-4 font-inter font-extralight text-base text-black border-b border-[#C9C9C9] last:border-0 cursor-pointer w-full" onClick={() => {
-                                setCustomerId(group?.record_id);
-                                setCustomerGroupName(group?.group_name)
+                                setCustomerGroupId(group?.record_id);
+                                setCustomerGroupName("");
+                                setCustomerGroupNameFound(group?.group_name);
+                                setDropdownSearch2(false);
                               }}>{group?.group_name}</div>
                             ))
                           }
@@ -761,7 +753,7 @@ const VoucherList: React.FC = () => {
                       )
                     }
                   </div> :
-                  <div className="w-full py-4">
+                  <div className="w-full py-4" ref={dropwdownSearchRef}>
                     <input className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-80 font-inter font-extralight text-base text-black" placeholder="Enter customer email id"
                       onChange={e => {
                         setCustomerSearch({
@@ -769,8 +761,10 @@ const VoucherList: React.FC = () => {
                           search_data: e.target.value
                         });
                         setCustomerId("");
+                        setCustomerEmailFound("");
                       }}
-                      value={customerSearch?.search_data}
+                      value={customerSearch?.search_data || customerEmailFound}
+                      onFocus={() => {setDropdownSearch(true)}}
                     />
 
                     {
@@ -784,9 +778,11 @@ const VoucherList: React.FC = () => {
                                   className="w-full px-4 py-2 font-inter font-extralight font-base text-black cursor-pointer" onClick={() => {
                                     setCustomerSearch({
                                       ...customerSearch,
-                                      search_data: customer?.email
+                                      search_data: ""
                                     });
-                                    setCustomerId(customer?.record_id);
+                                    setCustomerId(customer?.id);
+                                    setDropdownSearch(false);
+                                    setCustomerEmailFound(customer?.email);
                                   }}
                                 >{customer?.email}</a>
                               )
@@ -803,7 +799,7 @@ const VoucherList: React.FC = () => {
                 <button
                   className="btn-green-2 font-inter w-[95px]"
                   type="button"
-                  onClick={() => {sendVoucherEmail(voucher?.id, customerId, selectedRadio === "group" ? 2 : 1)}}
+                  onClick={() => {sendVoucherEmail(voucher?.id, selectedRadio === "group" ? customerGroupId : customerId, selectedRadio === "group" ? 2 : 1)}}
                 >Send</button>
               </div>
             </div>

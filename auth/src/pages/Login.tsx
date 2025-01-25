@@ -205,7 +205,7 @@ const Login: React.FC = () => {
             <div className="fixed-full-screen">
               <div className="fixed-popup max-w-xl w-full p-2">
                 <div className="flex justify-between items-center pb-3">
-                  <h1 className="h1-text">Terms of Services</h1>
+                  <h1 className="h1-text">Terms and Conditions</h1>
                   <button onClick={handleClose} className="text-black">
                     <img
                       src={'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/close.png?alt=media&token=3fac7102-9ead-4bfa-a6f0-2c84d72260c6'}

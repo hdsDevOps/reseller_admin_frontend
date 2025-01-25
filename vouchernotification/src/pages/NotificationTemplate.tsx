@@ -4,7 +4,7 @@ import { BsEnvelopePlusFill } from "react-icons/bs";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
-import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk, getCustomerListThunk, removeUserAuthTokenFromLSThunk, sendTestEmailNotificationThunk } from 'store/user.thunk';
+import { addNotificationTemplateThunk, getNotificationTemplateThunk, updateNoficationTemplateContentThunk, getCustomerListThunk, removeUserAuthTokenFromLSThunk, sendTestEmailNotificationThunk, deleteNotificationTemplateThunk } from 'store/user.thunk';
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,13 +16,16 @@ const NotificationTemplate = () => {
   const { rolePermissionsSlice } = useAppSelector(state => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
   // console.log("selectedItem", selectedItem);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showNotification, setShowNotification] = useState(true);
   const [isToggled, setIsToggled] = useState(false);
-  const modalRef = useRef();
-  const previewRef = useRef();
+  const [selectedOption, setSelectedOption] = useState<Number|string>("");
+  const modalRef = useRef(null);
+  const previewRef = useRef(null);
+  const deleteRef = useRef(null);
   const filterRef = useRef(null);
   const [templateHeading, setTemplateHeading] = useState({template_heading: ""});
   // console.log(templateHeading);
@@ -130,7 +133,8 @@ const NotificationTemplate = () => {
 
   useEffect(() => {
     if(selectedItem?.id == null || selectedItem?.id == undefined){
-      setSelectedItem("")
+      setSelectedItem("");
+      setSelectedOption("");
     }
     else{
       setSelectedItem({
@@ -215,10 +219,18 @@ const NotificationTemplate = () => {
     }
   };
 
+  const clickOutsideDelete = (event) => {
+    if(deleteRef.current && !deleteRef.current.contains(event.target)){
+      setIsPreviewOpen(false);
+    }
+  };
+
   useEffect(() => {
     document.addEventListener('mousedown', clickOutsidePreview);
+    document.addEventListener('mousedown', clickOutsideDelete);
     return () => {
       document.removeEventListener('mousedown', clickOutsidePreview);
+      document.removeEventListener('mousedown', clickOutsideDelete);
     };
   }, []);
 
@@ -283,6 +295,25 @@ const NotificationTemplate = () => {
     }
   };
 
+  const deleteNotificationTemplate = async() => {
+    try {
+      const result = await dispatch(
+        deleteNotificationTemplateThunk({
+          record_id: selectedItem?.id
+        })
+      ).unwrap();
+      setSelectedItem("");
+      setSelectedOption("");
+      setIsDeleteOpen(false);
+      getNotificationTemplate();
+      setTimeout(() => {
+        toast.success(result?.message)
+      }, 1000);
+    } catch (error) {
+      toast.error("Tamplate content could not be deleted.")
+    }
+  }
+
   const sendNotificationEmail = async(e) => {
     e.preventDefault();
     if(selectedCustomers.length < 1) {
@@ -339,8 +370,10 @@ const NotificationTemplate = () => {
             onChange={e => {
               setTemplateContent(notificationTemplates[e.target.value]?.template_content);
               setSelectedItem(notificationTemplates[e.target.value]);
+              setSelectedOption(e.target.value);
             }}
             name="select-notification"
+            value={selectedOption}
           >
             <option selected value=''>Select a notification section </option>
             {
@@ -421,7 +454,7 @@ const NotificationTemplate = () => {
                     className="border border-custom-white h-[41px] sm:min-w-[400px] max-sm:w-full max-w-[400px] p-2"
                     name="search_data"
                     onChange={handleFilterChange}
-                    placeholder="Search email"
+                    placeholder="Enter email"
                     value={filters?.search_data}
                     ref={filterRef}
                   />
@@ -479,13 +512,16 @@ const NotificationTemplate = () => {
                 >Update</button>
                 <button
                   className='btn-orange max-w-fit'
-                  onClick={() => {setSelectedItem("")}}
+                  onClick={() => {
+                    setSelectedItem("");
+                    setSelectedOption("");
+                  }}
                   button-name="notificaiton-template-update-cancel"
                   disabled={!rolePermissionsSlice?.notification_template?.cancel ? true : false}
                 >Cancel</button>
                 <button
                   className='btn-red-2 max-w-fit'
-                  // onClick={() => {setSelectedItem("")}}
+                  onClick={() => {setIsDeleteOpen(true)}}
                   button-name="notificaiton-template-update-delete"
                   disabled={!rolePermissionsSlice?.notification_template?.cancel ? true : false}
                 >Delete</button>
@@ -550,6 +586,53 @@ const NotificationTemplate = () => {
                     onClick={() => {addNotificationTemplate()}}
                     button-name="add-voucher-submit-btn"
                   >Save</button>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          isDeleteOpen && (
+            <div className='fixed-full-screen'>
+              <div className='fixed-popup w-[488px] p-[30px]' ref={deleteRef}>
+                <div className='flex flex-col'>
+                  <div
+                    className='flex-row-between'
+                  >
+                    <h4
+                      className='text-2xl font-medium'
+                    >Delete Notification Template</h4>
+                    <div className='btn-close-bg'>
+                      <button
+                        type='button'
+                        className='text-3xl rotate-45 mt-[-8px] text-white'
+                        onClick={() => {
+                          setIsDeleteOpen(false);
+                        }}
+                      >+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className='flex flex-col px-2 mt-10 font-inter font-normal text-base text-black'>Are you sure you want to delete this notification template?</div>
+
+                <div
+                  className='mt-10 flex flex-row justify-center mb-3'
+                >
+                  <button
+                    className='btn-red h-[46px]'
+                    type="button"
+                    onClick={() => {deleteNotificationTemplate()}}
+                    button-name="add-voucher-submit-btn"
+                  >Delete</button>
+                  <button
+                    type='button'
+                    className='btn-green-2 h-[46px] ml-[30px]'
+                    onClick={() => {
+                      setIsDeleteOpen(false);
+                    }}
+                  >Cancel</button>
                 </div>
               </div>
             </div>
