@@ -433,7 +433,7 @@ const UserList = () => {
                 type="text"
                 placeholder="Name,Email,Phone"
                 className="serach-input-no-radius min-[985px]:w-[315px] max-[985px]:w-full min-w-[200px]"
-                onChange={e => {setSearchData(e.target.value)}}
+                onChange={e => {setSearchData(e.target.value.replace(/\+/g, ""))}}
                 value={searchData}
               />
               <div

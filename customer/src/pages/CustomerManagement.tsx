@@ -8,7 +8,67 @@ import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCu
 import { setCustomerFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { format } from "date-fns";
+import { addDays, addMonths, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays } from "date-fns";
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite.min.css";
+
+interface RangeType<T> {
+  label: string;
+  value: [T, T] | ((value: T[]) => [T, T]);
+  placement?: string;
+  closeOverlay?: boolean;
+  appearance?: string;
+}
+
+const predefinedRanges: RangeType<Date>[] = [
+  { label: "Today", value: [new Date(), new Date()], placement: "left" },
+  {
+    label: "Yesterday",
+    value: [addDays(new Date(), -1), addDays(new Date(), -1)],
+    placement: "left",
+  },
+  {
+    label: "This week",
+    value: [startOfWeek(new Date()), endOfWeek(new Date())],
+    placement: "left",
+  },
+  {
+    label: "Last week",
+    value: [subDays(new Date(), 6), new Date()],
+    placement: "left",
+  },
+  {
+    label: "This month",
+    value: [startOfMonth(new Date()), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last month",
+    value: [
+      startOfMonth(addMonths(new Date(), -1)),
+      endOfMonth(addMonths(new Date(), -1)),
+    ],
+    placement: "left",
+  },
+  {
+    label: "This year",
+    value: [new Date(new Date().getFullYear(), 0, 1), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last year",
+    value: [
+      new Date(new Date().getFullYear() - 1, 0, 1),
+      new Date(new Date().getFullYear(), 0, 0),
+    ],
+    placement: "left",
+  },
+  {
+    label: "All time",
+    value: [new Date(new Date().getFullYear() - 1, 0, 1), new Date()],
+    placement: "left",
+  },
+];
 
 const options: Intl.DateTimeFormatOptions = {
   day: "numeric",
@@ -149,6 +209,57 @@ const CustomerManagement: React.FC = () => {
 
   const [emailsCount, setEmailsCount] = useState([]);
   console.log("emailsCount...", emailsCount);
+
+  const [subscriptionRange, setSubscriptionRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [renewalRange, setRenewalRange] = useState<[Date | null, Date | null]>([null, null]);
+  console.log({subscriptionRange, renewalRange});
+
+  const renderValue = (date: [Date, Date]) => {
+    if (!date[0] || !date[1]) return "Select Date Range";
+    return `${format(date[0], 'MMM d')} - ${format(date[1], 'MMM d, yyyy')}`;
+  };
+
+  useEffect(() => {
+    if(subscriptionRange === null) {
+      setFilters({
+        ...filters,
+        subscription_date: initialDateRange,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        subscription_date: {
+          start_date: `${subscriptionRange[0] === null ? "" : format(subscriptionRange[0], "yyyy-MM-dd")}`,
+          end_date: `${subscriptionRange[1] === null ? "" : format(subscriptionRange[1], "yyyy-MM-dd")}`,
+        },
+      });
+    }
+  }, [subscriptionRange]);
+  
+  const handleSubscriptionRangeChange = (value: [Date | null, Date | null]) => {
+    setSubscriptionRange(value);
+  };
+
+  useEffect(() => {
+    if(renewalRange === null) {
+      setFilters({
+        ...filters,
+        renewal_date: initialDateRange,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        renewal_date: {
+          start_date: `${renewalRange[0] === null ? "" : format(renewalRange[0], "yyyy-MM-dd")}`,
+          end_date: `${renewalRange[1] === null ? "" : format(renewalRange[1], "yyyy-MM-dd")}`,
+        },
+      });
+    }
+  }, [renewalRange]);
+  
+  const handleRenewalnRangeChange = (value: [Date | null, Date | null]) => {
+    setRenewalRange(value);
+  };
 
   // useEffect(() => {
   //   if(currentItems?.length > 0) {
@@ -747,75 +858,102 @@ const CustomerManagement: React.FC = () => {
         </div>
 
         <div className="flex-row-between-responsive py-4 sm:mr-10 max-sm:mr-0">
-          <div
-            className="grid grid-cols-1 min-[968px]:grid-cols-2"
-          >
-            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 relative" ref={domainRef}>
-              <input
-                list="brow"
-                placeholder="Auto search domain list"
-                className="serach-input"
-                name="domain"
-                onChange={e => {
-                  setFilters({
-                    ...filters,
-                    domain: ""
-                  });
-                  setDomain(e.target.value);
-                }}
-                value={filters?.domain || domain}
-                onFocus={() => {setIsDomainDropdownOpen(true)}}
-                // onChange={e => {setFilters({
-                //   ...filters,
-                //   domain: e.target.value
-                // })}}
-                // value={filters?.domain}
-              />
-              {
-                isDomainDropdownOpen && domainList?.length > 0 && (
-                  <div
-                    className={`absolute flex flex-col py-1 domain-dropdown bg-custom-white rounded-b overflow-y-auto z-10`}
-                  >
-                    {/* min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] */}
-                    {
-                      domainList?.filter(item => item?.domain_name?.toLowerCase()?.includes(domain?.toLowerCase()))?.map((item, index) => {
-                        return (
-                          <a
-                            key={index}
-                            className={`font-inter-16px-400 pl-4 py-1 ${
-                              index != 0 && `border-t border-white break-words`
-                            }`}
-                            onClick={() => {
-                              setDomain("");
-                              setIsDomainDropdownOpen(false);
-                              setFilters({
-                                ...filters,
-                                domain: item?.domain_name
-                              })
-                            }}
-                          >
-                            {item?.domain_name}
-                          </a>
-                        );
-                      })
-                    }
-                  </div>
-                )
-              }
-              <ChevronDown className={`absolute top-[9px] right-5 w-5 h-5 pointer-events-none ${isDomainDropdownOpen ? "rotate-180" : ""} transition duration-300`} />
+          <div className="flex flex-col">
+            <div
+              className="grid grid-cols-1 min-[968px]:grid-cols-2"
+            >
+              <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 relative" ref={domainRef}>
+                <input
+                  list="brow"
+                  placeholder="Auto search domain list"
+                  className="serach-input"
+                  name="domain"
+                  onChange={e => {
+                    setFilters({
+                      ...filters,
+                      domain: ""
+                    });
+                    setDomain(e.target.value);
+                  }}
+                  value={filters?.domain || domain}
+                  onFocus={() => {setIsDomainDropdownOpen(true)}}
+                  // onChange={e => {setFilters({
+                  //   ...filters,
+                  //   domain: e.target.value
+                  // })}}
+                  // value={filters?.domain}
+                />
+                {
+                  isDomainDropdownOpen && domainList?.length > 0 && (
+                    <div
+                      className={`absolute flex flex-col py-1 domain-dropdown bg-custom-white rounded-b overflow-y-auto z-10`}
+                    >
+                      {/* min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] */}
+                      {
+                        domainList?.filter(item => item?.domain_name?.toLowerCase()?.includes(domain?.toLowerCase()))?.map((item, index) => {
+                          return (
+                            <a
+                              key={index}
+                              className={`font-inter-16px-400 pl-4 py-1 ${
+                                index != 0 && `border-t border-white break-words`
+                              }`}
+                              onClick={() => {
+                                setDomain("");
+                                setIsDomainDropdownOpen(false);
+                                setFilters({
+                                  ...filters,
+                                  domain: item?.domain_name
+                                })
+                              }}
+                            >
+                              {item?.domain_name}
+                            </a>
+                          );
+                        })
+                      }
+                    </div>
+                  )
+                }
+                <ChevronDown className={`absolute top-[9px] right-5 w-5 h-5 pointer-events-none ${isDomainDropdownOpen ? "rotate-180" : ""} transition duration-300`} />
+              </div>
+              <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
+                <input
+                  className="serach-input"
+                  name="search_data"
+                  onChange={e => {
+                    setFilters({
+                      ...filters,
+                      search_data: e.target.value,
+                    });
+                  }}
+                  placeholder="Name, Email"
+                  value={filters?.search_data}
+                />
+              </div>
             </div>
-            <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
-              <input
-                className="serach-input"
-                name="search_data"
-                onChange={e => {
-                  setFilters({
-                    ...filters,
-                    search_data: e.target.value,
-                  });
-                }}
-                placeholder="Name, Email"
-                value={filters?.search_data}
+            <div className="grid grid-cols-1 min-[968px]:grid-cols-2 mt-3 min-[968px]:gap-0 gap-3">
+              <DateRangePicker
+                range={predefinedRanges}
+                placeholder="Select Subscription Date Range"
+                style={{ width: '100%', maxWidth: '300px', padding: '0 16px', zIndex: '50' }}
+                onChange={handleSubscriptionRangeChange}
+                value={subscriptionRange}
+                showHeader={false}
+                renderValue={renderValue} // Custom render for the selected value
+                calendarSnapping={true}
+                cleanable
+              />
+
+              <DateRangePicker
+                range={predefinedRanges}
+                placeholder="Select Renewal Date Range"
+                style={{ width: '100%', maxWidth: '300px', padding: '0 16px', zIndex: '50' }}
+                onChange={handleRenewalnRangeChange}
+                value={renewalRange}
+                showHeader={false}
+                renderValue={renderValue} // Custom render for the selected value
+                calendarSnapping={true}
+                cleanable
               />
             </div>
           </div>
@@ -936,7 +1074,30 @@ const CustomerManagement: React.FC = () => {
                   </div>
 
                   <div className="flex flex-row px-4 py-2">
-                    <div className="w-1/2 px-4">
+                    {/* <DateRangePicker
+                      range={predefinedRanges}
+                      placeholder="Select Date Range"
+                      style={{ width: '50%', padding: '0 16px', zIndex: '50' }}
+                      onChange={handleSubscriptionRangeChange}
+                      value={subscriptionRange}
+                      showHeader={false}
+                      renderValue={renderValue} // Custom render for the selected value
+                      calendarSnapping={true}
+                      cleanable
+                    />
+
+                    <DateRangePicker
+                      range={predefinedRanges}
+                      placeholder="Select Date Range"
+                      style={{ width: '50%', padding: '0 16px' }}
+                      onChange={handleRenewalnRangeChange}
+                      value={renewalRange}
+                      showHeader={false}
+                      renderValue={renderValue} // Custom render for the selected value
+                      calendarSnapping={true}
+                      cleanable
+                    /> */}
+                    {/* <div className="w-1/2 px-4">
                       <input
                         type="text"
                         className="serach-input"
@@ -967,7 +1128,7 @@ const CustomerManagement: React.FC = () => {
                           e.target.type='text'
                         }}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -1123,10 +1284,10 @@ const CustomerManagement: React.FC = () => {
                         {
                           item?.workspace
                           ? item?.workspace?.last_payment
-                            ? convertToDate(item?.workspace?.last_payment?._seconds, item?.workspace?.last_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.workspace?.last_payment?._seconds, item?.workspace?.last_payment?._nanoseconds), 'dd MMM yyyy')
+                            ? convertToDate(item?.workspace?.next_payment?._seconds, item?.workspace?.next_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.workspace?.next_payment?._seconds, item?.workspace?.next_payment?._nanoseconds), 'dd MMM yyyy')
                             : "N/A"
                           : item?.domain_details
-                            ? convertToDate(item?.domain_details?.last_payment?._seconds, item?.domain_details?.last_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.domain_details?.last_payment?._seconds, item?.domain_details?.last_payment?._nanoseconds), 'dd MMM yyyy')
+                            ? convertToDate(item?.domain_details?.next_payment?._seconds, item?.domain_details?.next_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.domain_details?.next_payment?._seconds, item?.domain_details?.next_payment?._nanoseconds), 'dd MMM yyyy')
                             : "N/A"
                         }
                       </td>
