@@ -145,7 +145,7 @@ const Sidebar = () => {
   const dropdownRef = useRef([]);
 
   const [rolePermissions, setRolePermissions] = useState(rolePermissionsSlice !== null ? rolePermissionsSlice : intitalPermissions);
-  console.log("rolePermissions...", rolePermissions);
+  // console.log("rolePermissions...", rolePermissions);
 
   useEffect(() => {
     const getRole = async() => {
@@ -200,7 +200,7 @@ const Sidebar = () => {
     {
       path: ["/dashboard"],
       label: "Dashboard",
-      icon: <ChartLine className="navbar-w-h" />,
+      icon: <ChartLine className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
       name: 'dashboard',
     },
@@ -214,7 +214,7 @@ const Sidebar = () => {
     {
       path: ["/customer-group", "/voucher-list"],
       label: "Voucher Management",
-      icon: <TicketPercent className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
+      icon: <TicketPercent className={`w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]"`} />,
       subDomain: [
         { path: '/customer-group', label: 'Customer group', name: 'customer_group', },
         { path: '/voucher-list', label: 'Voucher list', name: 'voucher_list', }
@@ -224,14 +224,14 @@ const Sidebar = () => {
     {
       path: ["/notification-template"],
       label: "Notification Template",
-      icon: <LayoutTemplate className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
+      icon: <LayoutTemplate className={`w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]`} />,
       subDomain: [],
       name: 'notification_template',
     },
     {
       path: ["/plan-and-price-setup", "/gemini-setup"],
       label: "Subscription Master",
-      icon: <i className={`bi bi-cash-stack ${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`}></i>,
+      icon: <i className={`bi bi-cash-stack w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]`}></i>,
       subDomain: [
         { path: '/plan-and-price-setup', label: 'Plan & price setup', name: 'plan_and_price_setup', },
         { path: '/gemini-setup', label: 'Gemini setup', name: 'gemini_setup', },
@@ -241,35 +241,35 @@ const Sidebar = () => {
     {
       path: ["/payment-method"],
       label: "Payment Method",
-      icon: <CiCreditCard1 className="navbar-w-h" />,
+      icon: <CiCreditCard1 className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
       name: 'payment_method',
     },
     {
       path: ["/billing-history"],
       label: "Billing History",
-      icon: <ReceiptText className="navbar-w-h" />,
+      icon: <ReceiptText className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
       name: 'billing_history',
     },
     {
       path: ["/faqs"],
       label: "FAQ's",
-      icon: <MessageCircleQuestion className="navbar-w-h" />,
+      icon: <MessageCircleQuestion className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
       name: 'faqs',
     },
     {
       path: ["/email-log"],
       label: "Email Log",
-      icon: <History className="navbar-w-h" />,
+      icon: <History className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
       name: 'email_log',
     },
     {
       path: ["/user-list", "/role"],
       label: "Role Management",
-      icon: <UserPen className={`${isOpen ? "navbar-w-h-2" : "navbar-w-h"}`} />,
+      icon: <UserPen className={`w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]`} />,
       subDomain: [
         { path: '/user-list', label: 'User list', name: 'user_list', },
         { path: '/role', label: 'Role', name: 'role', },
@@ -279,7 +279,7 @@ const Sidebar = () => {
     {
       path: ["/cms"],
       label: "CMS",
-      icon: <GitPullRequestDraft className="navbar-w-h" />,
+      icon: <GitPullRequestDraft className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
       name: 'cms',
     },
@@ -289,7 +289,7 @@ const Sidebar = () => {
     {
       path: ["/customer-agreement", "/privacy-policy", "/terms-and-conditions"],
       label: "Settings",
-      icon: <Settings className="navbar-w-h" />,
+      icon: <Settings className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [
         { path: '/customer-agreement', label: 'Customer agreement', name: 'customer_agreement', },
         { path: '/privacy-policy', label: 'Privacy policy', name: 'privacy_policy', },
@@ -299,7 +299,7 @@ const Sidebar = () => {
     {
       path: ["/logout"],
       label: "Logout",
-      icon: <RiLogoutCircleLine className="navbar-w-h" />,
+      icon: <RiLogoutCircleLine className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
     },
   ]
@@ -372,12 +372,13 @@ const Sidebar = () => {
                   <div key={index}
                     className="flex flex-row px-[7px] border-b-[1px] border-[#E4E4E4] pb-[20px] my-[4px]"
                   >
-                    <Link
-                      to={item.path[0]}
-                      className="w-full"
+                    <button
+                      type='button'
+                      onClick={() => {navigate(item.path[0])}}
+                      className="w-full items-start"
                     >
                       <div
-                        className={`grid grid-cols-[auto,1fr] w-full py-[12px] px-[10px] ${
+                        className={`items-center flex w-full py-[12px] px-[10px] ${
                           location.pathname == item.path[0]  && `bg-[#12A83333] rounded-[8px]`
                         } hover:bg-[#12A83333] hover:rounded-[8px] ${
                           !isOpen && (
@@ -394,11 +395,12 @@ const Sidebar = () => {
                           }`}
                         >{item.label}</p>
                       </div>
-                    </Link>
+                    </button>
                   </div>
 
                   <div>
-                    <a
+                    <button
+                      type='button'
                       className="float-right mr-[-9px] mt-[-16px] cursor-pointer"
                       onClick={() => {
                         setIsOpen(!isOpen);
@@ -407,7 +409,7 @@ const Sidebar = () => {
                       <i className={`bi ${
                         isOpen ? `bi-text-indent-right` : 'bi-text-indent-left'
                       } text-[14px] text-white bg-custom-green border-[2px] border-custom-green rounded-full w-[21px] h-[21px] px-[2px]`}></i>
-                    </a>
+                    </button>
                   </div>
                 </>
               )
@@ -438,7 +440,7 @@ const Sidebar = () => {
                       }}
                     >
                       <div
-                        className={`flex flex-row justify-between w-full py-[12px] px-[10px] ${
+                        className={`flex flex-row justify-between w-full py-[12px] px-[10px] items-start ${
                           location.pathname == item.path[0] && `bg-[#12A83333] rounded-[8px]` || location.pathname == item.path[1] && `bg-[#12A83333] rounded-[8px]`
                         } hover:bg-[#12A83333] hover:rounded-[8px] ${
                           !isOpen && (
@@ -449,7 +451,7 @@ const Sidebar = () => {
                         } `}
                       >
                         <div
-                          className="grid grid-cols-[auto,1fr]"
+                          className="flex items-center"
                         >
                           <span>{item.icon}</span>
                           <p
@@ -460,13 +462,14 @@ const Sidebar = () => {
                             }`}
                           >{item.label}</p>
                         </div>
-                        <a
+                        <button
+                          type='button'
                           className="float-right mt-[2px]"
                         >
                           {
                             dropdowns[index] ? <ChevronUp /> : <ChevronDown />
                           }
-                        </a>
+                        </button>
                       </div>
                     </button>
                     {
@@ -481,15 +484,17 @@ const Sidebar = () => {
                                 // console.log(element?.name, rolePermissions[item.name][element?.name])
                                 return(
                                   <div
-                                    className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
+                                    className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px] items-start`}
                                     key={key}
                                   >
-                                    <Link
-                                      to={element.path}
+                                    <button
+                                      type='button'
+                                      onClick={() => {navigate(element.path)}}
                                     >
                                       {/*  border-t-[1px]  */}
-                                      <a
-                                        className="flex flex-row"
+                                      <button
+                                        type='button'
+                                        className="flex flex-row items-center"
                                         onClick={() => {
                                           if(width < 769){
                                             setIsOpen(false);
@@ -502,8 +507,8 @@ const Sidebar = () => {
                                       >
                                         <Dot />
                                         {element.label}
-                                      </a>
-                                    </Link>
+                                      </button>
+                                    </button>
                                   </div>
                                 )
                               }
@@ -523,12 +528,13 @@ const Sidebar = () => {
                     <div key={index}
                       className="flex flex-row px-[7px] my-[4px]"
                     >
-                      <Link
-                        to={item.path[0]}
+                      <button
+                        type='button'
+                        onClick={() => {navigate(item.path[0])}}
                         className="w-full"
                       >
                         <div
-                          className={`flex flex-row justify-between w-full py-[12px] px-[10px] ${
+                          className={`flex flex-row justify-between w-full py-[12px] px-[10px] items-start ${
                             location.pathname == item.path[0]  && `bg-[#12A83333] rounded-[8px]`
                           } hover:bg-[#12A83333] hover:rounded-[8px] ${
                               !isOpen && (
@@ -537,7 +543,7 @@ const Sidebar = () => {
                             }`}
                         >
                           <div
-                            className="grid grid-cols-[auto,1fr]"
+                            className="flex items-center"
                           >
                             <span>{item.icon}</span>
                             <p
@@ -549,7 +555,7 @@ const Sidebar = () => {
                             >{item.label}</p>
                           </div>
                         </div>
-                      </Link>
+                      </button>
                     </div>
                   
                   </>
@@ -613,11 +619,13 @@ const Sidebar = () => {
                                     className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
                                     key={key}
                                   >
-                                    <Link
-                                      to={element.path}
+                                    <button
+                                      type='button'
+                                      onClick={() => {navigate(element.path)}}
                                     >
                                       {/*  border-t-[1px]  */}
-                                      <a
+                                      <button
+                                        type='button'
                                         className="flex flex-row"
                                         onClick={() => {
                                           if(width < 769){
@@ -631,8 +639,8 @@ const Sidebar = () => {
                                       >
                                         <Dot />
                                         {element.label}
-                                      </a>
-                                    </Link>
+                                      </button>
+                                    </button>
                                   </div>
                                 )
                               }
@@ -686,13 +694,14 @@ const Sidebar = () => {
                               }`}
                             >{item.label}</p>
                           </div>
-                          <a
+                          <button
+                            type='button'
                             className="float-right mt-[2px]"
                           >
                             {
                               dropdowns[index] ? <ChevronDown /> : <ChevronUp />
                             }
-                          </a>
+                          </button>
                         </div>
                       </button>
                     </div>

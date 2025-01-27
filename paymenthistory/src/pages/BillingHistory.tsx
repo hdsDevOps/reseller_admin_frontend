@@ -14,6 +14,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
 import { format } from 'date-fns';
+import ReactPaginate from "react-paginate";
 
 const initialFilter = {
   start_date: "",
@@ -294,7 +295,7 @@ const BillingHistory: React.FC = () => {
               isDropdownOpen && initialBillingHistory?.filter(history => history?.domain?.toLowerCase()?.includes(search?.toLowerCase())).length > 0 && (
                 <div className='absolute flex flex-col py-1 2xl:w-[90%] min-[1450px]:w-[89%] min-[1350px]:w-[88%] xl:w-[87%] min-[900px]:w-[90%] md:w-[94%] min-[415px]:w-[90%] w-[88%] bg-custom-white rounded-b max-h-40 overflow-y-auto z-[9999] border'>
                   {
-                    initialBillingHistory?.filter(history => history?.domain.toLowerCase().includes(search.toLowerCase())).map((item, index) => (
+                    initialBillingHistory?.filter((history, idx, self) => self?.findIndex(h => h?.domain === history?.domain) === idx)?.filter(history => history?.domain.toLowerCase().includes(search.toLowerCase())).map((item, index) => (
                       <p
                         key={index}
                         className={`font-inter-16px-400 pl-4 py-1 ${
@@ -320,7 +321,7 @@ const BillingHistory: React.FC = () => {
               type="text"
               className="serach-input-3"
               name="search_data"
-              placeholder="Transaction ID, customer name"
+              placeholder="Transaction ID, name"
               onChange={e => {setSearchData(e.target.value)}}
               value={searchData}
             />
@@ -350,6 +351,24 @@ const BillingHistory: React.FC = () => {
             </button>
           </div>
           </div>
+      </div>
+
+      <div className="w-full py-3">
+        <div className="flex items-center justify-start gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -445,66 +464,60 @@ const BillingHistory: React.FC = () => {
             }
           </tbody>
         </table>
-      </div>
 
-      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
-        <div className="flex items-center gap-1">
-          <select
-            onChange={e => {
-              setItemsPerPage(parseInt(e.target.value));
-            }}
-            value={itemsPerPage}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20} selected>20</option>
-            <option value={50}>50</option>
-          </select>
-          <label>items</label>
-        </div>
-        <div className="flex">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
-            className={`px-3 py-1 text-sm ${
-              currentPage === 0
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-l transition`}
-          >
-            Prev
-          </button>
-
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, index) => (
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel={(
             <button
-              key={index}
-              onClick={() => setCurrentPage(index)}
-              className={`px-3 py-1 text-sm mx-1 rounded ${
-                currentPage === index
-                  ? "bg-green-500 text-white"
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+              }}
+              disabled={currentPage === totalPages - 1}
+              className={`px-3 py-1 text-sm ${
+                currentPage === totalPages - 1
+                  ? "bg-transparent text-gray-300"
                   : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-              } transition`}
+              } rounded-r transition`}
             >
-              {index + 1}
+              Next
             </button>
-          ))}
+          )}
+          onPageChange={(event) => {
+            setCurrentPage(event.selected);
+            // console.log(event.selected);
+          }}
+          pageRangeDisplayed={2}
+          pageCount={totalPages}
+          previousLabel={(
+            <button
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 0));
+              }}
+              disabled={currentPage === 0}
+              className={`px-3 py-1 text-sm ${
+                currentPage === 0
+                  ? "bg-transparent text-gray-300"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } rounded-l transition`}
+            >
+              Prev
+            </button>
+          )}
 
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-            }
-            disabled={currentPage === totalPages - 1}
-            className={`px-3 py-1 text-sm ${
-              currentPage === totalPages - 1
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-r transition`}
-          >
-            Next
-          </button>
-        </div>
+          containerClassName="flex justify-start"
+
+          renderOnZeroPageCount={null}
+          className="pagination-class-name"
+
+          pageClassName="pagination-li"
+          pageLinkClassName="pagination-li-a"
+
+          breakClassName="pagination-ellipsis"
+          breakLinkClassName="pagination-ellipsis-a"
+
+          activeClassName="pagination-active-li"
+          activeLinkClassName	="pagination-active-a"
+        />
       </div>
     </div>
   );

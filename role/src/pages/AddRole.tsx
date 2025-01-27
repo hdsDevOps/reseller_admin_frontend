@@ -519,7 +519,6 @@ const AddRole = () => {
   
   return (
     <div className="grid- grid-cols-1 p-4 md:p-8">
-      <ToastContainer />
       <div
         className='flex flex-row'
       >

@@ -700,7 +700,6 @@ function EditPlanPriceSetup() {
       className='grid grid-cols-1'
       onSubmit={handleSubmit}
     >
-      <ToastContainer />
       <div
         className='flex flex-row'
       >

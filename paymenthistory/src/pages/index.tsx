@@ -11,7 +11,6 @@ const BillingHistory = React.lazy(() => import("./BillingHistory"));
 const PaymentApp: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ToastContainer />
       <Routes>
         <Route path="/payment-method" element={<Payment />} />
         <Route path="/billing-history" element={<BillingHistory />} />

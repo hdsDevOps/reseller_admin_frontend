@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronDown, Plus, Grid, LayoutGrid, TableProperties } from "lucide-react";
+import { ChevronDown, Plus, Grid, LayoutGrid, TableProperties, X } from "lucide-react";
 import { FaTrash } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import { RiHeart2Fill, RiCheckboxCircleFill, RiVipCrownFill, RiFlashlightFill } from "react-icons/ri";
@@ -591,7 +591,6 @@ const PlanPriceSetup = () => {
 
   return (
     <div className="grid grid-cols-1">
-      <ToastContainer />
       <div className="flex min-sm:flex-row max-sm:flex-col justify-between min-sm:items-center mb-6 max-sm:gap-2">
         <h3 className="h3-text">Plan & Price setup</h3>
         <div className="flex gap-4 max-sm:justify-end">
@@ -657,16 +656,17 @@ const PlanPriceSetup = () => {
                     as="h3"
                     className="text-lg font-semibold text-gray-900"
                   >Delete Plan</DialogTitle>
-                  <div className='btn-close-bg'>
-                    <button
-                      type='button'
-                      className='text-3xl rotate-45 mt-[-8px] text-white'
-                      onClick={() => {
-                        setIsModalOpen(false);
-                        setDeleteId("");
-                      }}
-                    >+</button>
-                  </div>
+                  
+                  <button
+                    type='button'
+                    className='bg-[#67C100] w-[25px] h-[25px] rounded-full items-center'
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setDeleteId("");
+                    }}
+                  >
+                    <X className='w-5 h-5 mx-auto items-center text-white' />
+                  </button>
                 </div>
                 <form
                   className="grid sm:grid-cols-2 grid-cols-1 gap-4"
@@ -716,15 +716,15 @@ const PlanPriceSetup = () => {
                   as="h3"
                   className="text-lg font-semibold text-gray-900"
                 >Details of the Plan</DialogTitle>
-                <div className='btn-close-bg'>
-                  <button
-                    type='button'
-                    className='text-3xl rotate-45 mt-[-8px] text-white'
-                    onClick={() => {
-                      setIsMoreOpen(false);
-                    }}
-                  >+</button>
-                </div>
+                <button
+                  type='button'
+                  className='bg-[#67C100] w-[25px] h-[25px] rounded-full items-center'
+                  onClick={() => {
+                    setIsMoreOpen(false);
+                  }}
+                >
+                  <X className='w-5 h-5 mx-auto items-center text-white' />
+                </button>
               </div>
 
               <div className="overflow-x-auto overflow-y-auto max-h-[500px]">

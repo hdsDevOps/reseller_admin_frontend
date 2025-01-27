@@ -377,7 +377,6 @@ const AboutUs: React.FC = () => {
 
   return (
     <div className="sm:p-4 p-0 bg-white">
-      <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
         <button className="btn-cms" onClick={() => {
           setIsEditModalOpen(true);
@@ -490,7 +489,7 @@ const AboutUs: React.FC = () => {
                       htmlFor="file-upload"
                       className="flex flex-col items-center justify-center md:w-48 w-full h-[73px] border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100 md:mx-0 mx-auto"
                     >
-                      <div className={`flex flex-col items-center justify-center ${imageFile3 === null ? 'pt-5 pb-2' : ''} w-full h-full`}>
+                      <div className={`flex flex-col items-center justify-center ${imageFile3 === null ? 'pt-2 pb-2' : ''} w-full h-full`}>
                         {
                           imageFile3 === null || imageFile3 === "" ?
                           (<React.Fragment>
@@ -510,6 +509,7 @@ const AboutUs: React.FC = () => {
                               ></path>
                             </svg>
                             <p className="mb-1 text-sm text-gray-500">Add banner image</p>
+                            <p className="text-[12px] text-gray-500">Dimesion: 1440 x 300</p>
                           </React.Fragment>) :
                           (<img ref={imageRef3} src={imageFile3} alt="image" className="h-full object-cover" />)
                         }
@@ -517,14 +517,6 @@ const AboutUs: React.FC = () => {
                       <input id="file-upload" type="file" className="hidden" accept="image/*"
                         onChange={e => { setImageFile3(e.target.files[0]) }}
                       />
-                      {
-                        imageFile3 === null || imageFile3 === ""
-                        ? (
-                          <p className="text-[12px] -mt-3 text-gray-500">Dimesion: 1440 x 300</p>
-                        ) : (
-                          ""
-                        )
-                      }
                     </label>
                       {
                         imageFile3 === null || imageFile3 === ""

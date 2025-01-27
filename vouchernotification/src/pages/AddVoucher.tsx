@@ -180,7 +180,6 @@ const AddVoucher: React.FC = () =>  {
   };
   return (
     <div>
-      <ToastContainer />
       <div
         className='flex flex-row mb-[20px]'
       >

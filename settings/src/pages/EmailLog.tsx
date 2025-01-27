@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ArrowRightLeft } from 'lucide-react';
+import ReactPaginate from 'react-paginate';
 
 const EmailLog: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -92,8 +93,26 @@ const EmailLog: React.FC = () => {
   return (
     <div className="grid grid-cols-1">
       <h3 className="my-[7px] h3-text">Email Log</h3>
+
+      <div className="w-full py-3 mt-[33px]">
+        <div className="flex items-center justify-start gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+      </div>
       
-      <div className="overflow-x-auto p-[13px] mt-[33px]">
+      <div className="overflow-x-auto p-[13px]">
         <table className="w-full min-w-[800px]">
           <thead className='h-14 bg-gray-200'>
             <tr className="bg-gray-100">
@@ -146,66 +165,60 @@ const EmailLog: React.FC = () => {
             }
           </tbody>
         </table>
-      </div>
 
-      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
-        <div className="flex items-center gap-1">
-          <select
-            onChange={e => {
-              setItemsPerPage(parseInt(e.target.value));
-            }}
-            value={itemsPerPage}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20} selected>20</option>
-            <option value={50}>50</option>
-          </select>
-          <label>items</label>
-        </div>
-        <div className="flex">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
-            className={`px-3 py-1 text-sm ${
-              currentPage === 0
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-l transition`}
-          >
-            Prev
-          </button>
-
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, index) => (
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel={(
             <button
-              key={index}
-              onClick={() => setCurrentPage(index)}
-              className={`px-3 py-1 text-sm mx-1 rounded ${
-                currentPage === index
-                  ? "bg-green-500 text-white"
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+              }}
+              disabled={currentPage === totalPages - 1}
+              className={`px-3 py-1 text-sm ${
+                currentPage === totalPages - 1
+                  ? "bg-transparent text-gray-300"
                   : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-              } transition`}
+              } rounded-r transition`}
             >
-              {index + 1}
+              Next
             </button>
-          ))}
+          )}
+          onPageChange={(event) => {
+            setCurrentPage(event.selected);
+            // console.log(event.selected);
+          }}
+          pageRangeDisplayed={2}
+          pageCount={totalPages}
+          previousLabel={(
+            <button
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 0));
+              }}
+              disabled={currentPage === 0}
+              className={`px-3 py-1 text-sm ${
+                currentPage === 0
+                  ? "bg-transparent text-gray-300"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } rounded-l transition`}
+            >
+              Prev
+            </button>
+          )}
 
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-            }
-            disabled={currentPage === totalPages - 1}
-            className={`px-3 py-1 text-sm ${
-              currentPage === totalPages - 1
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-r transition`}
-          >
-            Next
-          </button>
-        </div>
+          containerClassName="flex justify-start"
+
+          renderOnZeroPageCount={null}
+          className="pagination-class-name"
+
+          pageClassName="pagination-li"
+          pageLinkClassName="pagination-li-a"
+
+          breakClassName="pagination-ellipsis"
+          breakLinkClassName="pagination-ellipsis-a"
+
+          activeClassName="pagination-active-li"
+          activeLinkClassName	="pagination-active-a"
+        />
       </div>
 
       <Dialog

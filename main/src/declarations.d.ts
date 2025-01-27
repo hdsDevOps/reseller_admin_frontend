@@ -58,5 +58,8 @@ declare module 'store/authSlice' {
 
   export const setTokenDetails: (payload: string) => PayloadAction<string>;
   // Other exports
+
+  export const setUserIdDetails: (payload: any) => PayloadAction<any>;
+  export const setUserDetails: (payload: any) => PayloadAction<any>;
 }
 

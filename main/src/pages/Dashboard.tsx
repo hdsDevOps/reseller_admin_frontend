@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [monthlyRevenueData, setMonthlyRevenueData] = useState(initialMonthlyRevenueData);
-  console.log("monthlyRevenueData...", monthlyRevenueData);
+  // console.log("monthlyRevenueData...", monthlyRevenueData);
   const [yearlySpendingStatistics, setYearlySpendingStatistics] = useState([initialYearlySpendingStatistics]);
   // console.log("yearlySpendingStatistics...", yearlySpendingStatistics);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -259,9 +259,21 @@ const Dashboard: React.FC = () => {
 
     const pdf = new jsPDF('p', 'mm', 'a4');
 
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    const pdfWidth = 210;
+    const PdfHeight = 297;
+
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+
+    const scaleFactor = Math.min(pdfWidth / imgWidth, PdfHeight / imgHeight);
+
+    const adjustedWidth = (imgWidth * scaleFactor) - 10;
+    const adjustedHeight = (imgHeight * scaleFactor) - 10;
+
+    const xOffset = (pdfWidth - adjustedWidth) / 2;
+    const yOffset = (PdfHeight - adjustedHeight) / 2;
+
+    pdf.addImage(imgData, 'PNG', xOffset, yOffset, adjustedWidth, adjustedHeight);
 
     pdf.save('revenue.pdf');
   };
@@ -270,7 +282,6 @@ const Dashboard: React.FC = () => {
     <div
       className='flex flex-col px-2 max-[400px]:px-0'
     >
-      <ToastContainer />
       <div
         className='flex flex-row justify-between'
       >

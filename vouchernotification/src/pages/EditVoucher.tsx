@@ -198,7 +198,6 @@ const EditVoucher: React.FC = () =>  {
   };
   return (
     <div>
-      <ToastContainer />
       <div
         className='flex flex-row mb-[35px]'
       >

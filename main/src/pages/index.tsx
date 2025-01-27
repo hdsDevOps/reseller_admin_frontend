@@ -9,6 +9,7 @@ import RoleApp from "role/RoleApp";
 import SettingsApp from "settings/SettingsApp";
 import SubscriptionApp from "subscription/SubscriptionApp";
 import VoucherApp from "vouchernotification/VoucherApp";
+import { ToastContainer } from "react-toastify";
 // import DomainApp from "domains/DomainApp";
 
 const Dashboard = React.lazy(() => import("./Dashboard"));
@@ -23,6 +24,8 @@ const MainApp: React.FC = () => (
     <Header />
     <div className="flex flex-row mt-[94px]">
       <Navbar />
+
+      <ToastContainer />
 
       <div className="content-body md:p-6 p-1 pb-6 flex flex-col min-h-screen relative w-full">
         <Routes>

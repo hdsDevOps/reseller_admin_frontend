@@ -9,18 +9,14 @@ import AuthApp from "auth/AuthApp";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import "auth/AuthCss";
 import { getUserAuthTokenFromLSThunk, getUserIdFromLSThunk, getAdminDetailsThunk, getDefaultCurrencyThunk } from "store/user.thunk";
+import { setUserDetails, setUserIdDetails } from "store/authSlice";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { token } = useAppSelector((state) => state.auth);
-  // const token = "usy6767jshs688ytmbqa88654sgsgs5sgs6sgs6q";
-  // const token = "";
-  // console.log(token, 'token');
-  const { userId } = useAppSelector((state) => state.auth);
-  const { defaultCurrency } = useAppSelector((state) => state.auth);
-  
-  
+  const { token, userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);
+
+  // console.log({userId, userDetails});
 
   useEffect(() => {
     const getUserAuthToken = async () => {
@@ -41,8 +37,13 @@ const App: React.FC = () => {
       if(token) {
         try {
           const getUserIdFromLocalStorage = await dispatch(getUserIdFromLSThunk()).unwrap();
-          await dispatch(getAdminDetailsThunk({userid: getUserIdFromLocalStorage})).unwrap();
-          await dispatch(getDefaultCurrencyThunk({userid: getUserIdFromLocalStorage})).unwrap();
+          console.log("getUserIdFromLocalStorage...", getUserIdFromLocalStorage);
+          // await dispatch(setUserIdDetails(getUserAuthTokenFromLSThunk));
+          const userAdminDetails = await dispatch(getAdminDetailsThunk({userid: getUserIdFromLocalStorage})).unwrap();
+          console.log("userDetails...", userAdminDetails);
+          // await dispatch(setUserDetails(userAdminDetails?.data));
+          const currencyDefault = await dispatch(getDefaultCurrencyThunk({userid: getUserIdFromLocalStorage})).unwrap();
+          console.log("currencyDefault...", currencyDefault);
         } catch (error) {
           //
         }

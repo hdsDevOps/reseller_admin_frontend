@@ -98,7 +98,6 @@ const CustomerInformation: React.FC = () => {
     <div
       className='flex flex-col px-2 max-[400px]:px-0'
     >
-      <ToastContainer />
       <div
         className='flex flex-row'
       >

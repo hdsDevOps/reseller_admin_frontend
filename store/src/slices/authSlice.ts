@@ -17,7 +17,7 @@ import { userLocalStorage } from '../localStorage/user.storage';
 
 export interface UserDetailsState {
   userAuthStatus: 'AUTHORIZED' | 'UN_AUTHORIZED' | 'PENDING' | 'UPGRADE';
-  userDetails: any;
+  userDetails: object|null;
   userId: string | null;
   token: string | null;
   defaultCurrency: string | null;
@@ -34,7 +34,7 @@ export interface UserDetailsState {
 
 const initialState: UserDetailsState = {
   userAuthStatus: 'PENDING',
-  userDetails: {},
+  userDetails: null,
   userId: null,
   token: '',
   defaultCurrency: '',
@@ -111,7 +111,7 @@ const authSlice = createSlice({
     builder.addCase(makeUserLoginThunk.fulfilled,
       (state, action: PayloadAction<any>) => {
         // state.userAuthStatus = 'AUTHORIZED';
-        state.userId = action.payload.userId;
+        // state.userId = action.payload.userId;
       },
     );
 

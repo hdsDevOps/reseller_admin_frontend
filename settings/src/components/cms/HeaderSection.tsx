@@ -80,7 +80,6 @@ const HeaderSection = () => {
 
   return (
     <div className="sm:p-4 p-0 bg-white">
-      <ToastContainer />
       <div className="flex items-center justify-start mx-4 mb-3">
         <button className="btn-cms" onClick={() => {
           setIsModalOpen(true);

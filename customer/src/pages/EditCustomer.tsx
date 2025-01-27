@@ -323,7 +323,6 @@ function EditCustomer() {
     <div
       className='flex flex-col px-2'
     >
-      <ToastContainer />
       <div
         className='flex flex-row'
       >

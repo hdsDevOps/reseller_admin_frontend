@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ReactPaginate from "react-paginate";
 
 const initialFilters = {
   currency: "",
@@ -346,6 +347,17 @@ const VoucherList: React.FC = () => {
           })
         ).unwrap();
         toast.success(result?.message);
+        setTimeout(() => {
+          setCustomerGroupId("");
+          setCustomerGroupName("");
+          setCustomerGroupNameFound("");
+          setCustomerId("");
+          setCustomerEmailFound("");
+          setCustomerSearch({
+            ...customerSearch,
+            search_data: ""
+          });
+        }, 1000);
       } catch (error) {
         toast.error("Voucher email could not be sent");
         console.log(error);
@@ -355,7 +367,6 @@ const VoucherList: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1">
-      <ToastContainer />
       <div className="flex flex-col">
         <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
           <h3 className="h3-text">Voucher List</h3>
@@ -489,6 +500,24 @@ const VoucherList: React.FC = () => {
         </div>
       </div>
 
+      <div className="w-full py-3">
+        <div className="flex items-center justify-start gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+      </div>
+
       <div className="w-full overflow-x-auto pb-[20px]">
         <table className="min-w-[1100px] lg:min-w-full max-h-screen">
           <thead className="bg-custom-blue-6 h-[53px]">
@@ -561,6 +590,60 @@ const VoucherList: React.FC = () => {
             }
           </tbody>
         </table>
+
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel={(
+            <button
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+              }}
+              disabled={currentPage === totalPages - 1}
+              className={`px-3 py-1 text-sm ${
+                currentPage === totalPages - 1
+                  ? "bg-transparent text-gray-300"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } rounded-r transition`}
+            >
+              Next
+            </button>
+          )}
+          onPageChange={(event) => {
+            setCurrentPage(event.selected);
+            // console.log(event.selected);
+          }}
+          pageRangeDisplayed={2}
+          pageCount={totalPages}
+          previousLabel={(
+            <button
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 0));
+              }}
+              disabled={currentPage === 0}
+              className={`px-3 py-1 text-sm ${
+                currentPage === 0
+                  ? "bg-transparent text-gray-300"
+                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+              } rounded-l transition`}
+            >
+              Prev
+            </button>
+          )}
+
+          containerClassName="flex justify-start"
+
+          renderOnZeroPageCount={null}
+          className="pagination-class-name"
+
+          pageClassName="pagination-li"
+          pageLinkClassName="pagination-li-a"
+
+          breakClassName="pagination-ellipsis"
+          breakLinkClassName="pagination-ellipsis-a"
+
+          activeClassName="pagination-active-li"
+          activeLinkClassName	="pagination-active-a"
+        />
       </div>
 
       {
@@ -628,66 +711,6 @@ const VoucherList: React.FC = () => {
           </Dialog>
         )
       }
-
-      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
-        <div className="flex items-center gap-1">
-          <select
-            onChange={e => {
-              setItemsPerPage(parseInt(e.target.value));
-            }}
-            value={itemsPerPage}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20} selected>20</option>
-            <option value={50}>50</option>
-          </select>
-          <label>items</label>
-        </div>
-        <div className="flex">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
-            className={`px-3 py-1 text-sm ${
-              currentPage === 0
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-l transition`}
-          >
-            Prev
-          </button>
-
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index)}
-              className={`px-3 py-1 text-sm mx-1 rounded ${
-                currentPage === index
-                  ? "bg-green-500 text-white"
-                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-              } transition`}
-            >
-              {index + 1}
-            </button>
-          ))}
-
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-            }
-            disabled={currentPage === totalPages - 1}
-            className={`px-3 py-1 text-sm ${
-              currentPage === totalPages - 1
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-r transition`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
       
       {
         isModalOpen && (

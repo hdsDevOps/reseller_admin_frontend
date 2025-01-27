@@ -299,7 +299,6 @@ export default function Header() {
     <header
       className="bg-white flex flex-row text-black px-2 items-center justify-between z-50 fixed top-0 left-0 right-0 w-full h-[94px] border border-b-[#E4E4E4]"
     >
-      {/* <ToastContainer /> */}
       <a
         className="flex items-center justify-center md:ml-[70px] sm:ml-[20px]"
       >
@@ -368,7 +367,7 @@ export default function Header() {
 
             {
               showProfile && <div 
-                className="fixed flex flex-col bg-white sm:w-[220px] w-[200px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px] -ml-16"
+                className="fixed flex flex-col bg-white sm:w-[220px] w-[210px] sm:mt-[-13px] mt-[-5px] rounded-[8px] shadow-md p-[5px] -ml-16"
                 ref={elementRef}
               >
                 <div
@@ -424,32 +423,38 @@ export default function Header() {
                   <ul>
                     <li>
                       <div
-                        className="flex flex-row cursor-pointer py-[5px]"
+                        className="flex flex-row cursor-pointer py-[5px] items-start"
                       >
-                        <RiSettings4Line
-                          className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
-                        />
-                        <a
-                          className="sm:text-[15px] text-[12px] pl-[5px]"
-                          onClick={() => {navigate('/profile-settings')}}
-                        >Profile setting</a>
+                        <div className="items-center flex">
+                          <RiSettings4Line
+                            className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
+                          />
+                          <button
+                            type="button"
+                            className="sm:text-[15px] text-[12px] pl-[5px]"
+                            onClick={() => {navigate('/profile-settings')}}
+                          >Profile setting</button>
+                        </div>
                       </div>
                     </li>
                     <li
-                      className="flex-row-between"
+                      className="flex-row-between items-start"
                     >
                       <div
-                        className="flex flex-row cursor-pointer py-[5px]"
+                        className="flex flex-row cursor-pointer py-[5px] items-start"
                       >
                         {/* <RiSettings4Line
                           className="mt-[4px]"
                         /> */}
-                        <Bell
-                          className="sm:w-[15px] w-[12px] sm:h-[15px] h-[12px] sm:mt-[5px] mt-[4px]"
-                        />
-                        <a
-                          className="sm:text-[15px] text-[12px] pl-[5px]"
-                        >Notification setting</a>
+                        <div className="flex items-center">
+                          <Bell
+                            className="sm:w-[15px] w-[12px] sm:h-[15px] h-[12px]"
+                          />
+                          <button
+                            type="button"
+                            className="sm:text-[15px] text-[12px] pl-[5px]"
+                          >Notification setting</button>
+                        </div>
                       </div>
                       <div
                         className="mt-[7.5px] transition-transform duration-1000 ease-in-out"
@@ -466,15 +471,18 @@ export default function Header() {
                     </li>
                     <li>
                       <div
-                        className="flex flex-row cursor-pointer py-[5px]"
+                        className="flex flex-row cursor-pointer py-[5px] items-start"
                         onClick={e => {setPasswordModal(true)}}
                       >
-                        <RiLock2Line
-                          className="sm:mt-[4px] mt-[3px] sm:text-[15px] text-[12px]"
-                        />
-                        <a
-                          className="sm:text-[15px] text-[12px] pl-[5px]"
-                        >Change password</a>
+                        <div className="flex items-center">
+                          <RiLock2Line
+                            className="sm:text-[15px] text-[12px]"
+                          />
+                          <button
+                            type="button"
+                            className="sm:text-[15px] text-[12px] pl-[5px]"
+                          >Change password</button>
+                        </div>
                       </div>
                       {
                         passwordModal && (
@@ -577,23 +585,26 @@ export default function Header() {
                     </li>
                     <li>
                       <div
-                        className="flex flex-row cursor-pointer py-[5px]"
+                        className="flex flex-row cursor-pointer py-[5px] items-start"
                         onClick={() => setShowCurrency(true)}
                       >
                         {/* <RiSettings4Line
                           className="mt-[4px]"
                         /> */}
-                        <img 
-                          src={`${
-                            getflag(currency)
-                            ?.flag
-                          }`}
-                          alt={currency}
-                          className="h-[12px] mt-[6px] ml-[1px]"
-                        />
-                        <a
-                          className="sm:text-[15px] text-[12px] pl-[5px]"
-                        >Default currency</a>
+                        <div className="flex items-center">
+                          <img 
+                            src={`${
+                              getflag(currency)
+                              ?.flag
+                            }`}
+                            alt={currency}
+                            className="h-[12px] ml-[1px]"
+                          />
+                          <button
+                            type="button"
+                            className="sm:text-[15px] text-[12px] pl-[5px]"
+                          >Default currency</button>
+                        </div>
                       </div>
                       {
                         showCurrency && (
@@ -648,11 +659,12 @@ export default function Header() {
             }
           </div>
 
-          <a
-            className="font-inter font-normal sm:mt-[1px] mt-[9px] sm:text-[16px] text-[14px]"
+          <button
+            type="button"
+            className="font-inter font-normal sm:mt-[1px] mt-[9px] sm:text-[16px] text-[14px] cursor-default"
           >
             {userDetails?.role}
-          </a>
+          </button>
         </div>
       </div>
       {

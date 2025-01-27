@@ -671,6 +671,8 @@ function AddPlanPriceSetup() {
       toast.warning("Please enter sticker text");
     } else if(!localPriceValidation()) {
       toast.warning("Please enter valid price values");
+    } else if(subscription?.top_features?.length === 0) {
+      toast.warning("Please enter atleast one top feature");
     } else {
       if(iconImage !== null && typeof iconImage !== "string") {
         try {
@@ -721,7 +723,6 @@ function AddPlanPriceSetup() {
       className='grid grid-cols-1'
       onSubmit={handleSubmit}
     >
-      <ToastContainer />
       <div
         className='flex flex-row'
       >
@@ -900,6 +901,7 @@ function AddPlanPriceSetup() {
               className='h-[45px] border border-custom-white rounded-[10px] w-full pl-2'
               onChange={handleSubscriptionChange}
               name='sticker_text'
+              required={subscription?.sticker_exists}
             />
           </div>
         </div>

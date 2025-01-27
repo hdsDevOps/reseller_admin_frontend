@@ -80,7 +80,6 @@ const TermsConditions: React.FC = () => {
 
   return (
     <div className="flex flex-col px-2 max-[400px]:px-0">
-      <ToastContainer />
       {/* Header */}
       <div
         className='flex flex-row'

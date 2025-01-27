@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { addDays, addMonths, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays } from "date-fns";
 import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
+import ReactPaginate from "react-paginate";
 
 interface RangeType<T> {
   label: string;
@@ -406,7 +407,7 @@ const CustomerManagement: React.FC = () => {
 
   useEffect(() => {
     if(filters2?.country !== "") {
-      const data = countries.find(country => country?.name === filters2?.country)
+      const data = countries?.find(country => country?.name === filters2?.country)
       setCountry(data)
     } else {
       setCountry({})
@@ -437,10 +438,10 @@ const CustomerManagement: React.FC = () => {
 
   useEffect(() => {
     const findAvailableStates = async() => {
-      if(states.length > 0 && regionList.length > 0) {
+      if(states?.length > 0 && regionList?.length > 0) {
         const data = [];
         await regionList?.forEach(element => {
-          states.find(item => {
+          states?.find(item => {
             if(item?.name === element) {
               data.push(item?.name)
             } else {
@@ -460,7 +461,7 @@ const CustomerManagement: React.FC = () => {
   const getCountryList = async() => {
     try {
       const countries = await dispatch(getCountryListThunk()).unwrap();
-      setCountryList(countries.countrylist);
+      setCountryList(countries?.countrylist);
     } catch (error) {
       console.log("Error on token")
     }
@@ -544,12 +545,12 @@ const CustomerManagement: React.FC = () => {
   const handleSetFilter = () => {
     setFilters({
       ...filters,
-      country: filters2.country,
-      state_name: filters2.state_name,
-      authentication: filters2.authentication == "true" ? true : filters2.authentication == "false" ? false: "",
-      license_usage: filters2.license_usage,
-      subscritption_date: filters2.subscritption_date,
-      renewal_date: filters2.renewal_date
+      country: filters2?.country,
+      state_name: filters2?.state_name,
+      authentication: filters2?.authentication == "true" ? true : filters2?.authentication == "false" ? false: "",
+      license_usage: filters2?.license_usage,
+      subscritption_date: filters2?.subscritption_date,
+      renewal_date: filters2?.renewal_date
     })
   }
 
@@ -744,12 +745,12 @@ const CustomerManagement: React.FC = () => {
   };
   
   useEffect(() => {
-    if(selectAllCount === checked.length && checked.length > 0) {
+    if(selectAllCount === checked?.length && checked?.length > 0) {
       setSelectAll(true);
     } else {
       setSelectAll(false);
     }
-  }, [currentItems]);
+  }, [currentItems, selectAllCount, checked]);
 
   const toggleCheck = (newJson:any) => {
     setChecked((prevChecked) => {
@@ -771,7 +772,7 @@ const CustomerManagement: React.FC = () => {
       const emails = checked?.map(item => item?.email);
       // console.log("emails...", emails);
       // console.log("notificationId...", notificationId);
-      if(emails.length === 0){
+      if(emails?.length === 0){
         toast.warning("Please select customer");
       }
       else{
@@ -803,7 +804,6 @@ const CustomerManagement: React.FC = () => {
     <div
       className="grid grid-cols-1"
     >
-      <ToastContainer />
       <div className="flex flex-col w-full">
         <div className="flex-row-between-responsive sm:mr-10 max-sm:mr-0">
           <h3 className="h3-text">
@@ -890,7 +890,7 @@ const CustomerManagement: React.FC = () => {
                     >
                       {/* min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] */}
                       {
-                        domainList?.filter(item => item?.domain_name?.toLowerCase()?.includes(domain?.toLowerCase()))?.map((item, index) => {
+                        domainList?.filter((history, idx, self) => self?.findIndex(h => h?.domain_name === history?.domain_name) === idx)?.filter(item => item?.domain_name?.toLowerCase()?.includes(domain?.toLowerCase()))?.map((item, index) => {
                           return (
                             <a
                               key={index}
@@ -935,7 +935,7 @@ const CustomerManagement: React.FC = () => {
               <DateRangePicker
                 range={predefinedRanges}
                 placeholder="Select Subscription Date Range"
-                style={{ width: '100%', maxWidth: '300px', padding: '0 16px', zIndex: '50' }}
+                style={{ width: '100%', maxWidth: '300px', padding: '0 16px' }}
                 onChange={handleSubscriptionRangeChange}
                 value={subscriptionRange}
                 showHeader={false}
@@ -947,7 +947,7 @@ const CustomerManagement: React.FC = () => {
               <DateRangePicker
                 range={predefinedRanges}
                 placeholder="Select Renewal Date Range"
-                style={{ width: '100%', maxWidth: '300px', padding: '0 16px', zIndex: '50' }}
+                style={{ width: '100%', maxWidth: '300px', padding: '0 16px' }}
                 onChange={handleRenewalnRangeChange}
                 value={renewalRange}
                 showHeader={false}
@@ -1015,13 +1015,13 @@ const CustomerManagement: React.FC = () => {
                         className="select-input"
                         name="country"
                         onChange={handleFilterCountryChange}
-                        value={filters2.country}
+                        value={filters2?.country}
                       >
                         <option selected value="">
                           Select Country
                         </option>
                         {
-                          countryList && countryList.map((country, number) => (
+                          countryList && countryList?.map((country, number) => (
                             <option key={number} value={country}>{country}</option>
                           ))
                         }
@@ -1032,7 +1032,7 @@ const CustomerManagement: React.FC = () => {
                         className="select-input"
                         name="state_name"
                         onChange={handleFilterChange}
-                        value={filters2.state_name}
+                        value={filters2?.state_name}
                       >
                         <option selected value="">
                           Select Region
@@ -1052,7 +1052,7 @@ const CustomerManagement: React.FC = () => {
                         className="select-input"
                         name="authentication"
                         onChange={handleFilterChange}
-                        value={filters2.authentication}
+                        value={filters2?.authentication}
                       >
                         <option selected value="">
                           Select Authorization
@@ -1067,7 +1067,7 @@ const CustomerManagement: React.FC = () => {
                         className="serach-input"
                         name="license_usage"
                         onChange={handleFilterChange}
-                        value={filters2.license_usage}
+                        value={filters2?.license_usage}
                         placeholder="Enter License Usage Value"
                       />
                     </div>
@@ -1164,6 +1164,24 @@ const CustomerManagement: React.FC = () => {
           )
         }
 
+        <div className="w-full py-3">
+          <div className="flex items-center justify-start gap-1">
+            <select
+              onChange={e => {
+                setItemsPerPage(parseInt(e.target.value));
+              }}
+              value={itemsPerPage}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={20} selected>20</option>
+              <option value={50}>50</option>
+            </select>
+            <label>items</label>
+          </div>
+        </div>
+
         <div className="w-full overflow-x-auto pb-[20px]">
           <table className="min-w-[1100px] w-full max-h-screen">
             <thead className="h-[53px] thead-css">
@@ -1208,12 +1226,12 @@ const CustomerManagement: React.FC = () => {
                         className="td-css"
                       >#{item?.profile_id}</td>
                       <td
-                        className="td-css text-[#1F86E5] underline"
+                        className="td-css"
                       >
                         <button
                           onClick={() => navigate('/customer-information', { state: {item, filters} })}
                           button-name="go-to-customer-information"
-                          className="cursor-pointer"
+                          className={!rolePermissionsSlice?.customer_management?.edit ? "" : "cursor-pointer text-[#1F86E5] underline"}
                           disabled={!rolePermissionsSlice?.customer_management?.edit ? true : false}
                         >{item?.first_name} {item?.last_name}</button>
                       </td>
@@ -1547,69 +1565,59 @@ const CustomerManagement: React.FC = () => {
               }
             </tbody>
           </table>
-        </div>
-        <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
-          <div className="flex items-center gap-1">
-            <select
-              onChange={e => {
-                setItemsPerPage(parseInt(e.target.value));
-              }}
-              value={itemsPerPage}
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={15}>15</option>
-              <option value={20} selected>20</option>
-              <option value={50}>50</option>
-            </select>
-            <label>items</label>
-          </div>
-          <div className="flex">
-            <button
-              onClick={() => {
-                setCurrentPage((prev) => Math.max(prev - 1, 0));
-              }}
-              disabled={currentPage === 0}
-              className={`px-3 py-1 text-sm ${
-                currentPage === 0
-                  ? "bg-transparent text-gray-300"
-                  : "bg-transparent hover:bg-green-500 hover:text-white"
-              } rounded-l transition`}
-            >
-              Prev
-            </button>
-
-            {/* Page numbers */}
-            {Array.from({ length: totalPages }, (_, index) => (
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel={(
               <button
-                key={index}
                 onClick={() => {
-                  setCurrentPage(index);
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
                 }}
-                className={`px-3 py-1 text-sm mx-1 rounded ${
-                  currentPage === index
-                    ? "bg-green-500 text-white"
+                disabled={currentPage === totalPages - 1}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === totalPages - 1
+                    ? "bg-transparent text-gray-300"
                     : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-                } transition`}
+                } rounded-r transition`}
               >
-                {index + 1}
+                Next
               </button>
-            ))}
+            )}
+            onPageChange={(event) => {
+              setCurrentPage(event.selected);
+              // console.log(event.selected);
+            }}
+            pageRangeDisplayed={2}
+            pageCount={totalPages}
+            previousLabel={(
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.max(prev - 1, 0));
+                }}
+                disabled={currentPage === 0}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === 0
+                    ? "bg-transparent text-gray-300"
+                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                } rounded-l transition`}
+              >
+                Prev
+              </button>
+            )}
 
-            <button
-              onClick={() => {
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
-              }}
-              disabled={currentPage === totalPages - 1}
-              className={`px-3 py-1 text-sm ${
-                currentPage === totalPages - 1
-                  ? "bg-transparent text-gray-300"
-                  : "bg-transparent hover:bg-green-500 hover:text-white"
-              } rounded-r transition`}
-            >
-              Next
-            </button>
-          </div>
+            containerClassName="flex justify-start"
+
+            renderOnZeroPageCount={null}
+            className="pagination-class-name"
+
+            pageClassName="pagination-li"
+            pageLinkClassName="pagination-li-a"
+
+            breakClassName="pagination-ellipsis"
+            breakLinkClassName="pagination-ellipsis-a"
+
+            activeClassName="pagination-active-li"
+            activeLinkClassName	="pagination-active-a"
+          />
         </div>
       </div>
     </div>

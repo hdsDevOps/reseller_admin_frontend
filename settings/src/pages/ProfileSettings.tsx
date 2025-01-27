@@ -30,8 +30,9 @@ function ProfileSettings() {
   const [isNumberValid, setIsNumberValid] = useState(false);
 
   const [modalShow, setModalShow] = useState(false);
-  const [profile, setProfile] = useState(userDetails);
+  const [profile, setProfile] = useState<object|null>(null);
   console.log("profile...", profile);
+  const [newProfile, setNewProfile] = useState<object|null>(null);
   const [cPassword, setCPassword] = useState("");
   const [showPassword,setShowPassword] = useState(false);
   const [showCPassword,setShowCPassword] = useState(false);
@@ -98,19 +99,19 @@ function ProfileSettings() {
   }, []);
 
   useEffect(() => {
-    if(countries.length > 0 && countryName !== "") {
+    if(countries?.length > 0 && countryName !== "") {
       setCountryDropdownOpen(true);
     }
   }, [countries, countryName]);
 
   useEffect(() => {
-    if(states.length > 0 && stateName !== "") {
+    if(states?.length > 0 && stateName !== "") {
       setStateDropdownOpen(true);
     }
   }, [states, stateName]);
 
   useEffect(() => {
-    if(cities.length > 0 && cityName !== "") {
+    if(cities?.length > 0 && cityName !== "") {
       setCityDropdownOpen(true);
     }
   }, [cities, cityName]);
@@ -122,11 +123,11 @@ function ProfileSettings() {
   }, [hereList, hereSearch]);
 
   const getFirstAlphabet = (str: string) => {
-    return Array.from(str)[0].toUpperCase();
+    return Array?.from(str)[0]?.toUpperCase();
   };
 
   useEffect(() => {
-    if(userDetails?.phone_no === profile?.phone_no) {
+    if(userDetails?.phone_no === newProfile?.phone_no) {
       setIsNumberValid(true);
     }
   }, [userDetails, profile]);
@@ -198,7 +199,7 @@ function ProfileSettings() {
   }, [userDetails]);
 
   const handlePhoneChange = (value: string) => {
-    setProfile((prevData) => ({ ...prevData, phone: value }));
+    setNewProfile((prevData) => ({ ...prevData, phone: value }));
   };
 
   const getHereData = async() => {
@@ -217,10 +218,10 @@ function ProfileSettings() {
   }, [hereSearch]);
 
   const removePrefix = (input:string, prefix:string) => {
-    if(input.startsWith(prefix)) {
-      return input.slice(prefix.length);
-    } else if(input.startsWith('0')) {
-      return input.slice(1);
+    if(input?.startsWith(prefix)) {
+      return input?.slice(prefix.length);
+    } else if(input?.startsWith('0')) {
+      return input?.slice(1);
     }
     return input;
   };
@@ -254,17 +255,17 @@ function ProfileSettings() {
   };
   
   const updateProfile = e => {
-    setProfile({
-      ...profile,
+    setNewProfile({
+      ...newProfile,
       [e.target.name]: e.target.value,
     });
   };
   
   const updateProfileName = (e) => {
     const value = e.target.value;
-    const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
-    setProfile({
-      ...profile,
+    const filteredValue = value?.replace(/[^a-zA-Z\s]/g, "");
+    setNewProfile({
+      ...newProfile,
       [e.target.name]: filteredValue,
     });
   };
@@ -290,36 +291,36 @@ function ProfileSettings() {
     e.preventDefault();
     if(isNumberValid) {
       if(
-        profile?.first_name === "" || profile?.first_name?.trim() === "" ||
-        profile?.last_name === "" || profile?.last_name?.trim() === "" ||
-        profile?.email === "" || profile?.email?.trim() === "" ||
-        profile?.phone === "" || profile?.phone?.trim() === "" ||
-        profile?.street_name === "" || profile?.street_name?.trim() === "" ||
-        profile?.country === "" || profile?.country?.trim() === ""
+        newProfile?.first_name === "" || newProfile?.first_name?.trim() === "" ||
+        newProfile?.last_name === "" || newProfile?.last_name?.trim() === "" ||
+        newProfile?.email === "" || newProfile?.email?.trim() === "" ||
+        newProfile?.phone === "" || newProfile?.phone?.trim() === "" ||
+        newProfile?.street_name === "" || newProfile?.street_name?.trim() === "" ||
+        newProfile?.country === "" || newProfile?.country?.trim() === ""
       ) {
         toast.warning("Please fill the fields.");
-      } else if(states.length > 0 && profile?.state_name === "" && profile?.state_name.trim() === "") {
+      } else if(states.length > 0 && newProfile?.state_name === "" && newProfile?.state_name.trim() === "") {
         toast.warning("Please fill the fields.");
-      } else if(cities.length > 0 && profile?.city === "" && profile?.city.trim() === "") {
+      } else if(cities.length > 0 && newProfile?.city === "" && newProfile?.city.trim() === "") {
         toast.warning("Please fill the fields.");
       } else {
         try {
           if(cPassword !== "" && cPassword.trim() !== "") {
-            if(profile?.password === cPassword){
+            if(newProfile?.password === cPassword){
               const result = await dispatch(updateAdminDetailsThunk({
                 userid: userId,
-                first_name: profile?.first_name,
-                last_name: profile?.last_name,
-                email: profile?.email,
-                phone: profile?.phone,
+                first_name: newProfile?.first_name,
+                last_name: newProfile?.last_name,
+                email: newProfile?.email,
+                phone: newProfile?.phone,
                 password: cPassword,
-                profile_pic: profile?.profile_pic,
-                street_name: profile?.street_name,
-                city: profile?.city,
-                state_name: profile?.state_name,
-                country: profile?.country
+                profile_pic: newProfile?.profile_pic,
+                street_name: newProfile?.street_name,
+                city: newProfile?.city,
+                state_name: newProfile?.state_name,
+                country: newProfile?.country
               })).unwrap();
-              dispatch(setUserDetails(profile));
+              dispatch(setUserDetails(newProfile));
               toast.success(result?.message);
               setModalShow(false);
             } else {
@@ -328,17 +329,17 @@ function ProfileSettings() {
           } else {
             const result = await dispatch(updateAdminDetailsThunk({
               userid: userId,
-              first_name: profile?.first_name,
-              last_name: profile?.last_name,
-              email: profile?.email,
-              phone: profile?.phone,
-              profile_pic: profile?.profile_pic,
-              street_name: profile?.street_name,
-              city: profile?.city,
-              state_name: profile?.state_name,
-              country: profile?.country
+              first_name: newProfile?.first_name,
+              last_name: newProfile?.last_name,
+              email: newProfile?.email,
+              phone: newProfile?.phone,
+              profile_pic: newProfile?.profile_pic,
+              street_name: newProfile?.street_name,
+              city: newProfile?.city,
+              state_name: newProfile?.state_name,
+              country: newProfile?.country
             })).unwrap();
-            dispatch(setUserDetails(profile));
+            dispatch(setUserDetails(newProfile));
             toast.success(result?.message);
             setModalShow(false);
           }
@@ -362,6 +363,10 @@ function ProfileSettings() {
   const handleClickOutOfFilter = e => {
     if(modalRef.current && !modalRef.current.contains(e.target)){
       setModalShow(false);
+      setNewProfile(null);
+      setCountryName("");
+      setStateName("");
+      setCityName("");
     }
   };
   useEffect(() => {
@@ -376,6 +381,7 @@ function ProfileSettings() {
     setCountryName("");
     setStateName("");
     setCityName("");
+    setNewProfile(null);
   }
 
   const imageUpload = async(e) => {
@@ -568,7 +574,6 @@ function ProfileSettings() {
 
   return (
     <div className='flex flex-col px-2 max-[400px]:px-0'>
-      <ToastContainer />
       <h3
         className='h3-text-3'
       >Profile Settings</h3>
@@ -592,7 +597,7 @@ function ProfileSettings() {
                 />
               ) : (
                 <h6 className='border-[3px] border-white w-full h-full min-h-[93px] rounded-full bg-custom-green text-center items-center text-white text-5xl pt-4'>
-                  {getFirstAlphabet(profile?.first_name)}{getFirstAlphabet(profile?.last_name)}
+                  {getFirstAlphabet(profile ? profile?.first_name : "")}{getFirstAlphabet(profile ? profile?.last_name : "")}
                 </h6>
               )
             }
@@ -626,6 +631,7 @@ function ProfileSettings() {
                 className='btn-green-4 duration-500 ease-in-out'
                 onClick={() => {
                   setModalShow(true);
+                  setNewProfile(userDetails);
                 }}
               >Edit</button>
             </div>
@@ -637,7 +643,7 @@ function ProfileSettings() {
             className='grid grid-cols-2 gap-2 mt-1'
           >
             {
-              formList.map((item, index) => {
+              profile !== null && formList.map((item, index) => {
                 if(item.name == 'email' || item.name == 'phone'){
                   return(
                     <div
@@ -720,7 +726,7 @@ function ProfileSettings() {
                   className='grid grid-cols-2 gap-2 mt-1 max-h-[300px] overflow-y-scroll'
                 >
                   {
-                    formList.map((item, index) => {
+                    newProfile !== null && formList.map((item, index) => {
                       if(item.name == 'email'){
                         return(
                           <div
@@ -732,7 +738,7 @@ function ProfileSettings() {
                               type={item.type}
                               name={item.name}
                               placeholder={item.placeholder}
-                              defaultValue={profile[item.name] || ""}
+                              defaultValue={newProfile[item.name] || ""}
                               className='search-input-text'
                               onChange={updateProfile}
                               required
@@ -742,7 +748,7 @@ function ProfileSettings() {
                       } else if(item.name === 'phone'){
                         return(
                           <div
-                setIsNumberValid            key={index}
+                            key={index}
                             className='flex flex-col col-span-2 mb-2'
                           >
                             <label
@@ -764,7 +770,7 @@ function ProfileSettings() {
                                   setIsNumberValid(false);
                                 }
                               }}
-                              value={profile?.phone}
+                              value={newProfile?.phone}
                               placeholder='00000-00000'
                               inputProps={{
                                 required: true,
@@ -793,8 +799,8 @@ function ProfileSettings() {
                               placeholder={item?.placeholder}
                               name='country'
                               onChange={e => {
-                                setProfile({
-                                  ...profile,
+                                setNewProfile({
+                                  ...newProfile,
                                   country: '',
                                   state_name: '',
                                   city: ''
@@ -806,7 +812,7 @@ function ProfileSettings() {
                                 setState({});
                                 setCity({});
                               }}
-                              value={profile?.country || countryName}
+                              value={newProfile?.country || countryName}
                               required
                               onFocus={() => {setCountryDropdownOpen(true)}}
                             />
@@ -814,14 +820,14 @@ function ProfileSettings() {
                               countryDropdownOpen && (
                                 <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2'>
                                   {
-                                    countries?.filter(name => name?.name.toLowerCase().includes(countryName.toLowerCase())).map((country, idx) => (
+                                    countries?.filter(name => name?.name?.toLowerCase()?.includes(countryName?.toLowerCase()))?.map((country, idx) => (
                                       <p
                                         key={idx}
                                         className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
                                         dropdown-name="country-dropdown"
                                         onClick={() => {
-                                          setProfile({
-                                            ...profile,
+                                          setNewProfile({
+                                            ...newProfile,
                                             country: country?.name
                                           });
                                           setCountryName("");
@@ -856,8 +862,8 @@ function ProfileSettings() {
                               placeholder={item?.placeholder}
                               name='state_name'
                               onChange={e => {
-                                setProfile({
-                                  ...profile,
+                                setNewProfile({
+                                  ...newProfile,
                                   state_name: "",
                                   city: ""
                                 });
@@ -866,7 +872,7 @@ function ProfileSettings() {
                                 setState({});
                                 setCity({});
                               }}
-                              value={profile?.state_name || stateName}
+                              value={newProfile?.state_name || stateName}
                               required={states?.length > 0 ? true : false}
                               onFocus={() => {setStateDropdownOpen(true)}}
                             />
@@ -874,13 +880,13 @@ function ProfileSettings() {
                               stateDropdownOpen && (
                                 <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2'>
                                   {
-                                    states?.filter(name => name?.name.toLowerCase().includes(stateName.toLowerCase())).map((region, idx) => (
+                                    states?.filter(name => name?.name.toLowerCase()?.includes(stateName?.toLowerCase()))?.map((region, idx) => (
                                       <p
                                         key={idx}
                                         className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
                                         onClick={() => {
-                                          setProfile({
-                                            ...profile,
+                                          setNewProfile({
+                                            ...newProfile,
                                             state_name: region?.name,
                                             city: ""
                                           });
@@ -914,14 +920,14 @@ function ProfileSettings() {
                               placeholder={item?.placeholder}
                               name='city'
                               onChange={e => {
-                                setProfile({
-                                  ...profile,
+                                setNewProfile({
+                                  ...newProfile,
                                   city: ''
                                 });
                                 setCityName(e.target.value);
                                 setCity({});
                               }}
-                              value={profile?.city || cityName}
+                              value={newProfile?.city || cityName}
                               required={cities?.length > 0 ? true : false}
                               onFocus={() => {setCityDropdownOpen(true)}}
                             />
@@ -929,13 +935,13 @@ function ProfileSettings() {
                               cityDropdownOpen && (
                                 <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2'>
                                   {
-                                    cities?.filter(name => name?.name.toLowerCase().includes(cityName.toLowerCase())).map((city_name, idx) => (
+                                    cities?.filter(name => name?.name.toLowerCase()?.includes(cityName?.toLowerCase()))?.map((city_name, idx) => (
                                       <p
                                         key={idx}
                                         className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
                                         onClick={() => {
-                                          setProfile({
-                                            ...profile,
+                                          setNewProfile({
+                                            ...newProfile,
                                             city: city_name?.name
                                           });
                                           setCityName("");
@@ -961,7 +967,7 @@ function ProfileSettings() {
                               type={item.type}
                               name={item.name}
                               placeholder={item.placeholder}
-                              value={profile[item.name] || ""}
+                              value={newProfile[item.name] || ""}
                               className='search-input-text'
                               onChange={updateProfileName}
                               required
@@ -985,14 +991,14 @@ function ProfileSettings() {
                       //         placeholder={item?.placeholder}
                       //         name='city'
                       //         onChange={e => {
-                      //           setProfile({
-                      //             ...profile,
+                      //           setNewProfile({
+                      //             ...newProfile,
                       //             street_name: ''
                       //           });
                       //           setHereSearch(e.target.value);
                       //           setHereData(null);
                       //         }}
-                      //         value={profile?.street_name || hereSearch}
+                      //         value={newProfile?.street_name || hereSearch}
                       //         required
                       //         onFocus={() => {setStreetDropdownOpen(true)}}
                       //       />
@@ -1005,8 +1011,8 @@ function ProfileSettings() {
                       //         //           key={idx}
                       //         //           className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
                       //         //           onClick={() => {
-                      //         //             setProfile({
-                      //         //               ...profile,
+                      //         //             setNewProfile({
+                      //         //               ...newProfile,
                       //         //               street_name: city_name?.name
                       //         //             });
                       //         //             setHereSearch("");
@@ -1033,7 +1039,7 @@ function ProfileSettings() {
                               type={item.type}
                               name={item.name}
                               placeholder={item.placeholder}
-                              value={profile[item.name] || ""}
+                              value={newProfile[item.name] || ""}
                               className='search-input-text'
                               onChange={updateProfile}
                               required

@@ -173,7 +173,6 @@ const Faqs: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1">
-      <ToastContainer />
       <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
         <h3 className="h3-text">FAQ's</h3>
         <div

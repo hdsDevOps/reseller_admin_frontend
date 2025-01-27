@@ -368,7 +368,6 @@ const UserList = () => {
 
   return (
     <div className="grid grid-cols-1">
-      <ToastContainer />
       <div className="flex-row-between-responsive sm:mr-10 max-sm:mr-0">
         <h3 className="h3-text">
           User List
