@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import '../styles/styles.css';
-import { getCustomerDomainsListThunk, updateCustomerPasswordThunk } from 'store/user.thunk';
+import { getCustomerDomainsListThunk, logInAsCustomerThunk, updateCustomerPasswordThunk } from 'store/user.thunk';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,7 +14,7 @@ const CustomerInformation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const { rolePermissionsSlice } = useAppSelector(state => state.auth);
+  const { rolePermissionsSlice, userDetails } = useAppSelector(state => state.auth);
 
   const [primaryDomain, setPrimaryDomain] = useState("");
 
@@ -93,6 +93,27 @@ const CustomerInformation: React.FC = () => {
   useEffect(() => {
     getPrimaryDomain();
   }, [domains]);
+  
+  const handleLoginAsCustomer = async(email:string) => {
+    try {
+      const result = await dispatch(logInAsCustomerThunk({email: email})).unwrap();
+      console.log("result....", result);
+      if(result?.status === 200) {
+        window.location.href=`${process.env.CUSTOMER_PORTAL_BASE_URL}redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
+      }
+    } catch (error) {
+      toast.error("Unable to login as customer");
+      // if(error?.message == "Request failed with status code 401") {
+      //   try {
+      //     const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+      //     navigate('/login');
+      //   } catch (error) {
+      //     //
+      //   }
+      // }
+      console.log("error....", error);
+    }
+  };
   
   return (
     <div
@@ -178,6 +199,7 @@ const CustomerInformation: React.FC = () => {
             type='button'
             className='btn-as-customer-login max-w-fit'
             disabled={!rolePermissionsSlice?.customer_management?.login ? true : false}
+            onClick={() => {handleLoginAsCustomer(customer?.email)}}
           >Login as Customer</button>
 
           <button
@@ -307,7 +329,7 @@ const CustomerInformation: React.FC = () => {
           bottomData && bottomData.map((item, index) => {
             return(
               <div
-                className='w-[268px] h-[119px] rounded-[5px] border border-[#dbffe380] bg-[#dbffe380] flex flex-col justify-center min-[1150px]:my-0 my-2 mx-auto min-[1150px]:first:ml-0 min-[1150px]:last:mr-0'
+                className='w-[268px] h-[119px] rounded-[5px] border border-[#dbffe380] bg-[#dbffe380] flex flex-col justify-center min-[1150px]:my-0 my-2 mx-auto min-[1150px]:first:ml-0 min-[1150px]:last:mr-0 text-black hover:text-black no-underline hover:no-underline'
                 key={index}
               >
                 {item.icon}

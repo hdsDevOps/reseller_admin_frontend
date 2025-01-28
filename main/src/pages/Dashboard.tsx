@@ -161,7 +161,7 @@ const Dashboard: React.FC = () => {
 
   const revenue = [
     {label: 'Revenue Last Month', name: 'last_month_revenue',},
-    {label: 'monthly Recurring Income', name: 'current_month_recurring_income',},
+    {label: 'Monthly Recurring Revenue', name: 'current_month_recurring_income',},
     {label: 'Customers in Stripe', name: 'customers_who_use_stripe',},
     {label: 'Customers this month', name: 'new_customers_count_this_month',},
   ];

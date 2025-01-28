@@ -277,7 +277,7 @@ const OTP: React.FC = () => {
               {
                 [1, 2, 3, 4, 5, 6].map((index) => (
                   <input
-                  key={index}
+                    key={index}
                     type="text"
                     maxLength={1}
                     // ref={otp1Ref}
@@ -288,6 +288,7 @@ const OTP: React.FC = () => {
                     onPaste={handlePaste}
                     className="w-full aspect-square outline-none focus border-2 bg-transparent rounded-lg text-center text-black"
                     placeholder="0"
+                    data-otp-index={`${index}`}
                   />
                 ))
               }

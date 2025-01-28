@@ -4,7 +4,7 @@ import { ArrowRightLeft, ChevronDown, Ellipsis } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getNotificationTemplateThunk, sendEmailToCustomerThunk, getPlansAndPricesThunk, getCustomerDomainsListThunk, getCustomerEmailsCountThunk } from 'store/user.thunk';
+import { getCustomerListThunk, editCustomerThunk, deleteCustomerThunk, suspendCustomerThunk, cancelCustomerSubscriptionThunk, declineCustomerSubscriptionThunk, getCountryListThunk, getRegionListThunk, removeUserAuthTokenFromLSThunk, getNotificationTemplateThunk, sendEmailToCustomerThunk, getPlansAndPricesThunk, getCustomerDomainsListThunk, getCustomerEmailsCountThunk, logInAsCustomerThunk } from 'store/user.thunk';
 import { setCustomerFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -132,7 +132,7 @@ const CustomerManagement: React.FC = () => {
     renewal_date: initialDateRange,
     domain: ""
   };
-  const {customerFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice } = useAppSelector(state => state.auth);
+  const {customerFilters, currentPageNumber, itemsPerPageNumber, rolePermissionsSlice, userDetails } = useAppSelector(state => state.auth);
   // console.log('customerFilters', customerFilters);
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(customerFilters === null ? intialFilter : customerFilters);
@@ -369,6 +369,27 @@ const CustomerManagement: React.FC = () => {
     getCustomerList();
   }, [filters]);
 
+  const handleLoginAsCustomer = async(email:string) => {
+    try {
+      const result = await dispatch(logInAsCustomerThunk({email: email})).unwrap();
+      console.log("result....", result);
+      if(result?.status === 200) {
+        window.location.href=`${process.env.CUSTOMER_PORTAL_BASE_URL}redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
+      }
+    } catch (error) {
+      toast.error("Unable to login as customer");
+      // if(error?.message == "Request failed with status code 401") {
+      //   try {
+      //     const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+      //     navigate('/login');
+      //   } catch (error) {
+      //     //
+      //   }
+      // }
+      console.log("error....", error);
+    }
+  }
+
   // const getCustomerEmailsCount = async(id:string, index:Number) => {
   //   if(currentItems?.length === emailsCount?.length) {
   //     const newEmailCounts = [...emailsCount];
@@ -548,7 +569,7 @@ const CustomerManagement: React.FC = () => {
       country: filters2?.country,
       state_name: filters2?.state_name,
       authentication: filters2?.authentication == "true" ? true : filters2?.authentication == "false" ? false: "",
-      license_usage: filters2?.license_usage,
+      license_usage: filters2?.license_usage === "" ? "" : Number(filters2?.license_usage),
       subscritption_date: filters2?.subscritption_date,
       renewal_date: filters2?.renewal_date
     })
@@ -894,7 +915,7 @@ const CustomerManagement: React.FC = () => {
                           return (
                             <a
                               key={index}
-                              className={`font-inter-16px-400 pl-4 py-1 ${
+                              className={`font-inter-16px-400 pl-4 py-1 text-black no-underline hover:text-black hover:no-underline ${
                                 index != 0 && `border-t border-white break-words`
                               }`}
                               onClick={() => {
@@ -1362,7 +1383,7 @@ const CustomerManagement: React.FC = () => {
                                   className={`customer-table-more-list-li ${!rolePermissionsSlice?.customer_management?.edit ? "hidden" : ""}`}
                                 >
                                   <a
-                                    className="cursor-pointer"
+                                    className="cursor-pointer text-black no-underline hover:text-black hover:no-underline"
                                     onClick={() => {
                                       navigate('/edit-customer', { state: item});
                                     }}
@@ -1372,7 +1393,7 @@ const CustomerManagement: React.FC = () => {
                                   className={`customer-table-more-list-li ${!rolePermissionsSlice?.customer_management?.delete ? "hidden" : ""}`}
                                 >
                                   <a
-                                    className="cursor-pointer"
+                                    className="cursor-pointer text-black no-underline hover:text-black hover:no-underline"
                                     onClick={() => {
                                       setShowDeleteModal(!showDeleteModal);
                                       setCommonModal(true);
@@ -1383,14 +1404,15 @@ const CustomerManagement: React.FC = () => {
                                   className={`customer-table-more-list-li ${!rolePermissionsSlice?.customer_management?.login ? "hidden" : ""}`}
                                 >
                                   <a
-                                    className="cursor-pointer"
+                                    className="cursor-pointer text-black no-underline hover:text-black hover:no-underline"
+                                    onClick={() => {handleLoginAsCustomer(item?.email)}}
                                   >Login as Customer</a>
                                 </li>
                                 <li
                                   className="customer-table-more-list-li"
                                 >
                                   <a
-                                    className="cursor-pointer"
+                                    className="cursor-pointer text-black no-underline hover:text-black hover:no-underline"
                                     onClick={() => {
                                       setShowSubscriptionModal(!showSubscriptionModal);
                                     }}
@@ -1533,7 +1555,7 @@ const CustomerManagement: React.FC = () => {
                                   className="customer-table-more-list-li"
                                 >
                                   <a
-                                    className="cursor-pointer"
+                                    className="cursor-pointer text-black no-underline hover:text-black hover:no-underline"
                                     onClick={() => {
                                       setShowSuspendModal(!showSuspendModal);
                                       setCommonModal(true);
@@ -1548,7 +1570,7 @@ const CustomerManagement: React.FC = () => {
                                     }}
                                 >
                                   <a
-                                    className="cursor-pointer"
+                                    className="cursor-pointer text-black no-underline hover:text-black hover:no-underline"
                                   >Transfer Account</a>
                                 </li>
                               </ul>

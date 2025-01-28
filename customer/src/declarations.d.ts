@@ -17,6 +17,7 @@ declare module "store/ReduxProvider" {
     export const getCustomerDomainsListThunk;
     export const getPlansAndPricesThunk;
     export const getCustomerEmailsCountThunk;
+    export const logInAsCustomerThunk;
   }
 
   declare module 'store/authSlice' {

@@ -57,7 +57,7 @@ const FooterSection = () => {
       name: "contact_us_section_data",
     },
     {
-      header: "Our NewsLetter",
+      header: "Learning and Support",
       name: "newsletter_section_data",
     },
     {

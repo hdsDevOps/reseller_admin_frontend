@@ -105,7 +105,7 @@ const authSlice = createSlice({
   extraReducers: builder => {
     // user login
     builder.addCase(makeUserLoginThunk.pending, state => {
-      state.userAuthStatus = 'PENDING';
+      // state.userAuthStatus = 'PENDING';
     });
 
     builder.addCase(makeUserLoginThunk.fulfilled,

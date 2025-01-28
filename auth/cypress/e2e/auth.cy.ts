@@ -34,7 +34,7 @@ describe('auth microservice test', () => {
 
       // Step 4: Enter OTP
       otpString?.split('').forEach((digit, index) => {
-        cy.get(`input[data-otp-index="${index}"`).type(digit);
+        cy.get(`input[data-otp-index="${index+1}"`).type(digit);
       });
       cy.wait(2000);
       cy.get('button[type="submit"]').click();

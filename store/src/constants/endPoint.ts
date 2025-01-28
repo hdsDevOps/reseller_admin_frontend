@@ -23,6 +23,7 @@ export const endPoints = {
     getCustomerCount: 'adminservices/voucher/api/v1/getcustomer_number',
     getCustomerDomainsList: 'adminservices/customer/api/v1/get_domain_list',
     getCustomerEmailsCount: 'adminservices/customer/api/v1/get_email_list',
+    logInAsCustomer: 'adminservices/admin/api/v1/impersonate_login',
 
     // voucher notification endpoints
     voucherList: 'voucherservices/voucher/api/v1/voucherlist',

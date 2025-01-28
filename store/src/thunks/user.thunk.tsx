@@ -359,6 +359,13 @@ export const getCustomerEmailsCountThunk = createAsyncThunk(
   }
 );
 
+export const logInAsCustomerThunk = createAsyncThunk(
+  "users/logInAsCustomer",
+  async ({email}:any) => {
+    return await userApis.logInAsCustomerApi(email);
+  }
+);
+
 export const addNotificationTemplateThunk = createAsyncThunk(
   "users/addNotificationTemplate",
   async ({template_heading}: any) => {

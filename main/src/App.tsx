@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const { token, userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);
 
   // console.log({userId, userDetails});
+  console.log("userDetails...", userDetails);
 
   useEffect(() => {
     const getUserAuthToken = async () => {
@@ -40,7 +41,7 @@ const App: React.FC = () => {
           console.log("getUserIdFromLocalStorage...", getUserIdFromLocalStorage);
           // await dispatch(setUserIdDetails(getUserAuthTokenFromLSThunk));
           const userAdminDetails = await dispatch(getAdminDetailsThunk({userid: getUserIdFromLocalStorage})).unwrap();
-          console.log("userDetails...", userAdminDetails);
+          // console.log("userDetails...", userAdminDetails);
           // await dispatch(setUserDetails(userAdminDetails?.data));
           const currencyDefault = await dispatch(getDefaultCurrencyThunk({userid: getUserIdFromLocalStorage})).unwrap();
           console.log("currencyDefault...", currencyDefault);

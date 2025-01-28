@@ -464,6 +464,17 @@ async function getCustomerEmailsCountApi(
   }
 };
 
+async function logInAsCustomerApi(
+  email:string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.logInAsCustomer, {email});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function addNotificationTemplateApi(
   template_heading: string
 ): Promise<any> {
@@ -1265,6 +1276,7 @@ export const userApis = {
   getCustomerCountApi,
   getCustomerDomainsListApi,
   getCustomerEmailsCountApi,
+  logInAsCustomerApi,
   addNotificationTemplateApi,
   getNotificationTemplateApi,
   updateNoficationTemplateContentApi,

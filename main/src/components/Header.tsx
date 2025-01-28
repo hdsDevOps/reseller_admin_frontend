@@ -348,7 +348,7 @@ export default function Header() {
                   className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-0 mt-[8px] sm:mr-[10px] mr-0"
                 >
                   <a
-                    className="font-montserrat sm:text-base text-[12px] font-semibold text-white"
+                    className="font-montserrat sm:text-base text-[12px] font-semibold text-white hover:text-white no-underline hover:no-underline"
                   >
                     {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
                   </a>
@@ -386,7 +386,7 @@ export default function Header() {
                         className="text-center sm:pt-[1px] bg-custom-green sm:w-[41px] w-[25px] sm:h-[41px] h-[25px] rounded-full sm:mt-[8px] mt-[8px] sm:mr-[10px] mr-0"
                       >
                         <a
-                          className="font-montserrat sm:text-base text-[10px] font-semibold text-white"
+                          className="font-montserrat sm:text-base text-[10px] font-semibold text-white hover:text-white no-underline hover:no-underline"
                         >
                           {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
                         </a>
