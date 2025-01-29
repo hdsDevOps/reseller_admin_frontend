@@ -287,6 +287,7 @@ const AddCustomer: React.FC = () => {
       toast.error("Spaces cannot be empty");
     }
   };
+  // hello
   return (
     <div
       className='flex flex-col px-2'
