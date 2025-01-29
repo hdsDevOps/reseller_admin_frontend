@@ -99,7 +99,8 @@ const CustomerInformation: React.FC = () => {
       const result = await dispatch(logInAsCustomerThunk({email: email})).unwrap();
       console.log("result....", result);
       if(result?.status === 200) {
-        window.location.href=`${process.env.CUSTOMER_PORTAL_BASE_URL}redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
+        window.location.href=`https://main.customer.gworkspace.withhordanso.com/redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
+        // window.location.href=`${process.env.CUSTOMER_PORTAL_BASE_URL}redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
       }
     } catch (error) {
       toast.error("Unable to login as customer");
