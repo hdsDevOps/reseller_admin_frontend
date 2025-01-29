@@ -136,7 +136,7 @@ const CustomerManagement: React.FC = () => {
   // console.log('customerFilters', customerFilters);
   const [filterShow, setFilterShow] = useState(false);
   const [filters, setFilters] = useState(customerFilters === null ? intialFilter : customerFilters);
-  console.log("filters...", filters);
+  // console.log("filters...", filters);
   
   const [filters2, setFilters2] = useState(customerFilters === null ? intialFilter2 : {
     country: customerFilters?.country || "",
@@ -147,11 +147,11 @@ const CustomerManagement: React.FC = () => {
     renewal_date: customerFilters?.renewal_date || initialDateRange,
     domain: customerFilters?.domain || ""
   });
-  console.log("filters2...", filters2);
+  // console.log("filters2...", filters2);
 
   useEffect(() => {
     const setCustomerFiltersSlice = async() => {
-      await dispatch(setCustomerFiltersStatus(filters)).unwrap();
+      await dispatch(setCustomerFiltersStatus(filters));
     }
 
     setCustomerFiltersSlice();
@@ -163,7 +163,7 @@ const CustomerManagement: React.FC = () => {
   const [customerList, setCustomerList] = useState([]);
   // console.log("customerList...", customerList);
   const [checked, setChecked] = useState([]);
-  console.log("checked...", checked);
+  // console.log("checked...", checked);
   const domainRef = useRef(null);
   const [isDomainDropdownOpen, setIsDomainDropdownOpen] = useState(false);
   
@@ -177,9 +177,9 @@ const CustomerManagement: React.FC = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [commonModal, setCommonModal] = useState(false);
   const [selectAll, setSelectAll] = useState<boolean>(false);
-  console.log("selectAll...", selectAll)
+  // console.log("selectAll...", selectAll)
   const [selectAllCount, setSelectAllCount] = useState<number>(0);
-  console.log("selected count...", selectAllCount);
+  // console.log("selected count...", selectAllCount);
   const [selectAllPage, setSelectAllPage] = useState<number>(0);
   const [authorization, setAuthorization] = useState("");
   const [notificationTemplates, setNotificationTemplates] = useState([]);
@@ -191,7 +191,7 @@ const CustomerManagement: React.FC = () => {
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = customerList?.slice(indexOfFirstItem, indexOfLastItem);
-  console.log("currentItems...", currentItems);
+  // console.log("currentItems...", currentItems);
   const totalPages = Math.ceil(customerList.length / itemsPerPage);
   // console.log({currentPage, totalPages, lenght: currentItems?.length});
 
@@ -209,11 +209,11 @@ const CustomerManagement: React.FC = () => {
   const [state, setState] = useState({});
 
   const [emailsCount, setEmailsCount] = useState([]);
-  console.log("emailsCount...", emailsCount);
+  // console.log("emailsCount...", emailsCount);
 
   const [subscriptionRange, setSubscriptionRange] = useState<[Date | null, Date | null]>([null, null]);
   const [renewalRange, setRenewalRange] = useState<[Date | null, Date | null]>([null, null]);
-  console.log({subscriptionRange, renewalRange});
+  // console.log({subscriptionRange, renewalRange});
 
   const renderValue = (date: [Date, Date]) => {
     if (!date[0] || !date[1]) return "Select Date Range";
@@ -372,7 +372,7 @@ const CustomerManagement: React.FC = () => {
   const handleLoginAsCustomer = async(email:string) => {
     try {
       const result = await dispatch(logInAsCustomerThunk({email: email})).unwrap();
-      console.log("result....", result);
+      // console.log("result....", result);
       if(result?.status === 200) {
         window.location.href=`https://main.customer.gworkspace.withhordanso.com/redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
         // window.location.href=`${process.env.CUSTOMER_PORTAL_BASE_URL}redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
@@ -578,7 +578,7 @@ const CustomerManagement: React.FC = () => {
 
   const handleAuthorizeChange = async(item) => {
     const customerAuthentication = item?.authentication;
-    console.log(item);
+    // console.log(item);
     const newCustomerAuthentication = !customerAuthentication;
     try {
       const result = await dispatch(editCustomerThunk({
@@ -647,15 +647,15 @@ const CustomerManagement: React.FC = () => {
 
   const tableHeads = [
     {name: "checkbox", label: ""},
-    {name: "customer_id", label: "Customer ID",},
-    {name: "first_name", label: "Name",},
-    {name: "", label: "Product",},
-    {name: "", label: "Domain",},
-    {name: "", label: "Subscription Plan",},
-    {name: "", label: "License Usage",},
-    {name: "created_at", label: "Create Date",},
-    {name: "", label: "Payment Cycle",},
-    {name: "", label: "Renewal Date",},
+    {name: "profile_id", label: "Customer ID",},
+    {name: "name", label: "Name",},
+    {name: "product", label: "Product",},
+    {name: "domain", label: "Domain",},
+    {name: "plan", label: "Subscription Plan",},
+    {name: "license_usage", label: "License Usage",},
+    {name: "createdAt", label: "Create Date",},
+    {name: "payment_cycle", label: "Payment Cycle",},
+    {name: "next_payment", label: "Renewal Date",},
     {name: "authentication", label: "Make Authorization",},
     {name: "account_status", label: "Status",},
     {name: "action", label: "Action",},
@@ -745,13 +745,31 @@ const CustomerManagement: React.FC = () => {
   };
 
   const transferCustomer = async(item) => {
-    console.log('transfer');
+    // console.log('transfer');
   };
   
   function convertToDate(seconds:any, nanoseconds:any) {
-    const milliseconds = seconds * 1000 + nanoseconds / 1_000_000;
-    return new Date(milliseconds);
+    const milliseconds = (parseInt(seconds) * 1000) + (parseInt(nanoseconds) / 1e6);
+    const newDate = new Date(milliseconds);
+    // if(newDate === )
+    // console.log(newDate);
+    if(newDate == "Invalid Date") {
+      return "Invalid Date"
+    } else {
+      return format(newDate, 'dd MMM yyyy');
+    }
+    // convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds), 'dd MMM yyyy')}
   };
+
+  const renewalDate = (item) => {
+    if(item?.workspace) {
+      return convertToDate(item?.workspace?.next_payment?._seconds, item?.workspace?.next_payment?._nanoseconds);
+    } else if(item?.domain) {
+      return convertToDate(item?.domain_details?.next_payment?._seconds, item?.domain_details?.next_payment?._nanoseconds);
+    } else {
+      return "N/A";
+    }
+  }
 
   const selectAllButton = () => {
     const newSelectAllState = !selectAll;
@@ -1040,7 +1058,7 @@ const CustomerManagement: React.FC = () => {
                         value={filters2?.country}
                       >
                         <option selected value="">
-                          Select Country
+                          Select Country/Region
                         </option>
                         {
                           countryList && countryList?.map((country, number) => (
@@ -1057,7 +1075,7 @@ const CustomerManagement: React.FC = () => {
                         value={filters2?.state_name}
                       >
                         <option selected value="">
-                          Select Region
+                          Select State
                         </option>
                         {
                           availableStates && availableStates?.map((region, number) => (
@@ -1217,11 +1235,28 @@ const CustomerManagement: React.FC = () => {
                     >
                       <span>{item.label}</span>
                       {
-                        item?.name === "checkbox" ? "" :
-                        item?.name === "action" ? "" :
-                        <span className="ml-1"><button type="button" onClick={() => {
-                          //
-                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                        //next_payment,createdAt,license_usage,name
+                        item?.name === "next_payment"
+                        || item?.name === "createdAt"
+                        || item?.name === "name"
+                        || item?.name === "license_usage"
+                        ? <span className="ml-1">
+                          <button type="button" onClick={() => {
+                            setFilters((prev) => {
+                              const newFilData = {
+                                ...prev,
+                                sortdata: {
+                                  sort_text: item?.name,
+                                  //next_payment,createdAt,license_usage,name
+                                  order: prev?.sortdata?.sort_text === item?.name 
+                                    ? prev?.sortdata?.order === "asc" ? "desc" : "asc"
+                                    : "asc"
+                                }
+                              }
+                              return newFilData;
+                            })
+                          }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button>
+                        </span> : ""
                       }
                     </th>
                   );
@@ -1305,7 +1340,7 @@ const CustomerManagement: React.FC = () => {
                       <td
                         className="td-css"
                       >
-                        {`${convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds), 'dd MMM yyyy')}`}
+                        {convertToDate(item?.createdAt?._seconds, item?.createdAt?._nanoseconds)}
                       </td>
                       <td
                         className="td-css"
@@ -1321,15 +1356,7 @@ const CustomerManagement: React.FC = () => {
                       <td
                         className="td-css"
                       >
-                        {
-                          item?.workspace
-                          ? item?.workspace?.last_payment
-                            ? convertToDate(item?.workspace?.next_payment?._seconds, item?.workspace?.next_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.workspace?.next_payment?._seconds, item?.workspace?.next_payment?._nanoseconds), 'dd MMM yyyy')
-                            : "N/A"
-                          : item?.domain_details
-                            ? convertToDate(item?.domain_details?.next_payment?._seconds, item?.domain_details?.next_payment?._nanoseconds) === "Invalid Date" ? "N/A" : format(convertToDate(item?.domain_details?.next_payment?._seconds, item?.domain_details?.next_payment?._nanoseconds), 'dd MMM yyyy')
-                            : "N/A"
-                        }
+                        {renewalDate(item)}
                       </td>
                       <td>
                         <div className="mt-[7.5px] transition-transform duration-1000 ease-in-out flex justify-center">

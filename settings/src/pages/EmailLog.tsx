@@ -23,7 +23,7 @@ const EmailLog: React.FC = () => {
     {name: "email", label: "Email"},
     {name: "subject", label: "Subject"},
     {name: "created_at", label: "Sent date"},
-    {name: "no_receipt", label: "Number of Recipient"},
+    // {name: "no_receipt", label: "Number of Recipient"},
     {name: "action", label: "Action"},
   ];
 
@@ -121,12 +121,12 @@ const EmailLog: React.FC = () => {
                   return(
                     <th key={index} className="th-css">
                       <span>{item.label}</span>
-                      {
+                      {/* {
                         item?.name === "action" ? "" :
                         <span className="ml-1"><button type="button" onClick={() => {
                           //
                         }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
-                      }
+                      } */}
                     </th>
                   )
                 })
@@ -143,7 +143,7 @@ const EmailLog: React.FC = () => {
                   <td className="td-css-3">{log?.email}</td>
                   <td className="td-css-3">{log?.subject}</td>
                   <td className="td-css-3">{dateToIsoString(log?.created_at)}</td>
-                  <td className="td-css-3">{log?.no_receipt}</td>
+                  {/* <td className="td-css-3">{log?.no_receipt}</td> */}
                   <td className="text-center">
                     <button 
                       className="view-details"

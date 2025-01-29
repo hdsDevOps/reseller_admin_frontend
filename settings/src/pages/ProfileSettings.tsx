@@ -436,6 +436,7 @@ function ProfileSettings() {
         })
       } catch (error) {
         toast.error("Error uploading profile image");
+        console.log("errror...", error);
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -492,6 +493,7 @@ function ProfileSettings() {
         })
       } catch (error) {
         toast.error("Error uploading profile image");
+        console.log("errror...", error);
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();

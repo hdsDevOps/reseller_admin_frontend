@@ -227,7 +227,7 @@ const Role = () => {
           >
             <input
               list="brow"
-              placeholder="Auto search"
+              placeholder="Search user type"
               className="serach-input-no-radius"
               name="user_type"
               onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
@@ -282,6 +282,24 @@ const Role = () => {
         </div>
       </div>
 
+      <div className="flex justify-start">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-transparent border-separate border-spacing-y-6">
           <thead className="bg-custom-blue-6 h-12">
@@ -294,9 +312,6 @@ const Role = () => {
               </th>
               <th className="th-css-full-opacity">
                 <span>Permissions</span>
-                <span className="ml-1"><button type="button" onClick={() => {
-                  //
-                }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
               </th>
               <th className="th-css-full-opacity">Actions</th>
             </tr>
@@ -414,22 +429,7 @@ const Role = () => {
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
-        <div className="flex items-center gap-1">
-          <select
-            onChange={e => {
-              setItemsPerPage(parseInt(e.target.value));
-            }}
-            value={itemsPerPage}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20} selected>20</option>
-            <option value={50}>50</option>
-          </select>
-          <label>items</label>
-        </div>
+      <div className="flex justify-end items-center mt-12 relative bottom-2 right-0">
         <div className="flex">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}

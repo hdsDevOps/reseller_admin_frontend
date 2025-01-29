@@ -384,10 +384,10 @@ const BillingHistory: React.FC = () => {
                 >
                   <span>{header.label}</span>
                   {
-                    header?.name === "invoice" ? "" :
+                    header?.name === "transaction_id" || header?.name === "customer_name"  || header?.name === "created_at"  || header?.name === "amount" ?
                     <span className="ml-1"><button type="button" onClick={() => {
                       //
-                    }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                    }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
                   }
                 </th>
               ))}
@@ -404,10 +404,10 @@ const BillingHistory: React.FC = () => {
                     {/* {`${detail?.first_name} ${detail?.last_name}`} */}
                     {detail?.customer_name}
                   </td>
-                  <td className="td-css-3 text-custom-black-5 flex items-center flex-col">
+                  <td className="td-custom-css">
                     {/* <a>{detail?.date_invoice || ' '}</a> */}
-                    <a>{formatDate(detail?.date?._seconds, detail?.date?._nanoseconds)}</a>
-                    <small className="text-custom-green">{detail?.invoice}</small>
+                    <p>{formatDate(detail?.date?._seconds, detail?.date?._nanoseconds)}</p>
+                    <p className="text-custom-green">{detail?.invoice}</p>
                   </td>
                   <td className="td-css-3 text-custom-black-5">
                     {detail?.product_type || ' '}

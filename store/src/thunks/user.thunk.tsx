@@ -18,7 +18,10 @@ export const setUserAuthTokenToLSThunk = createAsyncThunk(
 export const removeUserAuthTokenFromLSThunk = createAsyncThunk(
   "users/removeUserAuthTokenFromLS",
   async () => {
-    return localStorage.removeItem("LS_KEY_AUTH_TOKEN");
+    const removeAuthKeys = () => {
+      ["LS_KEY_AUTH_TOKEN", "LS_KEY_USER_ID"].forEach(key => localStorage.removeItem(key)); 
+    }
+    return removeAuthKeys();
   },
 );
 

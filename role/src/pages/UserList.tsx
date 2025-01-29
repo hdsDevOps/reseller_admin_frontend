@@ -460,7 +460,26 @@ const UserList = () => {
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto mt-[22px] p-[6px]">
+
+      <div className="flex justify-start mt-3">
+        <div className="flex items-center gap-1">
+          <select
+            onChange={e => {
+              setItemsPerPage(parseInt(e.target.value));
+            }}
+            value={itemsPerPage}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20} selected>20</option>
+            <option value={50}>50</option>
+          </select>
+          <label>items</label>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto mt-[10px] p-[6px]">
         <table className="min-w-full">
           <thead className="bg-custom-blue-6 h-12">
             <tr>
@@ -470,10 +489,10 @@ const UserList = () => {
                     <th key={index} className="th-css-full-opacity">
                       <span>{item.label}</span>
                       {
-                        item.name === "action" ? "" :
+                        item.name === "first_name" ?
                         <span className="ml-1"><button type="button" onClick={() => {
                           //
-                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                        }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
                       }
                     </th>
                   )
@@ -547,22 +566,7 @@ const UserList = () => {
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-12 relative bottom-2 right-0">
-        <div className="flex items-center gap-1">
-          <select
-            onChange={e => {
-              setItemsPerPage(parseInt(e.target.value));
-            }}
-            value={itemsPerPage}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20} selected>20</option>
-            <option value={50}>50</option>
-          </select>
-          <label>items</label>
-        </div>
+      <div className="flex justify-end items-center mt-12 relative bottom-2 right-0">
         <div className="flex">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}

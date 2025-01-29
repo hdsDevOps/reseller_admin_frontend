@@ -161,7 +161,7 @@ const VoucherList: React.FC = () => {
     {name: "currency", label: "Currency"},
     {name: "discount_rate", label: "Discount"},
     {name: "start_date", label: "Start Date"},
-    {name: "end_date", label: "End Dat"},
+    {name: "end_date", label: "End Date"},
     {name: "action", label: "Actions"},
   ];
 
@@ -527,6 +527,8 @@ const VoucherList: React.FC = () => {
                   <th key={index} className="th-css-2">
                     <span>{head.label}</span>
                     {
+                      head?.name === "voucher_code" ? "" :
+                      head?.name === "currency" ? "" :
                       head?.name === "action" ? "" :
                       <span className="ml-1"><button type="button" onClick={() => {
                         //

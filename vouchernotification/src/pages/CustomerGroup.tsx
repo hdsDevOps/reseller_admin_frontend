@@ -274,10 +274,10 @@ const CustomerGroup: React.FC = () => {
                   <th key={index} className="th-css-2">
                     <span>{head.label}</span>
                     {
-                      head?.name === "action" ? "" :
-                      <span className="ml-1"><button type="button" onClick={() => {
+                      head?.name === "no_customer"
+                      ? <span className="ml-1"><button type="button" onClick={() => {
                         //
-                      }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
+                      }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
                     }
                   </th>
                 ))
