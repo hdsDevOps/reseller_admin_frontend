@@ -12,11 +12,71 @@ import Flag from 'react-world-flags'; // Flag component
 import { vocuherListThunk, deleteVoucherThunk, getCustomerGroupListThunk, getCustomerListThunk, sendVoucherEmailThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { setVoucherFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactPaginate from "react-paginate";
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite.min.css";
+import { addDays, addMonths, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays } from 'date-fns';
+
+interface RangeType<T> {
+  label: string;
+  value: [T, T] | ((value: T[]) => [T, T]);
+  placement?: string;
+  closeOverlay?: boolean;
+  appearance?: string;
+}
+
+const predefinedRanges: RangeType<Date>[] = [
+  { label: "Today", value: [new Date(), new Date()], placement: "left" },
+  {
+    label: "Yesterday",
+    value: [addDays(new Date(), -1), addDays(new Date(), -1)],
+    placement: "left",
+  },
+  {
+    label: "This week",
+    value: [startOfWeek(new Date()), endOfWeek(new Date())],
+    placement: "left",
+  },
+  {
+    label: "Last week",
+    value: [subDays(new Date(), 6), new Date()],
+    placement: "left",
+  },
+  {
+    label: "This month",
+    value: [startOfMonth(new Date()), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last month",
+    value: [
+      startOfMonth(addMonths(new Date(), -1)),
+      endOfMonth(addMonths(new Date(), -1)),
+    ],
+    placement: "left",
+  },
+  {
+    label: "This year",
+    value: [new Date(new Date().getFullYear(), 0, 1), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last year",
+    value: [
+      new Date(new Date().getFullYear() - 1, 0, 1),
+      new Date(new Date().getFullYear(), 0, 0),
+    ],
+    placement: "left",
+  },
+  {
+    label: "All time",
+    value: [new Date(new Date().getFullYear() - 1, 0, 1), new Date()],
+    placement: "left",
+  },
+];
 
 const initialFilters = {
   currency: "",
@@ -77,6 +137,16 @@ const VoucherList: React.FC = () => {
   // console.log(customerSearch);
 
   // console.log({currentPage, totalPages});
+  const [range, setRange] = useState<[Date | null, Date | null]|null>([null, null]);
+    
+  const handleChange = (value: [Date | null, Date | null]) => {
+    setRange(value);
+  };
+
+  const renderValue = (date: [Date, Date]) => {
+    if (!date[0] || !date[1]) return "Select Date Range";
+    return `${format(date[0], 'MMM d')} - ${format(date[1], 'MMM d, yyyy')}`;
+  };
 
   useEffect(() => {
     const setCurrentPageNumberSlice = async() => {
@@ -170,7 +240,11 @@ const VoucherList: React.FC = () => {
     const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
     const totalMilliseconds = milliseconds+extraMilliseconds;
     const newDate = new Date(totalMilliseconds);
-    return format(newDate, "dd MMM yyyy");
+    if(newDate == "Invalid Date") {
+      return "Invalid Date";
+    } else {
+      return format(newDate, "dd MMM yyyy");
+    }
   };
 
   const [sampleData,setSampleData] = useState([]);
@@ -185,6 +259,22 @@ const VoucherList: React.FC = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+  useEffect(() => {
+    if(range === null) {
+      setFilters({
+        ...filters,
+        start_date: "",
+        end_date: "",
+      });
+    } else {
+      setFilters({
+        ...filters,
+        start_date: `${range[0] === null ? "" : format(range[0], "yyyy-MM-dd")}`,
+        end_date: `${range[1] === null ? "" : format(range[1], "yyyy-MM-dd")}`,
+      });
+    }
+  }, [range]);
   
   useEffect(() => {
     const setVouhcerFiltersSlice = async() => {
@@ -346,18 +436,22 @@ const VoucherList: React.FC = () => {
             customer_type: customerType
           })
         ).unwrap();
-        toast.success(result?.message);
-        setTimeout(() => {
-          setCustomerGroupId("");
-          setCustomerGroupName("");
-          setCustomerGroupNameFound("");
-          setCustomerId("");
-          setCustomerEmailFound("");
-          setCustomerSearch({
-            ...customerSearch,
-            search_data: ""
-          });
-        }, 1000);
+        if(result?.status === 200) {
+          toast.success(result?.message);
+          setTimeout(() => {
+            setCustomerGroupId("");
+            setCustomerGroupName("");
+            setCustomerGroupNameFound("");
+            setCustomerId("");
+            setCustomerEmailFound("");
+            setCustomerSearch({
+              ...customerSearch,
+              search_data: ""
+            });
+          }, 1000);
+        } else {
+          toast.error(result?.message);
+        }
       } catch (error) {
         toast.error("Voucher email could not be sent");
         console.log(error);
@@ -453,7 +547,20 @@ const VoucherList: React.FC = () => {
             />
           </div>
           <div className="px-4 mb-5 sm:mb-0">
-            <input
+            <DateRangePicker
+              ranges={predefinedRanges}
+              placeholder="Select Date Range"
+              style={{ width: '100%', height: '45px !important', marginTop: '-7px' }}
+              size='lg'
+              // border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60 font-inter font-normal
+              onChange={handleChange}
+              value={range}
+              showHeader={false}
+              renderValue={renderValue} // Custom render for the selected value
+              calendarSnapping={true}
+              cleanable
+            />
+            {/* <input
               type="text"
               className="serach-input-2 placeholder-black"
               name="start_date"
@@ -466,9 +573,9 @@ const VoucherList: React.FC = () => {
               }}
               onChange={handleFilterChange}
               value={filters?.start_date}
-            />
+            /> */}
           </div>
-          <div className="px-4 mb-5 sm:mb-0 flex gap-1s">
+          {/* <div className="px-4 mb-5 sm:mb-0 flex gap-1s">
             <input
               type="text"
               className="serach-input-2 placeholder-black"
@@ -496,7 +603,7 @@ const VoucherList: React.FC = () => {
                 className="text-[20px] text-custom-green"
               />
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 

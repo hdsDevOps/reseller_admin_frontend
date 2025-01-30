@@ -49,6 +49,7 @@
     "react-paginate": "^8.2.0",
     "react-router-dom": "^6.27.0",
     "react-toastify": "^10.0.6",
-    "react-world-flags": "^1.6.0"
+    "react-world-flags": "^1.6.0",
+    "rsuite": "^5.77.0"
   }
 }

@@ -318,7 +318,7 @@ const CustomerGroup: React.FC = () => {
                           </button>
                         </div>
                         <button
-                          className="btn-green-3 w-[80px] h-7"
+                          className="customer-group-view-btn"
                           onClick={() => {
                             openModal(item);
                             setVoucherGroup(item);

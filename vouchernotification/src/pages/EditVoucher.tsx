@@ -43,14 +43,19 @@ const EditVoucher: React.FC = () =>  {
 
   const dateToIsoString = (date) => {
     if(typeof date === "string"){
-      const newDate = new Date(date);
-      return format(newDate, "dd MMM yyyy");
+      if(date === "") {
+        const newDate = new Date();
+        return "";
+      } else {
+        const newDate = new Date(date);
+        return format(newDate, "yyyy-MM-dd");
+      }
     } else {
       const milliseconds = date?._seconds * 1000;
       const extraMilliseconds = date?._nanoseconds / 1000000;
       const totalMilliseconds = milliseconds+extraMilliseconds;
       const newDate = new Date(totalMilliseconds);
-      return format(newDate, "dd MMM yyyy");
+      return format(newDate, "yyyy-MM-dd");
     }
   };
   
@@ -342,7 +347,7 @@ const EditVoucher: React.FC = () =>  {
                       className='search-input-text px-4'
                       onChange={updateVoucher}
                       disabled={endDateEnable}
-                      min={dateToIsoString(voucher?.end_date)}
+                      min={dateToIsoString(voucher?.start_date)}
                       value={dateToIsoString(voucher?.end_date)}
                     />
                   </div>

@@ -12,6 +12,67 @@ import { getSubscriptonPlansListThunk, editCustomerGroupThunk, getCountryListThu
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite.min.css";
+import { addDays, addMonths, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays } from 'date-fns';
+
+interface RangeType<T> {
+  label: string;
+  value: [T, T] | ((value: T[]) => [T, T]);
+  placement?: string;
+  closeOverlay?: boolean;
+  appearance?: string;
+}
+
+const predefinedRanges: RangeType<Date>[] = [
+  { label: "Today", value: [new Date(), new Date()], placement: "left" },
+  {
+    label: "Yesterday",
+    value: [addDays(new Date(), -1), addDays(new Date(), -1)],
+    placement: "left",
+  },
+  {
+    label: "This week",
+    value: [startOfWeek(new Date()), endOfWeek(new Date())],
+    placement: "left",
+  },
+  {
+    label: "Last week",
+    value: [subDays(new Date(), 6), new Date()],
+    placement: "left",
+  },
+  {
+    label: "This month",
+    value: [startOfMonth(new Date()), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last month",
+    value: [
+      startOfMonth(addMonths(new Date(), -1)),
+      endOfMonth(addMonths(new Date(), -1)),
+    ],
+    placement: "left",
+  },
+  {
+    label: "This year",
+    value: [new Date(new Date().getFullYear(), 0, 1), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last year",
+    value: [
+      new Date(new Date().getFullYear() - 1, 0, 1),
+      new Date(new Date().getFullYear(), 0, 0),
+    ],
+    placement: "left",
+  },
+  {
+    label: "All time",
+    value: [new Date(new Date().getFullYear() - 1, 0, 1), new Date()],
+    placement: "left",
+  },
+];
 
 const EditCustomerGroup: React.FC = () =>  {
   const navigate = useNavigate();
@@ -23,6 +84,41 @@ const EditCustomerGroup: React.FC = () =>  {
   const [customerGroup, setCustomerGroup] = useState(location.state);
   console.log(customerGroup);
   const [customerCount, setCustomerCount] = useState<number>(parseInt(location.state.no_customer));
+  const [range, setRange] = useState<[Date | null, Date | null]|null>([
+    location.state.start_date === "" ? null : new Date(location.state.start_date),
+    location.state.end_date === "" ? null : new Date(location.state.end_date)
+  ]);
+    
+  const handleChange = (value: [Date | null, Date | null]) => {
+    setRange(value);
+  };
+
+  const renderValue = (date: [Date, Date]) => {
+    if (!date[0] || !date[1]) return "Select Date Range";
+    return `${format(date[0], 'MMM d')} - ${format(date[1], 'MMM d, yyyy')}`;
+  };
+
+  useEffect(() => {
+    if(customerGroup?.plan === "") {
+      setRange(null);
+    }
+  }, [customerGroup?.plan]);
+
+  useEffect(() => {
+    if(range === null) {
+      setCustomerGroup({
+        ...customerGroup,
+        start_date: "",
+        end_date: "",
+      });
+    } else {
+      setCustomerGroup({
+        ...customerGroup,
+        start_date: `${range[0] === null ? "" : format(range[0], "yyyy-MM-dd")}`,
+        end_date: `${range[1] === null ? "" : format(range[1], "yyyy-MM-dd")}`,
+      });
+    }
+  }, [range]);
   
   const updateCustomerGroup = (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setCustomerGroup({
@@ -69,8 +165,8 @@ const EditCustomerGroup: React.FC = () =>  {
     {label: 'Country', placeholder: 'Select country', type: 'select', name: 'country'},
     {label: 'State/Region', placeholder: 'Select State/Region', type: 'select', name: 'region'},
     {label: 'Subscription Plan', placeholder: 'Select a plan', type: 'select', name: 'plan'},
-    {label: 'Start Date', placeholder: 'Select start date', type: 'date', name: 'start_date'},
-    {label: 'End Date', placeholder: 'Select end date', type: 'date', name: 'end_date'},
+    {label: 'Expiry Dare Range', placeholder: '', type: '', name: 'expiry'},
+    // {label: 'End Date', placeholder: 'Select end date', type: 'date', name: 'end_date'},
     {label: 'License Usage', placeholder: 'Select number  ', type: 'number', name: 'license_usage'},
     {label: 'Number of customer', placeholder: 'Auto-filled', type: 'number', name: 'no_customer'},
   ];
@@ -375,7 +471,7 @@ const EditCustomerGroup: React.FC = () =>  {
                     <ChevronDown className='float-right -mt-8 ml-auto mr-[7px] w-[20px] pointer-events-none' />
                   </div>
                 )
-              } else if(item.name === 'start_date'){
+              } else if(item.name === 'expiry'){
                 return(
                   <div
                     className='flex flex-col px-2 mb-2'
@@ -384,32 +480,7 @@ const EditCustomerGroup: React.FC = () =>  {
                     <label
                       className='search-input-label'
                     >{item.label}</label>
-                    <input
-                      type='text'
-                      onFocus={e => {
-                        e.target.type='date'
-                      }}
-                      onBlur={e => {
-                        e.target.type='text'
-                      }}
-                      placeholder={item.placeholder}
-                      name={item.name}
-                      className='search-input-text px-4'
-                      onChange={updateCustomerGroup}
-                      value={customerGroup?.start_date}
-                    />
-                  </div>
-                )
-              } else if(item.name === 'end_date'){
-                return(
-                  <div
-                    className='flex flex-col px-2 mb-2'
-                    key={index}
-                  >
-                    <label
-                      className='search-input-label'
-                    >{item.label}</label>
-                    <input
+                    {/* <input
                       type='text'
                       onFocus={e => {
                         e.target.type='date'
@@ -425,6 +496,20 @@ const EditCustomerGroup: React.FC = () =>  {
                       min={customerGroup?.start_date == "" ? dateToIsoString(new Date()) : dateToIsoString(new Date(customerGroup?.start_date)) }
                       required={customerGroup?.start_date !== "" ? true : false}
                       value={customerGroup?.end_date}
+                    /> */}
+                    <DateRangePicker
+                      ranges={predefinedRanges}
+                      placeholder="Select Date Range"
+                      style={{ width: '100%', height: '45px !important', marginTop: '-7px' }}
+                      size='lg'
+                      // border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60 font-inter font-normal
+                      onChange={handleChange}
+                      value={range}
+                      showHeader={false}
+                      renderValue={renderValue} // Custom render for the selected value
+                      calendarSnapping={true}
+                      cleanable
+                      disabled={customerGroup?.plan === "" ? true : false}
                     />
                   </div>
                 )

@@ -151,7 +151,7 @@ export default function Header() {
   const [currency, setCurrency] = useState(defaultCurrency);
   // console.log("currency...", currency);
   
-  const [newCurrency, setNewCurrency] = useState("");
+  const [newCurrency, setNewCurrency] = useState("USD");
   const [passwordModal, setPasswordModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
@@ -166,7 +166,7 @@ export default function Header() {
     e.preventDefault();
     try {
       const result = await dispatch(updateDefaultCurrencyThunk({userid: userId, defaultCurrency: newCurrency})).unwrap();
-      // console.log("result...", result);
+      console.log("result...", result);
       setTimeout(() => {
         toast.success(result?.message);
       }, 1000);

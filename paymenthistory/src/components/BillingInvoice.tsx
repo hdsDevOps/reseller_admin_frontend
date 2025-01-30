@@ -1,11 +1,43 @@
+import { getDownloadURL, getStorage, ref } from '@firebase/storage';
 import { format } from 'date-fns';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import firebaseConfiguration from './firebase';
+
+const firebaseStorage = getStorage(firebaseConfiguration); 
 
 const BillingInvoice: React.FC = ({pdfRef, data}) => {
   const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899";
   // const logo = "http://localhost:3000/images/logo.jpeg";
   const visa = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa-logo-grey.png?alt=media&token=00881596-2fad-4385-82bb-a0269ae4b4fb";
   // const visa = "http://localhost:3000/images/visa-logo-grey.png";
+
+  const [logoUrl, setLogoUrl] = useState("");
+  // console.log("logo url...", logoUrl);
+  const [imageBase64, setImageBase64] = useState(null);
+  // console.log("imageBase64...", imageBase64);
+
+  const convertImageToBase64 = async (url:string) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    // console.log(response)
+    return new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const base64 = await convertImageToBase64(logoUrl);
+      setImageBase64(base64);
+    };
+
+    // fetchImage();
+    if(logoUrl) {
+      // fetchImage()
+    }
+  }, [logoUrl]);
 
   const formatDate = (seconds, nanoseconds) => {
     const miliseconds = (parseInt(seconds) * 1000) + (parseInt(nanoseconds) / 1e6);
@@ -15,6 +47,16 @@ const BillingInvoice: React.FC = ({pdfRef, data}) => {
     const formattedDate = format(new Date(date?.toISOString()), "MMM dd, yyyy, h:mm:ss a");
     return formattedDate;
   };
+  
+  useEffect(() => {
+    const fetchImage = async () => {
+      const imgRef = ref(firebaseStorage, "logo.jpeg");
+      const url = await getDownloadURL(imgRef);
+      setLogoUrl(url);
+    };
+
+    // fetchImage();
+  }, []);
   return (
     <div
       className='w-[700px]'
@@ -44,8 +86,14 @@ const BillingInvoice: React.FC = ({pdfRef, data}) => {
             <div
               className='w-[60px] h-[60px] bg-white rounded-full border-4 border-white flex items-center justify-center shadow-lg'
             >
+              {/* {
+                imageBase64 && <img
+                  src={imageBase64}
+                  className='w-[51px] rounded-full object-cover'
+                />
+              } */}
               <img
-                src={logo}
+                src='https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899'
                 className='w-[51px] rounded-full object-cover'
               />
             </div>

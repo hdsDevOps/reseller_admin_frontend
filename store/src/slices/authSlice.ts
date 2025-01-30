@@ -37,7 +37,7 @@ const initialState: UserDetailsState = {
   userDetails: null,
   userId: null,
   token: '',
-  defaultCurrency: '',
+  defaultCurrency: 'USD',
   currentPageNumber: 0,
   itemsPerPageNumber: 20,
   customerFilters: null,

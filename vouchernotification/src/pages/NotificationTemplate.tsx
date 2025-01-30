@@ -319,7 +319,7 @@ const NotificationTemplate = () => {
     e.preventDefault();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if(!emailRegex.test(sendEmailNotification)) {
-      toast.warning("No emails are selected");
+      toast.warning("Please enter a valid email");
     } else {
       const emailLists = selectedCustomers.map(item => item?.email);
       try {
@@ -544,15 +544,14 @@ const NotificationTemplate = () => {
                     <h4
                       className='text-2xl font-medium'
                     >Add Notification Template</h4>
-                    <div className='btn-close-bg'>
-                      <button
-                        type='button'
-                        className='text-3xl rotate-45 mt-[-8px] text-white'
-                        onClick={() => {
-                          setIsModalOpen(false);
-                        }}
-                      >+</button>
-                    </div>
+                    <button
+                      type='button'
+                      className='close-button'
+                      onClick={() => {
+                        setIsModalOpen(false);
+                      }}
+                      button-name="notification-template-preview-close"
+                    ><X className="text-white w-5 h-5 mx-auto" /></button>
                   </div>
                 </div>
 
@@ -606,15 +605,14 @@ const NotificationTemplate = () => {
                     <h4
                       className='text-2xl font-medium'
                     >Delete Notification Template</h4>
-                    <div className='btn-close-bg'>
-                      <button
-                        type='button'
-                        className='text-3xl rotate-45 mt-[-8px] text-white'
-                        onClick={() => {
-                          setIsDeleteOpen(false);
-                        }}
-                      >+</button>
-                    </div>
+                    <button
+                      type='button'
+                      className='close-button'
+                      onClick={() => {
+                        setIsDeleteOpen(false);
+                      }}
+                      button-name="notification-template-preview-close"
+                    ><X className="text-white w-5 h-5 mx-auto" /></button>
                   </div>
                 </div>
 
@@ -653,16 +651,14 @@ const NotificationTemplate = () => {
                     <h4
                       className='text-2xl font-medium'
                     >Voucher Preview</h4>
-                    <div className='btn-close-bg'>
-                      <button
-                        type='button'
-                        className='text-3xl rotate-45 mt-[-8px] text-white'
-                        onClick={() => {
-                          setIsPreviewOpen(false);
-                        }}
-                        button-name="notification-template-preview-close"
-                      >+</button>
-                    </div>
+                    <button
+                      type='button'
+                      className='close-button'
+                      onClick={() => {
+                        setIsPreviewOpen(false);
+                      }}
+                      button-name="notification-template-preview-close"
+                    ><X className="text-white w-5 h-5 mx-auto" /></button>
                   </div>
                 </div>
 

@@ -15,6 +15,8 @@ import jsPDF from "jspdf";
 const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
 import { format } from 'date-fns';
 import ReactPaginate from "react-paginate";
+import { getDownloadURL, getStorage, ref } from "@firebase/storage";
+import firebaseConfiguration from "../components/firebase";
 
 const initialFilter = {
   start_date: "",
@@ -22,6 +24,8 @@ const initialFilter = {
   domain: "",
   search_data: ""
 }
+
+const firebaseStorage = getStorage(firebaseConfiguration); 
 
 const BillingHistory: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +41,10 @@ const BillingHistory: React.FC = () => {
   // console.log("pdfRef...", pdfRef.current);
   const [pdfDownload, setPdfDownload] = useState('hidden');
   const [paymentMethods, setPaymentMethods] = useState([]);
-  console.log("payment methods....", paymentMethods);
+  // console.log("payment methods....", paymentMethods);
+
+  const [logoUrl, setLogoUrl] = useState("");
+  // console.log("logo url...", logoUrl);
 
   const [filter, setFilter] = useState(billingHistoryFilters === null ? initialFilter : billingHistoryFilters);
   // console.log("filter...", filter);
@@ -79,7 +86,7 @@ const BillingHistory: React.FC = () => {
       setBillingHistory([]);
       if(error?.message == "Request failed with status code 401") {
         try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          await dispatch(removeUserAuthTokenFromLSThunk());
           navigate('/login');
         } catch (error) {
           //
@@ -100,7 +107,7 @@ const BillingHistory: React.FC = () => {
       setBillingHistory([]);
       if(error?.message == "Request failed with status code 401") {
         try {
-          const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
+          await dispatch(removeUserAuthTokenFromLSThunk());
           navigate('/login');
         } catch (error) {
           //
@@ -111,6 +118,16 @@ const BillingHistory: React.FC = () => {
 
   useEffect(() => {
     fetchInitialBillingHistory();
+  }, []);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const imgRef = ref(firebaseStorage, "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899");
+      const url = await getDownloadURL(imgRef);
+      setLogoUrl(url);
+    };
+
+    fetchImage();
   }, []);
 
   const getPaymentMethodsList = async() => {
@@ -160,7 +177,7 @@ const BillingHistory: React.FC = () => {
 
   useEffect(() => {
     const setCurrentPageNumberSlice = async() => {
-      await dispatch(setCurrentPageStatus(currentPage)).unwrap();
+      await dispatch(setCurrentPageStatus(currentPage));
     }
 
     setCurrentPageNumberSlice();
@@ -168,23 +185,47 @@ const BillingHistory: React.FC = () => {
 
   useEffect(() => {
     const setItemsPerPageSlice = async() => {
-      await dispatch(setItemsPerPageStatus(itemsPerPage)).unwrap();
+      await dispatch(setItemsPerPageStatus(itemsPerPage));
     }
 
     setItemsPerPageSlice();
   }, [itemsPerPage]);
 
+  const convertImageToBase64 = async (url) => {
+    const response = await fetch(url, { mode: 'no-cors' });
+    console.log('===========response',response)
+    const blob = await response.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const downloadInvoice = async() => {
-    await setPdfDownload("fixed z-[9999] left-[-9999px]");
+   // await setPdfDownload("fixed z-[9999] left-[-9999]");
+
+
+   let url='https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899';
+ 
+   let base64string=convertImageToBase64(url);
+
+   console.log(base64string); return;
+
+
+
     const element = pdfRef.current;
+    console.log("element,,,", element);
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,  // Allow CORS requests for images
-      allowTaint: true, 
+      allowTaint: true,
+      logging: true
     });
     const imgData = canvas.toDataURL('image/png');
 
     if (imgData.startsWith('data:image/png;base64,')) {
+    console.log(imgData);
       const pdf = new jsPDF('p', 'mm', 'a4');
 
       const pdfWidth = 210;

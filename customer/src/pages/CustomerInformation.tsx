@@ -71,7 +71,7 @@ const CustomerInformation: React.FC = () => {
   const getCustomerDomainsList = async(id:string) => {
     try {
       const result = await dispatch(getCustomerDomainsListThunk({search_text: "", customer_id: id})).unwrap();
-      setDomains(result?.data);
+      setDomains(result?.domainlist);
     } catch (error) {
       setDomains([]);
     }
@@ -170,7 +170,7 @@ const CustomerInformation: React.FC = () => {
           >Business Name : {customer?.business_name || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
-          >Address : {customer?.address || 'N/A'}</p>
+          >Address : {customer?.address?.title || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray'
           >Country : {customer?.country || 'N/A'}</p>
@@ -255,7 +255,7 @@ const CustomerInformation: React.FC = () => {
                       placeholder='New Password'
                       minLength={8}
                       required
-                      className='search-input-text'
+                      className='search-input-text pr-9'
                       onChange={e => {
                         setNewPassword(e.target.value);
                       }}
@@ -287,7 +287,7 @@ const CustomerInformation: React.FC = () => {
                       placeholder='Confirm Password'
                       minLength={8}
                       required
-                      className='search-input-text'
+                      className='search-input-text pr-9'
                       onChange={e => {
                         setConfirmPassword(e.target.value);
                       }}
@@ -334,7 +334,7 @@ const CustomerInformation: React.FC = () => {
                 key={index}
               >
                 {item.icon}
-                <a className='mx-auto break-normal text-center'>{item.title}</a>
+                <p className='mx-auto break-all text-center'>{item.title}</p>
               </div>
             )
           })

@@ -103,7 +103,7 @@
 }
 
 .btn-close-bg{
-  @apply bg-cGreen5 w-[25px] h-[25px] rounded-full pl-[5px] mt-1;
+  @apply bg-[#67C100] w-[25px] h-[25px] rounded-full pl-[5px] mt-1;
 }
 
 .btn-as-customer-login{
@@ -342,4 +342,31 @@
     color: white;
     text-decoration: none;
   }
+}
+
+.customer-group-view-btn {
+  /* bg-cGreen2 text-[8px] font-normal font-inter text-cGray2 focus:outline-none rounded-[5px] px-5 py-[5px] text-center;btn-green-3 w-[80px] h-7 */
+  background-color: #CDE9D3;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 8px;
+  color: #5A5A5A;
+  border-radius: 5px;
+  padding: 5px 20px;
+  text-align: center;
+  width: 80px;
+  height: 28px;
+}
+
+.customer-group-view-btn:focus {
+  outline: none;
+}
+
+.close-button {
+  /* bg-[#67C100] w-[25px] h-[25px] rounded-full pl-[5px] mt-1 */
+  background-color: #67C100;
+  width: 25px;
+  height: 25px;
+  border-radius: 9999px;
+  margin-top: 1px;
 }

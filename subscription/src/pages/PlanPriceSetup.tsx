@@ -201,9 +201,10 @@ const PlanPriceSetup = () => {
   };
 
   const getFlag = () => {
-    const data = flagList.map(item => 
+    const data = flagList.find(item => 
       item.name === currencyIndex ? item.flag : undefined
     );
+    console.log({currencyIndex, data})
     return data;
   };
 
@@ -232,15 +233,8 @@ const PlanPriceSetup = () => {
                   className="flex flex-row px-2 py-[3px] bg-[#EBEBEB] rounded-sm gap-1"
                 >
                   <img
-                    src={`${
-                      getFlag()
-                        .filter(item => item !== undefined)
-                        .map((item, m) => {
-                          if(item != undefined){
-                            return item;
-                          }
-                      })
-                    }`}
+                    src={getFlag()?.flag}
+                    // src=""
                     alt={currencyIndex}
                     className="w-auto h-[15px] my-auto"
                   />
@@ -481,15 +475,8 @@ const PlanPriceSetup = () => {
                     className="flex flex-row px-2 py-[3px] rounded-sm gap-1"
                   >
                     <img
-                      src={`${
-                        getFlag()
-                          .filter(item => item !== undefined)
-                          .map((item, m) => {
-                            if(item != undefined){
-                              return item;
-                            }
-                        })
-                      }`}
+                      src={getFlag()?.flag}
+                      // src=""
                       alt={currencyIndex}
                       className="w-auto h-[15px] my-auto"
                     />

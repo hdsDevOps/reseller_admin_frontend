@@ -50,6 +50,8 @@ declare module 'store/user.thunk' {
   // Add more thunk declarations as needed
 
   export const monthlyRevenueDataThunk;
+  export const updateDefaultCurrencyThunk;
+  export const removeUserAuthTokenFromLSThunk;
 }
 
 declare module 'store/authSlice' {
@@ -61,5 +63,7 @@ declare module 'store/authSlice' {
 
   export const setUserIdDetails: (payload: any) => PayloadAction<any>;
   export const setUserDetails: (payload: any) => PayloadAction<any>;
+
+  export const setUserDefaultCurrency;
 }
 
