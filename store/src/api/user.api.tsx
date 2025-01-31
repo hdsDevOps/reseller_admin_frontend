@@ -298,10 +298,11 @@ async function voucherListApi(
   currency: string,
   voucher_code: string,
   start_date: string,
-  end_date: string
+  end_date: string,
+  sortdata:object
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.voucherList, {currency, voucher_code, start_date, end_date});
+    const result = await postApiCall(endPoints.voucherList, {currency, voucher_code, start_date, end_date, sortdata});
     return result;
   } catch (error: any) {
     throw error;
@@ -389,7 +390,7 @@ async function editCustomerGroupApi(
   region: string,
   plan: string,
   start_date: string,
-  end_date: string, 
+  end_date: strinsortdatag, 
   license_usage: string, 
   no_customer: string,
   record_id: string
@@ -405,9 +406,10 @@ async function editCustomerGroupApi(
 async function getCustomerGroupListApi(
   group_name: string,
   create_date: string,
+  sortdata:object
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.customerGroupList, {group_name, create_date});
+    const result = await postApiCall(endPoints.customerGroupList, {group_name, create_date, sortdata});
     return result;
   } catch (error: any) {
     throw error;
@@ -937,10 +939,11 @@ async function getBillingHistoryApi(
   start_date: string,
   end_date: string,
   domain: string,
-  search_data: string
+  search_data: string,
+  sortdata:object
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.getBillingHistory, {start_date, end_date, domain, search_data});
+    const result = await postApiCall(endPoints.getBillingHistory, {start_date, end_date, domain, search_data, sortdata});
     return result;
   } catch (error: any) {
     throw error;
@@ -967,9 +970,12 @@ async function getEmailLogsApi(): Promise<any> {
   }
 };
 
-async function getRolesApi(user_type:string): Promise<any> {
+async function getRolesApi(
+  user_type:string,
+  sortdata:object
+): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.getRoles, {user_type});
+    const result = await postApiCall(endPoints.getRoles, {user_type, sortdata});
     return result;
   } catch (error: any) {
     throw error;
@@ -1016,10 +1022,11 @@ async function deleteRoleApi(
 
 async function getUsersApi(
   role: string,
-  searchdata: string
+  searchdata: string,
+  sortdata:object
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.getUsers, {role, searchdata});
+    const result = await postApiCall(endPoints.getUsers, {role, searchdata, sortdata});
     return result;
   } catch (error: any) {
     throw error;

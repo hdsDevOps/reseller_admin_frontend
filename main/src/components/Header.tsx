@@ -191,7 +191,7 @@ export default function Header() {
   useEffect(() => {
     const getRolesList = async () => {
       try {
-        const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
+        const result = await dispatch(getRolesThunk({user_type: "", sortdata: { sort_text: "", order: "asc" }})).unwrap();
         setRoles(result?.roles);
       } catch (error) {
         setRoles([]);

@@ -24,7 +24,11 @@ import ReactPaginate from "react-paginate";
 
 const intialUserFilter = {
   role: "",
-  searchdata: ""
+  searchdata: "",
+  sortdata: {
+    sort_text: "",
+    order: "asc"
+  }
 };
 
 const UserList = () => {
@@ -123,7 +127,7 @@ const UserList = () => {
 
   const fetchRoles = async() => {
     try {
-      const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
+      const result = await dispatch(getRolesThunk({user_type: "", sortdata: { sort_text: "", order: "asc" }})).unwrap();
       // console.log("result...", result.roles);
       setRoles(result?.roles);
     } catch (error) {
@@ -505,7 +509,13 @@ const UserList = () => {
                       {
                         item.name === "first_name" ?
                         <span className="ml-1"><button type="button" onClick={() => {
-                          //
+                          setUserFilter({
+                            ...userFilter,
+                            sortdata: {
+                              sort_text: item.name,
+                              order: userFilter?.sortdata?.sort_text === item.name ? "desc" : "asc"
+                            }
+                          })
                         }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
                       }
                     </th>

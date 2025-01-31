@@ -150,7 +150,7 @@ const Sidebar = () => {
   useEffect(() => {
     const getRole = async() => {
       try {
-        const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
+        const result = await dispatch(getRolesThunk({user_type: "", sortdata: { sort_text: "", order: "asc" }})).unwrap();
         const rolesList = result?.roles;
         if(rolesList?.length > 0) {
           const findUserRole = rolesList?.find(item => item?.id === userDetails?.role);

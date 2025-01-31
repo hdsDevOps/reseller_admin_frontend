@@ -82,7 +82,11 @@ const initialFilters = {
   currency: "",
   voucher_code: "",
   start_date: "",
-  end_date: ""
+  end_date: "",
+  sortdata: {
+    sort_text: "",
+    order: "asc"
+  }
 }
 
 const VoucherList: React.FC = () => {
@@ -251,7 +255,7 @@ const VoucherList: React.FC = () => {
   // console.log(sampleData);
   
   const [filters, setFilters] = useState(voucherFilters === null ? initialFilters : voucherFilters);
-  // console.log("filters....", filters);
+  console.log("filters....", filters);
 
   const handleFilterChange = e => {
     setFilters({
@@ -638,7 +642,13 @@ const VoucherList: React.FC = () => {
                       head?.name === "currency" ? "" :
                       head?.name === "action" ? "" :
                       <span className="ml-1"><button type="button" onClick={() => {
-                        //
+                        setFilters({
+                          ...filters,
+                          sortdata: {
+                            sort_text: head.name,
+                            order: filters?.sortdata?.sort_text === head.name ? "desc" : "asc"
+                          }
+                        })
                       }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
                     }
                   </th>

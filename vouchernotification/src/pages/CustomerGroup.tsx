@@ -18,6 +18,11 @@ import ReactPaginate from "react-paginate";
 const initialFilters = {
   group_name: "",
   create_date: "",
+  sortdata: {
+    sort_text: "",
+    //no_customer
+    order: "asc"
+  }
 };
 
 const CustomerGroup: React.FC = () => {
@@ -31,7 +36,7 @@ const CustomerGroup: React.FC = () => {
   const [voucherGroup, setVoucherGroup] = useState({});
   // console.log(voucherGroup);
   const [filters, setFilters] = useState(customerGroupFilters === null ? initialFilters : customerGroupFilters);
-  // console.log(filters);
+  console.log(filters);
 
   useEffect(() => {
     const setCustomerGroupFiltersSlice = async() => {
@@ -276,7 +281,13 @@ const CustomerGroup: React.FC = () => {
                     {
                       head?.name === "no_customer"
                       ? <span className="ml-1"><button type="button" onClick={() => {
-                        //
+                        setFilters({
+                          ...filters,
+                          sortdata: {
+                            sort_text: head.name,
+                            order: filters?.sortdata?.sort_text === head.name ? "desc" : "asc"
+                          }
+                        })
                       }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
                     }
                   </th>

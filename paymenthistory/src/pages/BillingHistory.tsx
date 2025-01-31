@@ -9,18 +9,24 @@ import '../styles/styles.css';
 import { getBillingHistoryThunk, getPaymentMethodsListThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { setBillingHistoryFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ArrowRightLeft, FilterX } from 'lucide-react';
-import html2canvas from "html2canvas";
+import { ArrowRightLeft, Download, FilterX, X } from 'lucide-react';
+// import html2canvas from "html2canvas";
+import html2canvas from 'html2canvas-pro';
 import jsPDF from "jspdf";
 const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
 import { format } from 'date-fns';
 import ReactPaginate from "react-paginate";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 const initialFilter = {
   start_date: "",
   end_date: "",
   domain: "",
-  search_data: ""
+  search_data: "",
+  sortdata: {
+    sort_text: "",
+    order: "asc"
+  }
 }
 
 const BillingHistory: React.FC = () => {
@@ -38,9 +44,12 @@ const BillingHistory: React.FC = () => {
   const [pdfDownload, setPdfDownload] = useState('hidden');
   const [paymentMethods, setPaymentMethods] = useState([]);
   // console.log("payment methods....", paymentMethods);
+  const [currentInvoiceData, setCurrentInvoiceData] = useState<object|null>(null);
 
   const [logoUrl, setLogoUrl] = useState("");
   // console.log("logo url...", logoUrl);
+
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
 
   const [filter, setFilter] = useState(billingHistoryFilters === null ? initialFilter : billingHistoryFilters);
   // console.log("filter...", filter);
@@ -65,7 +74,7 @@ const BillingHistory: React.FC = () => {
     {name: "transaction_id", label: "Transaction ID"},
     {name: "customer_name", label: "Customer Name"},
     {name: "created_at", label: "Date / Invoice"},
-    {name: "production_type", label: "Production Type"},
+    {name: "product_type", label: "Product Type"},
     {name: "description", label: "Description"},
     {name: "domain", label: "Domain"},
     {name: "payment_method", label: "Payment Method"},
@@ -189,7 +198,7 @@ const BillingHistory: React.FC = () => {
   };
 
   const downloadInvoice = async() => {
-    await setPdfDownload("fixed z-[9999] left-[-9999]");
+    // await setPdfDownload("fixed z-[9999] left-0 top-0");
 
     const element = pdfRef.current;
     console.log("element,,,", element);
@@ -202,19 +211,31 @@ const BillingHistory: React.FC = () => {
     const imgData = canvas.toDataURL('image/png');
 
     if (imgData.startsWith('data:image/png;base64,')) {
-    console.log(imgData);
+      console.log(imgData);
       const pdf = new jsPDF('p', 'mm', 'a4');
 
       const pdfWidth = 210;
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const PdfHeight = 297;
+
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      const scaleFactor = Math.min(pdfWidth / imgWidth, PdfHeight / imgHeight);
+
+      const adjustedWidth = (imgWidth * scaleFactor) - 10;
+      const adjustedHeight = (imgHeight * scaleFactor) - 10;
+
+      const xOffset = (pdfWidth - adjustedWidth) / 2;
+      const yOffset = (PdfHeight - adjustedHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', xOffset, 0, adjustedWidth, adjustedHeight);
 
       pdf.save('invoice.pdf');
     } else {
       console.error("Image data is invalid or empty", imgData);
     }
 
-    setPdfDownload('hidden');
+    // setPdfDownload('hidden');
   };
 
   const formatDate = (seconds, nanoseconds) => {
@@ -404,7 +425,13 @@ const BillingHistory: React.FC = () => {
                   {
                     header?.name === "transaction_id" || header?.name === "customer_name"  || header?.name === "created_at"  || header?.name === "amount" ?
                     <span className="ml-1"><button type="button" onClick={() => {
-                      //
+                      setFilter({
+                        ...filter,
+                        sortdata: {
+                          sort_text: header.name,
+                          order: filter?.sortdata?.sort_text === header.name ? "desc" : "asc"
+                        }
+                      })
                     }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
                   }
                 </th>
@@ -465,7 +492,11 @@ const BillingHistory: React.FC = () => {
                     <button
                       type="button"
                       className="my-auto text-lg billing-history-td-text-custom-green"
-                      onClick={() => {downloadInvoice()}}
+                      // onClick={() => {downloadInvoice()}}
+                      onClick={() => {
+                        setIsInvoiceOpen(true);
+                        setCurrentInvoiceData(detail);
+                      }}
                       disabled={!rolePermissionsSlice?.billing_history?.download ? true : false}
                       cypress-name="invoice_download"
                     >
@@ -541,6 +572,40 @@ const BillingHistory: React.FC = () => {
           />
         </div>
       </div>
+
+      <Dialog
+        open={isInvoiceOpen}
+        as="div"
+        className="relative z-40 focus:outline-none"
+        onClose={() => {
+          setIsInvoiceOpen(false);
+          setCurrentInvoiceData(null);
+        }}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto mt-16">
+          <div className="flex min-h-full items-center justify-center py-4">
+            <DialogPanel
+              transition
+              className="w-full max-w-[600px] max-h-[600px] overflow-auto bg-white py-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+            >
+              <div className="w-full flex justify-between mb-3 px-4">
+                <Download
+                  className="h-5 text-[#12A833] cursor-pointer"
+                  onClick={() => {downloadInvoice()}}
+                />
+                <X
+                  className="h-5 text-[#12A833] cursor-pointer"
+                  onClick={() => {
+                    setIsInvoiceOpen(false);
+                    setCurrentInvoiceData(null);
+                  }}
+                />
+              </div>
+              <BillingInvoice pdfRef={pdfRef} data={currentInvoiceData} paymentMethods={paymentMethods} />
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };

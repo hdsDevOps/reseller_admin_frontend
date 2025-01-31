@@ -246,8 +246,8 @@ export const sendEmailToCustomerThunk = createAsyncThunk(
 
 export const vocuherListThunk = createAsyncThunk(
   "users/vocuherList",
-  async ({currency, voucher_code, start_date, end_date}:any) => {
-    return await userApis.voucherListApi(currency, voucher_code, start_date, end_date);
+  async ({currency, voucher_code, start_date, end_date, sortdata}:any) => {
+    return await userApis.voucherListApi(currency, voucher_code, start_date, end_date, sortdata);
   }
 );
 
@@ -329,8 +329,8 @@ export const editCustomerGroupThunk = createAsyncThunk(
 
 export const getCustomerGroupListThunk = createAsyncThunk(
   "users/getCustomerGroupList",
-  async ({group_name, create_date}:any) => {
-    return await userApis.getCustomerGroupListApi(group_name, create_date);
+  async ({group_name, create_date, sortdata}:any) => {
+    return await userApis.getCustomerGroupListApi(group_name, create_date, sortdata);
   }
 );
 
@@ -630,8 +630,8 @@ export const deletePlanAndPriceThunk = createAsyncThunk(
 
 export const getBillingHistoryThunk = createAsyncThunk(
   "users/getBillingHistory",
-  async ({start_date, end_date, domain, search_data}: any) => {
-    return await userApis.getBillingHistoryApi(start_date, end_date, domain, search_data);
+  async ({start_date, end_date, domain, search_data, sortdata}: any) => {
+    return await userApis.getBillingHistoryApi(start_date, end_date, domain, search_data, sortdata);
   }
 );
 
@@ -651,8 +651,8 @@ export const getEmailLogsThunk = createAsyncThunk(
 
 export const getRolesThunk = createAsyncThunk(
   "users/getRoles",
-  async ({user_type}:any) => {
-    return await userApis.getRolesApi(user_type);
+  async ({user_type, sortdata}:any) => {
+    return await userApis.getRolesApi(user_type, sortdata);
   }
 );
 
@@ -679,8 +679,8 @@ export const deleteRoleThunk = createAsyncThunk(
 
 export const getUsersThunk = createAsyncThunk(
   "users/getUsers",
-  async ({role, searchdata}:any) => {
-    return await userApis.getUsersApi(role, searchdata);
+  async ({role, searchdata, sortdata}:any) => {
+    return await userApis.getUsersApi(role, searchdata, sortdata);
   }
 );
 

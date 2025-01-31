@@ -104,7 +104,7 @@ export const endPoints = {
 
     // billing history
     getBillingHistory: 'subscriptionservices/billing/api/v1/billinghistory',
-    getCustomerSubscriptionData: 'adminservices/admin/api/v1/getsubscriptiondata',
+    getCustomerSubscriptionData: 'adminservices/admin/api/v1/getCustomerSubscription',
 
     //email log
     getEmailLogs: 'adminservices/notification/api/v1/emaillog',
@@ -145,7 +145,7 @@ export const endPoints = {
     yearlySpendingStatistics: 'reportservices/users/api/v1/yearly_spending_statistics',
     
     // here platform
-    hereMapSearch: 'customerservices/user/api/v1/get_address',
+    hereMapSearch: 'adminservices/admin/api/v1/get_address',
 
     // change image to base64
     getBase64Image: 'adminservices/customer/api/v1/create_base64',

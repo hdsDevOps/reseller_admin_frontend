@@ -99,8 +99,6 @@ function ProfileSettings() {
     };
   }, []);
 
-  
-
   const getBase64ProfileImage = async (url:string) => {
     try {
       const result = await dispatch(getBase64ImageThunk({url: url})).unwrap();
@@ -154,27 +152,36 @@ function ProfileSettings() {
 
   useEffect(() => {
     if(profile) {
-      const data = profile;
-      if(data?.country !== "" && countries?.length > 0) {
-        const countryData = countries?.find(item => item?.name === data?.country);
+      if(profile?.country !== "" && countries?.length > 0) {
+        const countryData = countries?.find(item => item?.name === profile?.country);
         setCountry(countryData);
-        if(data?.state_name !== "" && states?.length > 0) {
-          const statesData = states?.find(item2 => item2?.name === data?.state_name);
-          setState(statesData)
-          if(data?.city !== "" && cities?.length > 0) {
-            const cityData = cities?.find(item3 => item3?.name === data?.city);
-            setCity(cityData)
-          } else {
-            setCity({});
-          }
-        } else {
-          setState({});
-        }
       } else {
         setCountry({});
       }
     }
-  }, [profile, countries, states, cities]);
+  }, [profile?.country, countries]);
+
+  useEffect(() => {
+    if(profile) {
+      if(profile?.state_name !== "" && states?.length > 0) {
+        const statesData = states?.find(item2 => item2?.name === profile?.state_name);
+        setState(statesData)
+      } else {
+        setState({});
+      }
+    }
+  }, [profile?.state_name, states, cities]);
+
+  useEffect(() => {
+    if(profile) {
+      if(profile?.city !== "" && cities?.length > 0) {
+        const cityData = cities?.find(item3 => item3?.name === profile?.city);
+        setCity(cityData)
+      } else {
+        setCity({});
+      }
+    }
+  }, [profile?.city, cities]);
   
   const [crop, setCrop] = useState<Crop>({
     x: 0,
@@ -225,7 +232,7 @@ function ProfileSettings() {
   const getHereData = async() => {
     try {
       const result = await dispatch(hereMapSearchThunk({address: hereSearch})).unwrap();
-      console.log("result...", result);
+      setHereList(result?.data?.items);
     } catch (error) {
       setHereList([]);
     }
@@ -245,6 +252,56 @@ function ProfileSettings() {
     }
     return input;
   };
+
+  useEffect(() => {
+    setHereData(userDetails?.street_name);
+  }, [userDetails]);
+
+  useEffect(() => {
+    setNewProfile({
+      ...newProfile,
+      street_name: hereData === null ? "" : hereData,
+    })
+  }, [hereData]);
+
+  useEffect(() => {
+    if(hereData !== null && countries?.length > 0) {
+      const findCountry = countries?.find(item => item?.name?.toLowerCase() === hereData?.address?.countryName?.toLowerCase());
+      if(findCountry) {
+        setCountry(findCountry);
+        setNewProfile({
+          ...newProfile,
+          country: findCountry?.name
+        })
+      }
+    }
+  }, [hereData, countries]);
+
+  useEffect(() => {
+    if(hereData !== null && states?.length > 0) {
+      const findCountry = states?.find(item => item?.name?.toLowerCase() === hereData?.address?.state?.toLowerCase());
+      if(findCountry) {
+        setState(findCountry);
+        setNewProfile({
+          ...newProfile,
+          state_name: findCountry?.name
+        })
+      }
+    }
+  }, [hereData, states]);
+
+  useEffect(() => {
+    if(hereData !== null && cities?.length > 0) {
+      const findCountry = cities?.find(item => item?.name?.toLowerCase() === hereData?.address?.countryName?.toLowerCase());
+      if(findCountry) {
+        setCity(findCountry);
+        setNewProfile({
+          ...newProfile,
+          city: findCountry?.name
+        })
+      }
+    }
+  }, [hereData, cities]);
 
   const showImage = () => {
     const file = image;
@@ -315,7 +372,7 @@ function ProfileSettings() {
         newProfile?.last_name === "" || newProfile?.last_name?.trim() === "" ||
         newProfile?.email === "" || newProfile?.email?.trim() === "" ||
         newProfile?.phone === "" || newProfile?.phone?.trim() === "" ||
-        newProfile?.street_name === "" || newProfile?.street_name?.trim() === "" ||
+        hereData === null ||
         newProfile?.country === "" || newProfile?.country?.trim() === ""
       ) {
         toast.warning("Please fill the fields.");
@@ -335,7 +392,7 @@ function ProfileSettings() {
                 phone: newProfile?.phone,
                 password: cPassword,
                 profile_pic: newProfile?.profile_pic,
-                street_name: newProfile?.street_name,
+                street_name: hereData,
                 city: newProfile?.city,
                 state_name: newProfile?.state_name,
                 country: newProfile?.country
@@ -354,7 +411,7 @@ function ProfileSettings() {
               email: newProfile?.email,
               phone: newProfile?.phone,
               profile_pic: newProfile?.profile_pic,
-              street_name: newProfile?.street_name,
+              street_name: hereData,
               city: newProfile?.city,
               state_name: newProfile?.state_name,
               country: newProfile?.country
@@ -403,6 +460,10 @@ function ProfileSettings() {
     setCityName("");
     setNewProfile(null);
   };
+
+  useEffect(() => {
+
+  })
 
   const base64ToBlob = (base64) => {
     const parts = base64.split(",");
@@ -739,7 +800,7 @@ function ProfileSettings() {
                       />
                     </div>
                   )
-                } else if(item.name == 'street_name' || item.name == "city" || item.name == 'state_name' || item.name == 'country'){
+                } else if(item.name == "city" || item.name == 'state_name' || item.name == 'country'){
                   return(
                     <div
                       key={index}
@@ -751,6 +812,23 @@ function ProfileSettings() {
                         name={item.name}
                         placeholder={item.placeholder}
                         value={userDetails[item.name] || ""}
+                        className='search-input-text'
+                        disabled
+                      />
+                    </div>
+                  )
+                }  else if(item.name == 'street_name'){
+                  return(
+                    <div
+                      key={index}
+                      className='flex flex-col sm:col-span-1 col-span-2 my-1'
+                    >
+                      <label className='search-input-label'>{item.label}</label>
+                      <input
+                        type={item.type}
+                        name={item.name}
+                        placeholder={item.placeholder}
+                        value={userDetails?.street_name?.title || ""}
                         className='search-input-text'
                         disabled
                       />
@@ -1037,7 +1115,7 @@ function ProfileSettings() {
                             }
                           </div>
                         )
-                      } else if(item.name === "first_name" || item.name === "last_name"){
+                      } else if(item.name === "first_name" || item.name === "last_name") {
                         return(
                           <div
                             key={index}
@@ -1055,61 +1133,59 @@ function ProfileSettings() {
                             />
                           </div>
                         )
-                      }
-                      // else if(item.name === 'street_name'){
-                      //   return(
-                      //     <div
-                      //       key={index}
-                      //       className='flex flex-col sm:col-span-1 col-span-2 my-1 relative'
-                      //       ref={streetRef}
-                      //     >
-                      //       <label
-                      //         className='search-input-label'
-                      //       >{item.label}</label>
-                      //       <input
-                      //         type='text'
-                      //         className='search-input-text focus:outline-none w-full h-full p-0'
-                      //         placeholder={item?.placeholder}
-                      //         name='city'
-                      //         onChange={e => {
-                      //           setNewProfile({
-                      //             ...newProfile,
-                      //             street_name: ''
-                      //           });
-                      //           setHereSearch(e.target.value);
-                      //           setHereData(null);
-                      //         }}
-                      //         value={newProfile?.street_name || hereSearch}
-                      //         required
-                      //         onFocus={() => {setStreetDropdownOpen(true)}}
-                      //       />
-                      //       {
-                      //         // streetDropdownOpen && (
-                      //         //   <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2'>
-                      //         //     {
-                      //         //       hereList?.filter(name => name?.name.toLowerCase().includes(cityName.toLowerCase())).map((city_name, idx) => (
-                      //         //         <p
-                      //         //           key={idx}
-                      //         //           className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
-                      //         //           onClick={() => {
-                      //         //             setNewProfile({
-                      //         //               ...newProfile,
-                      //         //               street_name: city_name?.name
-                      //         //             });
-                      //         //             setHereSearch("");
-                      //         //             setHereData(city_name);
-                      //         //             setStreetDropdownOpen(false);
-                      //         //           }}
-                      //         //         >{city_name?.name}</p>
-                      //         //       ))
-                      //         //     }
-                      //         //   </div>
-                      //         // )
-                      //       }
-                      //     </div>
-                      //   )
-                      // }
-                      else{
+                      } else if(item.name === 'street_name'){
+                        return(
+                          <div
+                            key={index}
+                            className='flex flex-col sm:col-span-1 col-span-2 my-1 relative'
+                            ref={streetRef}
+                          >
+                            <label
+                              className='search-input-label'
+                            >{item.label}</label>
+                            <input
+                              type='text'
+                              className='search-input-text focus:outline-none w-full h-full p-0'
+                              placeholder={item?.placeholder}
+                              name='city'
+                              onChange={e => {
+                                setNewProfile({
+                                  ...newProfile,
+                                  street_name: ''
+                                });
+                                setHereSearch(e.target.value);
+                                setHereData(null);
+                              }}
+                              value={hereData?.title || hereSearch}
+                              required
+                              onFocus={() => {setStreetDropdownOpen(true)}}
+                            />
+                            {
+                              streetDropdownOpen && (
+                                <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2'>
+                                  {
+                                    hereList?.map((address, idx) => (
+                                      <p
+                                        key={idx}
+                                        className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                        onClick={() => {
+                                          setNewProfile({
+                                            ...newProfile,
+                                            street_name: address
+                                          });
+                                          setHereSearch("");
+                                          setHereData(address);
+                                          setStreetDropdownOpen(false);
+                                        }}
+                                      >{address?.title}</p>
+                                    ))
+                                  }
+                                </div>
+                              )
+                            }
+                          </div>
+                        )
+                      } else{
                         return(
                           <div
                             key={index}

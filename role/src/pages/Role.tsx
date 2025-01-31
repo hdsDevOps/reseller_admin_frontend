@@ -18,7 +18,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaChevronDown } from "react-icons/fa6";
 
 const initialFilter = {
-  user_type: ''
+  user_type: '',
+  sortdata: {
+    sort_text: "",
+    order: "asc"
+  }
 }
 
 const Role = () => {
@@ -307,7 +311,13 @@ const Role = () => {
               <th className="th-css-full-opacity-text-left">
                 <span>User Type</span>
                 <span className="ml-1"><button type="button" onClick={() => {
-                  //
+                  setFilter({
+                    ...filter,
+                    sortdata: {
+                      sort_text: "user_type",
+                      order: filter?.sortdata?.sort_text === "user_type" ? "desc" : "asc"
+                    }
+                  })
                 }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
               </th>
               <th className="th-css-full-opacity">
