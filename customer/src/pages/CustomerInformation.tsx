@@ -78,7 +78,7 @@ const CustomerInformation: React.FC = () => {
   };
 
   useEffect(() => {
-    getCustomerDomainsList(customer?.record_id);
+    getCustomerDomainsList(customer?.id);
   }, [customer?.record_id]);
 
   const getPrimaryDomain = async() => {

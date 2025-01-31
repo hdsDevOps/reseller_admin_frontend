@@ -1615,59 +1615,61 @@ const CustomerManagement: React.FC = () => {
               }
             </tbody>
           </table>
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel={(
-              <button
-                onClick={() => {
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
-                }}
-                disabled={currentPage === totalPages - 1}
-                className={`px-3 py-1 text-sm ${
-                  currentPage === totalPages - 1
-                    ? "bg-transparent text-gray-300"
-                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-                } rounded-r transition`}
-              >
-                Next
-              </button>
-            )}
-            onPageChange={(event) => {
-              setCurrentPage(event.selected);
-              // console.log(event.selected);
-            }}
-            pageRangeDisplayed={2}
-            pageCount={totalPages}
-            previousLabel={(
-              <button
-                onClick={() => {
-                  setCurrentPage((prev) => Math.max(prev - 1, 0));
-                }}
-                disabled={currentPage === 0}
-                className={`px-3 py-1 text-sm ${
-                  currentPage === 0
-                    ? "bg-transparent text-gray-300"
-                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-                } rounded-l transition`}
-              >
-                Prev
-              </button>
-            )}
+          <div className="flex justify-end">
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel={(
+                <button
+                  onClick={() => {
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+                  }}
+                  disabled={currentPage === totalPages - 1}
+                  className={`px-3 py-1 text-sm ${
+                    currentPage === totalPages - 1
+                      ? "bg-transparent text-gray-300"
+                      : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                  } rounded-r transition`}
+                >
+                  Next
+                </button>
+              )}
+              onPageChange={(event) => {
+                setCurrentPage(event.selected);
+                // console.log(event.selected);
+              }}
+              pageRangeDisplayed={2}
+              pageCount={totalPages}
+              previousLabel={(
+                <button
+                  onClick={() => {
+                    setCurrentPage((prev) => Math.max(prev - 1, 0));
+                  }}
+                  disabled={currentPage === 0}
+                  className={`px-3 py-1 text-sm ${
+                    currentPage === 0
+                      ? "bg-transparent text-gray-300"
+                      : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                  } rounded-l transition`}
+                >
+                  Prev
+                </button>
+              )}
 
-            containerClassName="flex justify-start"
+              containerClassName="flex justify-start"
 
-            renderOnZeroPageCount={null}
-            className="pagination-class-name"
+              renderOnZeroPageCount={null}
+              className="pagination-class-name"
 
-            pageClassName="pagination-li"
-            pageLinkClassName="pagination-li-a"
+              pageClassName="pagination-li"
+              pageLinkClassName="pagination-li-a"
 
-            breakClassName="pagination-ellipsis"
-            breakLinkClassName="pagination-ellipsis-a"
+              breakClassName="pagination-ellipsis"
+              breakLinkClassName="pagination-ellipsis-a"
 
-            activeClassName="pagination-active-li"
-            activeLinkClassName	="pagination-active-a"
-          />
+              activeClassName="pagination-active-li"
+              activeLinkClassName	="pagination-active-a"
+            />
+          </div>
         </div>
       </div>
     </div>

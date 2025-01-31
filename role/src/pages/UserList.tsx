@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import ReactPaginate from "react-paginate";
 
 const intialUserFilter = {
   role: "",
@@ -142,6 +143,15 @@ const UserList = () => {
     fetchRoles();
   }, []);
 
+  const roleName = (id:string) => {
+    if(roles?.length > 0) {
+      const roleTypeName = roles?.find(item => item?.id === id)?.role_name;
+      return roleTypeName;
+    } else {
+      return "";
+    }
+  }
+
   const tableHeaders = [
     {name: "first_name", label: "Name"},
     {name: "email", label: "Email"},
@@ -213,10 +223,14 @@ const UserList = () => {
 
   const validateForm = () => {
     // Check for spaces only in any field
-    for (const key in modalData) {
-      if (modalData[key]?.trim() === '') {
-        return false;
-      }
+    if(
+      modalData?.first_name?.trim() === "" ||
+      modalData?.last_name?.trim() === "" ||
+      modalData?.email?.trim() === "" ||
+      modalData?.role?.trim() === "" ||
+      modalData?.phone?.trim() === ""
+    ) {
+      return false;
     }
     return true;
   };
@@ -420,7 +434,7 @@ const UserList = () => {
               <option defaultChecked value=''>Select User Type</option>
               {
                 roles?.map((role, idx) => (
-                  <option key={idx} value={role?.role_name}>{role?.role_name}</option>
+                  <option key={idx} value={role?.id}>{role?.role_name}</option>
                 ))
               }
             </select>
@@ -479,7 +493,7 @@ const UserList = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto mt-[10px] p-[6px]">
+      <div className="w-full overflow-x-auto mt-[10px] p-[6px]">
         <table className="min-w-full">
           <thead className="bg-custom-blue-6 h-12">
             <tr>
@@ -517,10 +531,10 @@ const UserList = () => {
                     </td>
                     <td className="td-css-text m-2">{user?.email}</td>
                     <td className="td-css-text m-2">+{user?.phone}</td>
-                    <td className="td-css-text m-2">{user?.role}</td>
+                    <td className="td-css-text m-2">{roleName(user?.role)}</td>
                     <td className="td-css-text m-2">
                       {
-                        user?.role === 'Super Admin' ?
+                        roleName(user?.role) === 'Super Admin' ?
                         (<div
                           className="flex flex-row justify-center gap-4"
                         ></div>) :
@@ -564,52 +578,63 @@ const UserList = () => {
             
           </tbody>
         </table>
-      </div>
+        <div className="flex justify-end">
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel={(
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+                }}
+                disabled={currentPage === totalPages - 1}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === totalPages - 1
+                    ? "bg-transparent text-gray-300"
+                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                } rounded-r transition`}
+              >
+                Next
+              </button>
+            )}
+            onPageChange={(event) => {
+              setCurrentPage(event.selected);
+              // console.log(event.selected);
+            }}
+            pageRangeDisplayed={2}
+            pageCount={totalPages}
+            previousLabel={(
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.max(prev - 1, 0));
+                }}
+                disabled={currentPage === 0}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === 0
+                    ? "bg-transparent text-gray-300"
+                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                } rounded-l transition`}
+              >
+                Prev
+              </button>
+            )}
 
-      <div className="flex justify-end items-center mt-12 relative bottom-2 right-0">
-        <div className="flex">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
-            className={`px-3 py-1 text-sm ${
-              currentPage === 0
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-l transition`}
-          >
-            Prev
-          </button>
+            containerClassName="flex justify-start"
 
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index)}
-              className={`px-3 py-1 text-sm mx-1 rounded ${
-                currentPage === index
-                  ? "bg-green-500 text-white"
-                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-              } transition`}
-            >
-              {index + 1}
-            </button>
-          ))}
+            renderOnZeroPageCount={null}
+            className="pagination-class-name"
 
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-            }
-            disabled={currentPage === totalPages - 1}
-            className={`px-3 py-1 text-sm ${
-              currentPage === totalPages - 1
-                ? "bg-transparent text-gray-300"
-                : "bg-transparent hover:bg-green-500 hover:text-white"
-            } rounded-r transition`}
-          >
-            Next
-          </button>
+            pageClassName="pagination-li"
+            pageLinkClassName="pagination-li-a"
+
+            breakClassName="pagination-ellipsis"
+            breakLinkClassName="pagination-ellipsis-a"
+
+            activeClassName="pagination-active-li"
+            activeLinkClassName	="pagination-active-a"
+          />
         </div>
       </div>
+      
       {
         isModalOpen && (
           <div className="fixed-full-screen">
@@ -650,13 +675,14 @@ const UserList = () => {
                               onChange={updateModalData}
                               name={item.name}
                               required
+                              value={modalData?.role}
                             >
                               <option selected={modalType == 'add' ? true : false} value="" disabled>Select user type</option>
                               {
                                 roles?.map((role, idx) => {
                                   if(role?.role_name !== "Super Admin") {
                                     return (
-                                      <option key={idx} selected={modalType === "add" ? false : true}>{role?.role_name}</option>
+                                      <option key={idx} selected={modalType === "add" ? false : true} value={role?.id}>{role?.role_name}</option>
                                     )
                                   }
                                 })

@@ -635,6 +635,13 @@ export const getBillingHistoryThunk = createAsyncThunk(
   }
 );
 
+export const getCustomerSubscriptionDataThunk = createAsyncThunk(
+  "users/getCustomerSubscriptionData",
+  async ({subscription_id}: any) => {
+    return await userApis.getCustomerSubscriptionDataApi(subscription_id);
+  }
+);
+
 export const getEmailLogsThunk = createAsyncThunk(
   "users/getEmailLogs",
   async () => {
@@ -814,5 +821,12 @@ export const hereMapSearchThunk = createAsyncThunk(
   "users/hereMapSearch",
   async (address:any) => {
     return await userApis.hereMapSearchApi(address);
+  }
+);
+
+export const getBase64ImageThunk = createAsyncThunk(
+  "users/getBase64Image",
+  async ({url}:any) => {
+    return await userApis.getBase64ImageApi(url);
   }
 );

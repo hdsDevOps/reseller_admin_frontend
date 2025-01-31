@@ -15,8 +15,6 @@ import jsPDF from "jspdf";
 const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
 import { format } from 'date-fns';
 import ReactPaginate from "react-paginate";
-import { getDownloadURL, getStorage, ref } from "@firebase/storage";
-import firebaseConfiguration from "../components/firebase";
 
 const initialFilter = {
   start_date: "",
@@ -24,8 +22,6 @@ const initialFilter = {
   domain: "",
   search_data: ""
 }
-
-const firebaseStorage = getStorage(firebaseConfiguration); 
 
 const BillingHistory: React.FC = () => {
   const navigate = useNavigate();
@@ -120,16 +116,6 @@ const BillingHistory: React.FC = () => {
     fetchInitialBillingHistory();
   }, []);
 
-  useEffect(() => {
-    const fetchImage = async () => {
-      const imgRef = ref(firebaseStorage, "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899");
-      const url = await getDownloadURL(imgRef);
-      setLogoUrl(url);
-    };
-
-    fetchImage();
-  }, []);
-
   const getPaymentMethodsList = async() => {
     try {
       const result = await dispatch(getPaymentMethodsListThunk()).unwrap();
@@ -203,16 +189,7 @@ const BillingHistory: React.FC = () => {
   };
 
   const downloadInvoice = async() => {
-   // await setPdfDownload("fixed z-[9999] left-[-9999]");
-
-
-   let url='https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899';
- 
-   let base64string=convertImageToBase64(url);
-
-   console.log(base64string); return;
-
-
+    await setPdfDownload("fixed z-[9999] left-[-9999]");
 
     const element = pdfRef.current;
     console.log("element,,,", element);
@@ -437,27 +414,29 @@ const BillingHistory: React.FC = () => {
           <tbody>
             {
               currentItems?.length>0 ? currentItems?.map((detail, index) => (
-                <tr key={index} className="text-xs text-[#434D64]">
-                  <td className="td-css-3 text-custom-green">
+                <tr key={index} className="text-xs text-[#434D64]" style={{margin: '4px 0'}}>
+                  <td className="billing-history-td billing-history-td-text-custom-green">
                     {detail?.transaction_id}
                   </td>
-                  <td className="td-css-3 text-custom-black-5">
+                  <td className="billing-history-td text-custom-black-5">
                     {/* {`${detail?.first_name} ${detail?.last_name}`} */}
                     {detail?.customer_name}
                   </td>
                   <td className="td-custom-css">
                     {/* <a>{detail?.date_invoice || ' '}</a> */}
-                    <p>{formatDate(detail?.date?._seconds, detail?.date?._nanoseconds)}</p>
-                    <p className="text-custom-green">{detail?.invoice}</p>
+                    <div>
+                      <p>{formatDate(detail?.date?._seconds, detail?.date?._nanoseconds)}</p>
+                      <p className="billing-history-td-text-custom-green">{detail?.invoice}</p>
+                    </div>
                   </td>
-                  <td className="td-css-3 text-custom-black-5">
+                  <td className="billing-history-td text-custom-black-5">
                     {detail?.product_type || ' '}
                   </td>
-                  <td className="td-css-3 text-custom-black-5">
+                  <td className="billing-history-td text-custom-black-5">
                     {detail?.description || ' '}
                   </td>
-                  <td className="td-css-3 text-custom-black-5">{detail?.domain || ' '}</td>
-                  <td className="td-css-full-opactiy text-custom-black-5 min-w-[150px]">
+                  <td className="billing-history-td text-custom-black-5">{detail?.domain || ' '}</td>
+                  <td className="billing-history-td-full-opactiy text-custom-black-5 min-w-[150px]">
                     <span className="flex items-center justify-center">
                       {/* <img src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa.png?alt=media&token=793767a0-a14e-4f5a-a6e4-fc490119413a"} alt="Visa" className="h-[13.33px] w-[39px] mr-1" />
                       <span className="font-inter-bold-xs-60percent-black">
@@ -474,18 +453,18 @@ const BillingHistory: React.FC = () => {
                       <span className="font-inter-bold-xs-60percent-black capitalize">...{detail?.transaction_data?.payment_method_details?.card?.last4 || "0000"}</span>
                     </span>
                   </td>
-                  <td className="td-css-full-opactiy text-custom-black-5">
+                  <td className="billing-history-td-full-opactiy text-custom-black-5">
                     <button className="btn-green-4 uppercase">
                       {detail?.payment_status || ' '}
                     </button>
                   </td>
-                  <td className="td-css-4 text-custom-green">
+                  <td className="billing-history-td billing-history-td-text-custom-green">
                     {detail?.amount || ' '}
                   </td>
                   <td className="cursor-pointer w-full items-center text-center">
                     <button
                       type="button"
-                      className="my-auto text-lg text-custom-green"
+                      className="my-auto text-lg billing-history-td-text-custom-green"
                       onClick={() => {downloadInvoice()}}
                       disabled={!rolePermissionsSlice?.billing_history?.download ? true : false}
                       cypress-name="invoice_download"
@@ -494,7 +473,7 @@ const BillingHistory: React.FC = () => {
                     </button>
 
                     <div className={pdfDownload}>
-                      <BillingInvoice pdfRef={pdfRef} data={detail} />
+                      <BillingInvoice pdfRef={pdfRef} data={detail} paymentMethods={paymentMethods} />
                     </div>
                   </td>
                 </tr>
@@ -506,59 +485,61 @@ const BillingHistory: React.FC = () => {
           </tbody>
         </table>
 
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel={(
-            <button
-              onClick={() => {
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
-              }}
-              disabled={currentPage === totalPages - 1}
-              className={`px-3 py-1 text-sm ${
-                currentPage === totalPages - 1
-                  ? "bg-transparent text-gray-300"
-                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-              } rounded-r transition`}
-            >
-              Next
-            </button>
-          )}
-          onPageChange={(event) => {
-            setCurrentPage(event.selected);
-            // console.log(event.selected);
-          }}
-          pageRangeDisplayed={2}
-          pageCount={totalPages}
-          previousLabel={(
-            <button
-              onClick={() => {
-                setCurrentPage((prev) => Math.max(prev - 1, 0));
-              }}
-              disabled={currentPage === 0}
-              className={`px-3 py-1 text-sm ${
-                currentPage === 0
-                  ? "bg-transparent text-gray-300"
-                  : "bg-transparent text-black hover:bg-green-500 hover:text-white"
-              } rounded-l transition`}
-            >
-              Prev
-            </button>
-          )}
+        <div className="flex justify-end">
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel={(
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+                }}
+                disabled={currentPage === totalPages - 1}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === totalPages - 1
+                    ? "bg-transparent text-gray-300"
+                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                } rounded-r transition`}
+              >
+                Next
+              </button>
+            )}
+            onPageChange={(event) => {
+              setCurrentPage(event.selected);
+              // console.log(event.selected);
+            }}
+            pageRangeDisplayed={2}
+            pageCount={totalPages}
+            previousLabel={(
+              <button
+                onClick={() => {
+                  setCurrentPage((prev) => Math.max(prev - 1, 0));
+                }}
+                disabled={currentPage === 0}
+                className={`px-3 py-1 text-sm ${
+                  currentPage === 0
+                    ? "bg-transparent text-gray-300"
+                    : "bg-transparent text-black hover:bg-green-500 hover:text-white"
+                } rounded-l transition`}
+              >
+                Prev
+              </button>
+            )}
 
-          containerClassName="flex justify-start"
+            containerClassName="flex justify-start"
 
-          renderOnZeroPageCount={null}
-          className="pagination-class-name"
+            renderOnZeroPageCount={null}
+            className="pagination-class-name"
 
-          pageClassName="pagination-li"
-          pageLinkClassName="pagination-li-a"
+            pageClassName="pagination-li"
+            pageLinkClassName="pagination-li-a"
 
-          breakClassName="pagination-ellipsis"
-          breakLinkClassName="pagination-ellipsis-a"
+            breakClassName="pagination-ellipsis"
+            breakLinkClassName="pagination-ellipsis-a"
 
-          activeClassName="pagination-active-li"
-          activeLinkClassName	="pagination-active-a"
-        />
+            activeClassName="pagination-active-li"
+            activeLinkClassName	="pagination-active-a"
+          />
+        </div>
       </div>
     </div>
   );

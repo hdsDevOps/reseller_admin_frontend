@@ -947,6 +947,17 @@ async function getBillingHistoryApi(
   }
 };
 
+async function getCustomerSubscriptionDataApi(
+  subscription_id: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getCustomerSubscriptionData, {subscription_id});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 async function getEmailLogsApi(): Promise<any> {
   try {
     const result = await getApiCall(endPoints.getEmailLogs);
@@ -1244,6 +1255,17 @@ async function hereMapSearchApi(address:object): Promise<any> {
   }
 };
 
+async function getBase64ImageApi(
+  url: string
+): Promise<any> {
+  try {
+    const result = await postApiCall(endPoints.getBase64Image, {url});
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const userApis = {
   makeUserLoginApi,
   verifyUserOtpApi,
@@ -1315,6 +1337,7 @@ export const userApis = {
   editPlanAndPriceApi,
   deletePlanAndPriceApi,
   getBillingHistoryApi,
+  getCustomerSubscriptionDataApi,
   getEmailLogsApi,
   getRolesApi,
   addRoleApi,
@@ -1341,4 +1364,5 @@ export const userApis = {
   monthlyRevenueDataApi,
   yearlySpendingStatisticsApi,
   hereMapSearchApi,
+  getBase64ImageApi,
 };

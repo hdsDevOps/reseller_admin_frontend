@@ -91,7 +91,7 @@ const AddCustomerGroup: React.FC = () =>  {
     license_usage: 0, 
     no_customer: 0,
   });
-  // console.log(customerGroup);
+  console.log(customerGroup);
   const [customerCount, setCustomerCount] = useState<number>(0);
   
   const handleChange = (value: [Date | null, Date | null]) => {
@@ -410,11 +410,12 @@ const AddCustomerGroup: React.FC = () =>  {
                       className={`search-select-text font-inter font-medium appearance-none ${customerGroup?.plan == "" ? 'text-[#00000038]' : 'text-black'}`}
                       name='plan'
                       onChange={updateCustomerGroup}
+                      value={customerGroup?.plan}
                     >
                       <option selected value='' className=''>{item.placeholder}</option>
                       {
                         subscriptionPlans.length> 0 && subscriptionPlans?.map((subscription, idx) => (
-                          <option key={idx} value={subscription?.plan_name} className='text-black'>{subscription?.plan_name}</option>
+                          <option key={idx} value={subscription?.id} className='text-black'>{subscription?.plan_name}</option>
                         ))
                       }
                     </select>

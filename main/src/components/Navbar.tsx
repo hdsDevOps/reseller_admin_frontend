@@ -150,9 +150,18 @@ const Sidebar = () => {
   useEffect(() => {
     const getRole = async() => {
       try {
-        const result = await dispatch(getRolesThunk({user_type: userDetails?.role})).unwrap();
-        await dispatch(setRolesPermissionsStatus(result?.roles[0]?.permission));
-        setRolePermissions(result?.roles[0]?.permission);
+        const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
+        const rolesList = result?.roles;
+        if(rolesList?.length > 0) {
+          const findUserRole = rolesList?.find(item => item?.id === userDetails?.role);
+          if(findUserRole) {
+            await dispatch(setRolesPermissionsStatus(findUserRole?.permission));
+            setRolePermissions(findUserRole?.permission);
+          } else {
+            await dispatch(setRolesPermissionsStatus(intitalPermissions));
+            setRolePermissions(intitalPermissions);
+          }
+        }
       } catch (error) {
         setRolePermissions(intitalPermissions);
         await dispatch(setRolesPermissionsStatus(intitalPermissions));

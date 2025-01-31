@@ -5,7 +5,7 @@ import { Plus, X } from 'lucide-react';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getAdminDetailsThunk, hereMapSearchThunk } from "store/user.thunk";
+import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getAdminDetailsThunk, hereMapSearchThunk, getBase64ImageThunk } from "store/user.thunk";
 import { setUserDetails } from 'store/authSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,7 +28,8 @@ function ProfileSettings() {
   // console.log("userDetails...", userDetails);
   const modalRef = useRef();
   const [isNumberValid, setIsNumberValid] = useState(false);
-
+  const [base64ProfileImage, setBase64ProfileImage] = useState("");
+  // console.log("base64ProfileImage....", base64ProfileImage);
   const [modalShow, setModalShow] = useState(false);
   const [profile, setProfile] = useState<object|null>(null);
   console.log("profile...", profile);
@@ -97,6 +98,25 @@ function ProfileSettings() {
       document.removeEventListener('mousedown', handleClickOutsideStreet);
     };
   }, []);
+
+  
+
+  const getBase64ProfileImage = async (url:string) => {
+    try {
+      const result = await dispatch(getBase64ImageThunk({url: url})).unwrap();
+      setBase64ProfileImage(result?.base64)
+    } catch (error) {
+      setBase64ProfileImage("")
+    }
+  };
+
+  useEffect(() => {
+    if(userDetails?.profile_pic) {
+      getBase64ProfileImage(userDetails?.profile_pic);
+    } else {
+      setBase64ProfileImage("")
+    }
+  }, [userDetails?.profile_pic]);
 
   useEffect(() => {
     if(countries?.length > 0 && countryName !== "") {
@@ -382,12 +402,30 @@ function ProfileSettings() {
     setStateName("");
     setCityName("");
     setNewProfile(null);
-  }
+  };
+
+  const base64ToBlob = (base64) => {
+    const parts = base64.split(",");
+    if (parts.length !== 2) {
+      throw new Error("Invalid base64 format");
+    }
+    
+    const byteString = atob(parts[1]); // Decode base64
+    const mimeType = parts[0].split(":")[1].split(";")[0]; // Extract MIME type
+    const arrayBuffer = new Uint8Array(byteString.length);
+  
+    for (let i = 0; i < byteString.length; i++) {
+      arrayBuffer[i] = byteString.charCodeAt(i);
+    }
+  
+    return new Blob([arrayBuffer], { type: mimeType });
+  };
 
   const imageUpload = async(e) => {
     e.preventDefault();
     if(image === null) {
-      const defaultImageURL = userDetails?.profile_pic;
+      const defaultImageURL = base64ProfileImage;
+      console.log(defaultImageURL)
       // const defaultImageURL = 'http://localhost:3000/images/logo.jpeg'
 
       const response = await fetch(defaultImageURL);
@@ -397,6 +435,7 @@ function ProfileSettings() {
       await new Promise((resolve) => {
         imageFile.onload = resolve;
       });
+      console.log(blob)
       try {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -453,44 +492,81 @@ function ProfileSettings() {
       }
     } else {
       try {
-        const imageFile = imgRef.current;
-
+        const imageFile = image;
+    
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
-        const scale = zoom;
-        const naturalWidth = imageFile.naturalWidth;
-        const naturalHeight = imageFile.naturalHeight;
-        const width = naturalWidth * scale;
-        const height = naturalHeight * scale;
+        const newImage = new Image();
+        newImage.src = URL.createObjectURL(imageFile);
         
-        canvas.width = 300;
-        canvas.height = 300;
+        newImage.onload = async () => {
+          const maxSize = 300; // Fixed output size (300x300)
 
-        const offsetX = (300 - width) / 2;
-        const offsetY = (300 - height) / 2;
-
-        ctx?.clearRect(0, 0, 300, 300);
-        ctx.drawImage(imageFile, offsetX, offsetY, width, height);
+          let scale = zoom;
+          // if (zoom < 1) scale = 1; // Prevent shrink below 1x
         
-        canvas.toBlob(async (blob) => {
-          if (!blob) {
-            return;
+          // Set canvas size to fixed 300x300
+          canvas.width = maxSize;
+          canvas.height = maxSize;
+        
+          // Get original image dimensions
+          const originalWidth = newImage.width;
+          const originalHeight = newImage.height;
+        
+          // Preserve aspect ratio while fitting within maxSize
+          const aspectRatio = originalWidth / originalHeight;
+          let targetWidth, targetHeight;
+        
+          if (aspectRatio > 1) {
+            // Landscape image
+            targetWidth = maxSize * scale;
+            targetHeight = (maxSize / aspectRatio) * scale;
           } else {
-            const file = new File([blob], "resized-image.png", {type: 'image/png'});
-            const result = await dispatch(uploadImageThunk({image: file})).unwrap();
-            toast.success("Profile image updated successfully");
-            setProfile({
-              ...profile,
-              profile_pic: result?.url,
-            });
-            const updateProfile = await dispatch(updateAdminDetailsThunk({
-              userid: userId,
-              profile_pic: result?.url
-            })).unwrap();
-            await getAdminDetails();
+            // Portrait or square image
+            targetHeight = maxSize * scale;
+            targetWidth = (maxSize * aspectRatio) * scale;
           }
-        })
+        
+          // Ensure at least maxSize x maxSize (crop if needed)
+          // if (targetWidth < maxSize) targetWidth = maxSize;
+          // if (targetHeight < maxSize) targetHeight = maxSize;
+        
+          // Calculate center position (so it doesn't cut off incorrectly)
+          const offsetX = (maxSize - targetWidth) / 2;
+          const offsetY = (maxSize - targetHeight) / 2;
+        
+          // Clear canvas
+          ctx.clearRect(0, 0, maxSize, maxSize);
+        
+          if (zoom < 1) {
+            // Add transparency for padding when zooming out
+            ctx.fillStyle = "rgba(0,0,0,0)";
+            ctx.fillRect(0, 0, maxSize, maxSize);
+          }
+        
+          // Draw the scaled image properly centered
+          ctx.drawImage(newImage, offsetX, offsetY, targetWidth, targetHeight);
+          
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              return;
+            } else {
+              const file = new File([blob], "resized-image.png", {type: 'image/png'});
+              const result = await dispatch(uploadImageThunk({image: file})).unwrap();
+              toast.success("Profile image updated successfully");
+              setProfile({
+                ...profile,
+                profile_pic: result?.url,
+              });
+              const updateProfile = await dispatch(updateAdminDetailsThunk({
+                userid: userId,
+                profile_pic: result?.url
+              })).unwrap();
+              await getAdminDetails();
+            }
+          })
+        }
       } catch (error) {
         toast.error("Error uploading profile image");
         console.log("errror...", error);
@@ -607,7 +683,7 @@ function ProfileSettings() {
               className="float-right ml-auto mt-[-20px] w-[29px] h-[29px] border border-custom-gray-2 rounded-full items-center bg-white cursor-pointer"
               onClick={() => {
                 setImageModal(true);
-                setImage(profile?.profile_pic);
+                // setImage(profile?.profile_pic);
               }}
             >
               <RiCameraFill
@@ -659,6 +735,7 @@ function ProfileSettings() {
                         placeholder={item.placeholder}
                         value={item.name === "phone" ? `+${userDetails[item.name]}` : userDetails[item.name] || ""}
                         className='search-input-text'
+                        disabled
                       />
                     </div>
                   )
@@ -675,6 +752,7 @@ function ProfileSettings() {
                         placeholder={item.placeholder}
                         value={userDetails[item.name] || ""}
                         className='search-input-text'
+                        disabled
                       />
                     </div>
                   )
@@ -691,6 +769,7 @@ function ProfileSettings() {
                         placeholder={item.placeholder}
                         value={userDetails[item.name] || ""}
                         className='search-input-text'
+                        disabled
                       />
                     </div>
                   )
@@ -1160,7 +1239,7 @@ function ProfileSettings() {
                       className='w-[300px] h-[300px] relative overflow-hidden'
                     >
                       {
-                        image === null || profile?.profile_pic === ""
+                        image === null && base64ProfileImage === ""
                         ? (
                           <div className={`absolute top-0 left-0 bottom-0 right-0 transform duration-200 ease-in-out w-full h-full items-center`}>
                             <p className='my-auto text-center items-center pt-32'>Add profile photo from the camera icon</p>
@@ -1168,7 +1247,7 @@ function ProfileSettings() {
                         ) : (
                           <img
                             ref={imgRef}
-                            src={image === null ? profile?.profile_pic : image}
+                            src={image === null ? base64ProfileImage : image}
                             alt='profile picture'
                             className={`absolute top-0 left-0 transform scale-[${zoom}] duration-200 ease-in-out w-full h-full`}
                           />
@@ -1193,7 +1272,7 @@ function ProfileSettings() {
                   </label>
                 </div>
                 {
-                  image === null || profile?.profile_pic === ""
+                  image === null && base64ProfileImage === ""
                   ? ("") : (
                     <div className="flex flex-row justify-center gap-3 pt-4">
                       <label htmlFor="zoom" className="font-medium">

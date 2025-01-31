@@ -417,7 +417,7 @@ const EditCustomerGroup: React.FC = () =>  {
                       <option selected value='' className=''>{item.placeholder}</option>
                       {
                         subscriptionPlans.length> 0 && subscriptionPlans?.map((subscription, idx) => (
-                          <option key={idx} value={subscription?.plan_name} className='text-black'>{subscription?.plan_name}</option>
+                          <option key={idx} value={subscription?.id} className='text-black'>{subscription?.plan_name}</option>
                         ))
                       }
                     </select>

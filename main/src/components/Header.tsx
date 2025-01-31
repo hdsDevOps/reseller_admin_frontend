@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk, updateAdminDetailsThunk, getNotificationsThunk, getNotificationStatusThunk, updateNotificationStatusThunk, readNotificationsThunk } from 'store/user.thunk';
+import { updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk, updateAdminDetailsThunk, getNotificationsThunk, getNotificationStatusThunk, updateNotificationStatusThunk, readNotificationsThunk, getRolesThunk } from 'store/user.thunk';
 import { setUserDefaultCurrency } from 'store/authSlice';
 import { Bell, ShoppingCart } from "lucide-react";
 import { RiNotification4Fill } from "react-icons/ri";
@@ -150,6 +150,7 @@ export default function Header() {
   ];
   const [currency, setCurrency] = useState(defaultCurrency);
   // console.log("currency...", currency);
+  const [roles, setRoles] = useState([]);
   
   const [newCurrency, setNewCurrency] = useState("USD");
   const [passwordModal, setPasswordModal] = useState(false);
@@ -187,6 +188,31 @@ export default function Header() {
     }
   }
   
+  useEffect(() => {
+    const getRolesList = async () => {
+      try {
+        const result = await dispatch(getRolesThunk({user_type: ""})).unwrap();
+        setRoles(result?.roles);
+      } catch (error) {
+        setRoles([]);
+      }
+    };
+
+    getRolesList();
+  }, []);
+
+  const findUserRole = (id: string) => {
+    if(roles?.length > 0) {
+      const findRole = roles?.find(item => item?.id === id);
+      if(findRole) {
+        return findRole?.role_name;
+      } else {
+        return "";
+      }
+    } else {
+      return "";
+    }
+  }
 
   const getflag = (name) => {
     const flag = flagList
@@ -663,7 +689,7 @@ export default function Header() {
             type="button"
             className="font-inter font-normal sm:mt-[1px] mt-[9px] sm:text-[16px] text-[14px] cursor-default"
           >
-            {userDetails?.role}
+            {findUserRole(userDetails?.role)}
           </button>
         </div>
       </div>

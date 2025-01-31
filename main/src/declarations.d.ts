@@ -52,6 +52,7 @@ declare module 'store/user.thunk' {
   export const monthlyRevenueDataThunk;
   export const updateDefaultCurrencyThunk;
   export const removeUserAuthTokenFromLSThunk;
+  export const getRolesThunk;
 }
 
 declare module 'store/authSlice' {

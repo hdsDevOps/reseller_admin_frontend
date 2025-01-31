@@ -15,6 +15,102 @@ import {
 } from '../thunks/user.thunk';
 import { userLocalStorage } from '../localStorage/user.storage';
 
+const intitalPermissions = {
+  dashboard: false,
+  customer_management: {
+      overall: false,
+      add: false,
+      edit: false,
+      delete: false,
+      login: false,
+      authorization: false,
+      send_mail: false,
+      details: false,
+      reset_password: false
+  },
+  voucher_management: {
+      overall: false,
+      customer_group: {
+          overall: false,
+          add: false,
+          view: false,
+          delete: false
+      },
+      voucher_list: {
+          overall: false,
+          send_mail: false,
+          add: false,
+          delete: false
+      }
+  },
+  notification_template: {
+      overall: false,
+      add: false,
+      preview: false,
+      update: false,
+      cancel: false,
+      send_mail: false
+  },
+  subscription_master: {
+      overall: false,
+      plan_and_price_setup: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      },
+      gemini_setup: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      }
+  },
+  payment_method: {
+      overall: false,
+      action: false
+  },
+  billing_history: {
+      overall: false,
+      download: false
+  },
+  faqs: {
+      overall: false,
+      add: false
+  },
+  email_log: {
+      overall: false,
+      view_details: false
+  },
+  role_management: {
+      overall: false,
+      user_list: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      },
+      role: {
+          overall: false,
+          add: false,
+          edit: false,
+          delete: false
+      }
+  },
+  cms: {
+      overall: false,
+      view_details: false
+  },
+  settings: {
+      overall: false,
+      dashboard_widget: false,
+      about: false,
+      privacy_policy: false,
+      terms_and_conditions: false,
+      customer_agreement: false
+  }
+}
+
 export interface UserDetailsState {
   userAuthStatus: 'AUTHORIZED' | 'UN_AUTHORIZED' | 'PENDING' | 'UPGRADE';
   userDetails: object|null;
@@ -46,7 +142,7 @@ const initialState: UserDetailsState = {
   billingHistoryFilters: null,
   userListFilters: null,
   rolesFilters: null,
-  rolePermissionsSlice: null,
+  rolePermissionsSlice: intitalPermissions,
 };
 
 const authSlice = createSlice({

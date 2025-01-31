@@ -399,11 +399,34 @@
   font-size: 12px;
   text-align: center;
   opacity: 60%;
-  min-width: 120px;
-  padding: 0 10px;
+  min-width: fit-content;
+  /* padding: 0 10px; */
   color: #434D64;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  height: 100%;
+}
+
+.billing-history-td {
+  /* font-inter font-normal text-xs leading-6 tracking-[1px] text-center opacity-60 min-w-[120px] px-[10px]; */
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  text-align: center;
+  opacity: 60%;
+  min-width: fit-content;
+  align-items: center;
+}
+
+.billing-history-td-full-opactiy {
+  /* font-inter font-normal text-xs leading-6 tracking-[1px] text-center opacity-60 min-w-[120px] px-[10px]; */
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  text-align: center;
+  opacity: 100%;
+  min-width: fit-content;
+  align-items: center;
+}
+
+.billing-history-td-text-custom-green{
+  color: #12A833;
 }

@@ -1,43 +1,66 @@
-import { getDownloadURL, getStorage, ref } from '@firebase/storage';
 import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
-import firebaseConfiguration from './firebase';
+import { useAppDispatch } from 'store/hooks';
+import { getBase64ImageThunk, getCustomerListThunk, getCustomerSubscriptionDataThunk, getPaymentMethodsListThunk } from 'store/user.thunk';
 
-const firebaseStorage = getStorage(firebaseConfiguration); 
+const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899";
+// const logo = "";
+const stripeImage = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/stripe.png?alt=media&token=23bd6672-665c-4dfb-9d75-155abd49dc58";
+const paystackImage = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/paystack.png?alt=media&token=8faf3870-4256-4810-9844-5fd3c147d7a3";
 
-const BillingInvoice: React.FC = ({pdfRef, data}) => {
-  const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899";
-  // const logo = "http://localhost:3000/images/logo.jpeg";
-  const visa = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/visa-logo-grey.png?alt=media&token=00881596-2fad-4385-82bb-a0269ae4b4fb";
-  // const visa = "http://localhost:3000/images/visa-logo-grey.png";
+const BillingInvoice: React.FC = ({pdfRef, data, paymentMethods}) => {
+  const dispatch = useAppDispatch();
 
-  const [logoUrl, setLogoUrl] = useState("");
-  // console.log("logo url...", logoUrl);
-  const [imageBase64, setImageBase64] = useState(null);
-  // console.log("imageBase64...", imageBase64);
-
-  const convertImageToBase64 = async (url:string) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    // console.log(response)
-    return new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(blob);
-    });
+  const [base64ImageLogo, setBase64ImageLogo] = useState("");
+  // console.log("base64ImageLogo...", base64ImageLogo);
+  const [paymentMethodImage, setPaymentMethodImage] = useState("");
+  const [subscriptionData, setSubscriptionData] = useState<object|null>(null);
+  
+  const getCustomerSubscriptionData = async () => {
+    try {
+      const result = await dispatch(getCustomerSubscriptionDataThunk({subscription_id: ""})).unwrap();
+      console.log("result...", result?.data);
+    } catch (error) {
+      setSubscriptionData(null);
+    }
   };
 
   useEffect(() => {
-    const fetchImage = async () => {
-      const base64 = await convertImageToBase64(logoUrl);
-      setImageBase64(base64);
-    };
-
-    // fetchImage();
-    if(logoUrl) {
-      // fetchImage()
+    if(data !== null) {
+      getCustomerSubscriptionData();
     }
-  }, [logoUrl]);
+  }, [data]);
+
+  const getBase64ImageLogo = async() => {
+    try {
+      const result = await dispatch(getBase64ImageThunk({url: logo})).unwrap();
+      setBase64ImageLogo(result?.base64);
+    } catch (error) {
+      setBase64ImageLogo("");
+    }
+  };
+
+  useEffect(() => {
+    getBase64ImageLogo();
+  }, []);
+
+  const getBase64ImagePaymentMethod = async(url:string) => {
+    try {
+      const result = await dispatch(getBase64ImageThunk({url: url})).unwrap();
+      setPaymentMethodImage(result?.base64);
+    } catch (error) {
+      setPaymentMethodImage("");
+    }
+  };
+
+  useEffect(() => {
+    if(data !== null && paymentMethods?.length > 0) {
+      const paymentGatewayImage = paymentMethods?.find(item => item?.method_name?.toLowerCase() === data?.payment_method?.toLowerCase())?.method_image;
+      getBase64ImagePaymentMethod(paymentGatewayImage);
+    }
+  }, [paymentMethods, data]);
+
+  console.log("billing invoice data...", data);
 
   const formatDate = (seconds, nanoseconds) => {
     const miliseconds = (parseInt(seconds) * 1000) + (parseInt(nanoseconds) / 1e6);
@@ -47,181 +70,188 @@ const BillingInvoice: React.FC = ({pdfRef, data}) => {
     const formattedDate = format(new Date(date?.toISOString()), "MMM dd, yyyy, h:mm:ss a");
     return formattedDate;
   };
-  
-  useEffect(() => {
-    const fetchImage = async () => {
-      const imgRef = ref(firebaseStorage, "logo.jpeg");
-      const url = await getDownloadURL(imgRef);
-      setLogoUrl(url);
-    };
-
-    // fetchImage();
-  }, []);
   return (
-    <div
-      className='w-[700px]'
-      ref={pdfRef}
-    >
-      <div
-        className='bg-white px-1 w-full mx-auto'
-      >
-        <div
-          className='relative h-40 bg-white overflow-hidden'
-        >
-          <div
-            className='absolute top-0 w-full h-full bg-[#12A833] transform -skew-y-[11deg] origin-top-left z-10'
-          ></div>
-          <div
-            className='absolute top-0 right-0 w-[200px] h-[80%] bg-[#f4f4f6] opacity-50 transform -skew-y-[17deg] origin-top-left z-10'
-          ></div>
-          <div
-            className='absolute h-full w-[2px] bg-[#535E7C] top-0 ml-[300px]'
-          ></div>
-          <div
-            className='absolute h-full w-[2px] bg-[#535E7C] top-0 ml-[390px]'
-          ></div>
-          <div
-            className='absolute bottom-7 left-1/2 transform -translate-x-1/2 z-30'
-          >
-            <div
-              className='w-[60px] h-[60px] bg-white rounded-full border-4 border-white flex items-center justify-center shadow-lg'
-            >
-              {/* {
-                imageBase64 && <img
-                  src={imageBase64}
-                  className='w-[51px] rounded-full object-cover'
-                />
-              } */}
-              <img
-                src='https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899'
-                className='w-[51px] rounded-full object-cover'
-              />
-            </div>
-          </div>
-        </div>
+    // <div
+    //   className='max-w-[700px]'
+    //   ref={pdfRef}
+    // >
+    //   <div
+    //     className='bg-white px-1 w-full mx-auto'
+    //   >
+    //     <div
+    //       className='relative h-40 bg-white overflow-hidden'
+    //     >
+    //       <div
+    //         style={{position: 'absolute', top: 0, width: "100%", height: "100%", backgroundColor: '#12A833', zIndex: '10', transform: 'skewY(-11deg)', transformOrigin: 'top left'}}
+    //       ></div>
+    //       <div
+    //         className='absolute top-0 right-0 w-[200px] h-[80%] bg-[#f4f4f6] opacity-50 transform -skew-y-[17deg] origin-top-left z-10'
+    //       ></div>
+    //       <div
+    //         className='absolute h-full w-[2px] bg-[#535E7C] top-0 ml-[300px]'
+    //       ></div>
+    //       <div
+    //         className='absolute h-full w-[2px] bg-[#535E7C] top-0 ml-[390px]'
+    //       ></div>
+    //       <div
+    //         className='absolute bottom-7 left-1/2 transform -translate-x-1/2 z-30'
+    //       >
+    //         <div
+    //           className='w-[60px] h-[60px] bg-white rounded-full border-4 border-white flex items-center justify-center shadow-lg'
+    //         >
+    //           <img
+    //             src={base64ImageLogo}
+    //             className='w-[51px] rounded-full object-cover'
+    //           />
+    //         </div>
+    //       </div>
+    //     </div>
 
-        <div
-          className='text-center py-1'
-        >
-          <h3 className='font-inter text-[black] text-lg'>Receipt from Hordanso LLC</h3>
-          <p className='font-inter text-[#B3B7B8] text-sm'>Receipt #1567-5406</p>
-        </div>
+    //     <div
+    //       className='text-center py-1 border-b border-black'
+    //     >
+    //       <h3 className='font-inter text-[black] text-lg'>Receipt from Hordanso LLC</h3>
+    //       <p className='font-inter text-[#B3B7B8] text-sm'>Receipt #{data?.invoice}</p>
+    //     </div>
 
-        <div
-          className='flex justify-between text-[#B3B7B8] px-20 py-5'
-        >
-          <div
-            className='flex flex-col text-start font-inter'
-          >
-            <h6
-              className='text-sm font-medium'
-            >AMOUNT PAID</h6>
-            <p
-              className='text-sm'
-            >$ {data?.amount}</p>
-          </div>
-          <div
-            className='flex flex-col text-start'
-          >
-            <h6
-              className='text-sm font-medium'
-            >DATE PAID</h6>
-            <p
-              className='text-sm'
-            >{formatDate(data?.date?._seconds, data?.date?._nanoseconds)}</p>
-          </div>
-          <div
-            className='flex flex-col text-start'
-          >
-            <h6
-              className='text-sm font-medium'
-            >PAYMENT METHOD</h6>
-            <div
-              className='flex gap-1'
-            >
-              {/* <img
-                src={visa}
-                alt='visa'
-                className='h-5'
-              />
-              <p
-                className='text-sm'
-              > - 5953</p> */}
-              <p className='text-sm capitalize'>{data?.payment_method}</p>
-            </div>
-          </div>
-        </div>
+    //     <div
+    //       className='flex justify-between text-[#B3B7B8] px-20 py-5 w-full overflow-x-auto'
+    //     >
+    //       <table className="w-full min-w-[400px]">
+    //         <tbody>
+    //           <tr>
+    //             <td className="font-inter font-normal text-sm items-start text-start content-start">Inovice To</td>
+    //             <td className="flex flex-col font-inter font-normal text-sm text-black content-start">
+    //               <p>{data?.customer_name}</p>
+    //               <p>{customer?.email}</p>
+    //               <p>{customer?.country}</p>
+    //             </td>
+    //           </tr>
+    //           <tr>
+    //             <td className="font-inter font-normal text-sm items-start text-start content-start">Payment Method</td>
+    //             <td>
+    //               <img
+    //                 src={paymentMethodImage}
+    //                 alt={data?.payment_method}
+    //                 className="w-10 object-contain"
+    //               />
+    //             </td>
+    //           </tr>
+    //           <tr>
+    //             <td className="font-inter font-normal text-sm items-start text-start content-start">Payment Cycle</td>
+    //             <td className="flex flex-col font-inter font-normal text-sm text-black content-start">{invoiceData?.payment_cycle}</td>
+    //           </tr>
+    //         </tbody>
+    //       </table>
+    //     </div>
 
-        <h5
-          className='px-14 pb-6 font-inter font-bold text-sm text-[#B3B7B8]'
-        >SUMMARY</h5>
-      </div>
+    //     <div
+    //       className='flex justify-between text-[#B3B7B8] px-20 py-5 w-full overflow-x-auto'
+    //     >
+    //       <table className="w-full min-w-[400px]">
+    //         <thead>
+    //           <tr>
+    //             <th className="w-[150px] text-left border-b border-black">Description</th>
+    //             <th className="w-[50px] text-center border-b border-black">Qty</th>
+    //             <th className="w-[100px] text-center border-b border-black">
+    //               {/* Unit Price */}
+    //             </th>
+    //             <th className="w-[100px] text-center border-b border-black">Amount</th>
+    //           </tr>
+    //         </thead>
+    //         <tbody>
+    //           {/* <tr>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-left py-1 border-b border-black">Domain</td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-center py-1 border-b border-black">1</td>
+    //             <td className="font-inter font-normal text-sm text-black text-right py-1 border-b border-black">
+    //               <div className="inline-block">
+    //                 <span className="inline-block">1</span>
+    //                 <X className="inline-block w-4 h-4 text-black mx-[2px]" />
+    //                 <span className="inline-block">{currencyList?.find(item => item?.name === data?.currency)?.logo}{parseFloat(data?.selectedDomain?.price[data?.currency])?.toFixed(2)}</span>
+    //               </div>
+    //             </td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-right py-1 border-b border-black">{currencyList?.find(item => item?.name === data?.currency)?.logo}{data?.selectedDomain?.price[data?.currency]}</td>
+    //           </tr> */}
+    //           <tr>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-left py-1 border-b border-black capitalize">{billingHistoryData?.description}</td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-center py-1 border-b border-black">
+    //             {/* {data?.license_usage} */}
+    //             1
+    //             </td>
+    //             <td className="font-inter font-normal text-sm text-black text-right py-1 border-b border-black">
+    //               {/* <div className="inline-block">
+    //                 <span className="inline-block">{data?.license_usage}</span>
+    //                 <X className="inline-block w-4 h-4 text-black mx-[2px]" />
+    //                 <span className="inline-block">{currencyList?.find(item => item?.name === data?.currency)?.logo}{parseFloat(data?.plan?.amount_details?.find(amount => amount?.currency_code === data?.currency)?.price?.find(priceList => priceList?.type === data?.period)?.discount_price)?.toFixed(2)}</span>
+    //               </div> */}
+    //             </td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-right py-1 border-b border-black">
+    //               {billingHistoryData?.amount}
+    //             </td>
+    //           </tr>
 
-      <div
-        className='bg-[#F6F8Fc] w-full pb-2'
-      >
-        <div
-          className='flex items-center justify-between p-2'
-        >
-          <p
-            className='text-[#9A9597] break-words break-all w-[600px]'
-          >Automated Recharge: Messaging credits worth 18.19 USD added for The Jaiye Room. These credits will be used for SMS, Calls, Emails, phone numbers, etc. Please refer to Company Billing Page (https://app.hordanso.com/V2/location/Muygwiofec8362y9uncevb94309wcun98x2t4efwgrdswqdf/settings/company-billing/billing) for more details.</p>
-          <p
-            className='text-[#9A9597]'
-          >${data?.amount}</p>
-        </div>
+    //           {/* <tr>
+    //             <td></td>
+    //             <td></td>
+    //             <td className="font-inter font-normal text-sm text-black text-left py-1 border-b border-black">Voucher</td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-right py-1 border-b border-black">
+    //               -{currencyList?.find(item => item?.name === data?.currency)?.logo}
+    //               {data?.discountedPrice}
+    //             </td>
+    //           </tr> */}
 
-        <div
-          className='w-full h-px bg-[#9A9597] my-2 opacity-15'
-        ></div>
-        <div
-          className='w-full flex justify-between items-center p-2'
-        >
-          <p
-            className='text-[#4F5860] font-medium'
-          >Amount charged</p>
-          <p
-            className='text-[#4F5860] font-medium'
-          >${data?.amount}</p>
-        </div>
-      </div>
+    //           {/* <tr>
+    //             <td></td>
+    //             <td></td>
+    //             <td className="font-inter font-normal text-sm text-black text-left py-1 border-b border-black">Tax</td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-right py-1 border-b border-black">
+    //               {currencyList?.find(item => item?.name === data?.currency)?.logo}
+    //               {data?.taxedPrice}
+    //             </td>
+    //           </tr> */}
 
-      <div
-        className='px-16 py-8'
-      >
-        <div
-          className='w-full h-px bg-[#9A9597] my-8 opacity-15'
-        ></div>
+    //           {/* <tr>
+    //             <td></td>
+    //             <td></td>
+    //             <td className="font-inter font-normal text-sm text-black text-left py-1 border-b border-black">Total</td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-right py-1 border-b border-black">
+    //               {currencyList?.find(item => item?.name === data?.currency)?.logo}
+    //               {data?.finalTotalPrice}
+    //             </td>
+    //           </tr> */}
 
-        <h6
-          className='my-8 text-[#7F8E96]'
-        >
-          If you have any questions, contact us at&nbsp;
-          <span className='text-[#12A833] font-medium'>stripe@hordanso.com</span>
-          &nbsp;or call us at&nbsp;
-          <span className='text-[#12A833] font-medium'>+1 469-893-0678</span>.
-        </h6>
+    //           {/* <tr>
+    //             <td></td>
+    //             <td></td>
+    //             <td className="font-inter font-normal text-sm text-black text-left py-1 border-b border-black">Amount Charged</td>
+    //             <td className="font-inter font-normal text-sm text-black content-start text-right py-1 border-b border-black">
+    //               {currencyList?.find(item => item?.name === data?.currency)?.logo}
+    //               {data?.finalTotalPrice}
+    //             </td>
+    //           </tr> */}
+    //         </tbody>
+    //       </table>
+    //     </div>
+    //   </div>
 
-        <div
-          className='w-full h-px bg-[#9A9597] my-8 opacity-15'
-        ></div>
+    //   <div
+    //     className='px-16 py-8'
+    //   >
+    //     <div
+    //       className='w-full h-px bg-[#9A9597] opacity-15'
+    //     ></div>
 
-        <p
-          className='my-8 text-[#7F8E96]'
-        >
-          Something wrong with the email?&nbsp;
-          <span className='text-[#12A833] font-medium'>View in your browser</span>.
-        </p>
-
-        <p
-          className='my-8 text-[#7F8E96]'
-        >
-          You are viewing this email because you made a purchase at Hordanso LLC, which partners with&nbsp;
-          <span className='text-[#12A833] font-medium'>Stripe</span>
-          &nbsp;to provide marketing and payment processing.
-        </p>
-      </div>
-    </div>
+    //     <h6
+    //       className='mt-4 text-[#7F8E96]'
+    //     >
+    //       If you have any questions, contact us at&nbsp;
+    //       <span className='text-[#12A833] font-medium'>stripe@hordanso.com</span>
+    //       &nbsp;or call us at&nbsp;
+    //       <span className='text-[#12A833] font-medium'>+1 469-893-0678</span>.
+    //     </h6>
+    //   </div>
+    // </div>
+    <a></a>
   );
 };
 
