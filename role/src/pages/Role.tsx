@@ -315,7 +315,11 @@ const Role = () => {
                     ...filter,
                     sortdata: {
                       sort_text: "user_type",
-                      order: filter?.sortdata?.sort_text === "user_type" ? "desc" : "asc"
+                      order: filter?.sortdata?.sort_text === "user_type"
+                      ? filter?.sortdata?.order === "desc"
+                        ? "asc"
+                        : "desc"
+                      : "asc"
                     }
                   })
                 }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>

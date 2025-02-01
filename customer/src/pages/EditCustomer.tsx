@@ -5,7 +5,7 @@ import '../styles/styles.css';
 import Flag from 'react-world-flags'; // Flag component
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { editCustomerThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { editCustomerThunk, hereMapSearchThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import { useAppDispatch } from 'store/hooks';
 import {
   CitySelect,
@@ -30,10 +30,11 @@ function EditCustomer() {
   const countryRef = useRef(null);
   const stateRef = useRef(null);
   const cityRef = useRef(null);
+  const hereRef = useRef(null);
   const dispatch = useAppDispatch();
   
   const [customer, setCustomer] = useState(location.state);
-  console.log(customer);
+  console.log("customer...", customer);
   const [phoneNumber,setPhoneNumber] = useState();
   const [phoneCode,setPhoneCode] = useState('+1');
   const [countryName, setCountryName] = useState("");
@@ -47,7 +48,12 @@ function EditCustomer() {
   const [city, setCity] = useState({});
   console.log({countries, states, cities});
   // console.log({countryName, stateName, cityName});
-  console.log({country, state, city});
+  // console.log({country, state, city});
+  const [hereData, setHereData] = useState<object|null>(null);
+  const [hereList, setHereList] = useState([]);
+  const [hereSearch, setHereSearch] = useState("");
+  const [isHereDropdownOpen, setIsHereDropdownOpen] = useState<Boolean>(false);
+  console.log({hereData, hereList, hereSearch});
 
   // useEffect(() => {
   //   setCustomer({
@@ -76,32 +82,107 @@ function EditCustomer() {
       setCityDropdownOpen(false);
     }
   };
+  const handleClickOutsideHere = (event: MouseEvent) => {
+    if(hereRef.current && !hereRef.current.contains(event.target as Node)) {
+      setIsHereDropdownOpen(false);
+    }
+  };
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutsideCountry);
     document.addEventListener('mousedown', handleClickOutsideState);
     document.addEventListener('mousedown', handleClickOutsideCity);
+    document.addEventListener('mousedown', handleClickOutsideHere);
     return () => {
       document.removeEventListener('mousedown', handleClickOutsideCountry);
       document.removeEventListener('mousedown', handleClickOutsideState);
       document.removeEventListener('mousedown', handleClickOutsideCity);
+      document.removeEventListener('mousedown', handleClickOutsideHere);
     };
   }, []);
 
   useEffect(() => {
-    if(countries.length > 0 && countryName !== "") {
+    if(location.state.address) {
+      if(typeof location.state.address === "object") {
+        setHereData(location.state.address);
+      }
+    }
+  }, [location.state.address]);
+
+  const findHereData = async () => {
+    try {
+      const result = await dispatch(hereMapSearchThunk({address: hereSearch})).unwrap();
+      setHereList(result?.data?.items)
+    } catch (error) {
+      setHereData([]);
+    }
+  };
+
+  useEffect(() => {
+    if(hereSearch !== "") {
+      findHereData();
+    }
+  }, [hereSearch]);
+
+  useEffect(() => {
+    if(hereData !== null) {
+      if(countries?.length > 0) {
+        const findCountry = countries?.find(item => item?.name?.toLowerCase() === hereData?.address?.countryName?.toLowerCase());
+        if(findCountry) {
+          setCountry(findCountry);
+          setCustomer({
+            ...customer,
+            country: findCountry?.name
+          });
+          if(states?.length > 0) {
+            const findState = states?.find(item => item?.name?.toLowerCase() === hereData?.address?.state?.toLowerCase());
+            if(findState) {
+              setState(findState);
+              setCustomer({
+                ...customer,
+                state: findState?.name
+              });
+              if(cities?.length > 0) {
+                const findCity = cities?.find(item => item?.name?.toLowerCase() === hereData?.address?.city?.toLowerCase());
+                if(findCity) {
+                  setCity(findCity);
+                  setCustomer({
+                    ...customer,
+                    city: findCity?.name
+                  })
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, [hereData, countries, states, cities]);
+
+  useEffect(() => {
+    if(hereData !== null) {
+      setCustomer({
+        ...customer,
+        address: hereData,
+        zipcode: hereData?.address?.postalCode
+      });
+    }
+  }, [hereData]);
+
+  useEffect(() => {
+    if(countries?.length > 0 && countryName !== "") {
       setCountryDropdownOpen(true);
     }
   }, [countries, countryName]);
 
   useEffect(() => {
-    if(states.length > 0 && stateName !== "") {
+    if(states?.length > 0 && stateName !== "") {
       setStateDropdownOpen(true);
     }
   }, [states, stateName]);
 
   useEffect(() => {
-    if(cities.length > 0 && cityName !== "") {
+    if(cities?.length > 0 && cityName !== "") {
       setCityDropdownOpen(true);
     }
   }, [cities, cityName]);
@@ -201,7 +282,7 @@ function EditCustomer() {
         setCountry({});
       }
     }
-  }, [customer, countries, states, cities]);
+  }, [customer?.country, customer?.state, customer?.city, countries, states, cities]);
 
   const formList = [
     {label: 'First name', type: 'text', name: 'first_name', placeholder: 'Enter the first name',},
@@ -245,7 +326,7 @@ function EditCustomer() {
       setSelectedOption({ name: "United States", dial_code: '+1', code: "US" });
       setPhoneCode('+1');
     }
-  }, [customer?.country]);
+  }, [country]);
 
   const handleOptionClick = (option: { name: string; dial_code: string; code: string; }) => {
     setSelectedOption(option);
@@ -378,7 +459,7 @@ function EditCustomer() {
                           className='search-input-label'
                         >{item.label}</label>
                         <PhoneInput
-                          country={selectedOption?.code?.toLowerCase()}
+                          country={"us"}
                           onChange={handlePhoneChange}
                           value={customer?.phone_no}
                           placeholder='00000-00000'
@@ -567,6 +648,50 @@ function EditCustomer() {
                         }
                       </div>
                     )
+                  } else if(item.name == 'address'){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2 relative'
+                        ref={hereRef}
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <input
+                          type='text'
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                          placeholder={item?.placeholder}
+                          name='addrress'
+                          onChange={e => {
+                            setHereData(null);
+                            setHereSearch(e.target.value);
+                          }}
+                          value={hereData?.title || hereSearch}
+                          required
+                          onFocus={() => {setIsHereDropdownOpen(true)}}
+                        />
+                        {
+                          isHereDropdownOpen && hereList?.length > 0 && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2'>
+                              {
+                                hereList?.map((name, idx) => (
+                                  <p
+                                    key={idx}
+                                    className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                    onClick={() => {
+                                      setHereSearch("");
+                                      setHereData(name);
+                                      setIsHereDropdownOpen(false);
+                                    }}
+                                  >{name?.title}</p>
+                                ))
+                              }
+                            </div>
+                          )
+                        }
+                      </div>
+                    )
                   } else{
                     return(
                       <div
@@ -583,7 +708,7 @@ function EditCustomer() {
                           required
                           className='search-input-text'
                           onChange={updateCustomer}
-                          defaultValue={customer[item.name]}
+                          value={customer[item.name]}
                         />
                       </div>
                     )
@@ -637,18 +762,7 @@ function EditCustomer() {
                 type='button'
                 className='btn-red h-[46px] ml-[30px]'
                 onClick={() => {
-                  setCustomer({
-                    fname: '',
-                    lname: '',
-                    street: '',
-                    state: '',
-                    city: '',
-                    country: '',
-                    zipCode: '',
-                    phone: '',
-                    email: '',
-                    makeAuthorization: false
-                  });
+                  setCustomer(location.state);
                 }}
               >Cancel</button>
             </div>

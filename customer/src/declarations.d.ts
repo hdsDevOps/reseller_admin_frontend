@@ -18,6 +18,7 @@ declare module "store/ReduxProvider" {
     export const getPlansAndPricesThunk;
     export const getCustomerEmailsCountThunk;
     export const logInAsCustomerThunk;
+    export const hereMapSearchThunk;
   }
 
   declare module 'store/authSlice' {

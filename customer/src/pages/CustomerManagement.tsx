@@ -1242,18 +1242,17 @@ const CustomerManagement: React.FC = () => {
                         || item?.name === "license_usage"
                         ? <span className="ml-1">
                           <button type="button" onClick={() => {
-                            setFilters((prev) => {
-                              const newFilData = {
-                                ...prev,
-                                sortdata: {
-                                  sort_text: item?.name,
-                                  //next_payment,createdAt,license_usage,name
-                                  order: prev?.sortdata?.sort_text === item?.name 
-                                    ? prev?.sortdata?.order === "asc" ? "desc" : "asc"
+                            setFilters({
+                              ...filters,
+                              sortdata: {
+                                sort_text: item?.name,
+                                //next_payment,createdAt,license_usage,name
+                                order: filters?.sortdata?.sort_text === item?.name 
+                                  ? filters?.sortdata?.order === "asc"
+                                    ? "desc"
                                     : "asc"
-                                }
+                                  : "asc"
                               }
-                              return newFilData;
                             })
                           }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button>
                         </span> : ""

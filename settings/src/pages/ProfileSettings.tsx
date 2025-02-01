@@ -136,7 +136,7 @@ function ProfileSettings() {
 
   useEffect(() => {
     if(hereList?.length > 0 && hereSearch !== "") {
-      setStateDropdownOpen(true);
+      setStreetDropdownOpen(true);
     }
   }, [hereList, hereSearch]);
 
@@ -148,7 +148,7 @@ function ProfileSettings() {
     if(userDetails?.phone_no === newProfile?.phone_no) {
       setIsNumberValid(true);
     }
-  }, [userDetails, profile]);
+  }, [userDetails?.phone_no, profile?.phone_no]);
 
   useEffect(() => {
     if(profile) {
@@ -170,7 +170,7 @@ function ProfileSettings() {
         setState({});
       }
     }
-  }, [profile?.state_name, states, cities]);
+  }, [profile?.state_name, states]);
 
   useEffect(() => {
     if(profile) {
@@ -215,10 +215,10 @@ function ProfileSettings() {
     { label: 'Last Name', placeholder: 'Enter last name', name: 'last_name', type: 'text',},
     { label: 'Email', placeholder: 'Enter email', name: 'email', type: 'email',},
     { label: 'Phone Number', placeholder: 'Enter phone number', name: 'phone', type: 'text',},
+    { label: 'Street Address', placeholder: 'Enter street address', name: 'street_name', type: 'text',},
     { label: 'Country', placeholder: 'Enter name of Country', name: 'country', type: 'text',},
     { label: 'State', placeholder: 'Enter name of State', name: 'state_name', type: 'text',},
     { label: 'City', placeholder: 'Enter name of City', name: 'city', type: 'text',},
-    { label: 'Street Address', placeholder: 'Enter street address', name: 'street_name', type: 'text',},
   ];
 
   useEffect(() => {
@@ -255,7 +255,7 @@ function ProfileSettings() {
 
   useEffect(() => {
     setHereData(userDetails?.street_name);
-  }, [userDetails]);
+  }, [userDetails?.street_name]);
 
   useEffect(() => {
     setNewProfile({
@@ -273,35 +273,55 @@ function ProfileSettings() {
           ...newProfile,
           country: findCountry?.name
         })
+        if(hereData !== null && states?.length > 0) {
+          const findState = states?.find(item => item?.name?.toLowerCase() === hereData?.address?.state?.toLowerCase());
+          if(findState) {
+            setState(findState);
+            setNewProfile({
+              ...newProfile,
+              state_name: findState?.name
+            })
+            if(hereData !== null && cities?.length > 0) {
+              const findCity = cities?.find(item => item?.name?.toLowerCase() === hereData?.address?.city?.toLowerCase());
+              if(findCity) {
+                setCity(findCity);
+                setNewProfile({
+                  ...newProfile,
+                  city: findCity?.name
+                })
+              }
+            }
+          }
+        }
       }
     }
-  }, [hereData, countries]);
+  }, [hereData, countries, states, cities]);
 
-  useEffect(() => {
-    if(hereData !== null && states?.length > 0) {
-      const findCountry = states?.find(item => item?.name?.toLowerCase() === hereData?.address?.state?.toLowerCase());
-      if(findCountry) {
-        setState(findCountry);
-        setNewProfile({
-          ...newProfile,
-          state_name: findCountry?.name
-        })
-      }
-    }
-  }, [hereData, states]);
+  // useEffect(() => {
+  //   if(hereData !== null && states?.length > 0) {
+  //     const findCountry = states?.find(item => item?.name?.toLowerCase() === hereData?.address?.state?.toLowerCase());
+  //     if(findCountry) {
+  //       setState(findCountry);
+  //       setNewProfile({
+  //         ...newProfile,
+  //         state_name: findCountry?.name
+  //       })
+  //     }
+  //   }
+  // }, [hereData, states]);
 
-  useEffect(() => {
-    if(hereData !== null && cities?.length > 0) {
-      const findCountry = cities?.find(item => item?.name?.toLowerCase() === hereData?.address?.countryName?.toLowerCase());
-      if(findCountry) {
-        setCity(findCountry);
-        setNewProfile({
-          ...newProfile,
-          city: findCountry?.name
-        })
-      }
-    }
-  }, [hereData, cities]);
+  // useEffect(() => {
+  //   if(hereData !== null && cities?.length > 0) {
+  //     const findCountry = cities?.find(item => item?.name?.toLowerCase() === hereData?.address?.countryName?.toLowerCase());
+  //     if(findCountry) {
+  //       setCity(findCountry);
+  //       setNewProfile({
+  //         ...newProfile,
+  //         city: findCountry?.name
+  //       })
+  //     }
+  //   }
+  // }, [hereData, cities]);
 
   const showImage = () => {
     const file = image;
@@ -463,24 +483,7 @@ function ProfileSettings() {
 
   useEffect(() => {
 
-  })
-
-  const base64ToBlob = (base64) => {
-    const parts = base64.split(",");
-    if (parts.length !== 2) {
-      throw new Error("Invalid base64 format");
-    }
-    
-    const byteString = atob(parts[1]); // Decode base64
-    const mimeType = parts[0].split(":")[1].split(";")[0]; // Extract MIME type
-    const arrayBuffer = new Uint8Array(byteString.length);
-  
-    for (let i = 0; i < byteString.length; i++) {
-      arrayBuffer[i] = byteString.charCodeAt(i);
-    }
-  
-    return new Blob([arrayBuffer], { type: mimeType });
-  };
+  });
 
   const imageUpload = async(e) => {
     e.preventDefault();

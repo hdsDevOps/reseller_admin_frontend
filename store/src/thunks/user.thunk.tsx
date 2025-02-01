@@ -385,8 +385,8 @@ export const getNotificationTemplateThunk = createAsyncThunk(
 
 export const updateNoficationTemplateContentThunk = createAsyncThunk(
   "users/updateNoficationTemplateContent",
-  async ({record_id, template_content}: any) => {
-    return await userApis.updateNoficationTemplateContentApi(record_id, template_content);
+  async ({record_id, template_content, is_notification}: any) => {
+    return await userApis.updateNoficationTemplateContentApi(record_id, template_content, is_notification);
   }
 );
 

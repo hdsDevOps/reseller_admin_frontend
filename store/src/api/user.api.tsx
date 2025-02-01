@@ -499,10 +499,11 @@ async function getNotificationTemplateApi(): Promise<any> {
 
 async function updateNoficationTemplateContentApi(
   record_id: string,
-  template_content: string
+  template_content: string,
+  is_notification: Boolean
 ): Promise<any> {
   try {
-    const result = await postApiCall(endPoints.updateNoficationTemplateContent, {record_id, template_content});
+    const result = await postApiCall(endPoints.updateNoficationTemplateContent, {record_id, template_content, is_notification});
     return result;
   } catch (error: any) {
     throw error;

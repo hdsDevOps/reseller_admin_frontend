@@ -513,7 +513,11 @@ const UserList = () => {
                             ...userFilter,
                             sortdata: {
                               sort_text: item.name,
-                              order: userFilter?.sortdata?.sort_text === item.name ? "desc" : "asc"
+                              order: userFilter?.sortdata?.sort_text === item.name
+                              ? userFilter?.sortdata?.order === "desc"
+                                ? "asc"
+                                : "desc"
+                              : "asc"
                             }
                           })
                         }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""

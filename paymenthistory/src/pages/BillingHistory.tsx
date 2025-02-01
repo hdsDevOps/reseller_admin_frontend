@@ -423,13 +423,17 @@ const BillingHistory: React.FC = () => {
                 >
                   <span>{header.label}</span>
                   {
-                    header?.name === "transaction_id" || header?.name === "customer_name"  || header?.name === "created_at"  || header?.name === "amount" ?
+                    header?.name === "domain" || header?.name === "customer_name"  || header?.name === "created_at"  || header?.name === "amount" ?
                     <span className="ml-1"><button type="button" onClick={() => {
                       setFilter({
                         ...filter,
                         sortdata: {
                           sort_text: header.name,
-                          order: filter?.sortdata?.sort_text === header.name ? "desc" : "asc"
+                          order: filter?.sortdata?.sort_text === header.name
+                          ? filter?.sortdata?.order === "desc"
+                            ? "asc"
+                            : "desc"
+                          : "asc"
                         }
                       })
                     }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
@@ -503,9 +507,9 @@ const BillingHistory: React.FC = () => {
                       <FaDownload />
                     </button>
 
-                    <div className={pdfDownload}>
+                    {/* <div className={pdfDownload}>
                       <BillingInvoice pdfRef={pdfRef} data={detail} paymentMethods={paymentMethods} />
-                    </div>
+                    </div> */}
                   </td>
                 </tr>
               )) :

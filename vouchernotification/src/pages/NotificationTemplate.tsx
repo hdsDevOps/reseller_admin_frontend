@@ -17,8 +17,8 @@ const NotificationTemplate = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("");
-  // console.log("selectedItem", selectedItem);
+  const [selectedItem, setSelectedItem] = useState<object|null>(null);
+  console.log("selectedItem...", selectedItem);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showNotification, setShowNotification] = useState(true);
   const [isToggled, setIsToggled] = useState(false);
@@ -56,6 +56,13 @@ const NotificationTemplate = () => {
     "{email}",
   ]);
   const [sendEmailNotification, setSendEmailNotification] = useState("");
+  const [notificationToggle, setNotificationToggle] = useState<Boolean>(false);
+
+  useEffect(() => {
+    if(selectedItem !== null) {
+      setNotificationToggle(selectedItem?.is_notification);
+    }
+  }, [selectedItem?.is_notification]);
   
   const handleFilterChange = (e) => {
     // console.log("User Input:", e.target.value);
@@ -133,9 +140,9 @@ const NotificationTemplate = () => {
   }, [customerList, selectedCustomers])
 
   useEffect(() => {
-    if(selectedItem?.id == null || selectedItem?.id == undefined){
-      setSelectedItem("");
-      setSelectedOption("");
+    if(selectedItem?.id === null || selectedItem?.id === undefined){
+      setSelectedItem(null);
+      setSelectedOption(null);
     }
     else{
       setSelectedItem({
@@ -284,7 +291,8 @@ const NotificationTemplate = () => {
       const result = await dispatch(
         updateNoficationTemplateContentThunk({
           record_id: selectedItem?.id,
-          template_content: templateContent
+          template_content: templateContent,
+          is_notification: notificationToggle
         })
       ).unwrap();
       getNotificationTemplate();
@@ -303,7 +311,7 @@ const NotificationTemplate = () => {
           record_id: selectedItem?.id
         })
       ).unwrap();
-      setSelectedItem("");
+      setSelectedItem(null);
       setSelectedOption("");
       setIsDeleteOpen(false);
       getNotificationTemplate();
@@ -404,13 +412,18 @@ const NotificationTemplate = () => {
               </h5>
               <div
                 className="mt-[7.5px] transition-transform duration-1000 ease-in-out"
-                onClick={() => setShowNotification(!showNotification)}
               >
                 <label className="relative cursor-pointer">
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    defaultChecked={showNotification}
+                    checked={selectedItem?.is_notification}
+                    onChange={() => {
+                      setSelectedItem({
+                        ...selectedItem,
+                        is_notification: !selectedItem?.is_notification
+                      })
+                    }}
                   />
                   <div
                     className="w-[40px] h-[20px] flex items-center bg-gray-300 rounded-full after:flex after:items-center after:justify-center peer peer-checked:after:translate-x-full after:absolute after:left-[2px] peer-checked:after:border-white after:bg-white after:border after:border-gray-300 after:rounded-full after:h-[18px] after:w-[18px] after:transition-all peer-checked:bg-[#00D13B]">
@@ -516,7 +529,7 @@ const NotificationTemplate = () => {
                 <button
                   className='btn-orange max-w-fit'
                   onClick={() => {
-                    setSelectedItem("");
+                    setSelectedItem(null);
                     setSelectedOption("");
                   }}
                   button-name="notificaiton-template-update-cancel"
