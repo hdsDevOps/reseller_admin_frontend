@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
   const [currentRevenueData, setCurrentRevenueData] = useState(yearlySpendingStatistics[currentIndex]);
   // console.log("currentRevenueData...", currentRevenueData);
   useEffect(() => {
-    setCurrentRevenueData(yearlySpendingStatistics.length>0 ? yearlySpendingStatistics[currentIndex] : initialYearlySpendingStatistics);
+    setCurrentRevenueData(yearlySpendingStatistics?.length>0 ? yearlySpendingStatistics[currentIndex] : initialYearlySpendingStatistics);
   }, [yearlySpendingStatistics, currentIndex]);
 
   const currencyList = [
@@ -130,7 +130,7 @@ const Dashboard: React.FC = () => {
   };
 
   const changeIndex = (buttonType: string) => {
-    const length = yearlySpendingStatistics.length;
+    const length = yearlySpendingStatistics?.length;
     if(currentIndex === 0 && length === 1) {
       setCurrentIndex(0);
     } else if(length > 1) {
@@ -278,6 +278,11 @@ const Dashboard: React.FC = () => {
     pdf.save('revenue.pdf');
   };
 
+  useEffect(() => {
+    console.log((currentRevenueData?.current_month_revenue/roundToUpper5x(maxMonth?.total_revenue)) * 100)
+    // console.log(currentRevenueData?.current_month_revenue)
+  }, [currentRevenueData]);
+
   return (
     <div
       className='flex flex-col px-2 max-[400px]:px-0'
@@ -357,9 +362,29 @@ const Dashboard: React.FC = () => {
             >
               <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">Spending Statistics</p>
               <div className="flex flex-row justify-between w-[110px]">
-                <button><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
-                <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">2024</p>
-                <button><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if(currentIndex > 0) {
+                      changeIndex("prev");
+                    } else {
+                      //
+                    }
+                  }}
+                  className={currentIndex > 0 ? "" : "hidden"}
+                ><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
+                <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C] mx-auto">{currentRevenueData?.year}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if(currentIndex < yearlySpendingStatistics?.length - 1) {
+                      changeIndex("next");
+                    } else {
+                      //
+                    }
+                  }}
+                  className={currentIndex < yearlySpendingStatistics?.length - 1 ? "" : "hidden"}
+                ><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
               </div>
             </div>
             <div
@@ -427,7 +452,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className={`absolute w-full px-14 pb-[58px] pr-16 top-[18px] h-full`}>
-                  <div className={`border-b-4 border-[#905F00] h-[${100- ((currentRevenueData?.currentMonthRevenue/roundToUpper5x(maxMonth?.total_revenue)) * 100)}%] `}></div>
+                  <div className={`border-b-4 border-[#905F00] h-[${100- ((currentRevenueData?.current_month_revenue/roundToUpper5x(maxMonth?.total_revenue)) * 100)}%] `}></div>
                 </div>
               </div>
             </div>
