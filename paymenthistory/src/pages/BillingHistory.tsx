@@ -242,9 +242,11 @@ const BillingHistory: React.FC = () => {
     const miliseconds = (parseInt(seconds) * 1000) + (parseInt(nanoseconds) / 1e6);
 
     const date = new Date(miliseconds);
-
-    const formattedDate = format(new Date(date?.toISOString()), "dd MMM yyyy");
-    return formattedDate;
+    if(date == "Invalid Date") {
+      return "Invalid Date";
+    } else {
+      return format(date, "dd MMM yyyy");
+    }
   };
 
   const [search, setSearch] = useState("");
