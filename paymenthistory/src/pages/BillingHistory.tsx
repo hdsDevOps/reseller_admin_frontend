@@ -14,9 +14,70 @@ import { ArrowRightLeft, Download, FilterX, X } from 'lucide-react';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from "jspdf";
 const BillingInvoice = React.lazy(() => import('../components/BillingInvoice'));
-import { format } from 'date-fns';
+import { addDays, addMonths, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays } from 'date-fns';
 import ReactPaginate from "react-paginate";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite.min.css";
+import './DateRangePickerPlaceholder.css';
+
+interface RangeType<T> {
+  label: string;
+  value: [T, T] | ((value: T[]) => [T, T]);
+  placement?: string;
+  closeOverlay?: boolean;
+  appearance?: string;
+}
+
+const predefinedRanges: RangeType<Date>[] = [
+  { label: "Today", value: [new Date(), new Date()], placement: "left" },
+  {
+    label: "Yesterday",
+    value: [addDays(new Date(), -1), addDays(new Date(), -1)],
+    placement: "left",
+  },
+  {
+    label: "This week",
+    value: [startOfWeek(new Date()), endOfWeek(new Date())],
+    placement: "left",
+  },
+  {
+    label: "Last week",
+    value: [subDays(new Date(), 6), new Date()],
+    placement: "left",
+  },
+  {
+    label: "This month",
+    value: [startOfMonth(new Date()), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last month",
+    value: [
+      startOfMonth(addMonths(new Date(), -1)),
+      endOfMonth(addMonths(new Date(), -1)),
+    ],
+    placement: "left",
+  },
+  {
+    label: "This year",
+    value: [new Date(new Date().getFullYear(), 0, 1), new Date()],
+    placement: "left",
+  },
+  {
+    label: "Last year",
+    value: [
+      new Date(new Date().getFullYear() - 1, 0, 1),
+      new Date(new Date().getFullYear(), 0, 0),
+    ],
+    placement: "left",
+  },
+  {
+    label: "All time",
+    value: [new Date(new Date().getFullYear() - 1, 0, 1), new Date()],
+    placement: "left",
+  },
+];
 
 const initialFilter = {
   start_date: "",
@@ -69,6 +130,32 @@ const BillingHistory: React.FC = () => {
   // console.log("billingHistory...", billingHistory);
   const [initialBillingHistory, setInitialBillingHistory] = useState([]);
 
+  const [range, setRange] = useState<[Date | null, Date | null]|null>(null);
+
+  const renderValue = (date: [Date, Date]) => {
+    if (!date[0] || !date[1]) return "Select Date Range";
+    return `${format(date[0], 'MMM d')} - ${format(date[1], 'MMM d, yyyy')}`;
+  };
+
+  useEffect(() => {
+    if(range === null) {
+      setFilter({
+        ...filter,
+        start_date: "",
+        end_date: "",
+      });
+    } else {
+      setFilter({
+        ...filter,
+        start_date: `${range[0] === null ? "" : format(range[0], "yyyy-MM-dd")}`,
+        end_date: `${range[1] === null ? "" : format(range[1], "yyyy-MM-dd")}`,
+      });
+    }
+  }, [range]);
+  
+  const handleRangeChange = (value: [Date | null, Date | null]) => {
+    setRange(value);
+  };
 
   const tableHeads = [
     {name: "transaction_id", label: "Transaction ID"},
@@ -284,36 +371,18 @@ const BillingHistory: React.FC = () => {
       
       <div className="grid grid-cols-1 mt-14 sm:mb-[51px] mb-[31px]">
         <div className="lg:col-start-2 grid xl:grid-cols-4 min-[900px]:grid-cols-2 grid-cols-1 min-md:w-[300px] max-md:mx-auto">
-          <div className="px-4 mb-5 sm:mb-0">
-            <input
-              type="text"
-              className="serach-input-2 placeholder-black"
-              name="start_date"
-              placeholder="Start Date"
-              onFocus={e => {
-                e.target.type='date'
-              }}
-              onBlur={e => {
-                e.target.type='text'
-              }}
-              onChange={handleChangeFilter}
-              value={filter?.start_date}
-            />
-          </div>
-          <div className="px-4 mb-5 sm:mb-0">
-            <input
-              type="text"
-              className="serach-input-2 placeholder-black"
-              name="end_date"
-              placeholder="End Date"
-              onFocus={e => {
-                e.target.type='date'
-              }}
-              onBlur={e => {
-                e.target.type='text'
-              }}
-              onChange={handleChangeFilter}
-              value={filter?.end_date}
+          <div className="px-4 mb-5 sm:mb-0 w-full">
+            <DateRangePicker
+              range={predefinedRanges}
+              placeholder="Select Subscription Date Range"
+              style={{ width: '100%' }}
+              onChange={handleRangeChange}
+              value={range}
+              showHeader={false}
+              renderValue={renderValue} // Custom render for the selected value
+              calendarSnapping={true}
+              cleanable
+              size="lg"
             />
           </div>
           <div

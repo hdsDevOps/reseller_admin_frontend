@@ -1,0 +1,14 @@
+.rs-input {
+  font-size: 14px !important;
+  font-family: "Inter", sans-serif;
+}
+
+.rs-input::placeholder {
+  opacity: 60% !important;
+}
+
+/* border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60 font-inter font-normal */
+
+.rs-input-group {
+  border-radius: 0px !important;
+}
