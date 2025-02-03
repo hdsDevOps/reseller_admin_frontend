@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from 'axios';
-import { ArrowRightLeft, ChevronDown, Ellipsis } from "lucide-react";
+import { ArrowRightLeft, ChevronDown, Ellipsis, FilterX } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -211,8 +211,8 @@ const CustomerManagement: React.FC = () => {
   const [emailsCount, setEmailsCount] = useState([]);
   // console.log("emailsCount...", emailsCount);
 
-  const [subscriptionRange, setSubscriptionRange] = useState<[Date | null, Date | null]>([null, null]);
-  const [renewalRange, setRenewalRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [subscriptionRange, setSubscriptionRange] = useState<[Date | null, Date | null]|null>(null);
+  const [renewalRange, setRenewalRange] = useState<[Date | null, Date | null]|null>(null);
   // console.log({subscriptionRange, renewalRange});
 
   const renderValue = (date: [Date, Date]) => {
@@ -906,7 +906,7 @@ const CustomerManagement: React.FC = () => {
                 <input
                   list="brow"
                   placeholder="Auto search domain list"
-                  className="serach-input"
+                  className="serach-input !placeholder-[#8A8A8A] placeholder:text-sm"
                   name="domain"
                   onChange={e => {
                     setFilters({
@@ -958,7 +958,7 @@ const CustomerManagement: React.FC = () => {
               </div>
               <div className="sm:w-[300px] max-sm:w-full sm:px-4 max-sm:px-0 min-[968px]:mt-0 mt-[15px]">
                 <input
-                  className="serach-input"
+                  className="serach-input !placeholder-[#8A8A8A] placeholder:text-sm"
                   name="search_data"
                   onChange={e => {
                     setFilters({
@@ -966,7 +966,7 @@ const CustomerManagement: React.FC = () => {
                       search_data: e.target.value,
                     });
                   }}
-                  placeholder="Name, Email"
+                  placeholder="Search name or email"
                   value={filters?.search_data}
                 />
               </div>
@@ -998,18 +998,34 @@ const CustomerManagement: React.FC = () => {
             </div>
           </div>
           <div
-            className="min-[968px]:mt-0 mt-[27px]"
+            className="min-[968px]:mt-0 mt-[27px] flex flex-row justify-end items-start"
           >
             <button
               type="button"
               button-name="customers-filter-btn"
-              className="btn-green w-[80px] h-[38px] max-sm:float-right"
+              className="btn-green w-[80px] h-[38px]"
               onClick={() => {
                 setFilterShow(true);
               }}
             >
               Filter
             </button>
+            <div
+              className="ml-2 h-[38px] items-center"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setFilters(intialFilter);
+                  setFilters2(intialFilter2)
+                }}
+                className="pt-[5px]"
+              >
+                <FilterX
+                  className="w-6 h-6 text-[#12A833]"
+                />
+              </button>
+            </div>
           </div>
         </div>
         

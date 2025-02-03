@@ -84,10 +84,14 @@ const EditCustomerGroup: React.FC = () =>  {
   const [customerGroup, setCustomerGroup] = useState(location.state);
   console.log(customerGroup);
   const [customerCount, setCustomerCount] = useState<number>(parseInt(location.state.no_customer));
-  const [range, setRange] = useState<[Date | null, Date | null]|null>([
-    location.state.start_date === "" ? null : new Date(location.state.start_date),
-    location.state.end_date === "" ? null : new Date(location.state.end_date)
-  ]);
+  const [range, setRange] = useState<[Date | null, Date | null]|null>(
+    location.state.start_date === "" && location.state.end_date === ""
+    ? null
+    : [
+      location.state.start_date === "" ? null : new Date(location.state.start_date),
+      location.state.end_date === "" ? null : new Date(location.state.end_date)
+    ]
+  );
     
   const handleChange = (value: [Date | null, Date | null]) => {
     setRange(value);

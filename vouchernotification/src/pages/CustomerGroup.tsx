@@ -9,7 +9,7 @@ import "../styles/styles.css";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { format } from "date-fns";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getCustomerGroupListThunk, deleteCustomerGroupThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { getCustomerGroupListThunk, deleteCustomerGroupThunk, removeUserAuthTokenFromLSThunk, getPlansAndPricesThunk } from 'store/user.thunk';
 import { setCustomerGroupFiltersStatus, setCurrentPageStatus, setItemsPerPageStatus } from 'store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -37,6 +37,8 @@ const CustomerGroup: React.FC = () => {
   // console.log(voucherGroup);
   const [filters, setFilters] = useState(customerGroupFilters === null ? initialFilters : customerGroupFilters);
   console.log(filters);
+  const [plansList, setPlansList] = useState([]);
+  console.log(plansList);
 
   useEffect(() => {
     const setCustomerGroupFiltersSlice = async() => {
@@ -178,6 +180,32 @@ const CustomerGroup: React.FC = () => {
     });
   };
 
+  useEffect(() => {
+    const getPlansAndPricesList = async() => {
+      try {
+        const result = await dispatch(getPlansAndPricesThunk({last_order: ""})).unwrap();
+        setPlansList(result?.data);
+      } catch (error) {
+        setPlansList([]);
+      }
+    };
+
+    getPlansAndPricesList();
+  }, []);
+
+  const getPlanName = (id:string) => {
+    if(plansList?.length > 0) {
+      const foundPlan = plansList?.find(item => item?.id === id);
+      if(foundPlan) {
+        return foundPlan?.plan_name;
+      } else {
+        return "N/A";
+      }
+    } else {
+      return "N/A";
+    }
+  }
+
   return (
     <div className="grid grid-cols-1">
       <div className="flex flex-col">
@@ -285,7 +313,11 @@ const CustomerGroup: React.FC = () => {
                           ...filters,
                           sortdata: {
                             sort_text: head.name,
-                            order: filters?.sortdata?.sort_text === head.name ? "desc" : "asc"
+                            order: filters?.sortdata?.sort_text === head.name
+                            ? filters?.sortdata?.order === "desc"
+                              ? "asc"
+                              : "desc"
+                            : "asc"
                           }
                         })
                       }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span> : ""
@@ -484,15 +516,15 @@ const CustomerGroup: React.FC = () => {
         <div className="mt-px flex flex-col">
           <div className="mt-0 flex flex-row justify-between">
             <p>Country:</p>
-            <p>{selectedGroup?.country}</p>
+            <p>{selectedGroup?.country || "N/A"}</p>
           </div>
           <div className="mt-0 flex flex-row justify-between">
             <p>Region:</p>
-            <p>{selectedGroup?.region}</p>
+            <p>{selectedGroup?.region || "N/A"}</p>
           </div>
           <div className="mt-0 flex flex-row justify-between">
             <p>Subscription Plan:</p>
-            <p>{selectedGroup?.plan}</p>
+            <p>{getPlanName(selectedGroup?.plan) || "N/A"}</p>
           </div>
           <div className="mt-0 flex flex-row justify-between">
             <p>Expiry Date:</p>
@@ -501,11 +533,11 @@ const CustomerGroup: React.FC = () => {
           </div>
           <div className="mt-0 flex flex-row justify-between">
             <p>License Usage:</p>
-            <p>{selectedGroup?.license_usage}</p>
+            <p>{selectedGroup?.license_usage || "N/A"}</p>
           </div>
           <div className="mt-0 flex flex-row justify-between">
             <p>Number of Customers:</p>
-            <p>{selectedGroup?.no_customer}</p>
+            <p>{selectedGroup?.no_customer || "N/A"}</p>
           </div>
         </div>
       </Modal>

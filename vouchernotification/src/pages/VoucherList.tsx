@@ -141,7 +141,7 @@ const VoucherList: React.FC = () => {
   // console.log(customerSearch);
 
   // console.log({currentPage, totalPages});
-  const [range, setRange] = useState<[Date | null, Date | null]|null>([null, null]);
+  const [range, setRange] = useState<[Date | null, Date | null]|null>(null);
     
   const handleChange = (value: [Date | null, Date | null]) => {
     setRange(value);
@@ -330,8 +330,8 @@ const VoucherList: React.FC = () => {
   // Calculate displayed data based on current page
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sampleData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sampleData.length / itemsPerPage);
+  const currentItems = sampleData?.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sampleData?.length / itemsPerPage);
 
   useEffect(() => {
     if(sampleData?.length > 0 && totalPages < currentPage + 1) {
@@ -543,7 +543,7 @@ const VoucherList: React.FC = () => {
           <div className="px-4 mb-5 sm:mb-0">
             <input
               type="text"
-              className="serach-input-2 placeholder-black"
+              className="serach-input-2 placeholder-[#8A8A8A]"
               name="voucher_code"
               placeholder="Voucher Code"
               onChange={handleFilterChange}
@@ -646,7 +646,11 @@ const VoucherList: React.FC = () => {
                           ...filters,
                           sortdata: {
                             sort_text: head.name,
-                            order: filters?.sortdata?.sort_text === head.name ? "desc" : "asc"
+                            order: filters?.sortdata?.sort_text === head.name
+                            ? filters?.sortdata?.order === "desc"
+                              ? "desc"
+                              : "asc"
+                            : "asc"
                           }
                         })
                       }}><ArrowRightLeft className="w-3 h-3 rotate-90" /></button></span>
@@ -658,7 +662,7 @@ const VoucherList: React.FC = () => {
           </thead>
           <tbody className="bg-white mt-3">
             {
-              currentItems.length>0 ? currentItems?.map((item, index) => {
+              currentItems?.length>0 ? currentItems?.map((item, index) => {
                 return(
                   <tr key={index} className="text-center">
                     <td className="td-css-2">{item?.voucher_code}</td>

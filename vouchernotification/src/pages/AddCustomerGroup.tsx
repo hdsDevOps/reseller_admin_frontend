@@ -80,7 +80,7 @@ const AddCustomerGroup: React.FC = () =>  {
   const dispatch = useAppDispatch();
 
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
-  const [range, setRange] = useState<[Date | null, Date | null]|null>([null, null]);
+  const [range, setRange] = useState<[Date | null, Date | null]|null>(null);
   
   const [customerGroup, setCustomerGroup] = useState({
     group_name: "",

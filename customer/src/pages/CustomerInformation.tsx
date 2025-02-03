@@ -9,6 +9,7 @@ import { getCustomerDomainsListThunk, logInAsCustomerThunk, updateCustomerPasswo
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { format } from 'date-fns';
 
 const CustomerInformation: React.FC = () => {
   const navigate = useNavigate();
@@ -115,6 +116,18 @@ const CustomerInformation: React.FC = () => {
       console.log("error....", error);
     }
   };
+
+  const dateFormat = (date) => {
+    const milliseconds = parseInt(date?._seconds) * 1000;
+    const extraMilliseconds = parseInt(date?._nanoseconds) / 1e6;
+    const totalMilliseconds = milliseconds+extraMilliseconds;
+    const newDate = new Date(totalMilliseconds);
+    if(newDate != "Invalid Date"){
+      return format(newDate, "dd MMM yyyy");
+    } else {
+      return "Invalid Date";
+    }
+  };
   
   return (
     <div
@@ -177,6 +190,9 @@ const CustomerInformation: React.FC = () => {
           <p
             className='py-2 font-inter-16px-400-custom-gray'
           >Region : {customer?.state || 'N/A'}</p>
+          <p
+            className='py-2 font-inter-16px-400-custom-gray'
+          >Subscription Date : {dateFormat(customer?.workspace?.last_payment) || 'N/A'}</p>
           <p
             className='py-2 font-inter-16px-400-custom-gray flex max-[400px]:flex-col min-[400px]:flex-row'
           >

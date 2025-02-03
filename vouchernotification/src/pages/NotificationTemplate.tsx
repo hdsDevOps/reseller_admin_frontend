@@ -656,7 +656,7 @@ const NotificationTemplate = () => {
         {
           isPreviewOpen && (
             <div className='fixed-full-screen'>
-              <div className='fixed-popup w-[449px] min-h-[200px] p-[18px]' ref={previewRef}>
+              <div className='fixed-popup max-w-[800px] w-full min-h-[200px] p-[18px]' ref={previewRef}>
                 <div className='flex flex-col'>
                   <div
                     className='flex-row-between'
