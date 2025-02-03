@@ -53,7 +53,7 @@ function EditCustomer() {
   const [hereList, setHereList] = useState([]);
   const [hereSearch, setHereSearch] = useState("");
   const [isHereDropdownOpen, setIsHereDropdownOpen] = useState<Boolean>(false);
-  console.log({hereData, hereList, hereSearch});
+  // console.log({hereData, hereList, hereSearch});
 
   // useEffect(() => {
   //   setCustomer({

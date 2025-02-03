@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/styles.css'
 import Flag from 'react-world-flags'; // Flag component
 import { useAppDispatch } from 'store/hooks';
-import { addCustomerThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
+import { addCustomerThunk, hereMapSearchThunk, removeUserAuthTokenFromLSThunk } from 'store/user.thunk';
 import {
   CitySelect,
   CountrySelect,
@@ -26,6 +26,7 @@ const AddCustomer: React.FC = () => {
   const countryRef = useRef(null);
   const stateRef = useRef(null);
   const cityRef = useRef(null);
+  const hereRef = useRef(null);
   const [customer, setCustomer] = useState({
     first_name: '',
     last_name: '',
@@ -38,7 +39,7 @@ const AddCustomer: React.FC = () => {
     email: '',
     authentication: false
   });
-  // console.log("customer...", customer);
+  console.log("customer...", customer);
   
   const flagRef = useRef(null);
   const [phoneNumber,setPhoneNumber] = useState();
@@ -57,6 +58,11 @@ const AddCustomer: React.FC = () => {
   // console.log("states...", states);
   // console.log("cities...", cities);
   // console.log({countryName, stateName, cityName});
+  const [hereData, setHereData] = useState<object|null>(null);
+  const [hereList, setHereList] = useState([]);
+  const [hereSearch, setHereSearch] = useState("");
+  const [isHereDropdownOpen, setIsHereDropdownOpen] = useState<Boolean>(false);
+  console.log({hereData, hereList, hereSearch});
 
   const [countryDropdownOpen, setCountryDropdownOpen] = useState<Boolean>(false);
   const [stateDropdownOpen, setStateDropdownOpen] = useState<Boolean>(false);
@@ -78,15 +84,22 @@ const AddCustomer: React.FC = () => {
       setCityDropdownOpen(false);
     }
   };
+  const handleClickOutsideHere = (event: MouseEvent) => {
+    if(hereRef.current && !hereRef.current.contains(event.target as Node)) {
+      setIsHereDropdownOpen(false);
+    }
+  };
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutsideCountry);
     document.addEventListener('mousedown', handleClickOutsideState);
     document.addEventListener('mousedown', handleClickOutsideCity);
+    document.addEventListener('mousedown', handleClickOutsideHere);
     return () => {
       document.removeEventListener('mousedown', handleClickOutsideCountry);
       document.removeEventListener('mousedown', handleClickOutsideState);
       document.removeEventListener('mousedown', handleClickOutsideCity);
+      document.removeEventListener('mousedown', handleClickOutsideHere);
     };
   }, []);
 
@@ -125,6 +138,66 @@ const AddCustomer: React.FC = () => {
   const handlePhoneChange = (value: string) => {
     setCustomer((prevData) => ({ ...prevData, phone_no: value }));
   };
+  
+  const findHereData = async () => {
+    try {
+      const result = await dispatch(hereMapSearchThunk({address: hereSearch})).unwrap();
+      setHereList(result?.data?.items)
+    } catch (error) {
+      setHereData([]);
+    }
+  };
+
+  useEffect(() => {
+    if(hereSearch !== "") {
+      findHereData();
+    }
+  }, [hereSearch]);
+
+  useEffect(() => {
+    if(hereData !== null) {
+      if(countries?.length > 0) {
+        const findCountry = countries?.find(item => item?.name?.toLowerCase() === hereData?.address?.countryName?.toLowerCase());
+        if(findCountry) {
+          setCountry(findCountry);
+          setCustomer({
+            ...customer,
+            country: findCountry?.name
+          });
+          if(states?.length > 0) {
+            const findState = states?.find(item => item?.name?.toLowerCase() === hereData?.address?.state?.toLowerCase());
+            if(findState) {
+              setState(findState);
+              setCustomer({
+                ...customer,
+                state: findState?.name
+              });
+              if(cities?.length > 0) {
+                const findCity = cities?.find(item => item?.name?.toLowerCase() === hereData?.address?.city?.toLowerCase());
+                if(findCity) {
+                  setCity(findCity);
+                  setCustomer({
+                    ...customer,
+                    city: findCity?.name
+                  })
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, [hereData, countries, states, cities]);
+
+  useEffect(() => {
+    if(hereData !== null) {
+      setCustomer({
+        ...customer,
+        address: hereData,
+        zipcode: hereData?.address?.postalCode
+      });
+    }
+  }, [hereData]);
 
   useEffect(() => {
     var config = {
@@ -265,9 +338,7 @@ const AddCustomer: React.FC = () => {
     e.preventDefault();
     if(validateForm()) {
       try {
-        const result = await dispatch(
-          addCustomerThunk(customer)
-        ).unwrap();
+        const result = await dispatch(addCustomerThunk(customer)).unwrap();
         toast.success(result?.message);
         setTimeout(() => {
           navigate(-1);
@@ -337,7 +408,7 @@ const AddCustomer: React.FC = () => {
             >
               {
                 formList?.map((item, index) => {
-                  if(item.name == 'phone_no'){
+                  if(item.name == 'phone_no') {
                     return(
                       <div
                         key={index}
@@ -363,8 +434,7 @@ const AddCustomer: React.FC = () => {
                         />
                       </div>
                     )
-                  }
-                  else if(item.name == 'country'){
+                  } else if(item.name == 'country') {
                     return(
                       <div
                         key={index}
@@ -428,8 +498,7 @@ const AddCustomer: React.FC = () => {
                         }
                       </div>
                     )
-                  }
-                  else if(item.name == 'state'){
+                  } else if(item.name == 'state') {
                     return(
                       <div
                         key={index}
@@ -489,8 +558,7 @@ const AddCustomer: React.FC = () => {
                         }
                       </div>
                     )
-                  }
-                  else if(item.name == 'city'){
+                  } else if(item.name == 'city') {
                     return(
                       <div
                         key={index}
@@ -544,8 +612,51 @@ const AddCustomer: React.FC = () => {
                         }
                       </div>
                     )
-                  }
-                  else{
+                  } else if(item.name == 'address') {
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2 relative'
+                        ref={hereRef}
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <input
+                          type='text'
+                          className='search-input-text focus:outline-none w-full h-full p-0'
+                          placeholder={item?.placeholder}
+                          name='addrress'
+                          onChange={e => {
+                            setHereData(null);
+                            setHereSearch(e.target.value);
+                          }}
+                          value={hereData?.title || hereSearch}
+                          required
+                          onFocus={() => {setIsHereDropdownOpen(true)}}
+                        />
+                        {
+                          isHereDropdownOpen && hereList?.length > 0 && (
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2'>
+                              {
+                                hereList?.map((name, idx) => (
+                                  <p
+                                    key={idx}
+                                    className='py-1 border-b border-[#C9C9C9] last:border-0 cursor-pointer'
+                                    onClick={() => {
+                                      setHereSearch("");
+                                      setHereData(name);
+                                      setIsHereDropdownOpen(false);
+                                    }}
+                                  >{name?.title}</p>
+                                ))
+                              }
+                            </div>
+                          )
+                        }
+                      </div>
+                    )
+                  } else{
                     return(
                       <div
                         key={index}
@@ -562,6 +673,7 @@ const AddCustomer: React.FC = () => {
                           onChange={updateCustomer}
                           placeholder={item?.placeholder}
                           cypress-name={item.name+"_input"}
+                          value={customer[item.name]}
                         />
                       </div>
                     )

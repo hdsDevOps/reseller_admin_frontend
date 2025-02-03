@@ -9,6 +9,7 @@ const CustomerAgreement = React.lazy(() => import("./CustomerAgreement"));
 const PrivacyPolicy = React.lazy(() => import("./PrivacyPolicy"));
 const TermsConditions = React.lazy(() => import("./TermsAndConditions"));
 const ProfileSettings = React.lazy(() => import("./ProfileSettings"));
+const EmailServices = React.lazy(() => import("./EmailServices"));
 
 
 const SettingsApp: React.FC = () => {
@@ -22,6 +23,7 @@ const SettingsApp: React.FC = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-and-conditions" element={<TermsConditions />} />
         <Route path="/profile-settings" element={<ProfileSettings />} />
+        <Route path="/email-services" element={<EmailServices />} />
       </Routes>
     </Suspense>
   );

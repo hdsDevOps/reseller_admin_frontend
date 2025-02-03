@@ -15,6 +15,7 @@ import axios from 'axios';
 import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
 import { addDays, addMonths, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays } from 'date-fns';
+import './DateRangePickerPlaceholder.css';
 
 interface RangeType<T> {
   label: string;
@@ -88,7 +89,7 @@ const AddCustomerGroup: React.FC = () =>  {
     plan: "",
     start_date: "",
     end_date: "", 
-    license_usage: 0, 
+    license_usage: "", 
     no_customer: 0,
   });
   console.log(customerGroup);
@@ -150,7 +151,7 @@ const AddCustomerGroup: React.FC = () =>  {
     } else {
       setCustomerGroup({
         ...customerGroup,
-        license_usage: 0
+        license_usage: ""
       });
     }
   };
@@ -302,15 +303,26 @@ const AddCustomerGroup: React.FC = () =>  {
 
   const getCustomerCount = async() => {
     try {
-      const result = await dispatch(getCustomerCountThunk({
-        country: customerGroup?.country,
-        state_name: customerGroup?.region,
-        plan: customerGroup?.plan,
-        start_date: customerGroup?.start_date,
-        end_date: customerGroup?.end_date,
-        license_usage: customerGroup?.license_usage
-      })).unwrap();
-      setCustomerCount(parseInt(result?.customer_count));
+      if(
+        customerGroup?.country === "" && customerGroup?.country?.trim() === "" &&
+        customerGroup?.region === "" && customerGroup?.region?.trim() === "" &&
+        customerGroup?.plan === "" && customerGroup?.plan?.trim() === "" &&
+        customerGroup?.start_date === "" && customerGroup?.start_date?.trim() === "" &&
+        customerGroup?.end_date === "" && customerGroup?.end_date?.trim() === "" &&
+        customerGroup?.license_usage === "" && customerGroup?.license_usage?.trim() === ""
+      ) {
+        setCustomerCount(0);
+      } else {
+        const result = await dispatch(getCustomerCountThunk({
+          country: customerGroup?.country,
+          state_name: customerGroup?.region,
+          plan: customerGroup?.plan,
+          start_date: customerGroup?.start_date,
+          end_date: customerGroup?.end_date,
+          license_usage: customerGroup?.license_usage
+        })).unwrap();
+        setCustomerCount(parseInt(result?.customer_count));
+      }
     } catch (error) {
       setCustomerCount(0);
       if(error?.message == "Request failed with status code 401") {

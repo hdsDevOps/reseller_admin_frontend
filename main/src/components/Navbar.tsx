@@ -303,6 +303,7 @@ const Sidebar = () => {
         { path: '/customer-agreement', label: 'Customer agreement', name: 'customer_agreement', },
         { path: '/privacy-policy', label: 'Privacy policy', name: 'privacy_policy', },
         { path: '/terms-and-conditions', label: 'Terms & conditions', name: 'terms_and_conditions', },
+        { path: '/email-services', label: 'Email Services', name: 'dashboard_widget', },
       ],
     },
     {
@@ -617,7 +618,7 @@ const Sidebar = () => {
                     {
                       dropdowns[index] && (
                         <div
-                          className={`flex flex-col bg-white rounded-t-lg shadow-xl h-fit absolute w-[92%] mt-[-101px] ml-[8px]`}
+                          className={`flex flex-col bg-white rounded-t-lg shadow-xl h-fit absolute w-[92%] mt-[-160px] ml-[8px]`}
                           ref={(el) => (dropdownRef.current[index] = el)}
                         >
                           {
