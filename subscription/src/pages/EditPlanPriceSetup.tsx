@@ -39,6 +39,14 @@ function EditPlanPriceSetup() {
   const priceRefs = useRef({});
   // console.log(priceRefs);
   const imgRef = useRef(null);
+  const [selectedFlagList, setSelectedFlagList] = useState([]);
+  
+  useEffect(() => {
+    if(localPrice?.length > 0) {
+      const localFlags = localPrice?.map(item => item?.currency_code);
+      setSelectedFlagList([...localFlags]);
+    }
+  }, [localPrice]);
 
   const showImage = () => {
     const file = iconImage;
@@ -178,9 +186,10 @@ function EditPlanPriceSetup() {
     setLocalPrice([...newAmount])
   }
 
-  const addAmountCount = () => {
+  const addAmountCount = async() => {
+    const getCurrencyCode = await flagList?.filter(flag => !selectedFlagList?.includes(flag.name));
     const newAmounts = [...localPrice, {
-      currency_code: 'USD',
+      currency_code: getCurrencyCode[0] ? getCurrencyCode[0]?.name : "USD",
       price: [
         {
           type: 'Monthly',
@@ -260,6 +269,22 @@ function EditPlanPriceSetup() {
     });
   };
 
+  const renderSelectedOptions = (currentCurrency:string) => {
+    return flagList.map((flag, n) => {
+      const isSelected = currentCurrency === flag.name;
+      const isAlreadySelected = selectedFlagList?.includes(flag.name);
+
+      if(!isAlreadySelected || isSelected) {
+        return (
+          <option key={n} value={flag.name} selected={isSelected}>
+            {flag.name}
+          </option>
+        )
+      }
+      return null;
+    })
+  };
+
   const AmountBox = ({item, number}: AmountBoxProps) => {
     if(number === 0){
       return (
@@ -293,13 +318,7 @@ function EditPlanPriceSetup() {
                 onChange={e => {updateMap(e, number)}}
                 className='font-inter font-normal text-[10px] tracking-[-1.1%] text-[#312E3C] focus:outline-none'
               >
-                {
-                  flagList.map((flag, n) => {
-                    return(
-                      <option selected={ item?.currency_code === flag.name ? true : false }>{flag.name}</option>
-                    )
-                  })
-                }
+                {renderSelectedOptions(localPrice[number]?.currency_code)}
               </select>
             </div>
             <div
@@ -449,13 +468,7 @@ function EditPlanPriceSetup() {
                 onChange={e => {updateMap(e, number)}}
                 className='font-inter font-normal text-[10px] tracking-[-1.1%] text-[#312E3C] focus:outline-none'
               >
-                {
-                  flagList.map((flag, n) => {
-                    return(
-                      <option selected={ item?.currency_code === flag.name ? true : false }>{flag.name}</option>
-                    )
-                  })
-                }
+                {renderSelectedOptions(localPrice[number]?.currency_code)}
               </select>
             </div>
             <div
@@ -573,7 +586,7 @@ function EditPlanPriceSetup() {
         </div>
       )
     }
-  }
+  };
 
   const handleDrop = (event) => {
     event.preventDefault();

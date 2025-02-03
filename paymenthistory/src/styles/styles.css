@@ -430,3 +430,18 @@
 .billing-history-td-text-custom-green{
   color: #12A833;
 }
+
+.btn-green-4-customer{
+  /* @apply bg-cGreen text-xs font-normal font-inter text-white focus:outline-none rounded-[10px] px-5 py-[7px]; */
+  background-color: #12A833;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: white;
+  border-radius: 10px;
+  padding: 7px 20px;
+}
+
+.btn-green-4-customer:focus {
+  outline: none;
+}

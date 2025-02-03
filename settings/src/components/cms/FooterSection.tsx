@@ -60,10 +60,10 @@ const FooterSection = () => {
       header: "Learning and Support",
       name: "newsletter_section_data",
     },
-    {
-      header: "Social Link",
-      name: "social_section_data",
-    },
+    // {
+    //   header: "Social Link",
+    //   name: "social_section_data",
+    // },
   ];
 
   const [footerData, setFooterData] = useState([]);

@@ -484,7 +484,8 @@ const BillingHistory: React.FC = () => {
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead
-            className="bg-custom-white"
+            // className="bg-custom-white"
+            style={{backgroundColor: '#E4E4E4'}}
           >
             <tr className="">
               {tableHeads.map((header, index) => (
@@ -556,7 +557,7 @@ const BillingHistory: React.FC = () => {
                     </span>
                   </td>
                   <td className="billing-history-td-full-opactiy text-custom-black-5">
-                    <button className="btn-green-4 uppercase">
+                    <button className="btn-green-4-customer uppercase">
                       {detail?.payment_status || ' '}
                     </button>
                   </td>

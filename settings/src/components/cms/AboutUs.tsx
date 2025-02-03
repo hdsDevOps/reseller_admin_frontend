@@ -533,7 +533,16 @@ const AboutUs: React.FC = () => {
                         ) : (
                           <button
                             type="button"
-                            onClick={(e) => {setImageFile3(null)}}
+                            onClick={(e) => {
+                              setImageFile3(null);
+                              setAboutUs({
+                                ...aboutUs,
+                                heading_section: {
+                                  ...aboutUs.heading_section,
+                                  image: ""
+                                }
+                              })
+                            }}
                             disabled={deleteClicked}
                             className="absolute right-2 bottom-2"
                           >
