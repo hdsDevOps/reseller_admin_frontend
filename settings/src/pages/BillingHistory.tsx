@@ -5,7 +5,7 @@ import { FaDownload } from "react-icons/fa6";
 // import DatePicker from "react-datepicker";
 // import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import '../styles/styles.css';
+import '../styles/styles.css'; 
 
 interface BillingDetail {
   TransactID: string;

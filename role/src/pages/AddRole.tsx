@@ -511,7 +511,7 @@ const AddRole = () => {
             //
           }
         }
-      }
+      } 
     } else {
       toast.warning("Spaces cannot be empty");
     }

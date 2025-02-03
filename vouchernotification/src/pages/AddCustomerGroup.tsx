@@ -509,7 +509,7 @@ const AddCustomerGroup: React.FC = () =>  {
                     <DateRangePicker
                       ranges={predefinedRanges}
                       placeholder="Select Date Range"
-                      style={{ width: '100%', height: '45px !important', marginTop: '-7px' }}
+                      style={{ width: '100%', height: '45px !important', marginTop: '-7px' }} 
                       size='lg'
                       // border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] pl-2 placeholder:opacity-60 font-inter font-normal
                       onChange={handleChange}
