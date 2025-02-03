@@ -217,14 +217,11 @@ function AddPlanPriceSetup() {
   }
 
   const updateMap = (e, number) => {
-    let amounts = subscription?.amount_details;
-    const newAmount = amounts.map((item, index) => 
+    let amounts = [...localPrice];
+    const newAmount = amounts?.map((item, index) => 
       index === number ? { ...item, currency_code: e.target.value } : item
     )
-    setSubscription({
-      ...subscription,
-      amount_details: newAmount
-    })
+    setLocalPrice([...newAmount]);
   }
 
   const addAmountCount = () => {
