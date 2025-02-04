@@ -54,7 +54,7 @@ const Login: React.FC = () => {
         navigate("/otp?mode=signin", {state: {adminId: result?.userId}});
       } catch (error) {
         // console.error("Login error:", error);
-        toast.error("Please enter valid email or password!");
+        toast.error(error?.message || "Please enter valid email or password!");
         setIsLoading(false);
       }
     }

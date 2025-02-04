@@ -260,9 +260,9 @@ const UserList = () => {
               //
             }
           } else if(error === "Failed to add user.Error: The email address is already in use by another account.") {
-            toast.error("The email address is already in use by another account.")
+            toast.error(error?.message || "The email address is already in use by another account.")
           } else {
-            toast.error("Error adding user");
+            toast.error(error?.message || "Error adding user");
           }
         } finally {
           fetchUsers();
@@ -288,7 +288,7 @@ const UserList = () => {
             toast.success(result?.message);
           }, 1000);
         } catch (error) {
-          toast.error("Error adding user");
+          toast.error(error?.message || "Error adding user");
           if(error?.message == "Request failed with status code 401") {
             try {
               const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -327,7 +327,7 @@ const UserList = () => {
         toast.success(result?.message);
       }, 1000);
     } catch (error) {
-      toast.error("Error adding user");
+      toast.error(error?.message || "Error adding user");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();

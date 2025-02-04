@@ -52,7 +52,7 @@ const ResetPassword: React.FC = () => {
         }
       } catch (error) {
         // console.log("Error on otp");
-        toast.error("Enter valid OTP!");
+        toast.error(error?.message || "Enter valid OTP!");
       }
     }
   };

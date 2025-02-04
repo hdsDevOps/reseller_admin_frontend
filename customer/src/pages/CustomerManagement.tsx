@@ -378,7 +378,7 @@ const CustomerManagement: React.FC = () => {
         // window.location.href=`${process.env.CUSTOMER_PORTAL_BASE_URL}redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
       }
     } catch (error) {
-      toast.error("Unable to login as customer");
+      toast.error(error?.message || "Unable to login as customer");
       // if(error?.message == "Request failed with status code 401") {
       //   try {
       //     const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -596,7 +596,7 @@ const CustomerManagement: React.FC = () => {
         account_status: item?.account_status
       })).unwrap();
     } catch (error) {
-      toast.error("Authentication could not be updated");
+      toast.error(error?.message || "Authentication could not be updated");
     } finally{
       getCustomerList();
       setTimeout(() => {
@@ -631,7 +631,7 @@ const CustomerManagement: React.FC = () => {
         })
       ).unwrap();
     } catch (error) {
-      toast.error("Status could not be updated");
+      toast.error(error?.message || "Status could not be updated");
     } finally{
       getCustomerList();
       setTimeout(() => {
@@ -686,7 +686,7 @@ const CustomerManagement: React.FC = () => {
       }, 1000);
       setShowSubscriptionModal(false);
     } catch (error) {
-      toast.error("Error suspending customer")
+      toast.error(error?.message || "Error suspending customer")
     } finally {
       getCustomerList();
     }
@@ -702,7 +702,7 @@ const CustomerManagement: React.FC = () => {
       }, 1000);
       setShowSubscriptionModal(false);
     } catch (error) {
-      toast.error("Error suspending customer")
+      toast.error(error?.message || "Error suspending customer")
     } finally {
       getCustomerList();
     }
@@ -720,7 +720,7 @@ const CustomerManagement: React.FC = () => {
       setShowDeleteModal(false);
       setCommonModal(false);
     } catch (error) {
-      toast.error("Error deleting customer")
+      toast.error(error?.message || "Error deleting customer")
     } finally {
       getCustomerList();
     }
@@ -738,7 +738,7 @@ const CustomerManagement: React.FC = () => {
       setShowSuspendModal(false);
       setCommonModal(false);
     } catch (error) {
-      toast.error("Error suspending customer")
+      toast.error(error?.message || "Error suspending customer")
     } finally {
       getCustomerList();
     }
@@ -828,7 +828,6 @@ const CustomerManagement: React.FC = () => {
         }
       }
     } catch (error) {
-      toast.error("Error sending email");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -836,6 +835,8 @@ const CustomerManagement: React.FC = () => {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error sending email");
       }
     }
   };
@@ -1393,12 +1394,12 @@ const CustomerManagement: React.FC = () => {
                       >
                         <button
                           className={`w-20 h-[22px] ${
-                          item?.account_status == "active" ? 'active-status' : 'inactive-status'
+                          item?.status == "active" ? 'active-status' : 'inactive-status'
                           }`}
                           onClick={() => handleStatusChange(item)}
                         >
                           {
-                            item?.account_status == "active" ? 'Active' : 'Inactive'
+                            item?.status == "active" ? 'Active' : 'Inactive'
                           }
                         </button>
                       </td>

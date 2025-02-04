@@ -652,7 +652,7 @@ function EditPlanPriceSetup() {
                 toast.success(addPlan?.message)
               }, 1000);
             } catch (error) {
-              toast.error("Error adding plan.");
+              toast.error(error?.message || "Error adding plan.");
               console.log(error)
             }
           }
@@ -695,7 +695,7 @@ function EditPlanPriceSetup() {
             }
           }
           else{
-            toast.error("Error editing plan.");
+            toast.error(error?.message || "Error editing plan.");
           }
           console.log(error)
         }

@@ -293,7 +293,7 @@ const Banner: React.FC = () => {
               }, 1000);
             } catch (error) {
               console.log(error);
-              toast.error("Error adding banner");
+              toast.error(error?.message || "Error adding banner");
             } finally {
               fetchBannerList();
               setIsEditModalOpen(false);
@@ -305,7 +305,7 @@ const Banner: React.FC = () => {
             toast.error("Error uploading the image.");
           }
         } catch (error) {
-          toast.error("Please upload a valid image.");
+          toast.error(error?.message || "Please upload a valid image.");
         }
       }
       else{
@@ -347,7 +347,7 @@ const Banner: React.FC = () => {
               }, 1000);
             } catch (error) {
               // console.log(error);
-              toast.error("Error editing banner");
+              toast.error(error?.message || "Error editing banner");
             } finally {
               fetchBannerList();
               setEditBanner(false);
@@ -358,7 +358,7 @@ const Banner: React.FC = () => {
             toast.error("Error uploading the image.");
           }
         } catch (error) {
-          toast.error("Please upload a valid image.");
+          toast.error(error?.message || "Please upload a valid image.");
         }
       }
       else{
@@ -385,7 +385,7 @@ const Banner: React.FC = () => {
           }, 1000);
         } catch (error) {
           // console.log(error);
-          toast.error("Error editing banner");
+          toast.error(error?.message || "Error editing banner");
         } finally {
           fetchBannerList();
           setEditBanner(false);
@@ -415,7 +415,7 @@ const Banner: React.FC = () => {
       }, 1000);
     } catch (error) {
       // console.log("Error deleting banner");
-      toast.error("Error deleting banner");
+      toast.error(error?.message || "Error deleting banner");
     } finally {
       fetchBannerList();
       setIsDeleteModalOpen(false);
@@ -434,7 +434,7 @@ const Banner: React.FC = () => {
       toast.success("Status updated successfully");
     } catch (error) {
       // console.log(error);
-      toast.error("Error updating status");
+      toast.error(error?.message || "Error updating status");
     } finally {
       fetchBannerList();
     }
@@ -451,7 +451,7 @@ const Banner: React.FC = () => {
       toast.success("Show coupon status updated successfully");
     } catch (error) {
       // console.log(error);
-      toast.error("Error updating show coupon status");
+      toast.error(error?.message || "Error updating show coupon status");
     } finally {
       fetchBannerList();
     }
@@ -468,7 +468,7 @@ const Banner: React.FC = () => {
       toast.success("Show video status updated successfully");
     } catch (error) {
       // console.log(error);
-      toast.error("Error updating show video status");
+      toast.error(error?.message || "Error updating show video status");
     } finally {
       fetchBannerList();
     }

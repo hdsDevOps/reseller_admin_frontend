@@ -63,7 +63,7 @@ const CustomerInformation: React.FC = () => {
           toast.success("Password updated successfully");
         }, 1000);
       } catch (error) {
-        toast.error("Error resetting customer password");
+        toast.error(error?.message || "Error resetting customer password");
         console.log(error);
       }
     }
@@ -104,7 +104,7 @@ const CustomerInformation: React.FC = () => {
         // window.location.href=`${process.env.CUSTOMER_PORTAL_BASE_URL}redirecting-to-customer-portal?token=${result?.token}&customer_id=${result?.customer_id}&admin_name=${userDetails?.first_name}${" "}${userDetails?.last_name}`
       }
     } catch (error) {
-      toast.error("Unable to login as customer");
+      toast.error(error?.message || "Unable to login as customer");
       // if(error?.message == "Request failed with status code 401") {
       //   try {
       //     const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();

@@ -71,7 +71,7 @@ const HeaderSection = () => {
           toast.success(updateMenus?.message);
         }, 1000);
       } catch (error) {
-        toast.error("Error updating menus");
+        toast.error(error?.message || "Error updating menus");
       } finally {
         fetchMenus();
       }

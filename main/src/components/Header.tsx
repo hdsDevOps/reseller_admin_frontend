@@ -71,6 +71,8 @@ export default function Header() {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error sending email");
       }
     }
   };
@@ -90,6 +92,8 @@ export default function Header() {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error sending email");
       }
     } finally {
       getNotifications();
@@ -115,6 +119,8 @@ export default function Header() {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error sending email");
         }
       }
     }
@@ -135,6 +141,8 @@ export default function Header() {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error");
       }
     }
   }
@@ -176,7 +184,6 @@ export default function Header() {
       setShowCurrency(false);
       setNewCurrency("");
     } catch (error) {
-      toast.error("Error updating default currency");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -184,6 +191,8 @@ export default function Header() {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error updating default currency");
       }
     }
   }
@@ -304,7 +313,6 @@ export default function Header() {
           toast.warning("Password and confirm password do no match");
         }
       } catch (error) {
-        toast.error("Error upading password");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -312,6 +320,8 @@ export default function Header() {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error upading password");
         }
       } finally {
         
@@ -435,7 +445,7 @@ export default function Header() {
                     <p
                       className="text-inter sm:text-[10px] text-[8px] text-normal text-custom-gray3"
                     >
-                      ({userDetails?.role || "Super Admin"})
+                      ({findUserRole(userDetails?.role) || "Super Admin"})
                     </p>
                   </div>
                 </div>

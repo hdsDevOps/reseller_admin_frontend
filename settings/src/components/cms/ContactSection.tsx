@@ -72,7 +72,7 @@ const ContactSection = () => {
           toast.success(updateContactUs?.payload.message);
         }, 1000);
       } catch (error) {
-        toast.error("Error updating contact us");
+        toast.error(error?.message || "Error updating contact us");
       } finally {
         fetchContactUs();
       }

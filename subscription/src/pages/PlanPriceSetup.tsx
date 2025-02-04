@@ -569,7 +569,7 @@ const PlanPriceSetup = () => {
         }
       }
       else {
-        toast.error("Error deleting plan")
+        toast.error(error?.message || "Error deleting plan")
       }
     } finally {
       fetchPlansAndPrices();

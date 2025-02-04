@@ -70,7 +70,7 @@ const PrivacyPolicy: React.FC = () => {
         toast.success(result?.message);
       }, 1000);
     } catch (error) {
-      toast.error("Error updating Privacy Policy");
+      toast.error(error?.message || "Error updating Privacy Policy");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();

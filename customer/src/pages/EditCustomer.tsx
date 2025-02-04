@@ -381,7 +381,6 @@ function EditCustomer() {
         ).unwrap();
         toast.success(result?.message);
       } catch (error) {
-        toast.error("Error");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -389,6 +388,8 @@ function EditCustomer() {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error sending email");
         }
       } finally {
         setTimeout(() => {

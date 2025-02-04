@@ -344,7 +344,6 @@ const AddCustomer: React.FC = () => {
           navigate(-1);
         }, 1000);
       } catch (error) {
-        toast.error("Error adding customer");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -352,6 +351,8 @@ const AddCustomer: React.FC = () => {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error adding customer");
         }
       }
     } else {

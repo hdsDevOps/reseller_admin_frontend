@@ -109,7 +109,7 @@ const Faqs: React.FC = () => {
         setFaq(initialFaq);
         setFaqModal(false);
       } catch (error) {
-        toast.error("Error adding FAQ");
+        toast.error(error?.message || "Error adding FAQ");
       } finally {
         fetchFaqs();
       }
@@ -134,7 +134,7 @@ const Faqs: React.FC = () => {
         setFaq(initialFaq);
         setFaqModal(false);
       } catch (error) {
-        toast.error("Error editing faq");
+        toast.error(error?.message || "Error editing faq");
       } finally {
         fetchFaqs();
       }
@@ -163,7 +163,7 @@ const Faqs: React.FC = () => {
         toast.success(deleteResult?.message);
       }, 1000);
     } catch (error) {
-      toast.error("Error deleting FAQ");
+      toast.error(error?.message || "Error deleting FAQ");
       setDeleteId('');
       setDeleteModal(false);
     } finally {

@@ -192,7 +192,7 @@ const SEO = () => {
                 toast.success(udpateSeo?.message)
               }, 1000);
             } catch (error) {
-              toast.error("Error updating SEO data");
+              toast.error(error?.message || "Error updating SEO data");
             } finally {
               fetchSeoData();
             }
@@ -201,7 +201,7 @@ const SEO = () => {
             toast.error("Error uploading the image.");
           }
         } catch (error) {
-          toast.error("Please upload a valid image.");
+          toast.error(error?.message || "Please upload a valid image.");
         }
       }
       else{
@@ -220,7 +220,7 @@ const SEO = () => {
             toast.success(udpateSeo?.message)
           }, 1000);
         } catch (error) {
-          toast.error("Error updating SEO data1");
+          toast.error(error?.message || "Error updating SEO data1");
         } finally {
           fetchSeoData();
         }

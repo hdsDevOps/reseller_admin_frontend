@@ -14,7 +14,7 @@ const initialRole = {
   role_name: "",
   description: "",
   permission: {
-    dashboard: false,
+    dashboard: true,
     customer_management: {
       overall: false,
       add: false,
@@ -501,7 +501,7 @@ const AddRole = () => {
           navigate('/role');
         }, 1000);
       } catch (error) {
-        toast.error("Error adding role");
+        toast.error(error?.message || "Error adding role");
         // console.log("error...",error);
         if(error?.message == "Request failed with status code 401") {
           try {
@@ -601,7 +601,7 @@ const AddRole = () => {
             Permission*
           </div>
           <div className="search-input-text-2 p-4">
-            <div
+            {/* <div
               className="grid grid-cols-1 ml-1"
             >
               <div
@@ -618,7 +618,7 @@ const AddRole = () => {
                 }} />
                 <label>Dashboard</label>
               </div>
-            </div>
+            </div> */}
             {
               permissionGroups && permissionGroups.map((item, index) => {
                 return(

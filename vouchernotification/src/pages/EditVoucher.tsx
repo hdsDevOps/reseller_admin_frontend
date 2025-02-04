@@ -178,7 +178,7 @@ const EditVoucher: React.FC = () =>  {
           navigate(-1);
         }, 1000);
       } catch (error) {
-        toast.error("Error editing voucher");
+        toast.error(error?.message || "Error editing voucher");
         console.log("error...", error)
         if(error?.message == "Request failed with status code 401") {
           try {

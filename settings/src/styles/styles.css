@@ -509,3 +509,12 @@
     text-decoration: none;
   }
 }
+
+.btn-close-custom{
+  /* @apply bg-cGreen5 w-[25px] h-[25px] rounded-full pl-[5px] mt-1; */
+  background-color: #12A833;
+  width: 25px;
+  height: 25px;
+  border-radius: 9999px;
+
+}

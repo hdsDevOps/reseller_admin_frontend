@@ -33,6 +33,7 @@ import { RiCashFill } from "react-icons/ri";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, setUserIdToLSThunk, getRolesThunk } from 'store/user.thunk';
 import { setRolesPermissionsStatus } from 'store/authSlice';
+import { toast } from "react-toastify";
 
 const intitalPermissions = {
   dashboard: false,

@@ -47,7 +47,7 @@ const PaymentMethod: React.FC = () => {
           toast.success(statusResult.message);
         }, 1000);
       } catch (error) {
-        toast.error(`Error updating ${paymentMethods[index].method_name} status`);
+        toast.error(error?.message || `Error updating ${paymentMethods[index].method_name} status`);
       } finally {
         getPaymentMethodsList();
       }

@@ -416,7 +416,7 @@ const VoucherList: React.FC = () => {
       setDeleteModal(false);
       setVoucher({});
     } catch (error) {
-      toast.error("Error suspending customer")
+      toast.error(error?.message || "Error suspending customer")
     } finally {
       getVoucherList();
     }
@@ -457,7 +457,7 @@ const VoucherList: React.FC = () => {
           toast.error(result?.message);
         }
       } catch (error) {
-        toast.error("Voucher email could not be sent");
+        toast.error(error?.message || "Voucher email could not be sent");
         console.log(error);
       }
     }
@@ -498,7 +498,7 @@ const VoucherList: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 mt-14 sm:mb-[51px] mb-[31px]">
+      <div className="grid grid-cols-1 mt-14 mb-3">
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 min-sm:w-[300px] max-sm:mx-auto">
           <div
             className='flex flex-col relative px-4 mb-5 sm:mb-0'

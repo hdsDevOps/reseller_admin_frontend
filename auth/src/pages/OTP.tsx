@@ -148,7 +148,7 @@ const OTP: React.FC = () => {
               }
             } catch (error) {
               // console.log("Error on otp");
-              toast.error("Enter valid OTP!");
+              toast.error(error?.message || "Enter valid OTP!");
               setIsLoading(false);
             }
           } else {
@@ -203,7 +203,7 @@ const OTP: React.FC = () => {
         toast.success("OTP has been resend to your email!");
       } catch (error) {
         console.log("Error sending otp")
-        toast.error("OTP resending is failed!");
+        toast.error(error?.message || "OTP resending is failed!");
       }
     }
     else{
@@ -217,7 +217,7 @@ const OTP: React.FC = () => {
         toast.success("OTP has been resend to your email!");
       } catch (error) {
         console.log("Error sending otp")
-        toast.error("OTP resending is failed!");
+        toast.error(error?.message || "OTP resending is failed!");
       }
     }
   }

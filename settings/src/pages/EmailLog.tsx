@@ -94,7 +94,7 @@ const EmailLog: React.FC = () => {
     <div className="grid grid-cols-1">
       <h3 className="my-[7px] h3-text">Email Log</h3>
 
-      <div className="w-full py-3 mt-[33px]">
+      <div className="w-full py-3 mt-3">
         <div className="flex items-center justify-start gap-1">
           <select
             onChange={e => {

@@ -441,7 +441,7 @@ function ProfileSettings() {
             setModalShow(false);
           }
         } catch (error) {
-          toast.error("Error updating profile");
+          toast.error(error?.message || "Error updating profile");
           if(error?.message == "Request failed with status code 401") {
             try {
               const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -538,7 +538,7 @@ function ProfileSettings() {
           }
         })
       } catch (error) {
-        toast.error("Error uploading profile image");
+        toast.error(error?.message || "Error uploading profile image");
         console.log("errror...", error);
         if(error?.message == "Request failed with status code 401") {
           try {
@@ -632,7 +632,7 @@ function ProfileSettings() {
           })
         }
       } catch (error) {
-        toast.error("Error uploading profile image");
+        toast.error(error?.message || "Error uploading profile image");
         console.log("errror...", error);
         if(error?.message == "Request failed with status code 401") {
           try {

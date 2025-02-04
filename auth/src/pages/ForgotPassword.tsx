@@ -25,7 +25,7 @@ const ForgotPassword: React.FC = () => {
       navigate("/otp", {state: { email: email }});
     } catch (error) {
       // console.error("Login error:", error);
-      toast.error("Please enter valid email or password!");
+      toast.error(error?.message || "Please enter valid email or password!");
     }
   };
 

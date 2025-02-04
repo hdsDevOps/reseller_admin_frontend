@@ -58,7 +58,7 @@ const Promotion: React.FC = () => {
   ];
   const newPromotionItemsLeft = [
     { label: 'Promo Code', placeholder: 'Enter here', name: 'code', type: 'text'},
-    { label: 'Template', placeholder: 'HTML/CSS script should be here to make the Promotion template', name: 'html_template', type: 'textarea'},
+    { label: 'Template', placeholder: 'HTML/CSS script should be here to make the Promotion template (Dimension: 325px X 200px)', name: 'html_template', type: 'textarea'},
   ];
   const newPromotionItemsRight = [
     { label: 'Start date', placeholder: 'Select here', name: 'start_date', type: 'date'},
@@ -178,7 +178,7 @@ const Promotion: React.FC = () => {
         }, 1000);
       } catch (error) {
         // console.log(error);
-        toast.error("Error on promotion adding");
+        toast.error(error?.message || "Error on promotion adding");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -229,7 +229,7 @@ const Promotion: React.FC = () => {
             //
           }
         }
-        toast.error("Error on promotion editing");
+        toast.error(error?.message || "Error on promotion editing");
       } finally {
         fetchPromotionsList();
         setIsEditModalOpen(false);
@@ -258,7 +258,7 @@ const Promotion: React.FC = () => {
       }, 1000);
     } catch (error) {
       // console.log(error);
-      toast.error("Error on promotion deleting");
+      toast.error(error?.message || "Error on promotion deleting");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -345,7 +345,7 @@ const Promotion: React.FC = () => {
       }, 1000);
     } catch (error) {
       // console.log(error);
-      toast.error("Error on promotion status updating");
+      toast.error(error?.message || "Error on promotion status updating");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -491,16 +491,16 @@ const Promotion: React.FC = () => {
                 >
                   {editPromo ? 'Edit Promotion' : 'Add Promotion'}
                 </DialogTitle>
-                <div className='btn-close-bg'>
+                <div className=''>
                   <button
                     type='button'
-                    className='text-3xl rotate-45 mt-[-8px] text-white'
+                    className='btn-close-custom text-white'
                     onClick={() => {
                       setIsEditModalOpen(false);
                       setNewPromotion(initialPromotion);
                       setEditPromo(false);
                     }}
-                  >+</button>
+                  ><X className="w-5 h-5 mx-auto" /></button>
                 </div>
               </div>
 

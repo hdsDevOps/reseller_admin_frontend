@@ -155,7 +155,7 @@ const AboutUs: React.FC = () => {
                       toast.success("Successfully updated about us");
                     }, 1000);
                   } catch (error) {
-                    toast.error("Error on updating About Us")
+                    toast.error(error?.message || "Error on updating About Us")
                   } finally {
                     fetchAboutUs();
                   }
@@ -187,7 +187,7 @@ const AboutUs: React.FC = () => {
                     toast.success("Successfully updated about us");
                   }, 1000);
                 } catch (error) {
-                  toast.error("Error on updating About Us")
+                  toast.error(error?.message || "Error on updating About Us")
                 } finally {
                   fetchAboutUs();
                 }
@@ -259,7 +259,7 @@ const AboutUs: React.FC = () => {
                     toast.success("Successfully updated about us");
                   }, 1000);
                 } catch (error) {
-                  toast.error("Error on updating About Us")
+                  toast.error(error?.message || "Error on updating About Us")
                 } finally {
                   fetchAboutUs();
                 }
@@ -291,7 +291,7 @@ const AboutUs: React.FC = () => {
                   toast.success("Successfully updated about us");
                 }, 1000);
               } catch (error) {
-                toast.error("Error on updating About Us")
+                toast.error(error?.message || "Error on updating About Us")
               } finally {
                 fetchAboutUs();
               }
@@ -327,7 +327,7 @@ const AboutUs: React.FC = () => {
                   toast.success("Successfully updated about us");
                 }, 1000);
               } catch (error) {
-                toast.error("Error on updating About Us")
+                toast.error(error?.message || "Error on updating About Us")
               } finally {
                 fetchAboutUs();
               }
@@ -359,7 +359,7 @@ const AboutUs: React.FC = () => {
                 toast.success("Successfully updated about us");
               }, 1000);
             } catch (error) {
-              toast.error("Error on updating About Us")
+              toast.error(error?.message || "Error on updating About Us")
             } finally {
               fetchAboutUs();
             }

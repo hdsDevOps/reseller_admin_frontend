@@ -380,7 +380,7 @@ const AddCustomerGroup: React.FC = () =>  {
           navigate(-1);
         }, 1000);
       } catch (error) {
-        toast.error("Error adding customer group");
+        toast.error(error?.message || "Error adding customer group");
       }
     } else {
       toast.warning("Spaces cannot be emtpy!");

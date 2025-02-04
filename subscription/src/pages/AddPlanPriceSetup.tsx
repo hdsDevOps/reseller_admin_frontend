@@ -703,7 +703,7 @@ function AddPlanPriceSetup() {
                 toast.success(addPlan?.message)
               }, 1000);
             } catch (error) {
-              toast.error("Error adding plan.");
+              toast.error(error?.message || "Error adding plan.");
               console.log(error)
             } finally {
               navigate(-1);
@@ -719,7 +719,7 @@ function AddPlanPriceSetup() {
             }
           }
           else{
-            toast.error("Please upload a valid image.");
+            toast.error(error?.message || "Please upload a valid image.");
           }
         }
       } else {

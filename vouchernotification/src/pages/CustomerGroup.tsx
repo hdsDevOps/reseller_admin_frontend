@@ -162,7 +162,7 @@ const CustomerGroup: React.FC = () => {
       setDeleteModal(false);
       setVoucherGroup({});
     } catch (error) {
-      toast.error("Error suspending customer")
+      toast.error(error?.message || "Error suspending customer")
     } finally {
       getCustomerGroupListData();
     }
@@ -238,7 +238,7 @@ const CustomerGroup: React.FC = () => {
           >Customer group</p>
         </div>
       </div>
-      <div className="grid lg:grid-cols-2 grid-cols-1 mt-14 mb-[51px]">
+      <div className="grid lg:grid-cols-2 grid-cols-1 mt-14 mb-3">
         <div className="lg:col-start-2 grid sm:grid-cols-2 grid-cols-1 max-sm:w-[300px] max-sm:mx-auto">
           <div className="px-4">
             <input

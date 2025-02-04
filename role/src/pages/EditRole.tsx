@@ -14,7 +14,7 @@ const initialRole = {
   role_name: "",
   description: "",
   permission: {
-    dashboard: false,
+    dashboard: true,
     customer_management: {
       overall: false,
       add: false,
@@ -511,7 +511,7 @@ const EditRole = () => {
           navigate(-1);
         }, 1000);
       } catch (error) {
-        toast.error("Error updating role");
+        toast.error(error?.message || "Error updating role");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -610,7 +610,7 @@ const EditRole = () => {
             Permission*
           </div>
           <div className="search-input-text-2 p-4">
-            <div
+            {/* <div
               className="grid grid-cols-1 ml-1"
             >
               <div
@@ -627,7 +627,7 @@ const EditRole = () => {
                 }} />
                 <label>Dashboard</label>
               </div>
-            </div>
+            </div> */}
             {
               permissionGroups && permissionGroups.map((item, index) => {
                 return(
