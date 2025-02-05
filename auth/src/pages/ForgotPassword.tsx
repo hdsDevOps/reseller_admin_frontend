@@ -11,6 +11,7 @@ const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState<Boolean>(false);
 
   const handleLogin = async(e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +23,11 @@ const ForgotPassword: React.FC = () => {
         })
       ).unwrap();
       console.log("result....", result);
-      navigate("/otp", {state: { email: email }});
+      if(result?.message === "OTP sent to user email address.") {
+        navigate("/otp", {state: { email: email }});
+      } else {
+        toast.error(result?.message);
+      }
     } catch (error) {
       // console.error("Login error:", error);
       toast.error(error?.message || "Please enter valid email or password!");

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import '../styles/styles.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { format } from "date-fns";
 
 const PasswordResetSuccessful: React.FC = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const PasswordResetSuccessful: React.FC = () => {
       </div>
 
       <div className="mt-12 mb-10 text-center">
-        <p className="text-[#848484] text-xs font-normal mt-8">© 2024 HORDANSO WORKSPACE. All rights reserved</p>
+        <p className="text-[#848484] text-xs font-normal mt-8">© {format(new Date(), "yyyy")} HORDANSO WORKSPACE. All rights reserved</p>
       </div>
     </div>
   );

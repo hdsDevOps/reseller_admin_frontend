@@ -187,31 +187,35 @@ function EditPlanPriceSetup() {
   }
 
   const addAmountCount = async() => {
-    const getCurrencyCode = await flagList?.filter(flag => !selectedFlagList?.includes(flag.name));
-    const newAmounts = [...localPrice, {
-      currency_code: getCurrencyCode[0] ? getCurrencyCode[0]?.name : "USD",
-      price: [
-        {
-          type: 'Monthly',
-          price: null,
-          discount_price: null,
-        },
-        {
-          type: 'Yearly',
-          price: null,
-          discount_price: null,
-        },
-        {
-          type: 'Yearly Subscription with monthly billing',
-          price: null,
-          discount_price: null,
-        },
-      ],
-    },]
-    setAMountCount(amountCount+1);
-    setLocalPrice([
-      ...newAmounts
-    ])
+    if(localPrice?.length < 7) {
+      const getCurrencyCode = await flagList?.filter(flag => !selectedFlagList?.includes(flag.name));
+      const newAmounts = [...localPrice, {
+        currency_code: getCurrencyCode[0]?.name,
+        price: [
+          {
+            type: 'Monthly',
+            price: null,
+            discount_price: null,
+          },
+          {
+            type: 'Yearly',
+            price: null,
+            discount_price: null,
+          },
+          {
+            type: 'Yearly Subscription with monthly billing',
+            price: null,
+            discount_price: null,
+          },
+        ],
+      },]
+      setAMountCount(amountCount+1);
+      setLocalPrice([
+        ...newAmounts
+      ])
+    } else {
+      toast.warning("You have already added all 7 currencies");
+    }
   };
 
   const removeAmountCount = (number) => {

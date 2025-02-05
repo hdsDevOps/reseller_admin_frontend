@@ -183,8 +183,7 @@ async function editCustomerApi(
   email: string,
   authentication: string,
   record_id: string,
-  status: string,
-  account_status: string
+  status: string
 ): Promise<any> {
   try {
     const result = await postApiCall(endPoints.editCustomer, {
@@ -199,8 +198,7 @@ async function editCustomerApi(
       email,
       authentication,
       record_id,
-      status,
-      account_status
+      status
     });
     return result;
   } catch (error: any) {

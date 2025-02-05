@@ -169,7 +169,7 @@ export const addCustomerThunk = createAsyncThunk(
 
 export const editCustomerThunk = createAsyncThunk(
   "users/editCustomer",
-  async ({first_name, last_name, address, state, city, country, zipcode, phone_no, email, authentication, record_id, status, account_status}: any) => {
+  async ({first_name, last_name, address, state, city, country, zipcode, phone_no, email, authentication, record_id, status}: any) => {
     return await userApis.editCustomerApi(
       first_name,
       last_name,
@@ -182,8 +182,7 @@ export const editCustomerThunk = createAsyncThunk(
       email,
       authentication,
       record_id,
-      status,
-      account_status
+      status
     );
   }
 );

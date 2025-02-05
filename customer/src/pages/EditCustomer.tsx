@@ -376,7 +376,7 @@ function EditCustomer() {
             email: customer?.email,
             authentication: customer?.authentication,
             record_id: customer?.id,
-            account_status: customer?.account_status
+            status: customer?.account_status
           })
         ).unwrap();
         toast.success(result?.message);

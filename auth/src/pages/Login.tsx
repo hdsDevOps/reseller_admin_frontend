@@ -7,6 +7,7 @@ import { makeUserLoginThunk } from "store/user.thunk";
 import '../styles/styles.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { format } from "date-fns";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -335,7 +336,7 @@ const Login: React.FC = () => {
       </div>
 
       <div className="mt-12 mb-10 text-center">
-        <p className="text-[#848484] text-xs font-normal mt-8">© 2024 HORDANSO WORKSPACE. All rights reserved</p>
+        <p className="text-[#848484] text-xs font-normal mt-8">© {format(new Date(), "yyyy")} HORDANSO WORKSPACE. All rights reserved</p>
       </div>
 
       {/* <div className="mt-6 mb-10 text-center">

@@ -234,9 +234,10 @@ function AddPlanPriceSetup() {
   }
 
   const addAmountCount = async() => {
-    const getCurrencyCode = await flagList?.filter(flag => !selectedFlagList?.includes(flag.name));
+    if(localPrice?.length < 7) {
+      const getCurrencyCode = await flagList?.filter(flag => !selectedFlagList?.includes(flag.name));
     const newAmounts = [...localPrice, {
-      currency_code: getCurrencyCode[0] ? getCurrencyCode[0]?.name : "USD",
+      currency_code: getCurrencyCode[0]?.name,
       price: [
         {
           type: 'Monthly',
@@ -259,6 +260,9 @@ function AddPlanPriceSetup() {
     setLocalPrice([
       ...newAmounts
     ])
+    } else {
+      toast.warning("You have already added all 7 currencies");
+    }
   };
 
   const removeAmountCount = (number) => {
@@ -697,7 +701,7 @@ function AddPlanPriceSetup() {
                 plan_name: subscription?.plan_name,
                 sticker_text: subscription?.sticker_text,
                 sticker_exists: subscription?.sticker_exists,
-                amount_details: subscription?.amount_details
+                amount_details: localPrice
               })).unwrap();
               setTimeout(() => {
                 toast.success(addPlan?.message)

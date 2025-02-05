@@ -593,7 +593,7 @@ const CustomerManagement: React.FC = () => {
         email: item?.email,
         authentication: newCustomerAuthentication,
         record_id: item?.id,
-        account_status: item?.account_status
+        status: item?.account_status
       })).unwrap();
     } catch (error) {
       toast.error(error?.message || "Authentication could not be updated");
@@ -627,7 +627,7 @@ const CustomerManagement: React.FC = () => {
           email: item?.email,
           authentication: item?.authentication,
           record_id: item?.id,
-          account_status: newAccountStatus
+          status: newAccountStatus
         })
       ).unwrap();
     } catch (error) {
