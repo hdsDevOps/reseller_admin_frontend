@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from "date-fns";
 
+const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/hordanso-fixed-logo.png?alt=media&token=ecd5d548-0aa7-46d4-9757-c24cba11693c";
+
 const PasswordResetSuccessful: React.FC = () => {
   const navigate = useNavigate();
 
@@ -19,7 +21,7 @@ const PasswordResetSuccessful: React.FC = () => {
           <div className="text-center">
             <div className="flex items-center justify-center">
               <img
-                src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
+                src={logo}
                 alt="logo"
                 className="w-[108px] mb-[10px]"
               />

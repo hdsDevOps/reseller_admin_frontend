@@ -284,7 +284,7 @@ const PlanPriceSetup = () => {
                           {price?.price}
                         </span>
                         <span className="border border-[#E4E4E4] font-inter font-normal text-xs text-[#0D121F] my-auto px-2 py-[2px] min-w-[54px]">
-                          <a className="pr-2 text-nowrap">{
+                          <a className="pr-2 text-nowrap text-[#0D121F] hover:text-[#0D121F] no-underline hover:no-underline">{
                             formatPrice()?.map((data, k) => (
                               `${data}`
                             ))

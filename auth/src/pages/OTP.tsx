@@ -14,6 +14,8 @@ import '../styles/styles.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/hordanso-fixed-logo.png?alt=media&token=ecd5d548-0aa7-46d4-9757-c24cba11693c";
+
 const OTP: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -131,14 +133,14 @@ const OTP: React.FC = () => {
                   // console.log({setToken, setUserId})
                   navigate('/dashboard', {state: {from: 'otp'}})
                 } catch (error) {
-                  console.log("Error on token")
+                  // console.log("Error on token")
                 } finally {
                   try {
                     const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
                     const getUserId = await dispatch(getUserIdFromLSThunk()).unwrap();
                     navigate('/dashboard', {state: {from: 'otp'}})
                   } catch (error) {
-                    console.log("Error on token")
+                    // console.log("Error on token")
                   }
                 }
               }
@@ -213,7 +215,7 @@ const OTP: React.FC = () => {
             email: email
           })
         ).unwrap();
-        console.log("result...", otpResend)
+        // console.log("result...", otpResend)
         toast.success("OTP has been resend to your email!");
       } catch (error) {
         console.log("Error sending otp")
@@ -230,7 +232,7 @@ const OTP: React.FC = () => {
             className={`mb-[20px] flex items-center justify-center`}
           >
             <img
-              src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
+              src={logo}
               alt="logo"
               className={`w-[108px]`}
             />

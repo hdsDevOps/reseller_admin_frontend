@@ -375,10 +375,14 @@ const AddCustomerGroup: React.FC = () =>  {
         const result = await dispatch(
           addCustomerGroupThunk(customerGroup)
         ).unwrap()
-        toast.success(result?.message);
-        setTimeout(() => {
-          navigate(-1);
-        }, 1000);
+        if(result?.message === "Customer group created successfully") {
+          toast.success(result?.message);
+          setTimeout(() => {
+            navigate(-1);
+          }, 1000);
+        } else {
+          toast.error(result?.message);
+        }
       } catch (error) {
         toast.error(error?.message || "Error adding customer group");
       }

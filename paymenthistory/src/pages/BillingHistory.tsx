@@ -363,10 +363,14 @@ const BillingHistory: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1">
-      <div className="flex-row-between-responsive">
+      <div className="flex flex-col justify-start">
         <h3 className="h3-text">
         Billing History
         </h3>
+        <p className="text-gray-900 text-sm mt-1">
+        View your billing details and download invoices
+        </p>
+        {/* View your billing details and download invoices */}
       </div>
       
       <div className="grid grid-cols-1 mt-14 mb-3">

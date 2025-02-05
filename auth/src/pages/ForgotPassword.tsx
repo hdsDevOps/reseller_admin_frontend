@@ -7,6 +7,8 @@ import { useAppDispatch } from "store/hooks";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const logo = "https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/hordanso-fixed-logo.png?alt=media&token=ecd5d548-0aa7-46d4-9757-c24cba11693c";
+
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const ForgotPassword: React.FC = () => {
           email: email
         })
       ).unwrap();
-      console.log("result....", result);
+      // console.log("result....", result);
       if(result?.message === "OTP sent to user email address.") {
         navigate("/otp", {state: { email: email }});
       } else {
@@ -40,7 +42,7 @@ const ForgotPassword: React.FC = () => {
         <div className="px-[60px] xsm-max:px-4 bg-custom-white5 rounded-lg shadow-sm">
           <div className={`mb-5 flex items-center justify-center`}>
             <img
-              src={"https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/logo.jpeg?alt=media&token=c210a6cb-a46f-462f-a00a-dfdff341e899"}
+              src={logo}
               alt="logo"
               className={`w-[108px]`}
             />

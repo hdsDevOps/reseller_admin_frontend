@@ -261,7 +261,7 @@ function AddPlanPriceSetup() {
       ...newAmounts
     ])
     } else {
-      toast.warning("You have already added all 7 currencies");
+      toast.warning("You have added all 7 currencies");
     }
   };
 
