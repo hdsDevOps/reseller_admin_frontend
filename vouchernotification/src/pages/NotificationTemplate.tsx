@@ -273,7 +273,7 @@ const NotificationTemplate = () => {
         }, 1000);
       } catch (error) {
         // console.log(error);
-        toast.error("Error adding customer group");
+        toast.error(error?.message || "Error adding customer group");
       }
     }
   };
@@ -300,7 +300,7 @@ const NotificationTemplate = () => {
         toast.success(result?.message)
       }, 1000);
     } catch (error) {
-      toast.error("Tamplate content could not be updated.")
+      toast.error(error?.message || "Tamplate content could not be updated.")
     }
   };
 
@@ -319,7 +319,7 @@ const NotificationTemplate = () => {
         toast.success(result?.message)
       }, 1000);
     } catch (error) {
-      toast.error("Tamplate content could not be deleted.")
+      toast.error(error?.message || "Tamplate content could not be deleted.")
     }
   }
 
@@ -338,7 +338,6 @@ const NotificationTemplate = () => {
         toast.success("Email sent successfully");
         // console.log("result...", result);
       } catch (error) {
-        toast.error("Error sending email.")
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -346,6 +345,8 @@ const NotificationTemplate = () => {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error sending email.");
         }
       }
     }

@@ -64,15 +64,13 @@ export default function Header() {
       setNotifications(result);
     } catch (error) {
       setNotifications([]);
-      if(error?.message == "Request failed with status code 401") {
+      if(error?.message === "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
           navigate('/login');
         } catch (error) {
           //
         }
-      } else {
-        toast.error(error?.message || "Error sending email");
       }
     }
   };
@@ -93,7 +91,7 @@ export default function Header() {
           //
         }
       } else {
-        toast.error(error?.message || "Error sending email");
+        toast.error(error?.message || "Error reading notification");
       }
     } finally {
       getNotifications();
@@ -119,8 +117,6 @@ export default function Header() {
           } catch (error) {
             //
           }
-        } else {
-          toast.error(error?.message || "Error sending email");
         }
       }
     }

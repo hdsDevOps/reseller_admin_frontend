@@ -156,7 +156,7 @@ const CustomerInformation: React.FC = () => {
       >
         <p
           className='page-indicator-1'
-        >Customer Managemnet</p>
+        >Customer Management</p>
         <ChevronRight
           className='page-indicator-arrow-2'
         />

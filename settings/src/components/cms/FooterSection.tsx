@@ -202,7 +202,6 @@ const FooterSection = () => {
         }, 1000);
         setShowModal(false);
       } catch (error) {
-        toast.error("Error updating footer");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -210,6 +209,8 @@ const FooterSection = () => {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error updating footer");
         }
       } finally {
         fetchFooterData();

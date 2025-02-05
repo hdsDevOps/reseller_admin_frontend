@@ -178,7 +178,6 @@ const Promotion: React.FC = () => {
         }, 1000);
       } catch (error) {
         // console.log(error);
-        toast.error(error?.message || "Error on promotion adding");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -186,6 +185,8 @@ const Promotion: React.FC = () => {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error on promotion adding");
         }
       } finally {
         fetchPromotionsList();
@@ -258,7 +259,6 @@ const Promotion: React.FC = () => {
       }, 1000);
     } catch (error) {
       // console.log(error);
-      toast.error(error?.message || "Error on promotion deleting");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -266,6 +266,8 @@ const Promotion: React.FC = () => {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error on promotion deleting");
       }
     } finally {
       fetchPromotionsList();
@@ -345,7 +347,6 @@ const Promotion: React.FC = () => {
       }, 1000);
     } catch (error) {
       // console.log(error);
-      toast.error(error?.message || "Error on promotion status updating");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -353,6 +354,8 @@ const Promotion: React.FC = () => {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error on promotion status updating");
       }
     } finally {
       fetchPromotionsList();

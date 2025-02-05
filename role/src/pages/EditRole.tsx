@@ -511,7 +511,6 @@ const EditRole = () => {
           navigate(-1);
         }, 1000);
       } catch (error) {
-        toast.error(error?.message || "Error updating role");
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -519,6 +518,8 @@ const EditRole = () => {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error updating role");
         }
       }
     } else {

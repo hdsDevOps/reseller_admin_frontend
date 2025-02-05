@@ -64,7 +64,6 @@ const TermsConditions: React.FC = () => {
         toast.success(result?.message);
       }, 1000);
     } catch (error) {
-      toast.error(error?.message || "Error updating Terms & Conditions");
       if(error?.message == "Request failed with status code 401") {
         try {
           const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -72,6 +71,8 @@ const TermsConditions: React.FC = () => {
         } catch (error) {
           //
         }
+      } else {
+        toast.error(error?.message || "Error updating Terms & Conditions");
       }
     } finally {
       fetchTermsAndConditions();

@@ -5,6 +5,7 @@ import { getContactUsThunk, updateContactUsThunk, removeUserAuthTokenFromLSThunk
 import { useAppDispatch } from "store/hooks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const initialContactUs = {
   content_description: "",
@@ -14,6 +15,7 @@ const initialContactUs = {
 }
 
 const ContactSection = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const contactItems = [

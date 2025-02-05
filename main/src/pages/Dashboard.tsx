@@ -217,6 +217,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if(location.state?.from == "otp"){
       toast.success("Login successful!");
+      navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state]);
 

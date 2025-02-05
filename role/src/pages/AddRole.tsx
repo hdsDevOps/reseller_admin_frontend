@@ -501,7 +501,6 @@ const AddRole = () => {
           navigate('/role');
         }, 1000);
       } catch (error) {
-        toast.error(error?.message || "Error adding role");
         // console.log("error...",error);
         if(error?.message == "Request failed with status code 401") {
           try {
@@ -510,6 +509,8 @@ const AddRole = () => {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error adding role");
         }
       } 
     } else {

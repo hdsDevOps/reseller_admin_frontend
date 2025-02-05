@@ -441,7 +441,6 @@ function ProfileSettings() {
             setModalShow(false);
           }
         } catch (error) {
-          toast.error(error?.message || "Error updating profile");
           if(error?.message == "Request failed with status code 401") {
             try {
               const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -449,6 +448,8 @@ function ProfileSettings() {
             } catch (error) {
               //
             }
+          } else {
+            toast.error(error?.message || "Error updating profile");
           }
         }
       }
@@ -538,8 +539,7 @@ function ProfileSettings() {
           }
         })
       } catch (error) {
-        toast.error(error?.message || "Error uploading profile image");
-        console.log("errror...", error);
+        // console.log("errror...", error);
         if(error?.message == "Request failed with status code 401") {
           try {
             const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
@@ -547,6 +547,8 @@ function ProfileSettings() {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error uploading profile image");
         }
       } finally {
         dispatch(setUserDetails(profile));
@@ -632,7 +634,6 @@ function ProfileSettings() {
           })
         }
       } catch (error) {
-        toast.error(error?.message || "Error uploading profile image");
         console.log("errror...", error);
         if(error?.message == "Request failed with status code 401") {
           try {
@@ -641,6 +642,8 @@ function ProfileSettings() {
           } catch (error) {
             //
           }
+        } else {
+          toast.error(error?.message || "Error uploading profile image");
         }
       } finally {
         dispatch(setUserDetails(profile));
