@@ -5,7 +5,7 @@ import { Plus, X } from 'lucide-react';
 import { HiOutlineEye } from "react-icons/hi";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getAdminDetailsThunk, hereMapSearchThunk, getBase64ImageThunk } from "store/user.thunk";
+import { updateAdminDetailsThunk, uploadImageThunk, removeUserAuthTokenFromLSThunk, getAdminDetailsThunk, hereMapSearchThunk, getBase64ImageThunk, getRolesThunk } from "store/user.thunk";
 import { setUserDetails } from 'store/authSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -54,6 +54,7 @@ function ProfileSettings() {
   // console.log("states...", states);
   // console.log("cities...", cities);
   // console.log({countryName, stateName, cityName});
+  const [roles, setRoles] = useState([]);
 
   const [hereList, setHereList] = useState([]);
   const [hereSearch, setHereSearch] = useState("");
@@ -107,6 +108,32 @@ function ProfileSettings() {
       setBase64ProfileImage("")
     }
   };
+  
+  useEffect(() => {
+    const getRolesList = async () => {
+      try {
+        const result = await dispatch(getRolesThunk({user_type: "", sortdata: { sort_text: "", order: "asc" }})).unwrap();
+        setRoles(result?.roles);
+      } catch (error) {
+        setRoles([]);
+      }
+    };
+
+    getRolesList();
+  }, []);
+
+  const findUserRole = (id: string) => {
+    if(roles?.length > 0) {
+      const findRole = roles?.find(item => item?.id === id);
+      if(findRole) {
+        return findRole?.role_name;
+      } else {
+        return "";
+      }
+    } else {
+      return "";
+    }
+  }
 
   useEffect(() => {
     if(userDetails?.profile_pic) {
@@ -767,7 +794,7 @@ function ProfileSettings() {
               className='flex flex-col'
             >
               <h6 className='h6-text'>{userDetails?.first_name} {userDetails?.last_name}</h6>
-              <p className='font-inter-14px-bold-cBlack7'>{userDetails?.role || "role"}</p>
+              <p className='font-inter-14px-bold-cBlack7'>{findUserRole(userDetails?.role) || "Super Admin"}</p>
             </div>
             <div
               className='transition-all my-auto flex justify-end'

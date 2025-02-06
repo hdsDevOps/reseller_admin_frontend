@@ -512,7 +512,7 @@ const VoucherList: React.FC = () => {
               </div>
               <p
                 className="w-full ml-2 text-nowrap overflow-hidden"
-              >{selectedOption?.currency_code} - {selectedOption?.value}</p>
+              >{selectedOption?.currency_code === "" ? "Select" : selectedOption?.currency_code} - {selectedOption?.value === "" ? "Currency": selectedOption?.value}</p>
               {
                 isOpen ? <ChevronUp style={{fontSize: '20px'}} /> : <ChevronDown style={{fontSize: '20px'}} />
               }
@@ -693,7 +693,7 @@ const VoucherList: React.FC = () => {
                           </button>
                         </div>
                         <button
-                          className="btn-green-3 w-[80px] h-7"
+                          className="send-mail-btn"
                           onClick={() => {
                             openModal(item);
                             setVoucher(item);

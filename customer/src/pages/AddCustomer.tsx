@@ -162,6 +162,8 @@ const AddCustomer: React.FC = () => {
           setCountry(findCountry);
           setCustomer({
             ...customer,
+            address: hereData,
+            zipcode: hereData?.address?.postalCode,
             country: findCountry?.name
           });
           if(states?.length > 0) {
@@ -170,6 +172,9 @@ const AddCustomer: React.FC = () => {
               setState(findState);
               setCustomer({
                 ...customer,
+                address: hereData,
+                zipcode: hereData?.address?.postalCode,
+                country: findCountry?.name,
                 state: findState?.name
               });
               if(cities?.length > 0) {
@@ -178,6 +183,10 @@ const AddCustomer: React.FC = () => {
                   setCity(findCity);
                   setCustomer({
                     ...customer,
+                    address: hereData,
+                    zipcode: hereData?.address?.postalCode,
+                    country: findCountry?.name,
+                    state: findState?.name,
                     city: findCity?.name
                   })
                 }
@@ -188,16 +197,6 @@ const AddCustomer: React.FC = () => {
       }
     }
   }, [hereData, countries, states, cities]);
-
-  useEffect(() => {
-    if(hereData !== null) {
-      setCustomer({
-        ...customer,
-        address: hereData,
-        zipcode: hereData?.address?.postalCode
-      });
-    }
-  }, [hereData]);
 
   useEffect(() => {
     var config = {

@@ -103,7 +103,7 @@
 }
 
 .btn-green-no-radius{
-  @apply bg-cGreen text-base font-normal font-inter text-white focus:outline-none rounded-none px-5 py-[7px];
+  @apply bg-cGreen text-base font-normal font-inter text-white focus:outline-none rounded-none px-5 py-[7px] h-[38px];
 }
 
 .btn-green-2{

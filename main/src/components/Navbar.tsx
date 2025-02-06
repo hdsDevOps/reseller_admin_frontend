@@ -307,13 +307,16 @@ const Sidebar = () => {
         { path: '/email-services', label: 'Email Services', name: 'dashboard_widget', },
       ],
     },
+  ];
+
+  const links3= [
     {
       path: ["/logout"],
       label: "Logout",
       icon: <RiLogoutCircleLine className="w-[18.5px] h-[15.5px] border-[#000000] rounded-[5px]" />,
       subDomain: [],
     },
-  ]
+  ];
 
   const handleLogout = async () => {
     // dispatch(setTokenDetails(""));
@@ -581,6 +584,115 @@ const Sidebar = () => {
         >
           {
             rolePermissions?.settings?.overall && links2 && links2.map((item, index) => {
+              return(
+                <>
+                  {
+                    dropdowns[index] && (
+                      <div
+                        className={`flex flex-col bg-white rounded-t-lg shadow-xl h-fit absolute w-[92%] mt-[-160px] ml-[8px]`}
+                        ref={(el) => (dropdownRef.current[index] = el)}
+                      >
+                        {
+                          item.subDomain.map((element, key) => {
+                            if(rolePermissions?.settings[element.name]) {
+                              return(
+                                <div
+                                  className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
+                                  key={key}
+                                >
+                                  <button
+                                    type='button'
+                                    onClick={() => {navigate(element.path)}}
+                                  >
+                                    {/*  border-t-[1px]  */}
+                                    <button
+                                      type='button'
+                                      className="flex flex-row"
+                                      onClick={() => {
+                                        if(width < 769){
+                                          setIsOpen(false);
+                                          toggleDropdown(index);
+                                        }
+                                        else{
+                                          toggleDropdown(index);
+                                        }
+                                      }}
+                                    >
+                                      <Dot />
+                                      {element.label}
+                                    </button>
+                                  </button>
+                                </div>
+                              )
+                            }
+                          })
+                        }
+                      </div>
+                    )
+                  }
+                  <div key={index}
+                    className="flex flex-row px-[7px] my-[4px]"
+                  >
+                    <button
+                      type='button'
+                      className="w-full"
+                      onClick={() => {
+                        if(dropdowns[index]){
+                          setIsOpen(true);
+                          toggleDropdown(index);
+                        }
+                        else{
+                          if(width < 769){
+                            setIsOpen(false);
+                            toggleDropdown(index);
+                          }
+                          else{
+                            toggleDropdown(index);
+                          }
+                        }
+                      }}
+                    >
+                      <div
+                        className={`flex-row-between w-full py-[12px] px-[10px] hover:bg-[#12A83333] hover:rounded-lg ${
+                          !isOpen && (
+                            `ml-[10px] max-w-12 pl-[15px]`
+                          )
+                        } ${
+                          dropdowns[index] ? 'bg-[#12A83333] rounded-lg' : ''
+                        } ${
+                          (location.pathname == item.path[0] || location.pathname == item.path[1] || location.pathname == item.path[2]) && ( `bg-[#12A83333] rounded-lg` )
+                        }`}
+                      >
+                        <div
+                          className="grid grid-cols-[auto,1fr]"
+                        >
+                          <span>{item.icon}</span>
+                          <p
+                            className={`ml-3 font-poppins text-base font-medium ${
+                              !isOpen && (
+                                `hidden`
+                              )
+                            }`}
+                          >{item.label}</p>
+                        </div>
+                        <button
+                          type='button'
+                          className="float-right mt-[2px]"
+                        >
+                          {
+                            dropdowns[index] ? <ChevronDown /> : <ChevronUp />
+                          }
+                        </button>
+                      </div>
+                    </button>
+                  </div>
+                </>
+              )
+            })
+          }
+
+          {
+            links3 && links3.map((item, index) => {
               if(item.path[0] == '/logout'){
                 return(
                   <div key={index}
@@ -592,7 +704,7 @@ const Sidebar = () => {
                       onClick={handleLogout}
                     >
                       <div
-                        className={`flex flex-row py-[12px] px-[10px] ${
+                        className={`flex flex-row py-[12px] px-[10px] items-center ${
                           location.pathname == item.path[0] && `bg-custom-red text-white rounded-lg`
                         } hover:bg-[#E02424] hover:rounded-lg hover:text-white ${
                           !isOpen && (
@@ -611,112 +723,6 @@ const Sidebar = () => {
                       </div>
                     </button>
                   </div>
-                )
-              }
-              else{
-                return(
-                  <>
-                    {
-                      dropdowns[index] && (
-                        <div
-                          className={`flex flex-col bg-white rounded-t-lg shadow-xl h-fit absolute w-[92%] mt-[-160px] ml-[8px]`}
-                          ref={(el) => (dropdownRef.current[index] = el)}
-                        >
-                          {
-                            item.subDomain.map((element, key) => {
-                              if(rolePermissions?.settings[element.name]) {
-                                return(
-                                  <div
-                                    className={`first:border-t-0 border-t-[1px] border-black py-[5px] px-[5px]`}
-                                    key={key}
-                                  >
-                                    <button
-                                      type='button'
-                                      onClick={() => {navigate(element.path)}}
-                                    >
-                                      {/*  border-t-[1px]  */}
-                                      <button
-                                        type='button'
-                                        className="flex flex-row"
-                                        onClick={() => {
-                                          if(width < 769){
-                                            setIsOpen(false);
-                                            toggleDropdown(index);
-                                          }
-                                          else{
-                                            toggleDropdown(index);
-                                          }
-                                        }}
-                                      >
-                                        <Dot />
-                                        {element.label}
-                                      </button>
-                                    </button>
-                                  </div>
-                                )
-                              }
-                            })
-                          }
-                        </div>
-                      )
-                    }
-                    <div key={index}
-                      className="flex flex-row px-[7px] my-[4px]"
-                    >
-                      <button
-                        type='button'
-                        className="w-full"
-                        onClick={() => {
-                          if(dropdowns[index]){
-                            setIsOpen(true);
-                            toggleDropdown(index);
-                          }
-                          else{
-                            if(width < 769){
-                              setIsOpen(false);
-                              toggleDropdown(index);
-                            }
-                            else{
-                              toggleDropdown(index);
-                            }
-                          }
-                        }}
-                      >
-                        <div
-                          className={`flex-row-between w-full py-[12px] px-[10px] hover:bg-[#12A83333] hover:rounded-lg ${
-                            !isOpen && (
-                              `ml-[10px] max-w-12 pl-[15px]`
-                            )
-                          } ${
-                            dropdowns[index] ? 'bg-[#12A83333] rounded-lg' : ''
-                          } ${
-                            (location.pathname == item.path[0] || location.pathname == item.path[1] || location.pathname == item.path[2]) && ( `bg-[#12A83333] rounded-lg` )
-                          }`}
-                        >
-                          <div
-                            className="grid grid-cols-[auto,1fr]"
-                          >
-                            <span>{item.icon}</span>
-                            <p
-                              className={`ml-3 font-poppins text-base font-medium ${
-                                !isOpen && (
-                                  `hidden`
-                                )
-                              }`}
-                            >{item.label}</p>
-                          </div>
-                          <button
-                            type='button'
-                            className="float-right mt-[2px]"
-                          >
-                            {
-                              dropdowns[index] ? <ChevronDown /> : <ChevronUp />
-                            }
-                          </button>
-                        </div>
-                      </button>
-                    </div>
-                  </>
                 )
               }
             })

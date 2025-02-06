@@ -374,7 +374,7 @@ const BillingHistory: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 mt-14 mb-3">
-        <div className="lg:col-start-2 grid xl:grid-cols-4 min-[900px]:grid-cols-2 grid-cols-1 min-md:w-[300px] max-md:mx-auto">
+        <div className="lg:col-start-2 grid xl:grid-cols-3 min-[900px]:grid-cols-2 grid-cols-1 min-md:w-[300px] max-md:mx-auto">
           <div className="px-4 mb-5 sm:mb-0 w-full">
             <DateRangePicker
               range={predefinedRanges}

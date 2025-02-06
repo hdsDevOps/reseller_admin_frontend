@@ -236,7 +236,7 @@ const EmailLog: React.FC = () => {
           <div className="flex min-h-full items-center justify-center py-4">
             <DialogPanel
               transition
-              className="w-full max-w-[450px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+              className="w-full max-w-[700px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
             >
               <div className="flex justify-between items-center mb-6">
                 <DialogTitle

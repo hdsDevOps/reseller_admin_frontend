@@ -200,13 +200,16 @@ const CustomerManagement: React.FC = () => {
 
   const [countryList, setCountryList] = useState([]);
   const [regionList, setRegionList] = useState([]);
-  // console.log({countryList, regionList})
+  console.log({countryList, regionList})
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [availableStates, setAvailableStates] = useState([]);
   // console.log({countries, states});
+  // console.log("availableStates...", availableStates);
   const [country, setCountry] = useState({});
   const [state, setState] = useState({});
+  // console.log("country...", country);
+  // console.log("states...", states);
 
   const [emailsCount, setEmailsCount] = useState([]);
   // console.log("emailsCount...", emailsCount);
@@ -639,7 +642,7 @@ const CustomerManagement: React.FC = () => {
           toast.warning("Account is suspended!");
         }
         else{
-          toast.success("Status updated");
+          toast.success("Status updated successfully");
         }
       }, 1000);
     }
@@ -689,6 +692,7 @@ const CustomerManagement: React.FC = () => {
       toast.error(error?.message || "Error suspending customer")
     } finally {
       getCustomerList();
+      setShowList(null);
     }
   };
   
@@ -705,6 +709,7 @@ const CustomerManagement: React.FC = () => {
       toast.error(error?.message || "Error suspending customer")
     } finally {
       getCustomerList();
+      setShowList(null);
     }
   };
 
@@ -825,6 +830,10 @@ const CustomerManagement: React.FC = () => {
             record_id: notificationId
           })).unwrap();
           toast.success(sendMail?.message);
+          setFilters(intialFilter);
+          setFilters2(intialFilter2);
+          setChecked([]);
+          setSelectAllCount(0);
         }
       }
     } catch (error) {
@@ -1480,6 +1489,7 @@ const CustomerManagement: React.FC = () => {
                                                 className="rotate-45 text-4xl ml-[5.5px] mt-[-7px]"
                                                 onClick={() => {
                                                   setShowSubscriptionModal(false);
+                                                  setShowList(null);
                                                 }}
                                               >
                                                 +
@@ -1546,6 +1556,7 @@ const CustomerManagement: React.FC = () => {
                                                   setShowDeleteModal(false);
                                                   setShowSuspendModal(false);
                                                   setShowTransferModal(false);
+                                                  setShowList(null);
                                                 }}
                                               >
                                                 +
@@ -1587,6 +1598,7 @@ const CustomerManagement: React.FC = () => {
                                                 setShowDeleteModal(false);
                                                 setShowSuspendModal(false);
                                                 setShowTransferModal(false);
+                                                setShowList(null);
                                               }}
                                             >Cancel</button>
                                           </div>
@@ -1611,6 +1623,7 @@ const CustomerManagement: React.FC = () => {
                                     onClick={() => {
                                       setShowTransferModal(!showTransferModal);
                                       setCommonModal(true);
+                                      setShowList(null);
                                     }}
                                 >
                                   <a

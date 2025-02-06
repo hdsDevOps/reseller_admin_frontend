@@ -370,3 +370,21 @@
   border-radius: 9999px;
   margin-top: 1px;
 }
+
+.send-mail-btn {
+  /* bg-cGreen2 text-[8px] font-normal font-inter text-cGray2 focus:outline-none rounded-[5px] px-5 py-[5px] text-center w-[80px] h-7 */
+  background-color: #CDE9D3;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 8px;
+  color: #5A5A5A;
+  border-radius: 5px;
+  padding: 5px 20px;
+  text-align: center;
+  width: 80px;
+  height: 28px;
+}
+
+.send-mail-btn:focus {
+  outline: none;
+}

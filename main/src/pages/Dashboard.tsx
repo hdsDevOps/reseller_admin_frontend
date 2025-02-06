@@ -356,7 +356,7 @@ const Dashboard: React.FC = () => {
           <div className="lg:col-span-5 col-span-1 border border-custom-white shadow-md rounded-lg flex flex-col w-full">
             <p
               className="p-4 font-inter font-bold text-base tracking-[1px] text-black opacity-50 border-b border-[#D0D3D8] top-0"
-            >Growth in the last 12 months</p>
+            >Growth (Yearly)</p>
 
             <div
               className="p-5 flex flex-row justify-between"

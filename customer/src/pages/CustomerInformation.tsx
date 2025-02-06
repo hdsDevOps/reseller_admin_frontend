@@ -125,7 +125,7 @@ const CustomerInformation: React.FC = () => {
     if(newDate != "Invalid Date"){
       return format(newDate, "dd MMM yyyy");
     } else {
-      return "Invalid Date";
+      return "N/A";
     }
   };
   

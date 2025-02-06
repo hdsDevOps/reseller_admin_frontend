@@ -18,6 +18,7 @@ declare module "store/ReduxProvider" {
     export const editBannerThunk;
     export const hereMapSearchThunk;
     export const getBase64ImageThunk;
+    export const getRolesThunk;
   }
 
   declare module 'store/authSlice' {
