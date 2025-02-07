@@ -794,7 +794,7 @@ function ProfileSettings() {
               className='flex flex-col'
             >
               <h6 className='h6-text'>{userDetails?.first_name} {userDetails?.last_name}</h6>
-              <p className='font-inter-14px-bold-cBlack7'>{findUserRole(userDetails?.role) || "Super Admin"}</p>
+              <p className='font-inter-14px-bold-cBlack7 mt-2'>{findUserRole(userDetails?.role)}</p>
             </div>
             <div
               className='transition-all my-auto flex justify-end'

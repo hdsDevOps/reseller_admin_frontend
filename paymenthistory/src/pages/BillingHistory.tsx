@@ -486,17 +486,17 @@ const BillingHistory: React.FC = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-[1100px] w-full">
           <thead
             // className="bg-custom-white"
             style={{backgroundColor: '#E4E4E4'}}
           >
-            <tr className="">
+            <tr>
               {tableHeads.map((header, index) => (
                 <th
                   key={index}
-                  className="th-css-2 text-nowrap px-2 h-[46px] min-w-full"
+                  className="th-css-2 text-nowrap px-2 h-[46px] min-w-fit"
                 >
                   <span>{header.label}</span>
                   {

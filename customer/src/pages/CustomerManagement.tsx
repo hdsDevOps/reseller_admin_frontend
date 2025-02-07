@@ -728,6 +728,7 @@ const CustomerManagement: React.FC = () => {
       toast.error(error?.message || "Error deleting customer")
     } finally {
       getCustomerList();
+      setShowList(null);
     }
   };
 
@@ -746,6 +747,7 @@ const CustomerManagement: React.FC = () => {
       toast.error(error?.message || "Error suspending customer")
     } finally {
       getCustomerList();
+      setShowList(null);
     }
   };
 
@@ -834,6 +836,9 @@ const CustomerManagement: React.FC = () => {
           setFilters2(intialFilter2);
           setChecked([]);
           setSelectAllCount(0);
+          setSubscriptionRange(null);
+          setRenewalRange(null);
+          setNotificationId("");
         }
       }
     } catch (error) {

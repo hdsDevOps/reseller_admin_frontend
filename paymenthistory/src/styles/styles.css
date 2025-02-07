@@ -399,7 +399,7 @@
   font-size: 12px;
   text-align: center;
   opacity: 60%;
-  min-width: fit-content;
+  /* min-width: fit-content; */
   /* padding: 0 10px; */
   color: #434D64;
   align-items: center;
@@ -412,8 +412,9 @@
   font-size: 12px;
   text-align: center;
   opacity: 60%;
-  min-width: fit-content;
+  /* min-width: fit-content; */
   align-items: center;
+  /* width: auto; */
 }
 
 .billing-history-td-full-opactiy {
@@ -423,7 +424,7 @@
   font-size: 12px;
   text-align: center;
   opacity: 100%;
-  min-width: fit-content;
+  /* min-width: fit-content; */
   align-items: center;
 }
 

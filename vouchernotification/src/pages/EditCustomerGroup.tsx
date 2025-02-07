@@ -589,6 +589,7 @@ const EditCustomerGroup: React.FC = () =>  {
           <button
             type='button'
             className='btn-red h-[46px] ml-[30px]'
+            onClick={() => {setCustomerGroup(location.state)}}
           >Cancel</button>
         </div>
       </form>

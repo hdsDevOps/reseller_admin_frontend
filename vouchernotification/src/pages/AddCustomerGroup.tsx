@@ -75,6 +75,17 @@ const predefinedRanges: RangeType<Date>[] = [
   },
 ];
 
+const initialCustomerGroup = {
+  group_name: "",
+  country: "",
+  region: "",
+  plan: "",
+  start_date: "",
+  end_date: "", 
+  license_usage: "", 
+  no_customer: 0,
+};
+
 const AddCustomerGroup: React.FC = () =>  {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -82,16 +93,7 @@ const AddCustomerGroup: React.FC = () =>  {
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const [range, setRange] = useState<[Date | null, Date | null]|null>(null);
   
-  const [customerGroup, setCustomerGroup] = useState({
-    group_name: "",
-    country: "",
-    region: "",
-    plan: "",
-    start_date: "",
-    end_date: "", 
-    license_usage: "", 
-    no_customer: 0,
-  });
+  const [customerGroup, setCustomerGroup] = useState(initialCustomerGroup);
   console.log(customerGroup);
   const [customerCount, setCustomerCount] = useState<number>(0);
   
@@ -171,7 +173,7 @@ const AddCustomerGroup: React.FC = () =>  {
     {label: 'Country', placeholder: 'Select country', type: 'select', name: 'country'},
     {label: 'State/Region', placeholder: 'Select State/Region', type: 'select', name: 'region'},
     {label: 'Subscription Plan', placeholder: 'Select a plan', type: 'select', name: 'plan'},
-    {label: 'Expiry Dare Range', placeholder: '', type: '', name: 'expiry'},
+    {label: 'Expiry Date Range', placeholder: '', type: '', name: 'expiry'},
     // {label: 'End Date', placeholder: 'Select end date', type: 'date', name: 'end_date'},
     {label: 'License Usage', placeholder: 'Select number  ', type: 'number', name: 'license_usage'},
     {label: 'Number of customer', placeholder: 'Auto-filled', type: 'number', name: 'no_customer'},
@@ -597,6 +599,7 @@ const AddCustomerGroup: React.FC = () =>  {
           <button
             type='button'
             className='btn-red h-[46px] ml-[30px]'
+            onClick={() => {setCustomerGroup(initialCustomerGroup)}}
           >Cancel</button>
         </div>
       </form>
