@@ -160,7 +160,7 @@ const MainApp: React.FC = () => {
     }
 
     adminDetails();
-  }, [userId]);
+  }, [userId]); 
 
   useEffect(() => {
     const getRole = async() => {
