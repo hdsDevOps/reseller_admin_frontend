@@ -11,8 +11,8 @@ import SubscriptionApp from "subscription/SubscriptionApp";
 import VoucherApp from "vouchernotification/VoucherApp";
 import { ToastContainer } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { getAdminDetailsThunk, getRolesThunk, removeUserAuthTokenFromLSThunk } from "store/user.thunk";
-import { setRolesPermissionsStatus } from "store/authSlice";
+import { getAdminDetailsThunk, getRolesThunk, getUserAuthTokenFromLSThunk, removeUserAuthTokenFromLSThunk } from "store/user.thunk";
+import { setRolesPermissionsStatus, setTokenDetails, setUserDetails, setUserIdDetails } from "store/authSlice";
 // import DomainApp from "domains/DomainApp";
 import { motion } from "framer-motion";
 import { BeatLoader } from "react-spinners";
@@ -143,7 +143,19 @@ const MainApp: React.FC = () => {
       try {
         await dispatch(getAdminDetailsThunk({userid: userId})).unwrap();
       } catch (error) {
-        //
+        if(error?.message == "Invalid token" || error?.error === "Invalid token" || error === "Invalid token") {
+          try {
+            await localStorage.removeItem('LS_KEY_AUTH_TOKEN');
+            await localStorage.removeItem('LS_KEY_USER_ID');
+            await dispatch(setTokenDetails(null));
+            await dispatch(setUserIdDetails(null));
+            await dispatch(setUserDetails(null));
+            const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+            navigate('/login');
+          } catch (error) {
+            //
+          }
+        }
       }
     }
 
@@ -152,25 +164,32 @@ const MainApp: React.FC = () => {
 
   useEffect(() => {
     const getRole = async() => {
-      try {
-        const result = await dispatch(getRolesThunk({user_type: "", sortdata: { sort_text: "", order: "asc" }})).unwrap();
-        const rolesList = result?.roles;
-        if(rolesList?.length > 0) {
-          const findUserRole = rolesList?.find(item => item?.id === userDetails?.role);
-          if(findUserRole) {
-            await dispatch(setRolesPermissionsStatus(findUserRole?.permission));
-          } else {
-            await dispatch(setRolesPermissionsStatus(intitalPermissions));
+      if(userDetails !== null) {
+        try {
+          const result = await dispatch(getRolesThunk({user_type: "", sortdata: { sort_text: "", order: "asc" }})).unwrap();
+          const rolesList = result?.roles;
+          if(rolesList?.length > 0) {
+            const findUserRole = rolesList?.find(item => item?.id === userDetails?.role);
+            if(findUserRole) {
+              await dispatch(setRolesPermissionsStatus(findUserRole?.permission));
+            } else {
+              await dispatch(setRolesPermissionsStatus(intitalPermissions));
+            }
           }
-        }
-      } catch (error) {
-        await dispatch(setRolesPermissionsStatus(intitalPermissions));
-        if(error?.message == "Request failed with status code 401") {
-          try {
-            const removeToken = await dispatch(removeUserAuthTokenFromLSThunk()).unwrap();
-            navigate('/login');
-          } catch (error) {
-            //
+        } catch (error) {
+          await dispatch(setRolesPermissionsStatus(intitalPermissions));
+          if(error?.message == "Invalid token" || error?.error === "Invalid token" || error === "Invalid token") {
+            try {
+              await localStorage.removeItem('LS_KEY_AUTH_TOKEN');
+              await localStorage.removeItem('LS_KEY_USER_ID');
+              await dispatch(setTokenDetails(null));
+              await dispatch(setUserIdDetails(null));
+              await dispatch(setUserDetails(null));
+              const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+              navigate('/login');
+            } catch (error) {
+              //
+            }
           }
         }
       }
