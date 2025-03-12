@@ -582,7 +582,7 @@ const PlanPriceSetup = () => {
   return (
     <div className="grid grid-cols-1">
       <div className="flex min-sm:flex-row max-sm:flex-col justify-between min-sm:items-center mb-6 max-sm:gap-2">
-        <h3 className="h3-text-resp">Plan & Price setup</h3>
+        <h3 className="h3-text-resp">Plan & Price Setup</h3>
         <div className="flex gap-4 max-sm:justify-end">
           <button
             className="btn-green w-[139px] flex flex-row items-center gap-2"

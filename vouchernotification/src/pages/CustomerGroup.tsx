@@ -226,7 +226,7 @@ const CustomerGroup: React.FC = () => {
           </div>
         </div>
         <div
-          className='flex flex-row mt-5 h-[22px]'
+          className='flex flex-row mt-5 h-[22px] items-center justify-start'
         >
           <p
             className='page-indicator-1'

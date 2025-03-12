@@ -137,7 +137,7 @@ const EmailServices: React.FC = () => {
     <div className="grid grid-cols-1">
       <div className="flex flex-col">
         <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
-          <h3 className="h3-text">Email Services</h3>
+          <h3 className="h3-text">Email services</h3>
           <div
             className="flex min-[500px]:justify-end max-[500px]:justify-center max-[500px]:mt-2"
           >
@@ -167,7 +167,7 @@ const EmailServices: React.FC = () => {
           />
           <p
             className='page-indicator-2'
-          >Email Services</p>
+          >Email services</p>
         </div>
       </div>
 

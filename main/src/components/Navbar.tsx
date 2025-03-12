@@ -315,7 +315,7 @@ const Sidebar = () => {
         { path: '/customer-agreement', label: 'Customer agreement', name: 'customer_agreement', },
         { path: '/privacy-policy', label: 'Privacy policy', name: 'privacy_policy', },
         { path: '/terms-and-conditions', label: 'Terms & conditions', name: 'terms_and_conditions', },
-        { path: '/email-services', label: 'Email Services', name: 'dashboard_widget', },
+        { path: '/email-services', label: 'Email services', name: 'dashboard_widget', },
       ],
     },
   ];
@@ -466,7 +466,7 @@ const Sidebar = () => {
                       cypress-name="sidebar-nav-name"
                     >
                       <div
-                        className={`flex flex-row justify-between w-full py-[12px] px-[10px] items-start ${
+                        className={`flex flex-row justify-between w-full py-[12px] px-[10px] items-center ${
                           location.pathname == item.path[0] && `bg-[#12A83333] rounded-[8px]` || location.pathname == item.path[1] && `bg-[#12A83333] rounded-[8px]`
                         } hover:bg-[#12A83333] hover:rounded-[8px] ${
                           !isOpen && (
@@ -477,7 +477,7 @@ const Sidebar = () => {
                         } `}
                       >
                         <div
-                          className="flex items-center"
+                          className="flex justify-center items-center"
                         >
                           <span>{item.icon}</span>
                           <p
@@ -490,7 +490,7 @@ const Sidebar = () => {
                         </div>
                         <button
                           type='button'
-                          className="float-right mt-[2px]"
+                          className="float-right mt-[4px]"
                         >
                           {
                             dropdowns[index] ? <ChevronUp /> : <ChevronDown />

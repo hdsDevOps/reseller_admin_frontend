@@ -211,7 +211,7 @@
 }
 
 .page-indicator-arrow-3{
-  @apply h-[20px] mt-[4px] max-[431px]:mt-[15px] text-[#00000066];
+  @apply h-[20px] text-[#00000066];
 }
 
 .page-indicator-arrow-4{
@@ -223,7 +223,7 @@
 }
 
 .page-indicator-2{
-  @apply font-inter font-normal text-base text-cGreen;
+  @apply font-inter font-normal text-base text-[#12A833];
 }
 
 .fixed-full-screen{
