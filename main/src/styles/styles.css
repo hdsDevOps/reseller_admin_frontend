@@ -221,3 +221,82 @@
 .navbar-w-h-2{
   @apply max-w-[21.5px] max-h-[18.5px] mt-[11px];
 }
+
+.dashboard-header {
+  /* font-inter font-medium text-[28px] text-black leading-8 */
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  color: black;
+}
+
+.dashboard-name {
+  /* mt-1 font-inter font-medium text-[25px] text-custom-green */
+  margin-top: 4px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 25px;
+  color: #12A833;
+}
+
+.revenue-count {
+  /* font-inter font-medium text-2xl text-[#434D64] */
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: #434D64;
+}
+
+.statistics-year-section {
+  /* p-5 flex flex-row justify-between */
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.color-show {
+  /* w-[12px] h-[12px] */
+  width: 12px;
+  height: 12px;
+}
+
+.color-show-text {
+  /* font-inter font-normal text-base text-[#727A8B] */
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #727A8B;
+}
+
+@media screen and (max-width: 426px) {
+  .dashboard-header {
+    font-size: 20px;
+  }
+
+  .dashboard-name {
+    font-size: 18px;
+  }
+
+  .revenue-count {
+    font-size: 18px;
+  }
+
+  .color-show {
+    width: 8px;
+    height: 8px;
+  }
+
+  .color-show-text {
+    font-size: 8px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .statistics-year-section {
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+  }
+}

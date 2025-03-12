@@ -195,6 +195,7 @@ const SEO = () => {
               toast.error(error?.message || "Error updating SEO data");
             } finally {
               fetchSeoData();
+              setIsModalOpen(false);
             }
           }
           else{
@@ -223,6 +224,7 @@ const SEO = () => {
           toast.error(error?.message || "Error updating SEO data1");
         } finally {
           fetchSeoData();
+          setIsModalOpen(false);
         }
       }
     }
@@ -231,11 +233,15 @@ const SEO = () => {
   return (
     <div className="sm:p-4 p-0 bg-white">
       <div className="flex items-center justify-start mx-4 mb-3">
-        <button className="btn-cms" onClick={() => {
-          setIsModalOpen(true);
-          setEditedSeo(seoData);
-          setImage(seoData?.image_path);
-        }}>
+        <button
+          className="btn-cms"
+          onClick={() => {
+            setIsModalOpen(true);
+            setEditedSeo(seoData);
+            setImage(seoData?.image_path);
+          }}
+          cypress-name="cms-edit-seo-button"
+        >
           EDIT
         </button>
       </div>
@@ -301,7 +307,7 @@ const SEO = () => {
       <Dialog
         open={isModalOpen}
         as="div"
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={() => {
           setIsModalOpen(false);
           setImage(seoData?.image_path);
@@ -328,6 +334,7 @@ const SEO = () => {
                         setImage(seoData?.image_path);
                         setEditedSeo(seoData);
                       }}
+                      cypress-name="cms-seo-close-button"
                     >+</button>
                   </div>
                 </div>
@@ -371,8 +378,7 @@ const SEO = () => {
                             <input id="file-upload" type="file" className="hidden" accept="image/*" onChange={e => {setImage(e.target.files[0])}} />
                           </label>
                         )
-                      }
-                      else if(menu.name === "desc" || menu.name === "keywords"){
+                      } else if(menu.name === "desc" || menu.name === "keywords"){
                         return(
                           <div
                             key={index}
@@ -412,8 +418,7 @@ const SEO = () => {
                             </div>
                           </div>
                         )
-                      }
-                      else{
+                      } else{
                         return(
                           <div
                             key={index}
@@ -440,6 +445,7 @@ const SEO = () => {
                     <button
                       type="submit"
                       className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                      cypress-name="cms-seo-submit-button"
                     >
                       Save
                     </button>

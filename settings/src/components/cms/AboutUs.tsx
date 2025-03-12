@@ -378,12 +378,16 @@ const AboutUs: React.FC = () => {
   return (
     <div className="sm:p-4 p-0 bg-white">
       <div className="flex items-center justify-start mx-4 mb-3">
-        <button className="btn-cms" onClick={() => {
-          setIsEditModalOpen(true);
-          setImageFile1(aboutUs?.block1.image);
-          setImageFile2(aboutUs?.block2.image);
-          setImageFile3(aboutUs?.heading_section.image);
-        }}>
+        <button
+          className="btn-cms"
+          onClick={() => {
+            setIsEditModalOpen(true);
+            setImageFile1(aboutUs?.block1.image);
+            setImageFile2(aboutUs?.block2.image);
+            setImageFile3(aboutUs?.heading_section.image);
+          }}
+          cypress-name="cms-edit-about-us-button"
+        >
           EDIT
         </button>
       </div>
@@ -429,7 +433,7 @@ const AboutUs: React.FC = () => {
       <Dialog
         open={isEditModalOpen}
         as="div"
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={() => {
           setIsEditModalOpen(false);
           fetchAboutUs();
@@ -460,6 +464,7 @@ const AboutUs: React.FC = () => {
                       setImageFile2(null);
                       setImageFile3(null);
                     }}
+                    cypress-name="cms-about-us-close-button"
                   >+</button>
                 </div>
               </div>
@@ -484,6 +489,7 @@ const AboutUs: React.FC = () => {
                           }
                         }))
                       }}
+                      cypress-name="cms-about-us-page-heading"
                     />
                     <label
                       htmlFor="file-upload"
@@ -578,6 +584,7 @@ const AboutUs: React.FC = () => {
                               }
                             }))
                           }}
+                          cypress-name="cms-block-1-content-title"
                         />
                       </div>
                       <label
@@ -673,6 +680,7 @@ const AboutUs: React.FC = () => {
                               }
                             }))
                           }}
+                          cypress-name="cms-block-2-content-title"
                         />
                       </div>
                       <label
@@ -744,6 +752,7 @@ const AboutUs: React.FC = () => {
                   <button
                     type="submit"
                     className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                    cypress-name="cms-about-us-submit-button"
                   >
                     Save
                   </button>

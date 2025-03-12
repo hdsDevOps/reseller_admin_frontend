@@ -265,3 +265,17 @@
 .checkbox-list{
   @apply grid min-[1570px]:grid-cols-8 min-[980px]:grid-cols-4 min-[819px]:grid-cols-3 min-[650px]:grid-cols-2 min-[0px]:grid-cols-1 gap-0 font-inter font-normal text-base bg-cGreen bg-opacity-10 text-cBlack3 border border-cWhite p-5 rounded-[10px] my-3;
 }
+
+.h3-text-resp {
+  /* font-inter font-medium text-[28px] text-black leading-8 */
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  color: black;
+}
+
+@media screen and (max-width: 426px) {
+  .h3-text-resp {
+    font-size: 20px;
+  }
+}

@@ -451,7 +451,7 @@ const Promotion: React.FC = () => {
                     });
                   }}
                   type="button"
-                  cypress-name={`edit-promotion-${index+1}`}
+                  cypress-name="edit-promotion-button"
                 >
                   <PencilIcon className="w-5 h-5" />
                 </button>
@@ -462,7 +462,7 @@ const Promotion: React.FC = () => {
                     setNewPromotion(promo);
                   }}
                   type="button"
-                  cypress-name={`delete-promotion-${index+1}`}
+                  cypress-name="delete-promotion-button"
                 >
                   <TrashIcon className="w-5 h-5" />
                 </button>
@@ -474,7 +474,7 @@ const Promotion: React.FC = () => {
       <Dialog
         open={isEditModalOpen}
         as="div"
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={() => {
           setIsEditModalOpen(false);
           setNewPromotion(initialPromotion);
@@ -576,6 +576,7 @@ const Promotion: React.FC = () => {
                                     amount: e.target.value,
                                   });
                                 }}
+                                cypress-name="cms-add-promotion-discount"
                               />
                               <select
                                 className="col-span-1 h-full"
@@ -596,6 +597,7 @@ const Promotion: React.FC = () => {
                                   type="button"
                                   className="btn-cms-2 my-auto"
                                   onClick={() => {updatePrice(price.currency_code, price)}}
+                                  cypress-name="cms-add-promotion-discount-button"
                                 >ADD</button>
                               </div>
                             </div>
@@ -752,7 +754,7 @@ const Promotion: React.FC = () => {
 
       <Dialog
         open={isDeleteModalOpen}
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={() => {
           setIsDeleteModalOpen(false);
           setNewPromotion(initialPromotion);

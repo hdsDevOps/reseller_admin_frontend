@@ -225,26 +225,26 @@ const OTP: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-[570px]">
-        <div className="p-8 xsm-max:px-4 bg-[#F9FAFB] rounded-lg shadow-sm">
+    <div className="otp-container">
+      <div className="opt-container-div">
+        <div className="opt-container-inner-div">
           <div
-            className={`mb-[20px] flex items-center justify-center`}
+            className="logo-area"
           >
             <img
               src={logo}
               alt="logo"
-              className={`w-[108px]`}
+              className="otp-logo"
             />
           </div>
-          <h3 className="text-center h3-text mb-4">
+          <h3 className="otp-header">
             {mode === "signin" ? "Sign in your account" : "Verify your email"}
           </h3>
           <div
-            className="w-full flex items-start justify-center"
+            className="otp-para"
           >
             <p
-              className="text-center font-inter-16px-400 w-[430px]"
+              className="otp-para-p"
             >
               {
                 mode === "signin" ? "Enter the six digit code we sent to your email address to verify your Hordanso account:" : `Enter the six digit code we sent to your email address to verify your Hordanso account:`
@@ -267,7 +267,7 @@ const OTP: React.FC = () => {
           <form onSubmit={handleLogin}
             className="flex flex-col w-full text-center"
           >
-            <div className="flex justify-between mt-12 w-[451px]">
+            <div className="flex justify-between mt-12 max-w-[451px] w-full">
               <p className="text-md font-bold">OTP verification</p>
               <span className="text-red-600">{
                 `0${minutes}:${
@@ -275,7 +275,7 @@ const OTP: React.FC = () => {
                 }`
               }</span>
             </div>
-            <div className="grid grid-cols-6 gap-2 mt-4 w-[451px]">
+            <div className="grid grid-cols-6 gap-2 mt-4 max-w-[451px] w-full">
               {
                 [1, 2, 3, 4, 5, 6].map((index) => (
                   <input

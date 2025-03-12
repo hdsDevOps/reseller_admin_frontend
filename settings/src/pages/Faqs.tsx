@@ -174,7 +174,7 @@ const Faqs: React.FC = () => {
   return (
     <div className="grid grid-cols-1">
       <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
-        <h3 className="h3-text">FAQ's</h3>
+        <h3 className="h3-text-resp">FAQ's</h3>
         <div
           className="flex min-[500px]:justify-end max-[500px]:justify-center max-[500px]:mt-2"
         >
@@ -209,7 +209,7 @@ const Faqs: React.FC = () => {
               cypress-name={`faq-number-${index+1}`}
               type='button'
             >
-              <span className="faq-header">{faq.question}</span>
+              <span className="faq-header-resp">{faq.question}</span>
               {
                 showList === index ? (
                   <ChevronUp className="w-5 h-5 text-black" />
@@ -224,7 +224,7 @@ const Faqs: React.FC = () => {
                 showList === index ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
-              <div className="faq-details">
+              <div className="faq-details-resp">
                 {faq.answer}
               </div>
               <div

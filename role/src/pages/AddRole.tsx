@@ -630,21 +630,23 @@ const AddRole = () => {
                     <div
                       className="flex flex-row gap-1"
                     >
-                      <input type="checkbox" name={item?.name} checked={role.permission[item.name].overall} onClick={() => {
-                        const value = !role.permission[item.name].overall
-                        setRole({
-                          ...role,
-                          permission: {
-                            ...role.permission,
-                            [item.name]: {
-                              ...role.permission[item.name],
-                              overall: !role.permission[item.name].overall
+                      <input
+                        type="checkbox"
+                        name={item?.name}
+                        checked={role.permission[item.name].overall} onClick={() => {
+                          const value = !role.permission[item.name].overall
+                          setRole({
+                            ...role,
+                            permission: {
+                              ...role.permission,
+                              [item.name]: {
+                                ...role.permission[item.name],
+                                overall: !role.permission[item.name].overall
+                              }
                             }
-                          }
-                        })
-                        console.log(value)
-                        
-                      }} />
+                          })
+                        }}
+                      />
                       <label>{item.label}</label>
                     </div>
                     <div
@@ -657,18 +659,22 @@ const AddRole = () => {
                               className="flex flex-row gap-1 "
                               key={i}
                             >
-                              <input type="checkbox" disabled={role.permission[item.name].overall ? false : true} name={e.name} checked={role.permission[item.name][e.name]} onClick={() => {
-                                setRole({
-                                  ...role,
-                                  permission: {
-                                    ...role.permission,
-                                    [item.name]: {
-                                      ...role.permission[item.name],
-                                      [e.name]: !role.permission[item.name][e.name],
+                              <input
+                                type="checkbox"
+                                disabled={role.permission[item.name].overall ? false : true} name={e.name} checked={role.permission[item.name][e.name]}
+                                onClick={() => {
+                                  setRole({
+                                    ...role,
+                                    permission: {
+                                      ...role.permission,
+                                      [item.name]: {
+                                        ...role.permission[item.name],
+                                        [e.name]: !role.permission[item.name][e.name],
+                                      }
                                     }
-                                  }
-                                })
-                              }} />
+                                  })
+                                }}
+                              />
                               <label>{e.label}</label>
                             </div>
                           )
@@ -713,21 +719,26 @@ const AddRole = () => {
                         <div
                           className="flex flex-row gap-1"
                         >
-                          <input type="checkbox" checked={role.permission.voucher_management[item.name].overall} disabled={role.permission.voucher_management.overall ? false : true} onClick={() => {
-                            setRole({
-                              ...role,
-                              permission: {
-                                ...role.permission,
-                                voucher_management: {
-                                  ...role.permission.voucher_management,
-                                  [item.name]: {
-                                    ...role.permission.voucher_management[item.name],
-                                    overall: !role.permission.voucher_management[item.name].overall
+                          <input
+                            type="checkbox"
+                            checked={role.permission.voucher_management[item.name].overall}
+                            disabled={role.permission.voucher_management.overall ? false : true}
+                            onClick={() => {
+                              setRole({
+                                ...role,
+                                permission: {
+                                  ...role.permission,
+                                  voucher_management: {
+                                    ...role.permission.voucher_management,
+                                    [item.name]: {
+                                      ...role.permission.voucher_management[item.name],
+                                      overall: !role.permission.voucher_management[item.name].overall
+                                    }
                                   }
                                 }
-                              }
-                            })
-                          }} />
+                              })
+                            }}
+                          />
                           <label>{item.label}</label>
                         </div>
                         <div
@@ -1117,20 +1128,23 @@ const AddRole = () => {
           </div>
         </div>
         <div className="flex justify-center gap-7 my-10">
-            <button
-              type="submit"
-              className="btn-green w-[130px]"
-            >
-              Submit
-            </button>
-            <button
-              type="button"
-              className="btn-red w-[130px]"
-              onClick={() => {setRole(initialRole)}}
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="btn-green w-[130px]"
+          >
+            Submit
+          </button>
+          <button
+            type="button"
+            className="btn-red w-[130px]"
+            onClick={() => {
+              setRole(initialRole);
+              navigate(-1);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

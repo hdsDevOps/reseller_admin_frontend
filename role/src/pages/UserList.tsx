@@ -389,7 +389,7 @@ const UserList = () => {
   return (
     <div className="grid grid-cols-1">
       <div className="flex-row-between-responsive sm:mr-10 max-sm:mr-0">
-        <h3 className="h3-text">
+        <h3 className="h3-text-resp">
           User List
         </h3>
       </div>
@@ -416,6 +416,7 @@ const UserList = () => {
             setPrevNumber("");
           }}
           disabled={!rolePermissionsSlice?.role_management?.user_list?.add ? true : false }
+          cypress-name="add-new-role-user"
         >
           Add User
         </button>
@@ -436,6 +437,7 @@ const UserList = () => {
               }}
               name="role"
               value={userFilter?.role}
+              cypress-name="filter-role"
             >
               <option defaultChecked value=''>Select User Type</option>
               {
@@ -454,6 +456,7 @@ const UserList = () => {
                 className="serach-input-no-radius min-[985px]:w-[315px] max-[985px]:w-full min-w-[200px]"
                 onChange={e => {setSearchData(e.target.value.replace(/\+/g, ""))}}
                 value={searchData}
+                cypress-name="search-role-filter"
               />
               <div
                 className="flex flex-row gap-3 min-[536px]:mt-0 max-[536px]:mt-2 max-[536px]:justify-between"
@@ -462,6 +465,7 @@ const UserList = () => {
                   type="button"
                   className="btn-green-no-radius"
                   onClick={() => {handleFilterSearch()}}
+                  cypress-name="search-role-filter-button"
                 >Seacrh</button>
 
                 <button
@@ -470,6 +474,7 @@ const UserList = () => {
                     setUserFilter(intialUserFilter);
                     setSearchData("");
                   }}
+                  cypress-name="clear-filter-button"
                 >
                   <LuFilterX
                     className="text-[20px] text-custom-green"
@@ -567,6 +572,7 @@ const UserList = () => {
                                 setPrevNumber(user?.phone_no);
                               }}
                               disabled={!rolePermissionsSlice?.role_management?.user_list?.edit ? true : false }
+                              cypress-name="edit-role-user"
                             >
                               <BiSolidEditAlt className="text-black text-xl" />
                             </button>
@@ -692,6 +698,7 @@ const UserList = () => {
                               name={item.name}
                               required
                               value={modalData?.role}
+                              cypress-name="select-role-for-new-user"
                             >
                               <option selected={modalType == 'add' ? true : false} value="" disabled>Select user type</option>
                               {
@@ -742,6 +749,10 @@ const UserList = () => {
                                   setIsNumberValid(false);
                                 }
                               }}
+                              inputProps={{
+                                required: true,
+                                name: 'phone'
+                              }}
                               inputClass="!w-full !outline-none border !border-black/30 !bg-[#E7E8F4] !h-[45px]"
                               dropdownClass="peer"
                             // border border-cWhite rounded-[10px] h-[45px] mt-[-9px] pl-2
@@ -765,6 +776,28 @@ const UserList = () => {
                               required
                               className='search-input-text px-4'
                               onChange={updateModalName}
+                              value={modalData[item.name]}
+                            />
+                          </div>
+                        )
+                      } else if(item.name === "email"){
+                        return(
+                          <div
+                            className='flex flex-col px-2 mb-2'
+                            key={index}
+                          >
+                            <label
+                              className='search-input-label [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                            >{item.label}</label>
+                            <input
+                              type={item.type}
+                              placeholder={item.placeholder}
+                              name={item.name}
+                              required
+                              disabled={modalType === "edit"}
+                              style={modalType === "edit" ? {cursor: "not-allowed"} : {}}
+                              className='search-input-text px-4'
+                              onChange={updateModalData}
                               value={modalData[item.name]}
                             />
                           </div>

@@ -364,7 +364,7 @@ const BillingHistory: React.FC = () => {
   return (
     <div className="grid grid-cols-1">
       <div className="flex flex-col justify-start">
-        <h3 className="h3-text">
+        <h3 className="h3-text-resp">
         Billing History
         </h3>
         <p className="text-gray-900 text-sm mt-1">
@@ -407,7 +407,7 @@ const BillingHistory: React.FC = () => {
             </div>
             {
               isDropdownOpen && initialBillingHistory?.filter(history => history?.domain?.toLowerCase()?.includes(search?.toLowerCase())).length > 0 && (
-                <div className='absolute flex flex-col py-1 2xl:w-[90%] min-[1450px]:w-[89%] min-[1350px]:w-[88%] xl:w-[87%] min-[900px]:w-[90%] md:w-[94%] min-[415px]:w-[90%] w-[88%] bg-custom-white rounded-b max-h-40 overflow-y-auto z-[9999] border'>
+                <div className='absolute flex flex-col py-1 2xl:w-[90%] min-[1450px]:w-[89%] min-[1350px]:w-[88%] xl:w-[87%] min-[900px]:w-[90%] md:w-[94%] min-[415px]:w-[90%] w-[88%] bg-custom-white rounded-b max-h-40 overflow-y-auto z-[9999] border' cypress-name="billing-history-domain-search-dropdown">
                   {
                     initialBillingHistory?.filter((history, idx, self) => self?.findIndex(h => h?.domain === history?.domain) === idx)?.filter(history => history?.domain.toLowerCase().includes(search.toLowerCase())).map((item, index) => (
                       <p
@@ -448,6 +448,7 @@ const BillingHistory: React.FC = () => {
                   search_data: searchData
                 })
               }}
+              cypress-name="billing-history-filter-search-button"
             >Search</button>
 
             <button
@@ -459,6 +460,7 @@ const BillingHistory: React.FC = () => {
                 setSearch("");
                 setRange(null);
               }}
+              cypress-name="cypress-name=billing-history-clear-filter"
             >
               <FilterX
                 className="text-[20px] text-custom-green"
@@ -673,6 +675,7 @@ const BillingHistory: React.FC = () => {
                 <Download
                   className="h-5 text-[#12A833] cursor-pointer"
                   onClick={() => {downloadInvoice()}}
+                  cypress-name="download-invoice-button"
                 />
                 <X
                   className="h-5 text-[#12A833] cursor-pointer"
@@ -680,6 +683,7 @@ const BillingHistory: React.FC = () => {
                     setIsInvoiceOpen(false);
                     setCurrentInvoiceData(null);
                   }}
+                  cypress-name="close-download-invoice-button"
                 />
               </div>
               <BillingInvoice pdfRef={pdfRef} data={currentInvoiceData} paymentMethods={paymentMethods} />

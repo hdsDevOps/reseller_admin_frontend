@@ -367,6 +367,7 @@ function EditPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-0-price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-0-price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-0-price`}
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
@@ -379,6 +380,7 @@ function EditPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-1-price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-1-price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-1-price`}
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
@@ -391,6 +393,7 @@ function EditPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-2-price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-2-price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-2-price`}
                       />
                     </td>
                   </tr>
@@ -406,6 +409,7 @@ function EditPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-0-discount_price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-0-discount_price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-0-discount_price`}
                       />
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
@@ -418,6 +422,7 @@ function EditPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-1-discount_price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-1-discount_price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-1-discount_price`}
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
@@ -430,6 +435,7 @@ function EditPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-2-discount_price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-2-discount_price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-2-discount_price`}
                       />
                     </td>
                   </tr>
@@ -722,6 +728,7 @@ function EditPlanPriceSetup() {
           onClick={() => {
             navigate(-1);
           }}
+          cypress-name="go-back-to-plan-and-price-page"
         >
           <MoveLeft
             className='h-[20px] text-black mt-[7px]'
@@ -907,8 +914,8 @@ function EditPlanPriceSetup() {
               return(
                 <div className='flex flex-row gap-12 bg-[#C7E5CD] px-2 w-fit rounded-xl' key={key}>
                   <a className='font-inter font-normal text-[10px] text-[#545454] pt-[6px]'>{value}</a>
-                  <button className='my-auto'>
-                    <X className='text-[10px] text-black' onClick={() => {handleDeleteFeature(value)}} />
+                  <button className='my-auto w-fit' type='button' onClick={() => {handleDeleteFeature(value)}} cypress-name="delete-plan-and-price-features">
+                    <X className='text-[10px] text-black' />
                   </button>
                 </div>
               )
@@ -924,6 +931,7 @@ function EditPlanPriceSetup() {
             type='text'
             placeholder='Enter top feature'
             onKeyDown={handleKeyDownFeature}
+            cypress-name="plan-and-price-feature-input"
           />
           <FaInfo className="w-[18px] h-[18px] text-[#12A833] border border-[#12A833] rounded-full p-[2px]" onMouseOver={() => {setFeatureHover(true)}} onMouseLeave={() => {setFeatureHover(false)}} />
           
@@ -1017,6 +1025,7 @@ function EditPlanPriceSetup() {
             setSubscription(location.state);
             setLocalPrice(subscription?.amount_details);
             setIconImage(location.state?.icon_image || null);
+            navigate(-1);
           }}
         >Cancel</button>
       </div>

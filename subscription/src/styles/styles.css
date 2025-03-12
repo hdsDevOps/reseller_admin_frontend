@@ -426,3 +426,17 @@
 .banner-price-p{
   @apply font-inter font-normal text-[10px] leading-3 tracking-[-1.1%] text-cBlack3 align-middle my-auto;
 }
+
+.h3-text-resp {
+  /* font-inter font-medium text-[28px] text-black leading-8 */
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  color: black;
+}
+
+@media screen and (max-width: 426px) {
+  .h3-text-resp {
+    font-size: 20px;
+  }
+}

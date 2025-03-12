@@ -53,18 +53,21 @@ declare module 'store/user.thunk' {
   export const updateDefaultCurrencyThunk;
   export const removeUserAuthTokenFromLSThunk;
   export const getRolesThunk;
+  export const getAdminDetailsThunk;
 }
 
 declare module 'store/authSlice' {
   import { PayloadAction, Slice } from '@reduxjs/toolkit';
   import { UserDetailsState } from 'store/authSlice';
 
-  export const setTokenDetails: (payload: string) => PayloadAction<string>;
+  export const setTokenDetails: (payload: any) => PayloadAction<string>;
   // Other exports
 
   export const setUserIdDetails: (payload: any) => PayloadAction<any>;
   export const setUserDetails: (payload: any) => PayloadAction<any>;
 
   export const setUserDefaultCurrency;
+  export const setNavOpen: (payload: any) => PayloadAction<any>;
+  export const setRolesPermissionsStatus: (payload: any) => PayloadAction<any>;
 }
 

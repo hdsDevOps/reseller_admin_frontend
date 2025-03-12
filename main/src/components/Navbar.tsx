@@ -28,12 +28,14 @@ import {
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { CiCreditCard1 } from "react-icons/ci";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { setTokenDetails } from "store/authSlice";
+import { setNavOpen, setTokenDetails, setUserDetails, setUserIdDetails } from "store/authSlice";
 import { RiCashFill } from "react-icons/ri";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { removeUserAuthTokenFromLSThunk, getUserAuthTokenFromLSThunk, setUserIdToLSThunk, getRolesThunk } from 'store/user.thunk';
 import { setRolesPermissionsStatus } from 'store/authSlice';
 import { toast } from "react-toastify";
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
+import './Navbar.css';
 
 const intitalPermissions = {
   dashboard: false,
@@ -144,6 +146,7 @@ const Sidebar = () => {
   const [width, setWidth] = useState(window.innerWidth);
   const [ dropdowns, setDropdowns ] = useState({});
   const dropdownRef = useRef([]);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState<Boolean>(false);
 
   const [rolePermissions, setRolePermissions] = useState(rolePermissionsSlice !== null ? rolePermissionsSlice : intitalPermissions);
   // console.log("rolePermissions...", rolePermissions);
@@ -179,6 +182,14 @@ const Sidebar = () => {
 
     getRole();
   }, [userDetails?.role]);
+
+  useEffect(() => {
+    const setNavOpenFunction = async () => {
+      await dispatch(setNavOpen(isOpen));
+    }
+
+    setNavOpenFunction();
+  }, [isOpen]);
 
   const toggleDropdown = (index) => {
     setDropdowns((prev) => ({
@@ -322,23 +333,23 @@ const Sidebar = () => {
     // dispatch(setTokenDetails(""));
     // navigate("/login");
     try {
-      const result = await dispatch(
-        removeUserAuthTokenFromLSThunk()
-      )
-      navigate('/login');
+      await localStorage.removeItem('LS_KEY_AUTH_TOKEN');
+      await localStorage.removeItem('LS_KEY_USER_ID');
+      await dispatch(setTokenDetails(null));
+      await dispatch(setUserIdDetails(null));
+      await dispatch(setUserDetails(null));
+      // navigate('/login');
     } catch (error) {
       console.log("Error on logging out")
     } finally {
       try {
-        const getToken = await dispatch(
-          getUserAuthTokenFromLSThunk()
-        ).unwrap()
-        navigate('/login')
+        const getToken = await dispatch(getUserAuthTokenFromLSThunk()).unwrap();
+        navigate('/login');
       } catch (error) {
         console.log("Error on token")
       }
     }
-  };  
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -370,12 +381,12 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`sticky transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
+      className={`fixed transition-all duration-300 ease-in-out shadow-md bg-[#F4F4F4] ${
         isOpen ? "w-[307px]" : "max-w-[307px]"
-      } pt-[24px] drop-shadow-md`}
+      } pt-[12px] drop-shadow-md z-10 h-screen pb-20 mr-5`}
     >
       <div
-        className={`transition-all duration-300 ease-in-out text-black flex flex-col`}
+        className={`transition-all duration-300 ease-in-out text-black flex flex-col z-20 overflow-y-auto thin-scrollbar h-full relative pr-3`}
         // 
       >
         {
@@ -415,7 +426,7 @@ const Sidebar = () => {
                   <div>
                     <button
                       type='button'
-                      className="float-right mr-[-9px] mt-[-16px] cursor-pointer"
+                      className="absolute mt-[-16px] right-0 z-40 cursor-pointer"
                       onClick={() => {
                         setIsOpen(!isOpen);
                       }}
@@ -452,6 +463,7 @@ const Sidebar = () => {
                           }
                         }
                       }}
+                      cypress-name="sidebar-nav-name"
                     >
                       <div
                         className={`flex flex-row justify-between w-full py-[12px] px-[10px] items-start ${
@@ -504,6 +516,7 @@ const Sidebar = () => {
                                     <button
                                       type='button'
                                       onClick={() => {navigate(element.path)}}
+                                      cypress-name="sidebar-subnav-button"
                                     >
                                       {/*  border-t-[1px]  */}
                                       <button
@@ -546,6 +559,7 @@ const Sidebar = () => {
                         type='button'
                         onClick={() => {navigate(item.path[0])}}
                         className="w-full"
+                        cypress-name="sidebar-nav-name"
                       >
                         <div
                           className={`flex flex-row justify-between w-full py-[12px] px-[10px] items-start ${
@@ -580,7 +594,7 @@ const Sidebar = () => {
         }
 
         <div
-          className="sticky top-[100vh] border-t-[1px] border-custom-white6 pt-[30px] pb-[15px] mt-[35px]"
+          className="sticky top-[100vh] bottom-0 border-t-[1px] border-custom-white6 pt-[30px] pb-[15px] mt-[35px]"
         >
           {
             rolePermissions?.settings?.overall && links2 && links2.map((item, index) => {
@@ -701,7 +715,8 @@ const Sidebar = () => {
                     <button
                       type='button'
                       className="w-full"
-                      onClick={handleLogout}
+                      onClick={() => {setIsLogoutModalOpen(true)}}
+                      cypress-name="log-out-side-bar"
                     >
                       <div
                         className={`flex flex-row py-[12px] px-[10px] items-center ${
@@ -729,6 +744,59 @@ const Sidebar = () => {
           }
         </div>
       </div>
+
+      <Dialog
+        open={isLogoutModalOpen}
+        as="div"
+        className="relative z-50 focus:outline-none"
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+        }}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen mt-16">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <DialogPanel
+            transition
+            className="w-full max-w-[400px] rounded-xl bg-white p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <DialogTitle
+                as="h3"
+                className="text-lg font-semibold text-gray-900"
+                >Do you really want to log out?</DialogTitle>
+                <div className='btn-close-bg'>
+                <button
+                  type='button'
+                  className='text-3xl rotate-45 mt-[-8px] text-white'
+                  onClick={() => {
+                    setIsLogoutModalOpen(false);
+                  }}
+                >+</button>
+                </div>
+              </div>
+              <div className="flex justify-center gap-10">
+                <button
+                  type="button"
+                  className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                  onClick={handleLogout}
+                  cypress-name="log-out-customer-portal"
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLogoutModalOpen(false);
+                  }}
+                  className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
+                >
+                  No
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </aside>
   );
 };

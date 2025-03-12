@@ -25,7 +25,7 @@ const flagList = [
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { token, userId, defaultCurrency, userDetails } = useAppSelector((state) => state.auth);
+  const { token, userId, defaultCurrency, userDetails, rolePermissionsSlice } = useAppSelector((state) => state.auth);
 
   const [currency, setCurrency] = useState(defaultCurrency);
   // console.log("currency...", currency);
@@ -35,6 +35,7 @@ const App: React.FC = () => {
 
   // console.log({userId, userDetails});
   // console.log("userDetails...", userDetails);
+  console.log("rolePermissionsSlice...", rolePermissionsSlice);
 
   useEffect(() => {
     const getUserAuthToken = async () => {
@@ -89,7 +90,11 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback={<h2>Loading.....</h2>}>
-      {token ? <MainApp /> : <AuthApp />}
+      {
+        token
+        ? <MainApp />
+        : <AuthApp />
+      }
     </Suspense>
   );
 };

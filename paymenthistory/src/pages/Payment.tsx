@@ -56,7 +56,7 @@ const PaymentMethod: React.FC = () => {
 
   return (
     <div className="grid">
-      <h3 className="h3-text">Payment method</h3>
+      <h3 className="h3-text-resp">Payment method</h3>
 
       <div className="grid grid-cols-1 min-[900px]:grid-cols-2 min-[1200px]:grid-cols-3 min-[1500px]:grid-cols-4 min-[1900px]:grid-cols-5 mt-5">
         {

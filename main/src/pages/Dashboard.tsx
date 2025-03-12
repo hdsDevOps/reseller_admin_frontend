@@ -292,7 +292,7 @@ const Dashboard: React.FC = () => {
         className='flex flex-row justify-between'
       >
         <h3
-          className='h3-text ml-[10px]'
+          className='dashboard-header ml-[10px]'
         >Dashboard</h3>
 
         <button
@@ -313,7 +313,7 @@ const Dashboard: React.FC = () => {
           className="p-5 bg-white border border-custom-white shadow-lg rounded-[10px]"
         >
           <h6
-            className="mt-1 font-inter font-medium text-[25px] text-custom-green"
+            className="dashboard-name"
           >Welcome to your dashboard, {userDetails?.first_name} {userDetails?.last_name}</h6>
           <p
             className="mt-[3px] font-inter font-light text-xs text-black"
@@ -340,7 +340,7 @@ const Dashboard: React.FC = () => {
                     className="flex flex-col"
                   >
                     <p className="font-inter font-normal text-xs text-black opacity-50 text-nowrap">{rev.label}</p>
-                    <h4 className="font-inter font-medium text-2xl text-[#434D64]">{rev.name === "last_month_revenue" ? currencyLogo() : rev.name === "current_month_recurring_income" ? currencyLogo() : ""}{monthlyRevenueData[rev.name]}</h4>
+                    <h4 className="revenue-count">{rev.name === "last_month_revenue" ? currencyLogo() : rev.name === "current_month_recurring_income" ? currencyLogo() : ""}{monthlyRevenueData[rev.name]}</h4>
                   </div>
                 </div>
               )
@@ -359,7 +359,7 @@ const Dashboard: React.FC = () => {
             >Growth (Yearly)</p>
 
             <div
-              className="p-5 flex flex-row justify-between"
+              className="statistics-year-section"
             >
               <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C]">Spending Statistics</p>
               <div className="flex flex-row justify-between w-[110px]">
@@ -372,7 +372,8 @@ const Dashboard: React.FC = () => {
                       //
                     }
                   }}
-                  className={currentIndex > 0 ? "" : "hidden"}
+                  style={currentIndex > 0 ? {} : {cursor: "not-allowed"}}
+                  disabled={currentIndex > 0 ? false : true}
                 ><ChevronLeft className="text-[6px] text-[#1A202C]" /></button>
                 <p className="font-inter font-bold text-base tracking-[1px] text-[#1A202C] mx-auto">{currentRevenueData?.year}</p>
                 <button
@@ -384,7 +385,8 @@ const Dashboard: React.FC = () => {
                       //
                     }
                   }}
-                  className={currentIndex < yearlySpendingStatistics?.length - 1 ? "" : "hidden"}
+                  style={currentIndex < yearlySpendingStatistics?.length - 1 ? {} : {cursor: "not-allowed"}}
+                  disabled={currentIndex < yearlySpendingStatistics?.length - 1 ? false : true}
                 ><ChevronRight className="text-[6px] text-[#1A202C]" /></button>
               </div>
             </div>
@@ -460,16 +462,16 @@ const Dashboard: React.FC = () => {
 
             <div className="flex min-[1190px]:flex-row max-[1190px]:flex-col max-lg:flex-row max-[860px]:flex-col items-center justify-between px-5 pt-2 pb-5">
               <div className="flex flex-row gap-1">
-                <div className="w-[12px] h-[12px] bg-[#FFC700] rounded-full my-auto"></div>
-                <p className="font-inter font-normal text-base text-[#727A8B]">New customer</p>
+                <div className="color-show bg-[#FFC700] rounded-full my-auto"></div>
+                <p className="color-show-text">New customer</p>
               </div>
               <div className="flex flex-row gap-1">
-                <div className="w-[12px] h-[12px] bg-[#12A833] rounded-full my-auto"></div>
-                <p className="font-inter font-normal text-base text-[#727A8B]">Old customer</p>
+                <div className="color-show bg-[#12A833] rounded-full my-auto"></div>
+                <p className="color-show-text">Old customer</p>
               </div>
               <div className="flex flex-row gap-1">
-                <div className="w-[12px] h-[12px] bg-[#905F00] rounded-full my-auto"></div>
-                <p className="font-inter font-normal text-base text-[#727A8B]">Monthly Recurring Revenue</p>
+                <div className="color-show bg-[#905F00] rounded-full my-auto"></div>
+                <p className="color-show-text">Monthly Recurring Revenue</p>
               </div>
             </div>
           </div>

@@ -637,7 +637,7 @@ const AddCustomer: React.FC = () => {
                         />
                         {
                           isHereDropdownOpen && hereList?.length > 0 && (
-                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2'>
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2' cypress-name="address-dropdown">
                               {
                                 hereList?.map((name, idx) => (
                                   <p
@@ -690,7 +690,7 @@ const AddCustomer: React.FC = () => {
               >Authorization</h5>
               <div className="transition-transform duration-1000 ease-in-out flex justify-center ml-5 mt-[3px]">
                 {/* {notificationToggle()} */}
-                <label className="relative cursor-pointer">
+                <label className="relative cursor-pointer" cypress-name="authorization-toggle-button">
                   <input
                     type="checkbox"
                     className="sr-only peer"

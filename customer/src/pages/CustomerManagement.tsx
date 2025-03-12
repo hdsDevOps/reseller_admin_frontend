@@ -612,9 +612,7 @@ const CustomerManagement: React.FC = () => {
     const customerItem = item;
     const accountStatus = customerItem?.account_status;
     const newAccountStatus = `${
-      accountStatus == "active" ? "inactive"
-      : accountStatus == "suspended" ? "suspended"
-      : "active"
+      accountStatus == "active" ? "inactive" : "active"
     }`;
     try {
       const result = await dispatch(
@@ -638,12 +636,7 @@ const CustomerManagement: React.FC = () => {
     } finally{
       getCustomerList();
       setTimeout(() => {
-        if(customerItem?.account_status == "suspended"){
-          toast.warning("Account is suspended!");
-        }
-        else{
-          toast.success("Status updated successfully");
-        }
+        toast.success("Status updated successfully");
       }, 1000);
     }
   };
@@ -861,7 +854,7 @@ const CustomerManagement: React.FC = () => {
     >
       <div className="flex flex-col w-full">
         <div className="flex-row-between-responsive sm:mr-10 max-sm:mr-0">
-          <h3 className="h3-text">
+          <h3 className="h3-text-resp">
             Customers Management
           </h3>
           <div>
@@ -892,7 +885,7 @@ const CustomerManagement: React.FC = () => {
             </p>
           </div>
           <div className="flex sm:flex-row max-sm:flex-col sm:justify-end max-sm:items-end w-full">
-            <select className="sm:mr-2 max-sm:mr-0 w-[198px] h-[38px] select-notification" onChange={(e) => {setNotificationId(e.target.value)}}>
+            <select className="sm:mr-2 max-sm:mr-0 max-w-[198px] w-full h-[38px] select-notification" onChange={(e) => {setNotificationId(e.target.value)}}>
               <option selected value="">Select a notification</option>
               {
                 notificationTemplates && notificationTemplates?.map((notification, index) => (
@@ -942,6 +935,7 @@ const CustomerManagement: React.FC = () => {
                   isDomainDropdownOpen && domainList?.length > 0 && (
                     <div
                       className={`absolute flex flex-col py-1 domain-dropdown bg-custom-white rounded-b overflow-y-auto z-10`}
+                      cypress-name="domain-filter-dropdown"
                     >
                       {/* min-[576px]:w-[240px] max-[576px]:w-[41%] max-[520px]:w-[40%] */}
                       {
@@ -1035,6 +1029,7 @@ const CustomerManagement: React.FC = () => {
                   setFilters2(intialFilter2)
                 }}
                 className="pt-[5px]"
+                cypress-name="clear-filter-button"
               >
                 <FilterX
                   className="w-6 h-6 text-[#12A833]"
@@ -1049,7 +1044,7 @@ const CustomerManagement: React.FC = () => {
             <div
               className={`fixed-full-screen`}
             >
-              <div className="fixed-popup max-w-xl w-full" ref={filterRef}>
+              <div className="fixed-popup max-w-xl w-full" ref={filterRef} cypress-name="filter-modal">
                 <div className="flex-row-between px-8 pt-2 pb-4 border-b-[1px] border-cWhite3">
                   <h3 className="text-xl font-medium">Filter</h3>
                   <button
@@ -1311,6 +1306,7 @@ const CustomerManagement: React.FC = () => {
                       </td>
                       <td
                         className="td-css"
+                        cypress-name="customer-profile-id"
                       >#{item?.profile_id}</td>
                       <td
                         className="td-css"
@@ -1391,7 +1387,7 @@ const CustomerManagement: React.FC = () => {
                       <td>
                         <div className="mt-[7.5px] transition-transform duration-1000 ease-in-out flex justify-center">
                           {/* {notificationToggle()} */}
-                          <label className="relative cursor-pointer">
+                          <label className="relative cursor-pointer" cypress-name="customer-authentication-toggle-button">
                             <input
                               type="checkbox"
                               className="sr-only peer"
@@ -1411,6 +1407,7 @@ const CustomerManagement: React.FC = () => {
                           item?.status == "active" ? 'active-status' : 'inactive-status'
                           }`}
                           onClick={() => handleStatusChange(item)}
+                          cypress-name="account-status-change-button"
                         >
                           {
                             item?.status == "active" ? 'Active' : 'Inactive'
@@ -1421,10 +1418,11 @@ const CustomerManagement: React.FC = () => {
                         <button
                           type="button"
                           className="w-[33.66px] h-[33.66px] text-custom-green border border-custom-green rounded-full"
+                          onClick={() => {toggleList(item?.id)}}
+                          cypress-name="show-list-button"
                         >
                           <Ellipsis
                             className="w-[19px] m-auto"
-                            onClick={() => {toggleList(item?.id)}}
                           />
                         </button>
 
@@ -1433,6 +1431,7 @@ const CustomerManagement: React.FC = () => {
                             <div
                               className={`absolute right-0 rounded-3xl bg-white border-2 w-[186px] z-10`}
                               ref={listRef}
+                              cypress-name="show-more-list"
                             >
                               <ul
                                 className="customer-table-more-list"
@@ -1445,6 +1444,7 @@ const CustomerManagement: React.FC = () => {
                                     onClick={() => {
                                       navigate('/edit-customer', { state: item});
                                     }}
+                                    cypress-name="edit-customer-button"
                                   >Edit Customer</a>
                                 </li>
                                 <li
@@ -1456,6 +1456,7 @@ const CustomerManagement: React.FC = () => {
                                       setShowDeleteModal(!showDeleteModal);
                                       setCommonModal(true);
                                     }}
+                                    cypress-name="delete-customer-button"
                                   >Delete Customer</a>
                                 </li>
                                 <li
@@ -1537,6 +1538,7 @@ const CustomerManagement: React.FC = () => {
                                       >
                                         <div
                                           className="fixed-popup-round3xl min-[540px]:w-[538px] max-[540px]:w-full h-[315px] p-6"
+                                          cypress-name="common-list-modal"
                                         >
                                           <div
                                             className="flex flex-row justify-between"
@@ -1594,6 +1596,7 @@ const CustomerManagement: React.FC = () => {
                                                 showSuspendModal ? suspendCustomer(item) :
                                                 showTransferModal ? transferCustomer(item) : ''
                                               }}
+                                              cypress-name="common-list-yes-button"
                                             >Yes</button>
                                             <button
                                               className="btn-red ml-[60px]"

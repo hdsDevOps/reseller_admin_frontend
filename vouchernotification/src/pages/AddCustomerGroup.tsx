@@ -599,7 +599,10 @@ const AddCustomerGroup: React.FC = () =>  {
           <button
             type='button'
             className='btn-red h-[46px] ml-[30px]'
-            onClick={() => {setCustomerGroup(initialCustomerGroup)}}
+            onClick={() => {
+              setCustomerGroup(initialCustomerGroup);
+              navigate(-1);
+            }}
           >Cancel</button>
         </div>
       </form>

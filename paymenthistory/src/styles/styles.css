@@ -446,3 +446,17 @@
 .btn-green-4-customer:focus {
   outline: none;
 }
+
+.h3-text-resp {
+  /* font-inter font-medium text-[28px] text-black leading-8 */
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  color: black;
+}
+
+@media screen and (max-width: 426px) {
+  .h3-text-resp {
+    font-size: 20px;
+  }
+}

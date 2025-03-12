@@ -337,6 +337,7 @@ const NotificationTemplate = () => {
         })).unwrap();
         toast.success("Email sent successfully");
         // console.log("result...", result);
+        setSendEmailNotification("");
       } catch (error) {
         if(error?.message == "Request failed with status code 401") {
           try {
@@ -356,7 +357,7 @@ const NotificationTemplate = () => {
     <div className="grid grid-cols-1">
       <div className="flex flex-col">
         <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
-          <h3 className="h3-text">Notification Template</h3>
+          <h3 className="h3-text-resp">Notification Template</h3>
           <div
             className="flex min-[500px]:justify-end max-[500px]:justify-center max-[500px]:mt-2"
           >
@@ -479,6 +480,7 @@ const NotificationTemplate = () => {
                     type="button"
                     onClick={(e) => {sendNotificationEmail(e)}}
                     disabled={!rolePermissionsSlice?.notification_template?.send_mail ? true : false}
+                    cypress-name="send-test-notification-template-to-email"
                   >
                     <Send className="w-6 text-[#12A833] sm:block my-auto" size={32} />
                   </button>
@@ -550,7 +552,7 @@ const NotificationTemplate = () => {
         {
           isModalOpen && (
             <div className='fixed-full-screen'>
-              <div className='fixed-popup w-[488px] h-[343px] p-[30px]' ref={modalRef}>
+              <div className='fixed-popup w-[488px] h-[343px] p-[30px]' ref={modalRef} cypress-name="add-new-notification-template-modal">
                 <div className='flex flex-col'>
                   <div
                     className='flex-row-between'
@@ -611,7 +613,7 @@ const NotificationTemplate = () => {
         {
           isDeleteOpen && (
             <div className='fixed-full-screen'>
-              <div className='fixed-popup w-[488px] p-[30px]' ref={deleteRef}>
+              <div className='fixed-popup w-[488px] p-[30px]' ref={deleteRef} cypress-name="delete-notification-template-modal">
                 <div className='flex flex-col'>
                   <div
                     className='flex-row-between'
@@ -639,7 +641,7 @@ const NotificationTemplate = () => {
                     className='btn-red h-[46px]'
                     type="button"
                     onClick={() => {deleteNotificationTemplate()}}
-                    button-name="add-voucher-submit-btn"
+                    button-name="delete-notification-template-delete-btn"
                   >Delete</button>
                   <button
                     type='button'
@@ -657,7 +659,7 @@ const NotificationTemplate = () => {
         {
           isPreviewOpen && (
             <div className='fixed-full-screen'>
-              <div className='fixed-popup max-w-[800px] w-full min-h-[200px] p-[18px]' ref={previewRef}>
+              <div className='fixed-popup max-w-[800px] w-full min-h-[200px] p-[18px]' ref={previewRef} cypress-name="notification-template-preview-modal">
                 <div className='flex flex-col'>
                   <div
                     className='flex-row-between'

@@ -132,6 +132,8 @@ function EditCustomer() {
           setCountry(findCountry);
           setCustomer({
             ...customer,
+            address: hereData,
+            zipcode: hereData?.address?.postalCode,
             country: findCountry?.name
           });
           if(states?.length > 0) {
@@ -140,6 +142,9 @@ function EditCustomer() {
               setState(findState);
               setCustomer({
                 ...customer,
+                address: hereData,
+                zipcode: hereData?.address?.postalCode,
+                country: findCountry?.name,
                 state: findState?.name
               });
               if(cities?.length > 0) {
@@ -148,6 +153,10 @@ function EditCustomer() {
                   setCity(findCity);
                   setCustomer({
                     ...customer,
+                    address: hereData,
+                    zipcode: hereData?.address?.postalCode,
+                    country: findCountry?.name,
+                    state: findState?.name,
                     city: findCity?.name
                   })
                 }
@@ -159,15 +168,15 @@ function EditCustomer() {
     }
   }, [hereData, countries, states, cities]);
 
-  useEffect(() => {
-    if(hereData !== null) {
-      setCustomer({
-        ...customer,
-        address: hereData,
-        zipcode: hereData?.address?.postalCode
-      });
-    }
-  }, [hereData]);
+  // useEffect(() => {
+  //   if(hereData !== null) {
+  //     setCustomer({
+  //       ...customer,
+  //       address: hereData,
+  //       zipcode: hereData?.address?.postalCode
+  //     });
+  //   }
+  // }, [hereData]);
 
   useEffect(() => {
     if(countries?.length > 0 && countryName !== "") {
@@ -674,7 +683,7 @@ function EditCustomer() {
                         />
                         {
                           isHereDropdownOpen && hereList?.length > 0 && (
-                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2'>
+                            <div className='lg:w-[97%] w-[95%] max-h-32 absolute mt-14 bg-[#E4E4E4] overflow-y-auto z-[100] px-2' cypress-name="address-dropdown">
                               {
                                 hereList?.map((name, idx) => (
                                   <p
@@ -691,6 +700,25 @@ function EditCustomer() {
                             </div>
                           )
                         }
+                      </div>
+                    )
+                  } else if(item.name === "email"){
+                    return(
+                      <div
+                        key={index}
+                        className='flex flex-col px-2 mb-2'
+                      >
+                        <label
+                          className='search-input-label'
+                        >{item.label}</label>
+                        <input
+                          type={item.type}
+                          placeholder={item.label}
+                          name={item.name}
+                          disabled
+                          className='search-input-text'
+                          value={customer[item.name]}
+                        />
                       </div>
                     )
                   } else{
@@ -757,6 +785,7 @@ function EditCustomer() {
               className='mt-4 flex flex-row max-[666px]:justify-center mb-3'
             >
               <button
+                type='submit'
                 className='btn-green-2 h-[46px]'
               >Save</button>
               <button
@@ -764,6 +793,7 @@ function EditCustomer() {
                 className='btn-red h-[46px] ml-[30px]'
                 onClick={() => {
                   setCustomer(location.state);
+                  navigate(-1);
                 }}
               >Cancel</button>
             </div>

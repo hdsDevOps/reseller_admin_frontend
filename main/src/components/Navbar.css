@@ -1,0 +1,19 @@
+/* Thin scrollbar for WebKit browsers (Chrome, Safari) */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 0.5px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Light gray scrollbar */
+  border-radius: 5px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+}
+
+/* Thin scrollbar for Firefox */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}

@@ -62,7 +62,7 @@ const CMS: React.FC = () => {
   return (
     <div className="min-h-screen p-[27px]">
       <div className="max-w-full mx-auto ">
-        <h3 className="h3-text">CMS</h3>
+        <h3 className="h3-text-resp">CMS</h3>
         <Accordion items={menuItems} />
       </div>
     </div>

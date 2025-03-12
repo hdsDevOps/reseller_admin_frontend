@@ -722,7 +722,7 @@ const EditRole = () => {
                         <div
                           className="flex flex-row gap-1"
                         >
-                          <input type="checkbox" checked={role.permission.voucher_management[item.name].overall} disabled={role.permission.voucher_management.overall ? false : true} onClick={() => {
+                          <input type="checkbox" checked={role.permission.voucher_management[item.name].overall} disabled={role.permission.voucher_management.overall ? false : true} cypress-name={`voucher-management-${item?.name}`} onClick={() => {
                             setRole({
                               ...role,
                               permission: {
@@ -736,7 +736,7 @@ const EditRole = () => {
                                 }
                               }
                             })
-                          }} />
+                          }}  />
                           <label>{item.label}</label>
                         </div>
                         <div
@@ -786,18 +786,23 @@ const EditRole = () => {
                     <div
                       className="flex flex-row gap-1"
                     >
-                      <input type="checkbox" name={item.name} checked={role.permission[item.name].overall} onClick={() => {
-                        setRole({
-                          ...role,
-                          permission: {
-                            ...role.permission,
-                            [item.name]: {
-                              ...role.permission[item.name],
-                              overall: !role.permission[item.name].overall
+                      <input
+                        type="checkbox"
+                        name={item.name}
+                        checked={role.permission[item.name].overall}
+                        onClick={() => {
+                          setRole({
+                            ...role,
+                            permission: {
+                              ...role.permission,
+                              [item.name]: {
+                                ...role.permission[item.name],
+                                overall: !role.permission[item.name].overall
+                              }
                             }
-                          }
-                        })
-                      }} />
+                          })
+                        }}
+                      />
                       <label>{item.label}</label>
                     </div>
 
@@ -1126,20 +1131,20 @@ const EditRole = () => {
           </div>
         </div>
         <div className="flex justify-center gap-7 my-10">
-            <button
-              type="submit"
-              className="btn-green w-[130px]"
-            >
-              Submit
-            </button>
-            <button
-              type="button"
-              className="btn-red w-[130px]"
-              onClick={() => {setRole(initialStateRole)}}
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="btn-green w-[130px]"
+          >
+            Submit
+          </button>
+          <button
+            type="button"
+            className="btn-red w-[130px]"
+            onClick={() => {setRole(initialStateRole)}}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -198,7 +198,7 @@ const Role = () => {
   return (
     <div className="grid grid-cols-1 p-4">
       <div className="flex-row-between-responsive sm:mr-10 max-sm:mr-0">
-        <h3 className="h3-text">
+        <h3 className="h3-text-resp">
           Role
         </h3>
       </div>
@@ -221,6 +221,7 @@ const Role = () => {
           className="btn-green ml-[19px]"
           onClick={() => {navigate('/add-role')}}
           disabled={!rolePermissionsSlice?.role_management?.role?.add ? true : false}
+          cypress-name="add-new-role"
         >
           Add Role
         </button>
@@ -261,7 +262,7 @@ const Role = () => {
             </button>
             {
               isDropdownOpen === true && initialRoles?.filter(role => role?.role_name.toLowerCase().includes(search.toLowerCase())).length > 0 && (
-                <div className='absolute flex flex-col py-1 sm:w-[290px] max-sm:w-[calc(100%-28px)] bg-custom-white rounded-b mt-10 max-h-40 overflow-y-auto z-[9999]'>
+                <div className='absolute flex flex-col py-1 sm:w-[290px] max-sm:w-[calc(100%-28px)] bg-custom-white rounded-b mt-10 max-h-40 overflow-y-auto z-[9999]' cypress-name="search-user-type-dropdown">
                   {
                     initialRoles?.filter(role => role?.role_name.toLowerCase().includes(search.toLowerCase())).map((item, index) => (
                       <p
@@ -417,6 +418,7 @@ const Role = () => {
                               navigate('/edit-role', {state: role});
                             }}
                             disabled={!rolePermissionsSlice?.role_management?.role?.edit ? true : false}
+                            cypress-name="edit-role-button"
                           >
                             <BiSolidEditAlt className="text-black text-xl" />
                           </button>
@@ -427,6 +429,7 @@ const Role = () => {
                               setDeleteRoleId(role?.id);
                             }}
                             disabled={!rolePermissionsSlice?.role_management?.role?.delete ? true : false}
+                            cypress-name="delete-role-button"
                           >
                             <IoTrashOutline className="text-red-500 text-xl hover:text-red-700" />
                           </button>

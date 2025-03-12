@@ -477,10 +477,12 @@ const Banner: React.FC = () => {
   return (
     <div className="sm:p-4 p-0 bg-white">
       <div className="flex items-center justify-start mx-4 mb-6">
-        <button className="btn-cms"
+        <button
+          className="btn-cms"
           onClick={() => {
             setIsEditModalOpen(true);
           }}
+          cypress-name="cms-add-new-banner"
         >
           ADD
         </button>
@@ -488,7 +490,7 @@ const Banner: React.FC = () => {
 
       <div className="bg-custom-white-2">
         {banners.map((banner, index) => (
-          <div key={index} className="p-4 border">
+          <div key={index} className="p-4 border" cypress-name="cms-banner">
             <div className="flex items-center justify-end mb-4">
               <div className="flex min-sm:flex-row max-sm:flex-col sm:items-center items-end sm:gap-4 gap-2">
                 <div className="flex sm:items-center items-end h-5 gap-2">
@@ -567,9 +569,7 @@ const Banner: React.FC = () => {
                 <table
                   className="sm:px-7 px-0 w-full"
                 >
-                  <tbody
-                    className=""
-                  >
+                  <tbody>
                     {
                       bannerItems.map((e, i) => {
                         if(e.name == 'currency_details'){
@@ -607,8 +607,7 @@ const Banner: React.FC = () => {
                               </td>
                             </tr>
                           )
-                        }
-                        else{
+                        } else{
                           return(
                             <tr key={i}
                               className=""
@@ -623,6 +622,7 @@ const Banner: React.FC = () => {
                                 className={`banner-table-td-2 py-2 pr-7 ${
                                   e.name == "title" ? "font-medium text-black" : e.name == "description" ? "font-normal text-black": e.name == "button_title" ? "font-bold text-black" : e.name == "button_url" ? "font-normal text-custom-blue-8 cursor-pointer" : ""
                                 }`}
+                                cypress-name="cms-banner-item-data"
                               >
                                 {
                                   e.name == "button_url" ?
@@ -644,28 +644,31 @@ const Banner: React.FC = () => {
               </div>
             </div>
             <div className="flex items-end justify-end space-x-4">
-                <button className="px-2 text-black hover:text-orange-300 duration-300 transition-all ease-in-out"
-                  type="button"
-                  onClick={() => {
-                    setEditBanner(true);
-                    setIsEditModalOpen(true);
-                    setNewBanner(banner);
-                    setImage(banner?.background_image);
-                  }}
-                >
-                  <PencilIcon className="w-5 h-5" />
-                </button>
-                <button
-                  className="px-2 text-black hover:text-red-600 duration-300 transition-all ease-in-out"
-                  type="button"
-                  onClick={() => {
-                    setIsDeleteModalOpen(true);
-                    setNewBanner(banner);
-                  }}
-                >
-                  <TrashIcon className="w-5 h-5" />
-                </button>
-              </div>
+              <button
+                className="px-2 text-black hover:text-orange-300 duration-300 transition-all ease-in-out"
+                type="button"
+                onClick={() => {
+                  setEditBanner(true);
+                  setIsEditModalOpen(true);
+                  setNewBanner(banner);
+                  setImage(banner?.background_image);
+                }}
+                cypress-name="edit-cms-banner-button"
+              >
+                <PencilIcon className="w-5 h-5" />
+              </button>
+              <button
+                className="px-2 text-black hover:text-red-600 duration-300 transition-all ease-in-out"
+                type="button"
+                onClick={() => {
+                  setIsDeleteModalOpen(true);
+                  setNewBanner(banner);
+                }}
+                cypress-name="delete-cms-banner-button"
+              >
+                <TrashIcon className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -673,13 +676,12 @@ const Banner: React.FC = () => {
       <Dialog
         open={isEditModalOpen}
         as="div"
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={() => {
           setIsEditModalOpen(false);
           setNewBanner(initialBanner);
           setEditBanner(false);
           setImage(null);
-
         }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
@@ -705,11 +707,12 @@ const Banner: React.FC = () => {
                       setEditBanner(false);
                       setImage(null);
                     }}
+                    cypress-name="close-cms-add-banner"
                   >+</button>
                 </div>
               </div>
 
-              <form className="grid grid-cols-1 gap-4 overflow-y-scroll max-h-[400px]" onSubmit={formSubmit}>
+              <form className="grid grid-cols-1 gap-4 overflow-y-auto max-h-[500px]" onSubmit={formSubmit}>
                 <div
                   className="grid sm:grid-cols-2 grid-cols-1 gap-2"
                 >
@@ -757,6 +760,7 @@ const Banner: React.FC = () => {
                                       amount: e.target.value,
                                     });
                                   }}
+                                  cypress-name="currency-add"
                                 />
                                 <select
                                   className="col-span-1 h-full"
@@ -777,6 +781,7 @@ const Banner: React.FC = () => {
                                     type="button"
                                     className="btn-cms-2 my-auto"
                                     onClick={() => {updatePrice(price.currency_code, price)}}
+                                    cypress-name="currency-add-button"
                                   >ADD</button>
                                 </div>
                               </div>
@@ -829,7 +834,7 @@ const Banner: React.FC = () => {
                                 <div
                                   className="transition-transform duration-1000 ease-in-out my-auto tracking-[-1.1%]"
                                 >
-                                  <label className="relative cursor-pointer">
+                                  <label className="relative cursor-pointer" cypress-name="cms-add-banner-show-video-toggle">
                                     <input type="checkbox" className="sr-only peer" checked={newBanner?.show_video_status}
                                       onClick={() => {
                                         setNewBanner({
@@ -909,6 +914,7 @@ const Banner: React.FC = () => {
                                   theme="snow"
                                   style={{height: 100}}
                                   modules={modules}
+                                  cypress-name="quill-banner"
                                 />
                               </div>
                             </div>
@@ -929,6 +935,7 @@ const Banner: React.FC = () => {
                               <label
                                 htmlFor="file-upload"
                                 className="flex flex-col items-center justify-center w-full h-[45px] mt-auto border-2 border-custom-white border-dashed rounded-[5px] cursor-pointer bg-white hover:bg-gray-100"
+                                cypress-name="cms-banner-add-bg"
                               >
                                 <div className="flex flex-col items-center justify-center w-full h-full">
                                   {
@@ -1030,6 +1037,7 @@ const Banner: React.FC = () => {
                     type="submit"
                     // onClick={handleSubmit}
                     className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                    cypress-name="cms-add-banner-submit"
                   >
                     Save
                   </button>
@@ -1054,7 +1062,7 @@ const Banner: React.FC = () => {
       
       <Dialog
         open={isDeleteModalOpen}
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={() => {setIsDeleteModalOpen(false)}}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
@@ -1084,6 +1092,7 @@ const Banner: React.FC = () => {
                     deleteBanner(newBanner?.id);
                   }}
                   className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                  cypress-name="cms-banner-delete-button"
                 >
                   Delete
                 </button>

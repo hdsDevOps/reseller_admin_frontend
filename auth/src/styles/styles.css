@@ -185,3 +185,88 @@
 .login-input{
   @apply w-full h-[52px] rounded-lg border px-1 py-[3.5px] text-gray-500 border-gray-300 font-inter text-base font-normal;
 }
+
+.otp-container {
+  /* min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 0 32px;
+  align-items: center;
+}
+
+.otp-container-div {
+  /* w-full !max-w-[570px] */
+  width: 100%;
+  max-width: 570px;
+}
+
+.otp-container-inner-div {
+  /* p-8 xsm-max:px-4 bg-[#F9FAFB] rounded-lg shadow-sm */
+  padding: 32px;
+  background-color: #F9FAFB;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.logo-area {
+  /* mb-[20px] flex items-center justify-center */
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.otp-logo {
+  /* w-[108px] */
+  max-width: 108px;
+}
+
+.otp-header {
+  /* text-center h3-text mb-4 */
+  /* font-inter font-medium text-[28px] text-black leading-8 */
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  color: black;
+}
+
+.otp-para {
+  /* w-full flex items-start justify-center */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.otp-para-p {
+  /* text-center font-inter-16px-400 w-[430px] */
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  text-align: center;
+  max-width: 430px;
+}
+
+@media screen and (max-width: 1024px) {
+  .otp-container {
+    padding: 0 24px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .otp-container {
+    padding: 0 16px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .otp-header {
+    font-size: 22px;
+  }
+
+  .otp-para-p {
+    font-size: 12px;
+  }
+}

@@ -135,11 +135,13 @@ const Resources: React.FC = () => {
   return (
     <div className="sm:p-4 p-0 bg-white">
       <div className="flex items-center justify-start mx-4 mb-3">
-        <button className="btn-cms"
+        <button
+          className="btn-cms"
           onClick={() => {
             setIsEditModalOpen(true);
             setNewResources(resources);
           }}
+          cypress-name="cms-edit-resources-button"
         >
           EDIT
         </button>
@@ -250,6 +252,7 @@ const Resources: React.FC = () => {
                             placeholder="Enter title here"
                             value={value?.content_title}
                             onChange={(e) => updateResouces(key, "content_title", e.target.value)}
+                            cypress-name={`cms-resources-content-title-${index+1}`}
                           />
                         </div>
                         <div
@@ -283,6 +286,7 @@ const Resources: React.FC = () => {
               <button
                 type="submit"
                 className="btn-green h-[46px]"
+                cypress-name="cms-resources-submit-button"
               >Save</button>
               <button
                 type="button"

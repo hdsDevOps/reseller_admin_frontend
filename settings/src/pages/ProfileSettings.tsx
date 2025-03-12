@@ -779,6 +779,7 @@ function ProfileSettings() {
                 setImageModal(true);
                 // setImage(profile?.profile_pic);
               }}
+              cypress-name="profile-update-image-button"
             >
               <RiCameraFill
                 className='mx-auto my-auto mt-[5px] w-[20px] text-custom-green'
@@ -805,6 +806,7 @@ function ProfileSettings() {
                   setModalShow(true);
                   setNewProfile(userDetails);
                 }}
+                cypress-name="edit-profile-button"
               >Edit</button>
             </div>
           </div>
@@ -871,7 +873,7 @@ function ProfileSettings() {
                   return(
                     <div
                       key={index}
-                      className='flex flex-col sm:col-span-1 col-span-6 my-2'
+                      className='flex flex-col sm:col-span-1 col-span-2 my-2'
                     >
                       <label className='search-input-label'>{item.label}</label>
                       <input
@@ -932,8 +934,9 @@ function ProfileSettings() {
                               placeholder={item.placeholder}
                               defaultValue={newProfile[item.name] || ""}
                               className='search-input-text'
-                              onChange={updateProfile}
-                              required
+                              disabled
+                              style={{cursor: 'not-allowed'}}
+                              cypress-name={item.name}
                             />
                           </div>
                         )
@@ -966,7 +969,8 @@ function ProfileSettings() {
                               placeholder='00000-00000'
                               inputProps={{
                                 required: true,
-                                name: 'phone'
+                                name: 'phone',
+                                cypressName: 'phone'
                               }}
                               containerClass='min-w-full border border-[#E4E4E4] rounded-[10px] h-[45px] mt-[-9px] items-center'
                               inputClass="react-tel-input outline-none !w-full bord !border-0 !h-full"
@@ -990,6 +994,7 @@ function ProfileSettings() {
                               type='text'
                               placeholder={item?.placeholder}
                               name='country'
+                              cypress-name={item.name}
                               onChange={e => {
                                 setNewProfile({
                                   ...newProfile,
@@ -1064,6 +1069,7 @@ function ProfileSettings() {
                                 setState({});
                                 setCity({});
                               }}
+                              cypress-name={item.name}
                               value={newProfile?.state_name || stateName}
                               required={states?.length > 0 ? true : false}
                               onFocus={() => {setStateDropdownOpen(true)}}
@@ -1119,6 +1125,7 @@ function ProfileSettings() {
                                 setCityName(e.target.value);
                                 setCity({});
                               }}
+                              cypress-name={item.name}
                               value={newProfile?.city || cityName}
                               required={cities?.length > 0 ? true : false}
                               onFocus={() => {setCityDropdownOpen(true)}}
@@ -1163,6 +1170,7 @@ function ProfileSettings() {
                               className='search-input-text'
                               onChange={updateProfileName}
                               required
+                              cypress-name={item.name}
                             />
                           </div>
                         )
@@ -1180,7 +1188,7 @@ function ProfileSettings() {
                               type='text'
                               className='search-input-text focus:outline-none w-full h-full p-0'
                               placeholder={item?.placeholder}
-                              name='city'
+                              name='street_name'
                               onChange={e => {
                                 setNewProfile({
                                   ...newProfile,
@@ -1189,13 +1197,14 @@ function ProfileSettings() {
                                 setHereSearch(e.target.value);
                                 setHereData(null);
                               }}
+                              cypress-name={item.name}
                               value={hereData?.title || hereSearch}
                               required
                               onFocus={() => {setStreetDropdownOpen(true)}}
                             />
                             {
                               streetDropdownOpen && (
-                                <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2'>
+                                <div className='w-full max-h-32 absolute mt-14 bg-white border border-[#E4E4E4] rounded-md overflow-y-auto z-[100] px-2' cypress-name="profile-street-dropdown">
                                   {
                                     hereList?.map((address, idx) => (
                                       <p
@@ -1294,6 +1303,7 @@ function ProfileSettings() {
                 <button
                   className='btn-green w-[104px] max-sm:mx-auto mt-2'
                   type='submit'
+                  cypress-name="edit-profile-submit-button"
                 >
                   Update
                 </button>
@@ -1373,6 +1383,7 @@ function ProfileSettings() {
                   <label
                     htmlFor="file-upload"
                     className="float-right ml-auto mt-[-20px] w-[29px] h-[29px] border border-custom-gray-2 rounded-full items-center bg-white cursor-pointer"
+                    cypress-name="profile-image-upload-button"
                   >
                     <RiCameraFill
                       className='mx-auto my-auto mt-[5px] w-[20px] text-custom-green'
@@ -1404,6 +1415,7 @@ function ProfileSettings() {
                   <button
                     type="submit"
                     className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                    cypress-name="profile-image-submit-button"
                   >
                     Save
                   </button>

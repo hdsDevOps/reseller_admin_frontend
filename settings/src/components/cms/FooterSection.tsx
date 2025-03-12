@@ -67,8 +67,8 @@ const FooterSection = () => {
   ];
 
   const [footerData, setFooterData] = useState([]);
-  console.log(footerData);
   const [editFooterData, setEditFooterData] = useState([]);
+  console.log(typeof footerData, typeof editFooterData);
 
   const fetchFooterData = async() => {
     try {
@@ -96,7 +96,7 @@ const FooterSection = () => {
     // console.log(data[index]);
     data[index][field] = e.target.value;
     setEditFooterData({
-      ...footerData,
+      ...editFooterData,
       [fieldName]: data
     });
   };
@@ -223,10 +223,14 @@ const FooterSection = () => {
   return (
     <div className="sm:p-4 p-0 bg-white">
       <div className="flex items-center justify-start mx-4 mb-3">
-        <button className="btn-cms" onClick={() => {
-          setShowModal(true);
-          setEditFooterData(footerData);
-        }}>
+        <button
+          className="btn-cms"
+          onClick={() => {
+            setShowModal(true);
+            setEditFooterData({...footerData});
+          }}
+          cypress-name="cms-edit-footer-button"
+        >
           EDIT
         </button>
       </div>
@@ -360,10 +364,11 @@ const FooterSection = () => {
       <Dialog
         open={showModal}
         as="div"
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={() => {
           setShowModal(false);
           setEditFooterData([]);
+          fetchFooterData();
         }}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 w-screen overflow-y-auto">
@@ -384,6 +389,7 @@ const FooterSection = () => {
                       onClick={() => {
                         setShowModal(false);
                         setEditFooterData([]);
+                        fetchFooterData();
                       }}
                     >+</button>
                   </div>
@@ -430,6 +436,7 @@ const FooterSection = () => {
                                             value={item?.name}
                                             onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "name")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-name-0`}
                                           />
                                         </div>
                                         <div
@@ -445,6 +452,7 @@ const FooterSection = () => {
                                             value={item?.value}
                                             onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "value")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-link-0`}
                                           />
                                         </div>
                                       </div>
@@ -495,6 +503,7 @@ const FooterSection = () => {
                                             value={item?.name}
                                             onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "name")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-name-${idx}`}
                                           />
                                         </div>
                                         <div
@@ -510,6 +519,7 @@ const FooterSection = () => {
                                             value={item?.value}
                                             onChange={(e) => {handleFooterArrayChange(e, footer.name, idx, "value")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-link-${idx}`}
                                           />
                                         </div>
                                       </div>
@@ -588,6 +598,7 @@ const FooterSection = () => {
                                             value={item?.name}
                                             onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "name")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-name-0`}
                                           />
                                         </div>
                                         <div
@@ -603,6 +614,7 @@ const FooterSection = () => {
                                             value={item?.value}
                                             onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "value")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-link-0`}
                                           />
                                         </div>
                                       </div>
@@ -653,6 +665,7 @@ const FooterSection = () => {
                                             value={item?.name}
                                             onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "name")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-name-${idx}`}
                                           />
                                         </div>
                                         <div
@@ -668,6 +681,7 @@ const FooterSection = () => {
                                             value={item?.value}
                                             onChange={(e) => {handleFooterArrayChange(e, footer?.name, idx, "value")}}
                                             required
+                                            cypress-name={`cms-footer-${footer.name}-link-${idx}`}
                                           />
                                         </div>
                                       </div>
@@ -737,6 +751,7 @@ const FooterSection = () => {
                     <button
                       type="submit"
                       className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none"
+                      cypress-name="cms-footer-submit-button"
                     >
                       Save
                     </button>
@@ -745,6 +760,7 @@ const FooterSection = () => {
                       onClick={() => {
                         setShowModal(false);
                         setEditFooterData([]);
+                        fetchFooterData();
                       }}
                       className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none"
                     >

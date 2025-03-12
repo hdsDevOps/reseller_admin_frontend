@@ -268,7 +268,7 @@ export default function Header() {
   }, []);
 
   const getFirstAlphabet = (str: string) => {
-    return Array.from(str)[0].toUpperCase();
+    return Array.from(str)[0]?.toUpperCase();
   }
 
   const [ showProfile, setShowProfile ] = useState<boolean>(false);
@@ -382,7 +382,7 @@ export default function Header() {
                   <a
                     className="font-montserrat sm:text-base text-[12px] font-semibold text-white hover:text-white no-underline hover:no-underline"
                   >
-                    {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
+                    {getFirstAlphabet(userDetails?.first_name || "")}{getFirstAlphabet(userDetails?.last_name || "")}
                   </a>
                 </div>
               )
@@ -420,7 +420,7 @@ export default function Header() {
                         <a
                           className="font-montserrat sm:text-base text-[10px] font-semibold text-white hover:text-white no-underline hover:no-underline"
                         >
-                          {getFirstAlphabet(userDetails?.first_name || "A")}{getFirstAlphabet(userDetails?.last_name || "B")}
+                          {getFirstAlphabet(userDetails?.first_name || "")}{getFirstAlphabet(userDetails?.last_name || "")}
                         </a>
                       </div>
                     )

@@ -415,6 +415,7 @@ function AddPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-0-price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-0-price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-0-price`}
                       />
                     </td>
                     <td className="w-[260px] text-center px-[15px] py-2">
@@ -427,6 +428,7 @@ function AddPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-1-price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-1-price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-1-price`}
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
@@ -439,6 +441,7 @@ function AddPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-2-price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-2-price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-2-price`}
                       />
                     </td>
                   </tr>
@@ -454,6 +457,7 @@ function AddPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-0-discount_price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-0-discount_price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-0-discount_price`}
                       />
                     </td>
                     <td className="min-w-[260px] text-center px-[15px] py-2">
@@ -466,6 +470,7 @@ function AddPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-1-discount_price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-1-discount_price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-1-discount_price`}
                       />
                     </td>
                     <td className="min-w-[400px] text-center px-[15px] py-2">
@@ -478,6 +483,7 @@ function AddPlanPriceSetup() {
                         ref={el => (priceRefs.current[`${number}-2-discount_price`] = el)}
                         onClick={() => {priceRefs.current[`${number}-2-discount_price`].focus()}}
                         required
+                        cypress-name={`amount-${number}-2-discount_price`}
                       />
                     </td>
                   </tr>
@@ -945,6 +951,7 @@ function AddPlanPriceSetup() {
             type='text'
             placeholder='Enter top feature'
             onKeyDown={handleKeyDownFeature}
+            cypress-name="plan-and-price-feature-input"
           />
           
           <FaInfo className="w-[18px] h-[18px] text-[#12A833] border border-[#12A833] rounded-full p-[2px]" onMouseOver={() => {setFeatureHover(true)}} onMouseLeave={() => {setFeatureHover(false)}} />
@@ -983,6 +990,7 @@ function AddPlanPriceSetup() {
                           name={item.name}
                           value={subscription?.services[item.name]}
                           checked={subscription?.services[item.name]}
+                          cypress-name="productivity-list-toggle"
                         />
                       </td>
                     </tr>
@@ -1039,6 +1047,7 @@ function AddPlanPriceSetup() {
             setSubscription(initialSubscription);
             setLocalPrice(initialSubscription?.amount_details);
             setIconImage(null);
+            navigate(-1);
           }}
         >Cancel</button>
       </div>

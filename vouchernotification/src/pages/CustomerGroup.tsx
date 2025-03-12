@@ -210,7 +210,7 @@ const CustomerGroup: React.FC = () => {
     <div className="grid grid-cols-1">
       <div className="flex flex-col">
         <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
-          <h3 className="h3-text">Customer Groups</h3>
+          <h3 className="h3-text-resp">Customer Groups</h3>
           <div
             className="flex min-[500px]:justify-end max-[500px]:justify-center max-[500px]:mt-2"
           >
@@ -218,6 +218,7 @@ const CustomerGroup: React.FC = () => {
               onClick={() => navigate('/add-customer-group')}
               className="btn-green w-[139px] items-center"
               disabled={!rolePermissionsSlice?.voucher_management?.customer_group?.add ? true : false}
+              cypress-name="add-new-customer-group-btn"
             >
               <FiPlus className="inline-block items-center mr-2 mt-[-2px]" />
               Add new

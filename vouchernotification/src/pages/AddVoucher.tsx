@@ -11,20 +11,22 @@ interface Props {
   htmlContent: string;
 }
 
+const initialVoucher = {
+  voucher_code: "",
+  start_date: "",
+  end_date: "",
+  discount_rate: "",
+  template_details: "",
+  currency: ""
+};
+
 const AddVoucher: React.FC = () =>  {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
   const flagRef = useRef(null);
-  const [voucher, setVoucher] = useState({
-    voucher_code: "",
-    start_date: "",
-    end_date: "",
-    discount_rate: "",
-    template_details: "",
-    currency: ""
-  });
+  const [voucher, setVoucher] = useState(initialVoucher);
   // console.log("voucher...", voucher);
   const { defaultCurrency } = useAppSelector((state) => state.auth);
   // console.log("defaultCurrency....", defaultCurrency);
@@ -382,6 +384,10 @@ const AddVoucher: React.FC = () =>  {
           <button
             type='button'
             className='btn-red h-[46px] ml-[30px]'
+            onClick={() => {
+              setVoucher(initialVoucher);
+              navigate(-1);
+            }}
           >Cancel</button>
         </div>
       </form>

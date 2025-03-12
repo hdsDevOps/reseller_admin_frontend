@@ -209,7 +209,7 @@ const PlanPriceSetup = () => {
   };
 
   const renderGridView = () => (
-    <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 gap-6" cypress-name="grid-view-plan-and-prices-list">
       {
         plansAndPrices?.length>0 ? plansAndPrices?.map((plan, index) => (
           <div
@@ -220,7 +220,7 @@ const PlanPriceSetup = () => {
             <div className="flex flex-col">
               <div className="flex flex-row items-center gap-2">
                 <img src={plan?.icon_image ? plan?.icon_image : ""} alt={plan?.plan_name} className="xl:w-[25px] lg:w-[20px] w-[25px]" />
-                <h4 className="font-inter font-medium xl:text-2xl lg:text-base text-2xl text-cBlue3 text-nowrap uppercase">{plan?.plan_name}</h4>
+                <h4 className="font-inter font-medium xl:text-2xl lg:text-base sm:text-2xl text-xl text-cBlue3 text-nowrap uppercase">{plan?.plan_name}</h4>
               </div>
               <div className="flex justify-end">
                 <p className="flex justify-end items-end text-right text-[10px] text-[#596780] font-inter font-normal">per user/month</p>
@@ -241,6 +241,7 @@ const PlanPriceSetup = () => {
                   <select
                     className="bg-transparent font-inter font-normal text-[8px] tracking[-1.1%] text-[#312E3c] focus:outline-none"
                     onChange={e => {setCurrencyIndex(e.target.value)}}
+                    cypress-name="change-currency-flag"
                   >
                     {
                       flagList.map((flag, i) => {
@@ -413,7 +414,7 @@ const PlanPriceSetup = () => {
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200 text-[0.65rem]">
+        <tbody className="divide-y divide-gray-200 text-[0.65rem]" cypress-name="plan-and-price-table-view-table-tbody">
           {
             plansAndPrices?.length>0 ? plansAndPrices?.map((plan, index) => (
               <tr key={index}>
@@ -525,6 +526,7 @@ const PlanPriceSetup = () => {
                         setIsModalOpen(true);
                       }}
                       disabled={!rolePermissionsSlice?.subscription_master?.plan_and_price_setup?.delete ? true : false}
+                      cypress-name="delete-plan-and-price-from-table-view"
                     >
                       <FaTrash />
                     </button>
@@ -535,6 +537,7 @@ const PlanPriceSetup = () => {
                         setIsMoreOpen(true);
                         setViewMore(plan);
                       }}
+                      cypress-name="plan-and-price-table-view-more-button"
                     >
                       More
                     </button>
@@ -579,7 +582,7 @@ const PlanPriceSetup = () => {
   return (
     <div className="grid grid-cols-1">
       <div className="flex min-sm:flex-row max-sm:flex-col justify-between min-sm:items-center mb-6 max-sm:gap-2">
-        <h3 className="h3-text">Plan & Price setup</h3>
+        <h3 className="h3-text-resp">Plan & Price setup</h3>
         <div className="flex gap-4 max-sm:justify-end">
           <button
             className="btn-green w-[139px] flex flex-row items-center gap-2"
@@ -709,6 +712,7 @@ const PlanPriceSetup = () => {
                   onClick={() => {
                     setIsMoreOpen(false);
                   }}
+                  cypress-name="close-view-more"
                 >
                   <X className='w-5 h-5 mx-auto items-center text-white' />
                 </button>

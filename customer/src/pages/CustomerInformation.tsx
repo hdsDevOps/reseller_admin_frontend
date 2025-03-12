@@ -141,6 +141,7 @@ const CustomerInformation: React.FC = () => {
           onClick={() => {
             navigate(-1);
           }}
+          cypress-name="go-back-button"
         >
           <MoveLeft
             className='h-[20px] text-black mt-[7px]'
@@ -236,7 +237,7 @@ const CustomerInformation: React.FC = () => {
           <div
             className={`fixed-full-screen`}
           >
-            <div className="fixed-popup-round3xl min-[546px]:w-[538px] max-[546px]:w-full h-[284px] p-6 flex flex-col font-inter">
+            <div className="fixed-popup-round3xl min-[546px]:w-[538px] max-[546px]:w-full h-[284px] p-6 flex flex-col font-inter" cypress-name="reset-password-modal">
               <div
                 className='flex-row-between'
               >
@@ -276,6 +277,7 @@ const CustomerInformation: React.FC = () => {
                         setNewPassword(e.target.value);
                       }}
                       value={newPassword}
+                      cypress-name="new-password"
                     />
                     <button
                       type="button"
@@ -308,6 +310,7 @@ const CustomerInformation: React.FC = () => {
                         setConfirmPassword(e.target.value);
                       }}
                       value={confirmPassword}
+                      cypress-name="new-confirmed-password"
                     />
                     <button
                       type="button"

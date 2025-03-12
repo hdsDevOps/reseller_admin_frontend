@@ -467,7 +467,7 @@ const VoucherList: React.FC = () => {
     <div className="grid grid-cols-1">
       <div className="flex flex-col">
         <div className="flex min-[629px]:flex-row max-[629px]:flex-col min-[629px]:justify-between">
-          <h3 className="h3-text">Voucher List</h3>
+          <h3 className="h3-text-resp">Voucher List</h3>
           <div
             className="flex min-[500px]:justify-end max-[500px]:justify-center max-[500px]:mt-2"
           >
@@ -506,6 +506,7 @@ const VoucherList: React.FC = () => {
             <div
               className="serach-input-2 flex flex-row"
               onClick={() => setIsOpen(!isOpen)}
+              cypress-name="currency-selector-button"
             >
               <div className="relative w-[40px] h-full flex mx-auto items-center justify-between border-0 cursor-pointer">
                 <Flag code={selectedOption?.code} style={{width: '30px', margin: 'auto'}} />
@@ -531,6 +532,7 @@ const VoucherList: React.FC = () => {
                       key={option.code}
                       className="flex items-center py-2 px-[5px] hover:bg-gray-100 cursor-pointer border-b-[1px]"
                       onClick={() => handleOptionClick(option)}
+                      cypress-name="currency-selector-options"
                     >
                       <Flag code={option?.code} style={{width: '30px'}} />
                       <p className="ml-2">{option?.currency_code || "Select"} - {option?.value || "Option"}</p>
@@ -699,6 +701,7 @@ const VoucherList: React.FC = () => {
                             setVoucher(item);
                           }}
                           disabled={!rolePermissionsSlice?.voucher_management?.voucher_list?.send_mail ? true : false}
+                          cypress-name="send-voucher-mail-button"
                         >
                           Send mail
                         </button>
@@ -840,13 +843,15 @@ const VoucherList: React.FC = () => {
       {
         isModalOpen && (
           <div className="fixed-full-screen">
-            <div className="fixed-popup max-[582px]:w-full min-[582px]:w-[582px] p-8" ref={modalRef}>
+            <div className="fixed-popup max-[582px]:w-full min-[582px]:w-[582px] p-8" ref={modalRef} cypress-name="send-voucher-mail-modal">
               <div className="w-full flex flex-row justify-between">
                 <h5 className="h5-text-black">Send Mail</h5>
                 <button
                   className="bg-green-600 rounded-full text-white pl-[3.5px] hover:bg-green-500 shadow-md w-[23px] h-[23px]"
                   onClick={() => {setModalOpen(false)}}
                   aria-label="Close"
+                  type="button"
+                  cypress-name="send-voucher-mail-close-btn"
                 >
                   <FaTimes />
                 </button>
@@ -860,6 +865,7 @@ const VoucherList: React.FC = () => {
                     value="group"
                     checked={selectedRadio === "group"}
                     onChange={handleRadioChange}
+                    cypress-name="group"
                   />
                   Group
                 </label>
@@ -870,6 +876,7 @@ const VoucherList: React.FC = () => {
                     value="individual"
                     checked={selectedRadio === "individual"}
                     onChange={handleRadioChange}
+                    cypress-name="individual"
                   />
                   Individual Customer
                 </label>
@@ -883,10 +890,10 @@ const VoucherList: React.FC = () => {
                       setCustomerGroupName(e.target.value);
                       setCustomerGroupId("");
                       setCustomerGroupNameFound("");
-                    }} placeholder="Search group" value={customerGroupName || customerGroupNameFound} onFocus={() => {setDropdownSearch2(true)}} />
+                    }} placeholder="Search group" value={customerGroupName || customerGroupNameFound} onFocus={() => {setDropdownSearch2(true)}} cypress-name="customer-group-search-input" />
                     {
                       dropwdownSearch2 && (
-                        <div className="absolute bg-[#F4F4F4] w-full max-h-40 overflow-y-auto p-1 grid grid-cols-1">
+                        <div className="absolute bg-[#F4F4F4] w-full max-h-40 overflow-y-auto p-1 grid grid-cols-1" cypress-name='customer-group-search-dropdown'>
                           {
                             customerGroupList?.filter(item => item?.group_name?.toLowerCase()?.includes(customerGroupName?.toLowerCase()))?.map((group, index) => (
                               <div key={index} className="py-1 px-4 font-inter font-extralight text-base text-black border-b border-[#C9C9C9] last:border-0 cursor-pointer w-full" onClick={() => {
@@ -902,7 +909,9 @@ const VoucherList: React.FC = () => {
                     }
                   </div> :
                   <div className="w-full py-4" ref={dropwdownSearchRef}>
-                    <input className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-80 font-inter font-extralight text-base text-black" placeholder="Enter customer email id"
+                    <input
+                      className="w-full h-[68px] px-6 py-4 bg-[#F4F4F4] focus:outline-none rounded-[10px] border border-[#C9C9C9] border-opacity-80 font-inter font-extralight text-base text-black"
+                      placeholder="Enter customer email id"
                       onChange={e => {
                         setCustomerSearch({
                           ...customerSearch,
@@ -913,11 +922,12 @@ const VoucherList: React.FC = () => {
                       }}
                       value={customerSearch?.search_data || customerEmailFound}
                       onFocus={() => {setDropdownSearch(true)}}
+                      cypress-name="customer-individual-search-input"
                     />
 
                     {
                       dropwdownSearch && (
-                        <div className="absolute bg-[#F4F4F4] max-[321px]:w-[80%] max-[376px]:w-[83%] max-[390px]:w-[84%] max-[426px]:w-[85%] max-[480px]:w-[86%] max-[582px]:w-[88%] min-[582px]:w-[516px] max-h-[200px] overflow-y-scroll flex flex-col">
+                        <div className="absolute bg-[#F4F4F4] max-[321px]:w-[80%] max-[376px]:w-[83%] max-[390px]:w-[84%] max-[426px]:w-[85%] max-[480px]:w-[86%] max-[582px]:w-[88%] min-[582px]:w-[516px] max-h-[200px] overflow-y-scroll flex flex-col" cypress-name="customer-individual-search-dropdown">
                           {
                             customerList && customerList?.map((customer, index) => {
                               return(
@@ -948,6 +958,7 @@ const VoucherList: React.FC = () => {
                   className="btn-green-2 font-inter w-[95px]"
                   type="button"
                   onClick={() => {sendVoucherEmail(voucher?.id, selectedRadio === "group" ? customerGroupId : customerId, selectedRadio === "group" ? 2 : 1)}}
+                  cypress-name="send-voucher-mail-send-button"
                 >Send</button>
               </div>
             </div>
