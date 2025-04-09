@@ -11,6 +11,7 @@ import "auth/AuthCss";
 import { getUserAuthTokenFromLSThunk, getUserIdFromLSThunk, getAdminDetailsThunk, getDefaultCurrencyThunk, updateDefaultCurrencyThunk, removeUserAuthTokenFromLSThunk } from "store/user.thunk";
 import { setUserDefaultCurrency, setUserDetails, setUserIdDetails } from "store/authSlice";
 import { toast } from "react-toastify";
+import NoInternetPage from "./components/NoInternetPage";
 
 const flagList = [
   {flag: 'https://firebasestorage.googleapis.com/v0/b/dev-hds-gworkspace.firebasestorage.app/o/european-flag.png?alt=media&token=bb4a2892-0544-4e13-81a6-88c3477a2a64', name: 'EUR', logo: '€',},
@@ -36,6 +37,23 @@ const App: React.FC = () => {
   // console.log({userId, userDetails});
   // console.log("userDetails...", userDetails);
   console.log("rolePermissionsSlice...", rolePermissionsSlice);
+
+  const [isOnline, setIsOnline] = useState<Boolean>(navigator.onLine);
+  
+    useEffect(() => {
+      setIsOnline(navigator.onLine);
+  
+      const handleOnline = () => setIsOnline(true);
+      const handleOffline = () => setIsOnline(false);
+  
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+  
+      return () => {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      };
+    }, []);
 
   useEffect(() => {
     const getUserAuthToken = async () => {
@@ -87,6 +105,21 @@ const App: React.FC = () => {
 
     fetchUserDetails();
   }, [userId, dispatch, navigate]);
+
+  if (!isOnline) {
+    return (
+      // <div className="no_inter_container">
+      //   <div>
+      //     <i className="bi bi-wifi-off font_100"></i>
+      //   </div>
+      //   <h1 style={{ marginBottom: '5px' }}>Check your internet connection</h1>
+      //   <div>
+      //     <h4 style={{ margin: '0' }}> It appears to be disconnected</h4>
+      //   </div>
+      // </div>
+      <NoInternetPage />
+    )
+  }
 
   return (
     <Suspense fallback={<h2>Loading.....</h2>}>
